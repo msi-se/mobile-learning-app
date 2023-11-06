@@ -6,6 +6,7 @@
 - Verbesserung der Kommunikation zwischen Studierenden und Dozenten
   - höhere Frequenz/Regelmäßigkeit der Rückmeldungen
 - Verbesserung der Lernveranstaltungen und des eigenständigen Lernens durch neue Lernkanäle
+- Innovation der Hochschulbildung vorantreiben durch innovative Lern-App
 
 ## Target Group
 
@@ -23,12 +24,15 @@
 
 - Mobile App für Android und iOS
 - Web-App für Desktop
+- Nutzerfreundlich & ansprechendes Design
 
 ## Business Goals
 
 - Steigerung der Attraktivität der HTWG Konstanz
   - App = modern
   - besserer Lernerfolg
+  - Höhere Lehrqualität
+- Steigerung der Lernmotivation
 
 ## Competitors
 
@@ -40,6 +44,7 @@
   - `+` Interaktion während der Vorlesung
   - `+` einfach und zuverlässig
   - `-` nicht hochschulintern
+  - `-` weniger Spielraum für experimentelle features
 
 ## Revenue Streams
 
