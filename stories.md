@@ -1,6 +1,5 @@
 # User-Stories
 
-
 ## Allgemein
 
 ### Einfache App erstellen
@@ -9,8 +8,19 @@ Als Benutzer möchte ich auf die Lern-App über mein Smartphone und über den Br
 ### UI/UX
 Als Benutzer möchte ich eine benutzerfreundliche Oberfläche haben, um die App einfach und intuitiv zu bedienen.
 
+#### Akzeptanzkriterien
+- Umsetzung von UX-Design Prinzipien (Konsistente Userexperience, Reaktionsfreudige Oberfläche, tbd, ...)
+- Corporate Identity der HTWG wird im App Design umgesetzt
+- Klare Appstruktur & einfache Navigationsmöglichkeiten
+
 ### Sicherheits- und Datenschutzbestimmungen
 Als Benutzer möchte ich sicherstellen, dass meine Daten und meine Privatsphäre geschützt sind, indem Sicherheits- und Datenschutzbestimmungen eingehalten werden.
+
+### Account- & Profilverwaltung
+Als Benutzer möchte ich mein Account/Profil einsehen können und Änderungen vornehmen können.
+
+### FAQ & Support
+Als Benutzer möchte ich als Hilfestellung bei bestimmten Fragen, Antworten im FAQ-Bereich finden. Bei weiteren Fragen kann ich den Support kontaktieren.
 
 
 ## Feedback-System
@@ -30,16 +40,26 @@ Als Dozent möchte ich das erhaltene Feedback zu meinen Lehrveranstaltungen eins
     - Volltext-Eingabe
   - Bei den Elementen kann ausgewählt werden, ob sie Pflicht sind oder optional.
 - Der Ersteller kann User angeben, die das Feedback einsehen können (z.B.: andere Dozenten, die die Veranstaltung mit ihm halten).
-- Der Ersteller kann einen QR-Code generieren, den Studierende scannen können, um das Feedback zu geben. TODO: check, vlt mit Moodle Integration? (Jeder, der in Kurs eingeschrieben ist, kann App aufrufen und sieht dort den Feedback-Kanal)
+- Der Ersteller kann einen QR-Code/Zugangscode generieren, den Studierende scannen können, um das Feedback zu geben. TODO: check, vlt mit Moodle Integration? (Jeder, der in Kurs eingeschrieben ist, kann App aufrufen und sieht dort den Feedback-Kanal)
   
 ### Student: Anonymes Feedback geben
 Als Studierender möchte ich die Möglichkeit haben, anonymes Feedback zu einer Lehrveranstaltung zu geben, um meine Meinung zu äußern.
+
+#### Akzeptanzkriterien
+- per Handy-Kamera lässt sich ein QR-Code scannen bzw. ein Zugangscode eingeben, um so einen Zugang zum Quiz zu erhalten
+- die Elemente des Fragebogens lassen sich wie vom Ersteller gedacht steuern  und schließlich fertigstellen mit einem Knopf "Feedback absenden"
+- Der User bekommt eine Bestätigung/Fehlermeldung wenn das Feedback abgesendet wurde
 
 ### Dozent: Feedback einsehen
 Als Dozent möchte ich das erhaltene Feedback zu meinen Lehrveranstaltungen einsehen können, um mögliche Verbesserungen vorzunehmen.
 
 #### Akzeptanzkriterien
 - Nur der Ersteller und vom Ersteller ernannten Personen können das Feedback eines Kanals einsehen.
+- Feedback ist sortiert nach Lehrveranstaltung & Veranstaltungsdatum
+- Feedback kann gefiltert und sortiert werden
+- Dozent kann Feedbackinhalte markieren/vormerken um sie für die Umsetzung in der Vorlesung leichter zu finden
+- Der Dozent hat Analyse Möglichkeiten um Trends & Muster im Feedback zu erkennen
+- Feedback mit ähnlichen Inhalten wird gruppiert?
 
 ## Quiz
 
