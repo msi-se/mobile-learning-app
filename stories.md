@@ -118,6 +118,9 @@ Als Student möchte ich den Speiseplan der Mensa HTWG einsehen, um zu entscheide
 ### Benachrichtigungen über wichtige Termine/Fristen
 Als Student möchte ich Benachrichtigungen über wichtige Termine/Fristen erhalten, um sicherzustellen, dass ich keine wichtigen Termine oder Fristen verpasse.
 
+### Quiz und Feedback anhand der Moodle Kurse Filtern
+Als Student möchte ich Quiz und Feedbacks basierend auf meinen Moodle-Kursen filtern können, damit ich relevante Informationen schnell und effizient finden kann. Somit habe ich alle Quiz und Feedbacks von meinen belegten Kursen im Überblick.
+
 <!-- ### Story 1
   Als Studierender möchte ich auf externe Lernressourcen zugreifen können, die über APIs in die App integriert sind, um mein Wissen zu erweitern.
 
