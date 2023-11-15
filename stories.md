@@ -5,23 +5,39 @@
 ### Einfache App erstellen
 Als Benutzer möchte ich auf die Lern-App über mein Smartphone und über den Browser zugreifen können.
 
+#### Akzeptanzkriterien
+- Die App ist über den Browser erreichbar mit einer Subdomain der HTWG (z.B.: `lernapp.htwg-konstanz.de`)
+- Die App ist über den Apple App Store und den Google Play Store erreichbar
+- Die App ist über den Browser und die App mit dem gleichen Account nutzbar
+- Die App hat die gleichen Funktionen auf dem Browser und der App
+
 ### UI/UX
 Als Benutzer möchte ich eine benutzerfreundliche Oberfläche haben, um die App einfach und intuitiv zu bedienen.
 
 #### Akzeptanzkriterien
-- Umsetzung von UX-Design Prinzipien (Konsistente Userexperience, Reaktionsfreudige Oberfläche, tbd, ...)
+- Umsetzung von UX-Design Prinzipien
+  - Material UI (funktioniert nativ mit Flutter)
 - Corporate Identity der HTWG wird im App Design umgesetzt
 - Klare Appstruktur & einfache Navigationsmöglichkeiten
 
 ### Sicherheits- und Datenschutzbestimmungen
-Als Benutzer möchte ich sicherstellen, dass meine Daten und meine Privatsphäre geschützt sind, indem Sicherheits- und Datenschutzbestimmungen eingehalten werden.
+Als Benutzer der Applikation möchte ich sicherstellen, dass meine Daten und meine Privatsphäre geschützt sind, indem Sicherheits- und Datenschutzbestimmungen eingehalten werden.
 
 ### Account- & Profilverwaltung
-Als Benutzer möchte ich mein Account/Profil einsehen können und Änderungen vornehmen können.
+Als Studierender und als Dozent möchte ich einen Account bei der App haben.
+Als Basis soll mein Hochschulaccount verwendet werden (sodass kein neues Passwort erstellt werden muss).
+
+#### Akzeptanzkriterien
+- Der Login in der App soll mit meinem Hochschulaccount möglich sein.
 
 ### FAQ & Support
-Als Benutzer möchte ich als Hilfestellung bei bestimmten Fragen, Antworten im FAQ-Bereich finden. Bei weiteren Fragen kann ich den Support kontaktieren.
+Als Benutzer möchte ich als Hilfestellung bei bestimmten Fragen, Antworten im FAQ-Bereich finden.
+Bei weiteren Fragen kann ich den Support kontaktieren.
 
+#### Akzeptanzkriterien
+- Der FAQ-Bereich ist in der App verfügbar.
+- Eine Support-E-Mail-Adresse ist in der App verfügbar.
+- Das FAQ soll wichtige und häufig gestellte Fragen beantworten.
 
 ## Feedback-System
 
@@ -46,8 +62,8 @@ Als Dozent möchte ich das erhaltene Feedback zu meinen Lehrveranstaltungen eins
 Als Studierender möchte ich die Möglichkeit haben, anonymes Feedback zu einer Lehrveranstaltung zu geben, um meine Meinung zu äußern.
 
 #### Akzeptanzkriterien
-- per Handy-Kamera lässt sich ein QR-Code scannen bzw. ein Zugangscode eingeben, um so einen Zugang zum Quiz zu erhalten
-- die Elemente des Fragebogens lassen sich wie vom Ersteller gedacht steuern  und schließlich fertigstellen mit einem Knopf "Feedback absenden"
+- Per Handy-Kamera lässt sich ein QR-Code scannen bzw. ein Zugangscode eingeben, um so einen Zugang zum Feedbackbogen zu erhalten
+- die Elemente des Fragebogens lassen sich wie vom Ersteller gedacht steuern und schließlich fertigstellen mit einem Knopf "Feedback absenden"
 - Der User bekommt eine Bestätigung/Fehlermeldung wenn das Feedback abgesendet wurde
 
 ### Dozent: Feedback einsehen
