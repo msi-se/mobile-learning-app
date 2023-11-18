@@ -121,6 +121,28 @@ Als Student möchte ich Benachrichtigungen über wichtige Termine/Fristen erhalt
 ### Quiz und Feedback anhand der Moodle Kurse Filtern
 Als Student möchte ich Quiz und Feedbacks basierend auf meinen Moodle-Kursen filtern können, damit ich relevante Informationen schnell und effizient finden kann. Somit habe ich alle Quiz und Feedbacks von meinen belegten Kursen im Überblick.
 
+Beispiel: Live Quiz für Vorlesung (mit Moodle-Integration)
+- Vorbereitung
+  - Dozent wählt gewünschten Moodle Kurs aus, falls es einen gibt (optional)
+  - Dozent erstellt Quiz mit mehreren Fragen (+ Antworten)
+- In der Vorlesung
+  - Dozent schält Quiz Live
+    - Alle Studenten, welche in dem Moodle Kurs eingeschrieben sind bekommen eine Benachrichtigung (falls gewünscht)
+    - In der App wird das Live Quiz angezeigt und ggf. vorhergehoben.
+    - Mit Klick auf die Benachrichtigung oder einer Schaltfläche in der App kommt man zu dem Quiz
+    - QR Code und/oder Zahlencode wird als Fallback angezeigt. Über diesen Code kann ebenfalls an dem Live Quiz teilgenommen werden. Falls kein Moodle Kurs existiert ist das die einzige Option.
+  - Live Quiz wird durchgeführt:
+    - Dozent kann Frage für Frage durchschalten
+    - Anonyme Live Auswertung
+
+Quiz außerhalb der Vorlesungen und Feedback können auch mit Moodle Kursen Verknüpft werden.
+
+Vorteile:
+- Sehr einfache Bedienung und schnelles Beitreten/Teilnehmen an Quiz und Feedback für die Studierenden
+- Schnelleres Beitreten für Live Quiz = Weniger Vorlesungszeit wird in Anspruch genommen
+- Übersichtliche Organisation der Quiz/Feedbacks in Moodle Kursen für die Dozierenden
+
+
 <!-- ### Story 1
   Als Studierender möchte ich auf externe Lernressourcen zugreifen können, die über APIs in die App integriert sind, um mein Wissen zu erweitern.
 
