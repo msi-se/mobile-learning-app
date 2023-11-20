@@ -18,7 +18,7 @@ Als Benutzer möchte ich eine benutzerfreundliche Oberfläche haben, um die App 
 - Umsetzung von UX-Design Prinzipien
   - Material UI (funktioniert nativ mit Flutter)
 - Corporate Identity der HTWG wird im App Design umgesetzt
-- Klare Appstruktur & einfache Navigationsmöglichkeiten
+- klare Appstruktur & einfache Navigationsmöglichkeiten
 
 ### Sicherheits- und Datenschutzbestimmungen
 Als Benutzer der Applikation möchte ich sicherstellen, dass meine Daten und meine Privatsphäre geschützt sind, indem Sicherheits- und Datenschutzbestimmungen eingehalten werden.
@@ -28,7 +28,7 @@ Als Studierender und als Dozent möchte ich einen Account bei der App haben.
 Als Basis soll mein Hochschulaccount verwendet werden (sodass kein neues Passwort erstellt werden muss).
 
 #### Akzeptanzkriterien
-- Der Login in der App soll mit meinem Hochschulaccount möglich sein.
+- der Login in der App ist mit dem HTWG-Account möglich
 
 ### FAQ & Support
 Als Benutzer möchte ich als Hilfestellung bei bestimmten Fragen, Antworten im FAQ-Bereich finden.
@@ -64,7 +64,7 @@ Als Studierender möchte ich die Möglichkeit haben, anonymes Feedback zu einer 
 #### Akzeptanzkriterien
 - Per Handy-Kamera lässt sich ein QR-Code scannen bzw. ein Zugangscode eingeben, um so einen Zugang zum Feedbackbogen zu erhalten
 - die Elemente des Fragebogens lassen sich wie vom Ersteller gedacht steuern und schließlich fertigstellen mit einem Knopf "Feedback absenden"
-- Der User bekommt eine Bestätigung/Fehlermeldung wenn das Feedback abgesendet wurde
+- Der User bekommt eine Bestätigung/Fehlermeldung, wenn das Feedback abgesendet wurde
 
 ### Dozent: Feedback einsehen
 Als Dozent möchte ich das erhaltene Feedback zu meinen Lehrveranstaltungen einsehen können, um mögliche Verbesserungen vorzunehmen.
@@ -96,16 +96,6 @@ Als Dozent möchte ich ein Live-Quiz durchführen, um die Studenten in Echtzeit 
 
 ### Student: Live Quiz teilnehmen
 Als Student möchte ich am Live-Quiz teilnehmen, um ein interaktives Lern-Erlebnis und sofortiges Feedback zu haben.
-
-<!-- ### Story 1
-  Als Studierender möchte ich interaktive Quizspiele zu verschiedenen Lerninhalten spielen können, um mein Wissen zu überprüfen und zu vertiefen.
-
-### Story 2
-  Als Studierender möchte ich personalisierte Quizspiele spielen können, um meinen individuellen Lernfortschritt zu verfolgen.
-
-### Story 3
-  Als Dozent möchte ich Quizfragen erstellen und verwalten können, um den Lernprozess zu unterstützen. -->
-
 
 ## Drittanbieter API-Anbindung
 
@@ -141,11 +131,4 @@ Vorteile:
 - Sehr einfache Bedienung und schnelles Beitreten/Teilnehmen an Quiz und Feedback für die Studierenden
 - Schnelleres Beitreten für Live Quiz = Weniger Vorlesungszeit wird in Anspruch genommen
 - Übersichtliche Organisation der Quiz/Feedbacks in Moodle Kursen für die Dozierenden
-
-
-<!-- ### Story 1
-  Als Studierender möchte ich auf externe Lernressourcen zugreifen können, die über APIs in die App integriert sind, um mein Wissen zu erweitern.
-
-### Story 2
-  Als Hochschuladministrator möchte ich die Möglichkeit haben, Drittanbieter-Integrationen zu verwalten und zu überwachen. -->
 
