@@ -2,7 +2,7 @@
 
 ## Allgemein
 
-### Einfache App erstellen
+### App-Verfügbarkeit
 Als Benutzer möchte ich auf die Lern-App über mein Smartphone und über den Browser zugreifen können.
 
 #### Akzeptanzkriterien
@@ -42,8 +42,8 @@ Bei weiteren Fragen kann ich den Support kontaktieren.
 ## Feedback-System
 
 ### Dozent: Feedback-Möglichkeit erstellen
-Als Dozent möchte ich das erhaltene Feedback zu meinen Lehrveranstaltungen einsehen können, um mögliche Verbesserungen vorzunehmen.
-  
+Als Dozent möchte ich einen Feedback-Bogen erstellen können, um Feedback von den Studierenden zu Lehrveranstaltungen zu erhalten.
+
 #### Akzeptanzkriterien
 - Es besteht die Möglichkeit zu jeder Veranstaltung ein Feedback-Kanal zu erstellen (z.B.: "Diskrete Mathematik WS23/34").
 - Darin lassen sich Feedback-Bögen vorbereiten (z.B.: "Feedback zum ersten Monat der Veranstaltung").
@@ -70,12 +70,10 @@ Als Studierender möchte ich die Möglichkeit haben, anonymes Feedback zu einer 
 Als Dozent möchte ich das erhaltene Feedback zu meinen Lehrveranstaltungen einsehen können, um mögliche Verbesserungen vorzunehmen.
 
 #### Akzeptanzkriterien
-- Nur der Ersteller und vom Ersteller ernannten Personen können das Feedback eines Kanals einsehen.
-- Feedback ist sortiert nach Lehrveranstaltung & Veranstaltungsdatum
-- Feedback kann gefiltert und sortiert werden
-- Dozent kann Feedbackinhalte markieren/vormerken um sie für die Umsetzung in der Vorlesung leichter zu finden
-- Der Dozent hat Analyse Möglichkeiten um Trends & Muster im Feedback zu erkennen
-- Feedback mit ähnlichen Inhalten wird gruppiert?
+- Der Dozent kann eine Übersicht über alle erstellten Feedback-Bögen einsehen.
+- Er kann einen Feedback-Bogen auswählen und die Ergebnisse einsehen.
+- Die Ergebnisse werden anonymisiert und wo möglich kummulierte angezeigt.
+
 
 ## Quiz
 
