@@ -1,4 +1,7 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:frontend/get-backend-url.dart';
+import 'package:http/http.dart' as http;
 
 void main() {
   runApp(const MyApp());
@@ -56,6 +59,23 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   int _counter = 0;
+  String _testData = "";
+
+  @override
+  void initState() { // this is a lifecycle method
+    super.initState();
+    // fetch test data from the backend (localhost:5005)
+    Future fetchTestData() async {
+      final response = await http.get(Uri.parse("${getBackendUrl()}/hello"));
+      if (response.statusCode == 200) {
+        setState(() {
+          _testData = response.body; // response.body is a String
+        });
+      }
+    }
+
+    fetchTestData();
+  }
 
   void _incrementCounter() {
     setState(() {
@@ -110,6 +130,10 @@ class _MyHomePageState extends State<MyHomePage> {
             ),
             Text(
               '$_counter',
+              style: Theme.of(context).textTheme.headlineMedium,
+            ),
+            Text(
+              _testData,
               style: Theme.of(context).textTheme.headlineMedium,
             ),
           ],

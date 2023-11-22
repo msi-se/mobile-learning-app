@@ -52,3 +52,8 @@ Als Dozent möchte ich die Möglichkeit haben, meine Feedback-Bögen einzusehen,
 - Der Dozent kann eine Übersicht über alle erstellten Feedback-Bögen einsehen.
 - Er kann einen Feedback-Bogen auswählen und die Ergebnisse einsehen.
 - Die Ergebnisse werden anonymisiert und wo möglich kummulierte angezeigt.
+
+# Sprint Goal
+
+Das Ziel dieses Sprints ist es, eine grundlegende Version der Lern-App bereitzustellen, die es Benutzern ermöglicht, auf die Anwendung über den Browser und das Smartphone zuzugreifen. Die Benutzeroberfläche soll benutzerfreundlich gestaltet sein und das Corporate Identity der HTWG widerspiegeln. Darüber hinaus soll die Account- und Profilverwaltung implementiert werden, wobei der Login über den Hochschulaccount erfolgt.
+Als erstes großes Feature der App soll die Erstellung von Feedback-Bögen für Lehrveranstaltungen implementiert werden. Dabei soll es Dozenten möglich sein, Feedback-Bögen zu erstellen, die dann von Studierenden ausgefüllt werden können.
