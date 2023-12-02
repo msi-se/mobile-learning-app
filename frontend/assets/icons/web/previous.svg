@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg id="Ebene_1" data-name="Ebene 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <path d="M91.6,100H8.4V0H91.6V100Zm-75.19-8.17H83.6V8.17H16.4V91.83Z" style="fill: #373737;"/>
+  <rect x="29.92" y="8.17" width="8" height="83.65" style="fill: #373737;"/>
+  <rect x="52.21" y="35.41" width="21.96" height="8" transform="translate(-9.36 56.23) rotate(-45)" style="fill: #373737;"/>
+  <rect x="56.36" y="42.78" width="8" height="29.96" transform="translate(-23.17 59.6) rotate(-45)" style="fill: #373737;"/>
+</svg>
