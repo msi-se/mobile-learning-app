@@ -1,4 +1,5 @@
 package com.htwg.mobilelearning.models;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.bson.types.ObjectId;
@@ -17,7 +18,7 @@ public class FeedbackChannel {
         this.id = new ObjectId();
         this.name = name;
         this.description = description;
-        this.feedbackForms = feedbackForms;
+        this.feedbackForms = feedbackForms != null ? feedbackForms : new ArrayList<FeedbackForm>();
     }
 
     public ObjectId getId() {

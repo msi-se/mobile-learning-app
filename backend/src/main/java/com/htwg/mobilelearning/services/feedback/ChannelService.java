@@ -1,7 +1,8 @@
-package com.htwg.mobilelearning;
+package com.htwg.mobilelearning.services.feedback;
 
 import java.util.List;
 
+import org.bson.types.ObjectId;
 import org.jboss.resteasy.reactive.RestPath;
 
 import com.htwg.mobilelearning.models.FeedbackChannel;
@@ -14,21 +15,23 @@ import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 
-@Path("/feedbackchannel")
-public class FeedbackChannelResource {
+@Path("/feedback/channel")
+public class ChannelService {
 
     @Inject
     private FeedbackChannelRepository feedbackChannelRepository;
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    @Path("/{id}")
-    public FeedbackChannel getFeedbackChannel(@RestPath String id) {
-        FeedbackChannel feedbackChannel = feedbackChannelRepository.findById(id);
+    @Path("/{channelId}")
+    public FeedbackChannel getFeedbackChannel(@RestPath String channelId) {
+        ObjectId channelObjectId = new ObjectId(channelId);
+        FeedbackChannel feedbackChannel = feedbackChannelRepository.findById(channelObjectId);
         return feedbackChannel;
     }
 
     @GET
+    @Path("")
     @Produces(MediaType.APPLICATION_JSON)
     public List<FeedbackChannel> getFeedbackChannels() {
         List<FeedbackChannel> feedbackChannels = feedbackChannelRepository.listAll();
@@ -59,9 +62,10 @@ public class FeedbackChannelResource {
 
     @PATCH
     @Produces(MediaType.APPLICATION_JSON)
-    @Path("/{id}")
-    public FeedbackChannel updateFeedbackChannel(@RestPath String id, FeedbackChannel feedbackChannel) {
-        FeedbackChannel feedbackChannelToUpdate = feedbackChannelRepository.findById(id);
+    @Path("/{channelId}")
+    public FeedbackChannel updateFeedbackChannel(@RestPath String channelId, FeedbackChannel feedbackChannel) {
+        ObjectId channelObjectId = new ObjectId(channelId);
+        FeedbackChannel feedbackChannelToUpdate = feedbackChannelRepository.findById(channelObjectId);
         
         if (feedbackChannel.description != null) {
             feedbackChannelToUpdate.description = feedbackChannel.description;
