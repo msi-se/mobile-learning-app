@@ -1,51 +1,49 @@
-# Fragen Shain:
+### Interview Herr Karakoc:
 
-Inwiefern sind Sie in dem Bereich digitale lehre Involviert?
+Inwiefern sind Sie in dem Bereich digitale Lehre involviert?
 
 Welche digitalen Methoden werden aktuell in der Lehre verwendet?
 
-Welche Erfahrungen haben Sie mit dem Einsatz von Quiz- und Feedback in der Lehre gemacht?
+Welche Erfahrungen gibt es zum Einsatz von Quizzes in der Lehre?
+
+Welche Erfahrungen gibt es zum Einsatz von Feedback in der Lehre?
 
 Gibt es Vorschläge zur Verbesserung der Lehre durch den Einsatz digitaler Methoden?
 
-Welche Gruppe von Studierenden wurden in der Umfrage zu digitalen Tools befragt (Shain hat bei Umfragen mitgewirkt evtl antwort in vorheriger Frage)?
+Gibt es digitale Methoden die besonders gut bei den Studierenden ankommen?
 
-Gibt es digitale Methoden die besonders gut bei den Studierenden ankommen ()?
-
-Wie/für was werden Quizfragen auf Moodle verwendet?
+Wie und wofür werden Quizfragen auf Moodle verwendet?
 
 Wie ist die Einstellung zu Tools die aktiv in VLs benutzt werden (z. B. Menti)?
 
-Wie könnten Lehrende dazu motiviert werden, digitale Lehrmethoden aktiv in ihren Unterricht zu integrieren?
-
 Inwiefern könnten die Quiz- und Feedbackfunktionen der App dazu beitragen, die aktive Beteiligung der Studierenden im Unterricht zu fördern?
 
-Welche Features für eine Feedback/Quizapp wären sinnvoll?
 
-# Fragen Profs
+### Interview Profs
 
-Inwiefern sind Sie in dem Bereich digitale lehre Involviert?
-
-Welche digitalen Methoden verwenden Sie aktuell in der Lehre?
-
-Welche Erfahrungen haben Sie mit dem Einsatz von Quiz- und Feedback in der Lehre gemacht?
+Welche digitalen Methoden verwenden Sie aktuell in der Lehre und warum?
 
 Fragen Sie Studierende häufig nach Feedback zu Lehrveranstaltungen?
 
-Wenn ja, hilft Ihnen das Feedback zur Verbesserung der Lehrveranstaltungen?/ Setzen Sie das Feedback um?
+Welche Erfahrungen haben Sie mit dem Einsatz von Quiz- und Feedback in der Lehre gemacht?
 
-Würden Sie digitale Tools wie Menti in der Lehre Einsetzen (Für Quizzes/Feedback von Studierenden)?
+Würden Sie (Oder haben Sie) digitale Tools wie Menti in der Lehre einsetzen (für Quizzes/Feedback von Studierenden)?
 
-Gibt es Vorschläge zur Verbesserung der Lehre durch den Einsatz digitaler Methoden?
+Was stört Sie an den digitalen Tools (gerne auch Kleinigkeiten)?
 
-Welche Features würden Sie sich von einer Quiz/Feedback App wünschen?
+Welche Features würden Sie sich von einer HTWG-Quiz-und-Feedback-App wünschen?
 
-# Fragen Studierende (Interview oder Umfrage?)
+
+### Interview Studierende
 
 Wie ist deine Einstellung zum Einsatz von digitalen Tools in der Lehre
 
-Wie bewertest du den Einsatz von Moodle, Menti, Kahoot?
+Wie bewertest du den Einsatz von Moodle, Menti?
 
-Welche Funktionen würdest du dir von einer App zum Mobilen Lernen wünschen?
+Was findest du eine sinnvolle Feedback-Methode für regelmäßiges Feedback zu Vorlesungen? (Volltext, Slider, Sterne, ...)
 
-Würdest du diese benutzen App?
+Welche Funktionen würdest du dir von einer Quiz App wünschen, die in Vorlesungen benutzt wird?
+
+Welche Funktionen würdest du dir von einer Feedback App wünschen, die in Vorlesungen benutzt wird?
+
+Welche Funktionen zum Alltag an der Hochschule würdest du dir von einer HTWG-App wünschen?
