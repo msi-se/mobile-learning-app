@@ -1,4 +1,4 @@
-package com.htwg.mobilelearning.models;
+package com.htwg.mobilelearning.models.feedback;
 import java.util.ArrayList;
 import java.util.List;
 

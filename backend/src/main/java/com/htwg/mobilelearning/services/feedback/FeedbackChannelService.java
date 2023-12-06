@@ -5,18 +5,19 @@ import java.util.List;
 import org.bson.types.ObjectId;
 import org.jboss.resteasy.reactive.RestPath;
 
-import com.htwg.mobilelearning.models.FeedbackChannel;
+import com.htwg.mobilelearning.models.feedback.FeedbackChannel;
 import com.htwg.mobilelearning.repositories.FeedbackChannelRepository;
 
 import jakarta.inject.Inject;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.PATCH;
+import jakarta.ws.rs.PUT;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 
 @Path("/feedback/channel")
-public class ChannelService {
+public class FeedbackChannelService {
 
     @Inject
     private FeedbackChannelRepository feedbackChannelRepository;
@@ -60,7 +61,7 @@ public class ChannelService {
         return feedbackChannelRepository.listAll();
     }
 
-    @PATCH
+    @PUT
     @Produces(MediaType.APPLICATION_JSON)
     @Path("/{channelId}")
     public FeedbackChannel updateFeedbackChannel(@RestPath String channelId, FeedbackChannel feedbackChannel) {

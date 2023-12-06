@@ -2,7 +2,7 @@ package com.htwg.mobilelearning.repositories;
 
 import org.bson.types.ObjectId;
 
-import com.htwg.mobilelearning.models.FeedbackChannel;
+import com.htwg.mobilelearning.models.feedback.FeedbackChannel;
 
 import io.quarkus.mongodb.panache.PanacheMongoRepository;
 import jakarta.enterprise.context.ApplicationScoped;
