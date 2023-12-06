@@ -6,16 +6,16 @@ import 'package:frontend/theme/assets.dart';
 import 'package:frontend/utils.dart';
 import 'package:http/http.dart' as http;
 
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
+class HomeTab extends StatefulWidget {
+  const HomeTab({super.key, required this.title});
 
   final String title;
 
   @override
-  State<MyHomePage> createState() => _MyHomePageState();
+  State<HomeTab> createState() => _HomeTabState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
+class _HomeTabState extends State<HomeTab> {
   int _counter = 0;
   String _testData = "";
 

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:frontend/pages/home.dart';
-import 'package:frontend/pages/login.dart';
+import 'package:frontend/pages/login_page.dart';
+import 'package:frontend/pages/main_page.dart';
 import 'package:frontend/theme/themes.dart';
 
 void main() {
@@ -18,7 +18,7 @@ class MyApp extends StatelessWidget {
       initialRoute: '/login',
       routes: <String, WidgetBuilder>{
         '/login': (_) => const LoginPage(),
-        '/home': (_) => const MyHomePage(title: 'Flutter Demo Home Page'),
+        '/home': (_) => const MainPage(),
       },
     );
   }
