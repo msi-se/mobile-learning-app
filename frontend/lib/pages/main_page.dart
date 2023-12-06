@@ -28,12 +28,11 @@ class _MainPageState extends State<MainPage> {
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         title: const Text("Mobile App"),
       ),
-      body: IndexedStack(
-        index: _tabIndex,
-        children: const [
-          HomeTab(title: "Home"),
-          FeedbackTab(),
-        ],
+      body: SafeArea(
+        child: <Widget>[
+          const HomeTab(title: "Home"),
+          const FeedbackTab(),
+        ][_tabIndex],
       ),
       bottomNavigationBar: NavigationBar(
         destinations: const [
