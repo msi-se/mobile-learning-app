@@ -1,18 +1,20 @@
-package com.htwg.mobilelearning.models;
+package com.htwg.mobilelearning.models.feedback;
 
 import org.bson.types.ObjectId;
 
-public class Element {
+import com.htwg.mobilelearning.enums.FeedbackElementType;
+
+public class FeedbackElement {
     public ObjectId id;
     public String name;
     public String description;
-    public String type;
-    public String value;
+    public FeedbackElementType type;
+    public Object value;
 
-    public Element() {
+    public FeedbackElement() {
     }
 
-    public Element(String name, String description, String type, String value) {
+    public FeedbackElement(String name, String description, FeedbackElementType type, Object value) {
         this.id = new ObjectId();
         this.name = name;
         this.description = description;
@@ -32,11 +34,11 @@ public class Element {
         return this.description;
     }
 
-    public String getType() {
+    public FeedbackElementType getType() {
         return this.type;
     }
 
-    public String getValue() {
+    public Object getValue() {
         return this.value;
     }
 }
