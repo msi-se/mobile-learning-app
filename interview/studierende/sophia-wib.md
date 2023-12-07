@@ -1,19 +1,19 @@
 ## Interview Sophia WIB
 
-Wie ist deine Einstellung zum Einsatz von digitalen Tools in der Lehre?
+### Wie ist deine Einstellung zum Einsatz von digitalen Tools in der Lehre?
 - postiv
 - fände sie gut, wenn es sowas gibt, aktuell:
   - maximal Powerpoint
   - keine Menti/Moodle Umfragen
-  - 1 Quiz auf Moodle nicht live-interaktiv
-    - Dozent geht nicht darauf ein
+  - 1 Quiz in einem Fach auf Moodle nicht live-interaktiv
+    - Dozent geht nicht darauf ein (Verweist nicht auf Quiz & )
 
-Wie bewertest du den Einsatz von Moodle, Menti?
-- nicht vorhanden
+### Wie bewertest du den Einsatz von Moodle, Menti?
+- Menti wird nicht verwendet
 - prinzipiell fänd sie es gut, wenn es mehr benutzt werden würde
 - alles gut, was nicht nur Powerpoint ist
 
-Was findest du eine sinnvolle Feedback-Methode für regelmäßiges Feedback zu Vorlesungen? (Volltext, Slider, Sterne, ...)
+### Was findest du eine sinnvolle Feedback-Methode für regelmäßiges Feedback zu Vorlesungen? (Volltext, Slider, Sterne, ...)
 - 1-5 Sterne
 - bis 10 ist zu granular
 - auch oke: Slider ohne Zahlen/Schritte (im Kopf wahrscheinlich immer noch 1-5)
@@ -25,7 +25,7 @@ Was findest du eine sinnvolle Feedback-Methode für regelmäßiges Feedback zu V
 - Fließtext nicht ganz so praktikabel weil zu viel Aufwand für Studierende (nur optional)
   - vlt auch optional unter jedem Slider/Sterne für extra Kommentar
 
-Welche Funktionen würdest du dir von einer Quiz-App wünschen, die in Vorlesungen benutzt wird?
+### Welche Funktionen würdest du dir von einer Quiz-App wünschen, die in Vorlesungen benutzt wird?
 - direkte Live-Auswertung
 - Frage sehen und nur ankreuzen müssen, was richtig ist
 - sehr gut:
@@ -37,10 +37,10 @@ Welche Funktionen würdest du dir von einer Quiz-App wünschen, die in Vorlesung
   - am Ende, nicht nach jeder Frage
 - Frage auch auf dem Handy/Laptop sehen nicht nur auf der Leinwand
 
-Welche Funktionen würdest du dir von einer Feedback-App wünschen, die in Vorlesungen benutzt wird?
+### Welche Funktionen würdest du dir von einer Feedback-App wünschen, die in Vorlesungen benutzt wird?
 - automatische Push-Notification, statt QR-Code scannen (→ Moodle Anbindung)
 
-Welche Funktionen zum Alltag an der Hochschule würdest du dir von einer HTWG-App wünschen?
+### Welche Funktionen zum Alltag an der Hochschule würdest du dir von einer HTWG-App wünschen?
 - Mensaplan
 - Gebäudeplan + Beschriftungen (Wo ist Wasserbaulabor, wo sind Lernräume, etc.)
 - freie Parkplätze
