@@ -95,7 +95,7 @@ class _ChooseFeedbackPageState extends State<ChooseFeedbackPage> {
         body: _selectedChannel == null
             ? ChooseFeedbackChannel(
                 channels: _channels,
-                choose: ({required String id}) {
+                choose: (id) {
                   setState(() {
                     _selectedChannel =
                         _channels.firstWhere((element) => element.id == id);
@@ -104,8 +104,8 @@ class _ChooseFeedbackPageState extends State<ChooseFeedbackPage> {
               )
             : ChooseFeedbackForm(
                 channel: _selectedChannel!,
-                choose: ({required String id}) {
-                  Navigator.pushNamed(context, '/feedback', arguments: id);
+                choose: (id) {
+                  // Navigator.pushNamed(context, '/feedback', arguments: id);
                 },
               ),
       ),

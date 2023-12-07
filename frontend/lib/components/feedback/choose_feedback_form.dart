@@ -3,7 +3,7 @@ import 'package:frontend/models/feedback/feedback_channel.dart';
 
 class ChooseFeedbackForm extends StatefulWidget {
   final FeedBackChannel channel;
-  final Function({required String id}) choose;
+  final Function(String id) choose;
 
   const ChooseFeedbackForm({super.key, required this.channel, required this.choose});
 
@@ -26,7 +26,7 @@ class _ChooseFeedbackFormState extends State<ChooseFeedbackForm> {
             trailing: const Icon(Icons.arrow_forward_ios),
             // TODO: display status of form
             onTap: () {
-              widget.choose(id: forms[index].id);
+              widget.choose(forms[index].id);
             },
           );
         },

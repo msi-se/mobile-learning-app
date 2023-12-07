@@ -3,7 +3,7 @@ import 'package:frontend/models/feedback/feedback_channel.dart';
 
 class ChooseFeedbackChannel extends StatefulWidget {
   final List<FeedBackChannel> channels;
-  final Function({required String id}) choose;
+  final Function(String id) choose;
 
   const ChooseFeedbackChannel({super.key, required this.channels, required this.choose});
 
@@ -25,7 +25,7 @@ class _ChooseFeedbackChannelState extends State<ChooseFeedbackChannel> {
             subtitle: Text(widget.channels[index].description),
             trailing: const Icon(Icons.arrow_forward_ios),
             onTap: () {
-              widget.choose(id: widget.channels[index].id);
+              widget.choose(widget.channels[index].id);
             },
           );
         },

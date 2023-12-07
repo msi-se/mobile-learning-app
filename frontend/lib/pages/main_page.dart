@@ -15,7 +15,7 @@ class _MainPageState extends State<MainPage> {
   @override
   void initState() {
     super.initState();
-    
+
     setState(() {
       _tabIndex = 0;
     });
@@ -23,9 +23,11 @@ class _MainPageState extends State<MainPage> {
 
   @override
   Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
+
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+        backgroundColor: Theme.of(context).colorScheme.primary,
         title: const Text("Mobile App"),
       ),
       body: SafeArea(
@@ -35,23 +37,22 @@ class _MainPageState extends State<MainPage> {
         ][_tabIndex],
       ),
       bottomNavigationBar: NavigationBar(
-        destinations: const [
-          NavigationDestination(
-            icon: Icon(Icons.home),
-            label: 'Home',
-          ),
-          NavigationDestination(
-            icon: Icon(Icons.feedback),
-            label: 'Feedback',
-          ),
-        ],
-        onDestinationSelected: (index) {
-          setState(() {
-            _tabIndex = index;
-          });
-        },
-        selectedIndex: _tabIndex),
-
+          destinations: [
+            NavigationDestination(
+              icon: Icon(Icons.home, color: colors.secondary),
+              label: 'Home',
+            ),
+            NavigationDestination(
+              icon: Icon(Icons.feedback, color: colors.secondary),
+              label: 'Feedback',
+            ),
+          ],
+          onDestinationSelected: (index) {
+            setState(() {
+              _tabIndex = index;
+            });
+          },
+          selectedIndex: _tabIndex),
     );
   }
 }
