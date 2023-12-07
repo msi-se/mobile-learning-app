@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    
+</body>
+
+
+<script>
+
+        // [
+        // [
+        //     {
+        //     "id": "6571b92fc08cda5aed6a7f52",
+        //     "name": "Diskrete Mathematik",
+        //     "description": "Feedback-Kanal für DiMa",
+        //     "feedbackForms": [
+        //         {
+        //         "id": "6571b92fc08cda5aed6a7f51",
+        //         "name": "Letzte Vorlesung",
+        //         "description": "Dies ist das Feedback zur letzten Vorlesung.",
+        //         "elements": [
+        //             {
+        //             "id": "6571b92fc08cda5aed6a7f4f",
+        //             "name": "Frage 1",
+        //             "description": "Wie fandest du die letzte Vorlesung auf einer Skala von 1 bis 5?",
+        //             "type": "STARS",
+        //             "value": null
+        //             },
+        //             {
+        //             "id": "6571b92fc08cda5aed6a7f50",
+        //             "name": "Frage 2",
+        //             "description": "Würdest du die Vorlesung weiterempfehlen?",
+        //             "type": "YES_NO",
+        //             "value": null
+        //             }
+        //         ],
+        //         "status": "NOT_STARTED"
+        //         }
+        //     ]
+        //     }
+        // ],
+        // [
+        //     {
+        //     "id": "6571b92fc08cda5aed6a7f53",
+        //     "username": "Johannes",
+        //     "hashedPassword": "password1"
+        //     },
+        //     {
+        //     "id": "6571b92fc08cda5aed6a7f54",
+        //     "username": "Fabi",
+        //     "hashedPassword": "password2"
+        //     }
+        // ]
+        // ]
+        // @ServerEndpoint("/feedback/channel/{channelId}/form/{formId}/subscribe/{userId}")
+
+    let webSocket = new WebSocket("ws://localhost:8080/feedback/channel/6571b92fc08cda5aed6a7f52/form/6571b92fc08cda5aed6a7f51/subscribe/6571b92fc08cda5aed6a7f53");
+
+    webSocket.onopen = function(event) {
+        console.log("Connection established!");
+        send();
+    };
+
+    webSocket.onmessage = function(event) {
+        console.log(event.data);
+    };
+
+    webSocket.onclose = function(event) {
+        console.log("Connection closed!");
+    };
+
+    webSocket.onerror = function(event) {
+        console.log("Error!");
+    };
+
+    function send() {
+
+        let sendObject = {
+            "type": "ADD RESULT",
+        }
+
+        webSocket.send("Hello World!");
+    }
+
+    function close() {
+        webSocket.close();
+    }
+    
+
+</script>
+
+</html>
