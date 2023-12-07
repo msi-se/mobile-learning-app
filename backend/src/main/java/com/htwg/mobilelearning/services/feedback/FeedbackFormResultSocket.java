@@ -11,7 +11,9 @@ import com.htwg.mobilelearning.enums.FeedbackChannelStatus;
 import com.htwg.mobilelearning.helperclasses.SocketConnection;
 import com.htwg.mobilelearning.helperclasses.SocketConnectionType;
 import com.htwg.mobilelearning.models.feedback.FeedbackChannel;
+import com.htwg.mobilelearning.models.feedback.FeedbackElement;
 import com.htwg.mobilelearning.models.feedback.FeedbackForm;
+import com.htwg.mobilelearning.models.feedback.FeedbackResult;
 import com.htwg.mobilelearning.repositories.FeedbackChannelRepository;
 
 import jakarta.enterprise.context.ApplicationScoped;
@@ -22,8 +24,6 @@ import jakarta.websocket.OnMessage;
 import jakarta.websocket.OnOpen;
 import jakarta.websocket.server.PathParam;
 import jakarta.websocket.server.ServerEndpoint;
-import jakarta.ws.rs.Produces;
-import jakarta.ws.rs.core.MediaType;
 import jakarta.websocket.Session;
 
 
@@ -63,7 +63,7 @@ public class FeedbackFormResultSocket {
         //     "action": "CHANGE_FORM_STATUS" | "ADD_RESULT"
         //     "formStatus": null | "NOT_STARTED" | "STARTED" | "FINISHED"
         //     "resultElementId": null | string,
-        //     "resultValue": null | string | number | boolean,
+        //     "resultValue": null | string | boolean,
         //     "role": "STUDENT" | "PROF" | "SERVER"
         // }
 
@@ -87,8 +87,17 @@ public class FeedbackFormResultSocket {
 
     }
 
-    private void broadcast(String message) {
+    private void broadcast(String message, String channelId, String formId) {
         connections.values().forEach(connection -> {
+
+            // check if the channel ID and form ID match
+            if (!connection.getChannelId().equals(new ObjectId(channelId))) {
+                return;
+            }
+            if (!connection.getFormId().equals(new ObjectId(formId))) {
+                return;
+            }
+
             connection.session.getAsyncRemote().sendObject(message, result ->  {
                 if (result.getException() != null) {
                     System.out.println("Unable to send message: " + result.getException());
@@ -110,10 +119,10 @@ public class FeedbackFormResultSocket {
             System.out.println("Change form status");
 
             // evaluate formStatus
-            // if (formStatus == null || formStatus == "" || (formStatus != "NOT_STARTED" && formStatus != "STARTED" && formStatus != "FINISHED")) {
-            //     System.out.println("Form status is invalid");
-            //     return false;
-            // }
+            if (formStatus == null || formStatus.equals("") || FeedbackChannelStatus.valueOf(formStatus) == null) {
+                System.out.println("Form status is invalid");
+                return false;
+            }
 
             // get the enum value of the formStatus
             FeedbackChannelStatus formStatusEnum = FeedbackChannelStatus.valueOf(formStatus);
@@ -139,7 +148,55 @@ public class FeedbackFormResultSocket {
 
             // send the updated form to all receivers (stringify the form)
             String formString = new JSONObject(form).toString();
-            this.broadcast(formString);
+            this.broadcast(formString, channelId, formId);
+            return true;
+        }
+
+        if (action.equals("ADD_RESULT")) {
+
+            System.out.println("Add result");
+
+            // evaluate resultElementId
+            if (resultElementId == null || resultElementId.equals("")) {
+                System.out.println("Result element ID is invalid");
+                return false;
+            }
+
+            // evaluate resultValue
+            if (resultValue == null || resultValue.equals("")) {
+                System.out.println("Result value is invalid");
+                return false;
+            }
+
+            // get the form
+            FeedbackChannel channel = feedbackChannelRepository.findById(new ObjectId(channelId));
+            if (channel == null) {
+                System.out.println("Channel not found");
+                return false;
+            }
+            FeedbackForm form = channel.getFeedbackFormById(new ObjectId(formId));
+            if (form == null) {
+                System.out.println("Form not found");
+                return false;
+            }
+
+            // get the element
+            FeedbackElement element = form.getElementById(new ObjectId(resultElementId));
+            if (element == null) {
+                System.out.println("Element not found");
+                return false;
+            }
+
+            // add the result
+            FeedbackResult result = new FeedbackResult(new ObjectId(userId), resultValue);
+            element.addResult(result);
+
+            // update the form in the database
+            feedbackChannelRepository.update(channel);
+
+            // send the updated form to all receivers (stringify the form)
+            String formString = new JSONObject(form).toString();
+            this.broadcast(formString, channelId, formId);
             return true;
         }
 

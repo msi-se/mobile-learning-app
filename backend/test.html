@@ -12,54 +12,55 @@
 
 <script>
 
-        // [
-        // [
-        //     {
-        //     "id": "6571b92fc08cda5aed6a7f52",
-        //     "name": "Diskrete Mathematik",
-        //     "description": "Feedback-Kanal für DiMa",
-        //     "feedbackForms": [
-        //         {
-        //         "id": "6571b92fc08cda5aed6a7f51",
-        //         "name": "Letzte Vorlesung",
-        //         "description": "Dies ist das Feedback zur letzten Vorlesung.",
-        //         "elements": [
-        //             {
-        //             "id": "6571b92fc08cda5aed6a7f4f",
-        //             "name": "Frage 1",
-        //             "description": "Wie fandest du die letzte Vorlesung auf einer Skala von 1 bis 5?",
-        //             "type": "STARS",
-        //             "value": null
-        //             },
-        //             {
-        //             "id": "6571b92fc08cda5aed6a7f50",
-        //             "name": "Frage 2",
-        //             "description": "Würdest du die Vorlesung weiterempfehlen?",
-        //             "type": "YES_NO",
-        //             "value": null
-        //             }
-        //         ],
-        //         "status": "NOT_STARTED"
-        //         }
-        //     ]
-        //     }
-        // ],
-        // [
-        //     {
-        //     "id": "6571b92fc08cda5aed6a7f53",
-        //     "username": "Johannes",
-        //     "hashedPassword": "password1"
-        //     },
-        //     {
-        //     "id": "6571b92fc08cda5aed6a7f54",
-        //     "username": "Fabi",
-        //     "hashedPassword": "password2"
-        //     }
-        // ]
-        // ]
+// [
+//   [
+//     {
+//       "id": "65721e1303a29768d66c17e5",
+//       "name": "Diskrete Mathematik",
+//       "description": "Feedback-Kanal für DiMa",
+//       "feedbackForms": [
+//         {
+//           "id": "65721e1303a29768d66c17e4",
+//           "name": "Letzte Vorlesung",
+//           "description": "Dies ist das Feedback zur letzten Vorlesung.",
+//           "elements": [
+//             {
+//               "id": "65721e1303a29768d66c17e2",
+//               "name": "Frage 1",
+//               "description": "Wie fandest du die letzte Vorlesung auf einer Skala von 1 bis 5?",
+//               "type": "STARS",
+//               "results": []
+//             },
+//             {
+//               "id": "65721e1303a29768d66c17e3",
+//               "name": "Frage 2",
+//               "description": "Würdest du die Vorlesung weiterempfehlen?",
+//               "type": "YES_NO",
+//               "results": []
+//             }
+//           ],
+//           "status": "NOT_STARTED"
+//         }
+//       ]
+//     }
+//   ],
+//   [
+//     {
+//       "id": "65721e1303a29768d66c17e6",
+//       "username": "Johannes",
+//       "hashedPassword": "password1"
+//     },
+//     {
+//       "id": "65721e1303a29768d66c17e7",
+//       "username": "Fabi",
+//       "hashedPassword": "password2"
+//     }
+//   ]
+// ]
+
         // @ServerEndpoint("/feedback/channel/{channelId}/form/{formId}/subscribe/{userId}")
 
-    let webSocket = new WebSocket("ws://localhost:8080/feedback/channel/6571b92fc08cda5aed6a7f52/form/6571b92fc08cda5aed6a7f51/subscribe/6571b92fc08cda5aed6a7f53");
+    let webSocket = new WebSocket("ws://localhost:8080/feedback/channel/65721e1303a29768d66c17e5/form/65721e1303a29768d66c17e4/subscribe/6571b92fc08cda5aed6a7f53");
 
     webSocket.onopen = function(event) {
         console.log("Connection established!");
@@ -91,14 +92,22 @@
 
         let sendObject = {
             "action": "CHANGE_FORM_STATUS",
-            "formStatus": "STARTED",
+            "formStatus": "FINISHED",
             "resultElementId": null,
             "resultValue": null,
             "role": "STUDENT",
-            "userId": "6571b92fc08cda5aed6a7f53",
+            "userId": "6571b92fc08cda5aed6a7f53"
         }
-        console.log("Sending: " + JSON.stringify(sendObject));
-        webSocket.send(JSON.stringify(sendObject));
+        let sendObject2 = {
+            "action": "ADD_RESULT",
+            "formStatus": null,
+            "resultElementId": "65721e1303a29768d66c17e2",
+            "resultValue": "5",
+            "role": "STUDENT",
+            "userId": "6571b92fc08cda5aed6a7f53"
+        }
+        console.log("Sending: " + JSON.stringify(sendObject2));
+        webSocket.send(JSON.stringify(sendObject2));
     }
 
     function close() {

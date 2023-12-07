@@ -12,7 +12,6 @@ import com.htwg.mobilelearning.models.feedback.FeedbackChannel;
 import com.htwg.mobilelearning.models.feedback.FeedbackElement;
 import com.htwg.mobilelearning.models.feedback.FeedbackForm;
 import com.htwg.mobilelearning.repositories.FeedbackChannelRepository;
-import com.htwg.mobilelearning.repositories.FeedbackFormRepository;
 import com.htwg.mobilelearning.repositories.UserRepository;
 
 import jakarta.inject.Inject;
@@ -30,9 +29,6 @@ public class MockingService {
     private FeedbackChannelRepository feedbackChannelRepository;
 
     @Inject
-    private FeedbackFormRepository feedbackFormRepository;
-
-    @Inject
     private UserRepository userRepository;
 
     @GET
@@ -40,7 +36,6 @@ public class MockingService {
     @Path("/mock")
     public List<Object> addData() {
         feedbackChannelRepository.deleteAll();
-        feedbackFormRepository.deleteAll();
         userRepository.deleteAll();
 
         // generate some FeedbackElements

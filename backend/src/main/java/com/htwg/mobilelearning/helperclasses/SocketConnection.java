@@ -16,6 +16,7 @@ public class SocketConnection {
         this.id = new ObjectId();
         this.session = session;
         this.channelId = channelId;
+        this.formId = formId;
         this.userId = userId;
         this.type = type;
     }
@@ -24,6 +25,7 @@ public class SocketConnection {
         this.id = new ObjectId();
         this.session = session;
         this.channelId = new ObjectId(channelId);
+        this.formId = new ObjectId(formId);
         this.userId = new ObjectId(userId);
         this.type = type;
     }
@@ -38,6 +40,10 @@ public class SocketConnection {
 
     public ObjectId getChannelId() {
         return channelId;
+    }
+
+    public ObjectId getFormId() {
+        return formId;
     }
 
     public ObjectId getUserId() {

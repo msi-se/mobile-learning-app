@@ -1,5 +1,7 @@
 package com.htwg.mobilelearning.models.feedback;
 
+import java.util.List;
+
 import org.bson.types.ObjectId;
 
 import com.htwg.mobilelearning.enums.FeedbackElementType;
@@ -9,17 +11,25 @@ public class FeedbackElement {
     public String name;
     public String description;
     public FeedbackElementType type;
-    public Object value;
+    public List<FeedbackResult> results;
 
     public FeedbackElement() {
     }
 
-    public FeedbackElement(String name, String description, FeedbackElementType type, Object value) {
+    public FeedbackElement(String name, String description, FeedbackElementType type, List<FeedbackResult> results) {
         this.id = new ObjectId();
         this.name = name;
         this.description = description;
         this.type = type;
-        this.value = value;
+        this.results = results != null ? results : new java.util.ArrayList<FeedbackResult>();
+    }
+
+    public FeedbackElement(String name, String description, FeedbackElementType type) {
+        this.id = new ObjectId();
+        this.name = name;
+        this.description = description;
+        this.type = type;
+        this.results = new java.util.ArrayList<FeedbackResult>();
     }
 
     public ObjectId getId() {
@@ -38,7 +48,24 @@ public class FeedbackElement {
         return this.type;
     }
 
-    public Object getValue() {
-        return this.value;
+    public List<FeedbackResult> getResults() {
+        return this.results;
+    }
+
+    public void addResult(FeedbackResult result) {
+        this.results.add(result);
+    }
+
+    public void removeResult(FeedbackResult result) {
+        this.results.remove(result);
+    }
+
+    public FeedbackResult getResultByUserId(ObjectId userId) {
+        for (FeedbackResult result : this.results) {
+            if (result.getUserId().equals(userId)) {
+                return result;
+            }
+        }
+        return null;
     }
 }
