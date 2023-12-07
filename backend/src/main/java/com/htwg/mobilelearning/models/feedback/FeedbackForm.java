@@ -17,11 +17,12 @@ public class FeedbackForm {
     public FeedbackForm() {
     }
 
-    public FeedbackForm(String name, String description, List<FeedbackElement> elements, Boolean isStarted, Boolean isFinished) {
+    public FeedbackForm(String name, String description, List<FeedbackElement> elements, FeedbackChannelStatus status) {
         this.id = new ObjectId();
         this.name = name;
         this.description = description;
         this.elements = elements != null ? elements : new ArrayList<FeedbackElement>();
+        this.status = status;
     }
 
     public ObjectId getId() {
@@ -38,6 +39,10 @@ public class FeedbackForm {
 
     public List<FeedbackElement> getElements() {
         return this.elements;
+    }
+
+    public FeedbackChannelStatus getStatus() {
+        return this.status;
     }
 
 }

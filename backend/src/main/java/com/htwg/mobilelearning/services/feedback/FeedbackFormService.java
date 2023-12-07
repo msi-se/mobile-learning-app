@@ -5,6 +5,7 @@ import java.util.List;
 import org.bson.types.ObjectId;
 import org.jboss.resteasy.reactive.RestPath;
 
+import com.htwg.mobilelearning.enums.FeedbackChannelStatus;
 import com.htwg.mobilelearning.models.feedback.FeedbackChannel;
 import com.htwg.mobilelearning.models.feedback.FeedbackForm;
 import com.htwg.mobilelearning.repositories.FeedbackChannelRepository;
@@ -23,7 +24,7 @@ public class FeedbackFormService {
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public List<FeedbackForm> getFeedbackChannel(@RestPath String channelId) {
+    public List<FeedbackForm> getFeedbackChannels(@RestPath String channelId) {
         ObjectId channelObjectId = new ObjectId(channelId);
         FeedbackChannel feedbackChannel = feedbackChannelRepository.findById(channelObjectId);
         return feedbackChannel.getFeedbackForms();
@@ -55,8 +56,8 @@ public class FeedbackFormService {
     @Path("/demoendpoint/insertmockdata")
     public List<FeedbackForm> insertMockData() {
         FeedbackChannel feedbackChannel = new FeedbackChannel("FeedbackChannel1", "Description1", null);
-        FeedbackForm feedbackForm1 = new FeedbackForm("FeedbackForm1", "Description1", null, false, false);
-        FeedbackForm feedbackForm2 = new FeedbackForm("FeedbackForm2", "Description2", null, false, false);
+        FeedbackForm feedbackForm1 = new FeedbackForm("FeedbackForm1", "Description1", null, FeedbackChannelStatus.NOT_STARTED);
+        FeedbackForm feedbackForm2 = new FeedbackForm("FeedbackForm2", "Description2", null, FeedbackChannelStatus.NOT_STARTED);
         feedbackChannel.getFeedbackForms().add(feedbackForm1);
         feedbackChannel.getFeedbackForms().add(feedbackForm2);
         feedbackChannelRepository.persist(feedbackChannel);
