@@ -11,12 +11,17 @@ class _FeedbackTabState extends State<FeedbackTab> {
 
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(
+    return Scaffold(
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            Text("Feedback"),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.pushNamed(context, '/choose-feedback');
+              },
+              child: const Text('Feedbackbogen auswählen'),
+            ),
           ],
         ),
       ),

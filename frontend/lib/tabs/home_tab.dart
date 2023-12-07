@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:frontend/theme/assets.dart';
@@ -31,7 +29,7 @@ class _HomeTabState extends State<HomeTab> {
             _testData = response.body; // response.body is a String
           });
         }
-      } on SocketException catch (_) {
+      } on http.ClientException catch (_) {
         setState(() {
           _testData = "Backend not reachable";
         });

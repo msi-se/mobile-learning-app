@@ -41,7 +41,7 @@ class _MainPageState extends State<MainPage> {
             label: 'Home',
           ),
           NavigationDestination(
-            icon: Icon(Icons.map),
+            icon: Icon(Icons.feedback),
             label: 'Feedback',
           ),
         ],

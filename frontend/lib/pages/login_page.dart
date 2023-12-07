@@ -22,7 +22,7 @@ class _LoginPageState extends State<LoginPage> {
           children: <Widget>[
             ElevatedButton(
               onPressed: () {
-                Navigator.pushNamed(context, '/home');
+                Navigator.pushReplacementNamed(context, '/home');
               },
               child: const Text('Login'),
             ),
