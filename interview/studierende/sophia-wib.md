@@ -2,11 +2,11 @@
 
 Wie ist deine Einstellung zum Einsatz von digitalen Tools in der Lehre?
 - postiv
-- fände sie gut, wenn es sowas gibt
+- fände sie gut, wenn es sowas gibt, aktuell:
   - maximal Powerpoint
   - keine Menti/Moodle Umfragen
   - 1 Quiz auf Moodle nicht live-interaktiv
-    - geht nicht darauf ein
+    - Dozent geht nicht darauf ein
 
 Wie bewertest du den Einsatz von Moodle, Menti?
 - nicht vorhanden
