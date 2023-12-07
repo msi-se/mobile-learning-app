@@ -70,35 +70,44 @@ class _ChooseFeedbackPageState extends State<ChooseFeedbackPage> {
       );
     }
 
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: Text(_selectedChannel != null ? _selectedChannel!.name : "Feedbackbogen auswählen"),
-        leading: BackButton(
-          onPressed: () {
-            if (_selectedChannel != null) {
-              setState(() {
-                _selectedChannel = null;
-              });
-            } else {
-              Navigator.pop(context);
-            }
-          },
-        ),
-      ),
-      // display _channels in list view with clickable tiles
-      body: _selectedChannel == null ? ChooseFeedbackChannel(
-        channels: _channels,
-        choose: ({required String id}) {
+    return PopScope(
+      canPop: false,
+      onPopInvoked: (bool didPop) {
+        if (didPop) {
+          return;
+        }
+        if (_selectedChannel != null) {
           setState(() {
-            _selectedChannel = _channels.firstWhere((element) => element.id == id);
+            _selectedChannel = null;
           });
-        },
-      ) : ChooseFeedbackForm(
-        channel: _selectedChannel!,
-        choose: ({required String id}) {
-          Navigator.pushNamed(context, '/feedback', arguments: id);
-        },
+        } else {
+          Navigator.pop(context);
+        }
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+          title: Text(_selectedChannel != null
+              ? _selectedChannel!.name
+              : "Feedbackbogen auswählen"),
+        ),
+        // display _channels in list view with clickable tiles
+        body: _selectedChannel == null
+            ? ChooseFeedbackChannel(
+                channels: _channels,
+                choose: ({required String id}) {
+                  setState(() {
+                    _selectedChannel =
+                        _channels.firstWhere((element) => element.id == id);
+                  });
+                },
+              )
+            : ChooseFeedbackForm(
+                channel: _selectedChannel!,
+                choose: ({required String id}) {
+                  Navigator.pushNamed(context, '/feedback', arguments: id);
+                },
+              ),
       ),
     );
   }
