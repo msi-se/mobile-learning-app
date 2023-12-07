@@ -67,6 +67,7 @@ flutter:
     - assets/icons/web/
     - assets/images/
     - assets/titles/
+    - assets/logo/
 
   fonts:
     - family: NunitoSans
