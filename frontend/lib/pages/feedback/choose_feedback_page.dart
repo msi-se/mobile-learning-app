@@ -86,7 +86,7 @@ class _ChooseFeedbackPageState extends State<ChooseFeedbackPage> {
       },
       child: Scaffold(
         appBar: AppBar(
-          backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+          backgroundColor: Theme.of(context).colorScheme.primary,
           title: Text(_selectedChannel != null
               ? _selectedChannel!.name
               : "Feedbackbogen auswählen"),

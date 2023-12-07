@@ -8,12 +8,13 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
-
   @override
   Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
+
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+        backgroundColor: Theme.of(context).colorScheme.primary,
         title: const Text("Login"),
       ),
       body: Center(
@@ -24,7 +25,7 @@ class _LoginPageState extends State<LoginPage> {
               onPressed: () {
                 Navigator.pushReplacementNamed(context, '/home');
               },
-              child: const Text('Login'),
+              child: Text('Login', style: TextStyle(color: colors.secondary)),
             ),
           ],
         ),

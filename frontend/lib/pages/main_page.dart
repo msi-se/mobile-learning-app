@@ -46,6 +46,11 @@ class _MainPageState extends State<MainPage> {
               icon: Icon(Icons.feedback, color: colors.secondary),
               label: 'Feedback',
             ),
+            NavigationDestination(
+              enabled: false,
+              icon: Icon(Icons.quiz, color: colors.secondary.withAlpha(64)),
+              label: 'Quiz',
+            ),
           ],
           onDestinationSelected: (index) {
             setState(() {

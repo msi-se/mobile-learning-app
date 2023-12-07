@@ -46,7 +46,7 @@ class _StarFeedbackState extends State<StarFeedback> {
               Icons.star,
               color: index < _rating
                   ? colors.primary
-                  : colors.secondary.withOpacity(0.3),
+                  : colors.tertiary.withAlpha(48),
             ),
             onPressed: () {
               setState(() {
