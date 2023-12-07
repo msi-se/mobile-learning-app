@@ -5,10 +5,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.bson.BSONObject;
 import org.bson.types.ObjectId;
-import org.json.simple.JSONObject;
-import org.json.simple.JSONValue;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
+import org.json.JSONObject;
 
 import com.htwg.mobilelearning.enums.FeedbackChannelStatus;
 import com.htwg.mobilelearning.helperclasses.SocketConnection;
@@ -25,6 +22,8 @@ import jakarta.websocket.OnMessage;
 import jakarta.websocket.OnOpen;
 import jakarta.websocket.server.PathParam;
 import jakarta.websocket.server.ServerEndpoint;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.core.MediaType;
 import jakarta.websocket.Session;
 
 
@@ -69,19 +68,20 @@ public class FeedbackFormResultSocket {
         // }
 
         // convert message to json and extract values
-        JSONObject messageObject = (JSONObject) JSONValue.parse(message);
-        System.out.println("Message object: " + messageObject.toJSONString());
-        String action = (String) messageObject.get("action");
-        String formStatus = (String) messageObject.get("formStatus");
-        String resultElementId = (String) messageObject.get("resultElementId");
-        String resultValue = (String) messageObject.get("resultValue");
-        String role = (String) messageObject.get("role");
+        JSONObject messageObject = new JSONObject(message);
+        System.out.println("Message object: " + messageObject.toString());
 
+        String action = messageObject.isNull("action") ? null : messageObject.getString("action");
         System.out.println("Action: " + action);
+        String formStatus = messageObject.isNull("formStatus") ? null : messageObject.getString("formStatus");
         System.out.println("Form status: " + formStatus);
+        String resultElementId = messageObject.isNull("resultElementId") ? null : messageObject.getString("resultElementId");
         System.out.println("Result element ID: " + resultElementId);
+        String resultValue = messageObject.isNull("resultValue") ? null : messageObject.getString("resultValue");
         System.out.println("Result value: " + resultValue);
+        String role = messageObject.isNull("role") ? null : messageObject.getString("role");
         System.out.println("Role: " + role);
+
 
         this.evaluateMessage(channelId, formId, userId, action, formStatus, resultElementId, resultValue, role);
 
@@ -137,15 +137,9 @@ public class FeedbackFormResultSocket {
             // update the form in the database
             feedbackChannelRepository.update(channel);
 
-            // send the new form status to all receivers
-            JSONObject messageObject = new JSONObject();
-            messageObject.put("action", "CHANGE_FORM_STATUS");
-            messageObject.put("formStatus", formStatus);
-            messageObject.put("role", "SERVER");
-
-            System.out.println("Broadcasting message: " + messageObject.toJSONString());
-
-            this.broadcast(messageObject.toJSONString());
+            // send the updated form to all receivers (stringify the form)
+            String formString = new JSONObject(form).toString();
+            this.broadcast(formString);
             return true;
         }
 
