@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prof</title>
+</head>
+<body>
+    <h1>Prof</h1>
+
+    <button id="startFeedbackButton" onclick="startFeedback()">Start Feedback</button>
+    <button id="stopFeedbackButton" style="display: none;" onclick="stopFeedback()">Stop Feedback</button>
+    <div id="results" style="display: none;">
+        <h3>Results</h3>
+        <div id="resultscontainer"></div>
+    </div>
+    
+</body>
+<script>
+
+// type feedbackSocketMessage = {
+//     "action": "CHANGE_FORM_STATUS" | "ADD_RESULT"
+//     "formStatus": null | "NOT_STARTED" | "STARTED" | "FINISHED"
+//     "resultElementId": null | string,
+//     "resultValue": null | string | boolean,
+//     "role": "STUDENT" | "PROF" | "SERVER"
+// }
+
+const channelId = "65721e1303a29768d66c17e5";
+const formId = "65721e1303a29768d66c17e4";
+const profUserId = "65721e1303a29768d66c17e6";
+
+
+let webSocket = new WebSocket("ws://localhost:8080/feedback/channel/65721e1303a29768d66c17e5/form/65721e1303a29768d66c17e4/subscribe/6571b92fc08cda5aed6a7f53");
+
+webSocket.onopen = function (event) {
+    console.log("Connection established.");
+}
+
+webSocket.onmessage = function (event) {
+    let form = JSON.parse(event.data);
+    console.log("Received: " + JSON.stringify(form));
+    updateData(form);
+}
+
+webSocket.onclose = function (event) {
+    console.log("Connection closed.");
+}
+
+webSocket.onerror = function (event) {
+    console.log("Error!");
+}
+
+function startFeedback() {
+    let sendObject = {
+        "action": "CHANGE_FORM_STATUS",
+        "formStatus": "STARTED",
+        "resultElementId": null,
+        "resultValue": null,
+        "role": "PROF",
+        "userId": "65721e1303a29768d66c17e6"
+    }
+    console.log("Sending: " + JSON.stringify(sendObject));
+    webSocket.send(JSON.stringify(sendObject));
+}
+
+function stopFeedback() {
+    let sendObject = {
+        "action": "CHANGE_FORM_STATUS",
+        "formStatus": "FINISHED",
+        "resultElementId": null,
+        "resultValue": null,
+        "role": "PROF",
+        "userId": "65721e1303a29768d66c17e6"
+    }
+    console.log("Sending: " + JSON.stringify(sendObject));
+    webSocket.send(JSON.stringify(sendObject));
+}
+
+fetch(`http://localhost:8080/feedback/channel/${channelId}/form/${formId}`)
+    .then(response => response.json())
+    .then(form => {
+        console.log("Received: ", form);
+        updateData(form);
+    });
+
+
+function updateData(form) {
+
+    console.log("Updating data: ", form);
+
+    if (form.status === "NOT_STARTED") {
+            document.getElementById("startFeedbackButton").style.display = "block";
+            document.getElementById("stopFeedbackButton").style.display = "none";
+            document.getElementById("results").style.display = "none";
+        }
+
+        if (form.status === "STARTED") {
+            document.getElementById("startFeedbackButton").style.display = "none";
+            document.getElementById("stopFeedbackButton").style.display = "block";
+            document.getElementById("results").style.display = "block";
+        }
+        if (form.status === "FINISHED") {
+            document.getElementById("startFeedbackButton").style.display = "block";
+            document.getElementById("stopFeedbackButton").style.display = "none";
+            document.getElementById("results").style.display = "none";
+        }
+
+
+    let resultscontainer = document.getElementById("resultscontainer");
+    resultscontainer.innerHTML = "";
+    form.elements.forEach(element => {
+        let div = document.createElement("div");
+        div.innerHTML = `
+            <h3>${element.name}</h3>
+            <p>${element.description}</p>
+        `;
+        element.results.forEach(result => {
+            let p = document.createElement("p");
+            p.innerHTML = `
+                <span>${result.value}</span>
+            `;
+            div.appendChild(p);
+        });
+        resultscontainer.appendChild(div);
+    });
+}
+
+</script>
+</html>
