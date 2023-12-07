@@ -32,7 +32,7 @@ class _MainPageState extends State<MainPage> {
       ),
       body: SafeArea(
         child: <Widget>[
-          const HomeTab(title: "Home"),
+          const HomeTab(title: "HTWG App"),
           const FeedbackTab(),
         ][_tabIndex],
       ),

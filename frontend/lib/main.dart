@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/pages/feedback/attend_feedback_page.dart';
 import 'package:frontend/pages/feedback/choose_feedback_page.dart';
 import 'package:frontend/pages/login_page.dart';
 import 'package:frontend/pages/main_page.dart';
@@ -21,6 +22,7 @@ class MyApp extends StatelessWidget {
         '/login': (_) => const LoginPage(),
         '/home': (_) => const MainPage(),
         '/choose-feedback': (_) => const ChooseFeedbackPage(),
+        '/attend-feedback': (_) => const AttendFeedbackPage(),
       },
     );
   }

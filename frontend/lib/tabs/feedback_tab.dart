@@ -46,7 +46,7 @@ class _FeedbackTabState extends State<FeedbackTab> {
                   );
                 },
                 onSubmit: () {
-                  print(_joinCodeController.text);
+                  Navigator.pushNamed(context, '/attend-feedback');
                 },
                 sublineText: 'Mit Code beitreten'),
             ElevatedButton(

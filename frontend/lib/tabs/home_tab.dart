@@ -11,7 +11,6 @@ class HomeTab extends StatefulWidget {
 }
 
 class _HomeTabState extends State<HomeTab> {
-
   bool loading = true;
 
   @override
@@ -24,7 +23,6 @@ class _HomeTabState extends State<HomeTab> {
 
   @override
   Widget build(BuildContext context) {
-
     if (loading) {
       return const Scaffold(
         body: Center(
@@ -35,11 +33,19 @@ class _HomeTabState extends State<HomeTab> {
 
     return Scaffold(
       body: Center(
-        child: SizedBox(
-          height: 300.0,
-          child: Center(
-            child: Image.asset(htwgLogo),
-          ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            Text(
+              widget.title,
+            ),
+            SizedBox(
+              height: 300.0,
+              child: Center(
+                child: Image.asset(htwgLogo),
+              ),
+            ),
+          ],
         ),
       ),
     );
