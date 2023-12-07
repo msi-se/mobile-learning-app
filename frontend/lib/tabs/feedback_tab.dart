@@ -31,7 +31,20 @@ class _FeedbackTabState extends State<FeedbackTab> {
                 inputText: '123 456',
                 textInputController: _joinCodeController,
                 textInput: TextInputType.number,
-                maxLength: 6,
+                maxLength: 7,
+                onChanged: (value) {
+                  var code = value.replaceAll(' ', '');
+                  if (code.length > 3) {
+                    code = '${code.substring(0, 3)} ${code.substring(3)}';
+                  }
+                  var selection = TextSelection.fromPosition(
+                    TextPosition(offset: code.length),
+                  );
+                  _joinCodeController.value = TextEditingValue(
+                    text: code,
+                    selection: selection,
+                  );
+                },
                 onSubmit: () {
                   print(_joinCodeController.text);
                 },

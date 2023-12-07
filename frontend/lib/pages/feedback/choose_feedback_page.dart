@@ -30,12 +30,12 @@ class _ChooseFeedbackPageState extends State<ChooseFeedbackPage> {
             {
               "id": "form1",
               "name": "Form 1",
-              "description": "Channel 1 Description",
+              "description": "Form 1 Description",
             },
             {
               "id": "form2",
               "name": "Form 2",
-              "description": "Channel 2 Description",
+              "description": "Form 2 Description",
             },
           ]
         },

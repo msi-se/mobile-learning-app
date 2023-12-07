@@ -9,6 +9,7 @@ class InputCard extends StatefulWidget {
   final String inputText;
   final TextEditingController textInputController;
   final Function onSubmit;
+  final Function(String) onChanged;
   final String sublineText;
   final TextInputType textInput;
   final int maxLength;
@@ -18,6 +19,7 @@ class InputCard extends StatefulWidget {
     required this.size,
     required this.inputText,
     required this.onSubmit,
+    required this.onChanged,
     required this.textInputController,
     required this.sublineText,
     required this.textInput,
@@ -64,6 +66,9 @@ class _InputCardState extends State<InputCard> {
                             inputFormatters: [
                               LengthLimitingTextInputFormatter(widget.maxLength)
                             ],
+                            onChanged: (value) {
+                              widget.onChanged(value);
+                            },
                             decoration: InputDecoration(
                               hintText: widget.inputText,
                               hintStyle: Theme.of(context).textTheme.bodyMedium,
