@@ -45,5 +45,26 @@ public class FeedbackForm {
         return this.status;
     }
 
+    public void addElement(FeedbackElement element) {
+        this.elements.add(element);
+    }
+
+    public void removeElement(FeedbackElement element) {
+        this.elements.remove(element);
+    }
+
+    public FeedbackElement getElementById(ObjectId elementId) {
+        for (FeedbackElement element : this.elements) {
+            if (element.getId().equals(elementId)) {
+                return element;
+            }
+        }
+        return null;
+    }
+
+    public void setStatus(FeedbackChannelStatus status) {
+        this.status = status;
+    }
+
 }
 

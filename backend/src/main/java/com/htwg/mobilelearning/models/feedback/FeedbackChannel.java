@@ -36,4 +36,21 @@ public class FeedbackChannel {
     public List<FeedbackForm> getFeedbackForms() {
         return this.feedbackForms;
     }
+
+    public void addFeedbackForm(FeedbackForm feedbackForm) {
+        this.feedbackForms.add(feedbackForm);
+    }
+
+    public void removeFeedbackForm(FeedbackForm feedbackForm) {
+        this.feedbackForms.remove(feedbackForm);
+    }
+
+    public FeedbackForm getFeedbackFormById(ObjectId feedbackFormId) {
+        for (FeedbackForm feedbackForm : this.feedbackForms) {
+            if (feedbackForm.getId().equals(feedbackFormId)) {
+                return feedbackForm;
+            }
+        }
+        return null;
+    }
 }

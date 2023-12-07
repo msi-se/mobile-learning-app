@@ -67,7 +67,7 @@
     };
 
     webSocket.onmessage = function(event) {
-        console.log(event.data);
+        console.log("Message received: " + event.data);
     };
 
     webSocket.onclose = function(event) {
@@ -80,11 +80,25 @@
 
     function send() {
 
-        let sendObject = {
-            "type": "ADD RESULT",
-        }
+        // type feedbackSocketMessage = {
+        //     "action": "CHANGE_FORM_STATUS" | "ADD_RESULT"
+        //     "formStatus": null | "NOT_STARTED" | "STARTED" | "FINISHED"
+        //     "resultElementId": null | string,
+        //     "resultValue": null | string | number | boolean,
+        //     "role": "STUDENT" | "PROF" | "SERVER"
+        //     "userId": string | "SERVER"
+        // }
 
-        webSocket.send("Hello World!");
+        let sendObject = {
+            "action": "CHANGE_FORM_STATUS",
+            "formStatus": "STARTED",
+            "resultElementId": null,
+            "resultValue": null,
+            "role": "STUDENT",
+            "userId": "6571b92fc08cda5aed6a7f53",
+        }
+        console.log("Sending: " + JSON.stringify(sendObject));
+        webSocket.send(JSON.stringify(sendObject));
     }
 
     function close() {
