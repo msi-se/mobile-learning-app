@@ -1,5 +1,6 @@
 package com.htwg.mobilelearning.models.feedback;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -7,7 +8,7 @@ import org.bson.types.ObjectId;
 
 import com.htwg.mobilelearning.enums.FeedbackChannelStatus;
 
-public class FeedbackForm {
+public class FeedbackForm implements Serializable {
     public ObjectId id;
     public String name;
     public String description;

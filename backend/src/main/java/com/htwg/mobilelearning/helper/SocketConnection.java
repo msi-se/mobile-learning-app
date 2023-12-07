@@ -1,4 +1,4 @@
-package com.htwg.mobilelearning.helperclasses;
+package com.htwg.mobilelearning.helper;
 
 import org.bson.types.ObjectId;
 

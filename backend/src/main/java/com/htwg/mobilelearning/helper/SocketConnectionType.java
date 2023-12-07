@@ -1,4 +1,4 @@
-package com.htwg.mobilelearning.helperclasses;
+package com.htwg.mobilelearning.helper;
 
 public enum SocketConnectionType {
     SENDER,

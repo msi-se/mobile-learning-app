@@ -1,11 +1,12 @@
 package com.htwg.mobilelearning.models.feedback;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.bson.types.ObjectId;
 
 
-public class FeedbackChannel {
+public class FeedbackChannel implements Serializable {
     public ObjectId id;
     public String name;
     public String description;

@@ -1,15 +1,16 @@
-package com.htwg.mobilelearning.services.feedback;
+package com.htwg.mobilelearning.services.feedback.socket;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.bson.BSONObject;
 import org.bson.types.ObjectId;
-import org.json.JSONObject;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.htwg.mobilelearning.enums.FeedbackChannelStatus;
-import com.htwg.mobilelearning.helperclasses.SocketConnection;
-import com.htwg.mobilelearning.helperclasses.SocketConnectionType;
+import com.htwg.mobilelearning.helper.ObjectIdTypeAdapter;
+import com.htwg.mobilelearning.helper.SocketConnection;
+import com.htwg.mobilelearning.helper.SocketConnectionType;
 import com.htwg.mobilelearning.models.feedback.FeedbackChannel;
 import com.htwg.mobilelearning.models.feedback.FeedbackElement;
 import com.htwg.mobilelearning.models.feedback.FeedbackForm;
@@ -67,23 +68,8 @@ public class FeedbackFormResultSocket {
         //     "role": "STUDENT" | "PROF" | "SERVER"
         // }
 
-        // convert message to json and extract values
-        JSONObject messageObject = new JSONObject(message);
-        System.out.println("Message object: " + messageObject.toString());
-
-        String action = messageObject.isNull("action") ? null : messageObject.getString("action");
-        System.out.println("Action: " + action);
-        String formStatus = messageObject.isNull("formStatus") ? null : messageObject.getString("formStatus");
-        System.out.println("Form status: " + formStatus);
-        String resultElementId = messageObject.isNull("resultElementId") ? null : messageObject.getString("resultElementId");
-        System.out.println("Result element ID: " + resultElementId);
-        String resultValue = messageObject.isNull("resultValue") ? null : messageObject.getString("resultValue");
-        System.out.println("Result value: " + resultValue);
-        String role = messageObject.isNull("role") ? null : messageObject.getString("role");
-        System.out.println("Role: " + role);
-
-
-        this.evaluateMessage(channelId, formId, userId, action, formStatus, resultElementId, resultValue, role);
+        FeedbackSocketMessage feedbackSocketMessage = new FeedbackSocketMessage(message);
+        this.evaluateMessage(feedbackSocketMessage, channelId, formId, userId);
 
     }
 
@@ -106,26 +92,26 @@ public class FeedbackFormResultSocket {
         });
     }
 
-    private Boolean evaluateMessage(String channelId, String formId, String userId, String action, String formStatus, String resultElementId, String resultValue, String role) {
+    private Boolean evaluateMessage(FeedbackSocketMessage feedbackSocketMessage, String channelId, String formId, String userId) {
         
         // evaluate action
-        if (action == null || action.equals("")) { 
+        if (feedbackSocketMessage.action == null || feedbackSocketMessage.action.equals("")) { 
             System.out.println("Action is null");
             return false;
         }
 
-        if (action.equals("CHANGE_FORM_STATUS")) {
+        if (feedbackSocketMessage.action.equals("CHANGE_FORM_STATUS")) {
 
             System.out.println("Change form status");
 
             // evaluate formStatus
-            if (formStatus == null || formStatus.equals("") || FeedbackChannelStatus.valueOf(formStatus) == null) {
+            if (feedbackSocketMessage.formStatus == null || feedbackSocketMessage.formStatus.equals("") || FeedbackChannelStatus.valueOf(feedbackSocketMessage.formStatus) == null) {
                 System.out.println("Form status is invalid");
                 return false;
             }
 
             // get the enum value of the formStatus
-            FeedbackChannelStatus formStatusEnum = FeedbackChannelStatus.valueOf(formStatus);
+            FeedbackChannelStatus formStatusEnum = FeedbackChannelStatus.valueOf(feedbackSocketMessage.formStatus);
             System.out.println("Form status enum: " + formStatusEnum);
 
             // get the form
@@ -147,23 +133,24 @@ public class FeedbackFormResultSocket {
             feedbackChannelRepository.update(channel);
 
             // send the updated form to all receivers (stringify the form)
-            String formString = new JSONObject(form).toString();
+            Gson gson = new GsonBuilder().registerTypeAdapter(ObjectId.class, new ObjectIdTypeAdapter()).create();
+            String formString = gson.toJson(form);
             this.broadcast(formString, channelId, formId);
             return true;
         }
 
-        if (action.equals("ADD_RESULT")) {
+        if (feedbackSocketMessage.action.equals("ADD_RESULT")) {
 
             System.out.println("Add result");
 
             // evaluate resultElementId
-            if (resultElementId == null || resultElementId.equals("")) {
+            if (feedbackSocketMessage.resultElementId == null || feedbackSocketMessage.resultElementId.equals("")) {
                 System.out.println("Result element ID is invalid");
                 return false;
             }
 
             // evaluate resultValue
-            if (resultValue == null || resultValue.equals("")) {
+            if (feedbackSocketMessage.resultValue == null || feedbackSocketMessage.resultValue.equals("")) {
                 System.out.println("Result value is invalid");
                 return false;
             }
@@ -181,21 +168,22 @@ public class FeedbackFormResultSocket {
             }
 
             // get the element
-            FeedbackElement element = form.getElementById(new ObjectId(resultElementId));
+            FeedbackElement element = form.getElementById(new ObjectId(feedbackSocketMessage.resultElementId));
             if (element == null) {
                 System.out.println("Element not found");
                 return false;
             }
 
             // add the result
-            FeedbackResult result = new FeedbackResult(new ObjectId(userId), resultValue);
+            FeedbackResult result = new FeedbackResult(new ObjectId(userId), feedbackSocketMessage.resultValue);
             element.addResult(result);
 
             // update the form in the database
             feedbackChannelRepository.update(channel);
 
             // send the updated form to all receivers (stringify the form)
-            String formString = new JSONObject(form).toString();
+            Gson gson = new GsonBuilder().registerTypeAdapter(ObjectId.class, new ObjectIdTypeAdapter()).create();
+            String formString = gson.toJson(form);
             this.broadcast(formString, channelId, formId);
             return true;
         }
