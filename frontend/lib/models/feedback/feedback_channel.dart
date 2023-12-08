@@ -1,24 +1,25 @@
 import 'package:frontend/models/feedback/feedback_form.dart';
 
-class FeedBackChannel {
+class FeedbackChannel {
   final String id;
   final String name;
   final String description;
-  final List<FeedBackForm> feedbackForms;
+  final List<FeedbackForm> feedbackForms;
 
-  FeedBackChannel(
-      {required this.id,
-      required this.name,
-      required this.description,
-      required this.feedbackForms});
+  FeedbackChannel({
+    required this.id,
+    required this.name,
+    required this.description,
+    required this.feedbackForms,
+  });
 
-  factory FeedBackChannel.fromJson(Map<String, dynamic> json) {
-    return FeedBackChannel(
+  factory FeedbackChannel.fromJson(Map<String, dynamic> json) {
+    return FeedbackChannel(
       id: json['id'],
       name: json['name'],
       description: json['description'],
       feedbackForms: (json['feedbackForms'] as List<dynamic>)
-          .map((e) => FeedBackForm.fromJson(e))
+          .map((e) => FeedbackForm.fromJson(e))
           .toList(),
     );
   }

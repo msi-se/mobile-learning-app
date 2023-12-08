@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:frontend/models/feedback/feedback_channel.dart';
 
 class ChooseFeedbackChannel extends StatefulWidget {
-  final List<FeedBackChannel> channels;
+  final List<FeedbackChannel> channels;
   final Function(String id) choose;
 
   const ChooseFeedbackChannel({super.key, required this.channels, required this.choose});

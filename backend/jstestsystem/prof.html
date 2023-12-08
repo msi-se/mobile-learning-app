@@ -26,12 +26,12 @@
 //     "role": "STUDENT" | "PROF" | "SERVER"
 // }
 
-const channelId = "65721e1303a29768d66c17e5";
-const formId = "65721e1303a29768d66c17e4";
-const profUserId = "65721e1303a29768d66c17e6";
+const channelId = "6573a251ed01282ce7782bca";
+const formId = "6573a251ed01282ce7782bc9";
+const profUserId = "6573a251ed01282ce7782bcb";
 
 
-let webSocket = new WebSocket("ws://localhost:8080/feedback/channel/65721e1303a29768d66c17e5/form/65721e1303a29768d66c17e4/subscribe/6571b92fc08cda5aed6a7f53");
+let webSocket = new WebSocket(`ws://localhost:8080/feedback/channel/${channelId}/form/${formId}/subscribe/${profUserId}`);
 
 webSocket.onopen = function (event) {
     console.log("Connection established.");

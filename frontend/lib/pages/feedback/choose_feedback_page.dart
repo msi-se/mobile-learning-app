@@ -15,9 +15,9 @@ class ChooseFeedbackPage extends StatefulWidget {
 }
 
 class _ChooseFeedbackPageState extends State<ChooseFeedbackPage> {
-  late List<FeedBackChannel> _channels;
+  late List<FeedbackChannel> _channels;
 
-  FeedBackChannel? _selectedChannel;
+  FeedbackChannel? _selectedChannel;
 
   bool _loading = true;
 
@@ -43,8 +43,8 @@ class _ChooseFeedbackPageState extends State<ChooseFeedbackPage> {
     }
   }
 
-  List<FeedBackChannel> getChannelsFromJson(List<dynamic> json) {
-    return json.map((e) => FeedBackChannel.fromJson(e)).toList();
+  List<FeedbackChannel> getChannelsFromJson(List<dynamic> json) {
+    return json.map((e) => FeedbackChannel.fromJson(e)).toList();
   }
 
   @override

@@ -35,7 +35,7 @@ public class MockingService {
 
         // generate some FeedbackElements
         FeedbackElement feedbackElement1 = new FeedbackElement("Frage 1", "Wie fandest du die letzte Vorlesung auf einer Skala von 1 bis 5?", FeedbackElementType.STARS, null);
-        FeedbackElement feedbackElement2 = new FeedbackElement("Frage 2", "Würdest du die Vorlesung weiterempfehlen?", FeedbackElementType.YES_NO, null);
+        FeedbackElement feedbackElement2 = new FeedbackElement("Frage 2", "Würdest du die Vorlesung weiterempfehlen?", FeedbackElementType.SLIDER, null);
 
         // generate a FeedbackForm
         FeedbackForm feedbackForm1 = new FeedbackForm("Letzte Vorlesung", "Dies ist das Feedback zur letzten Vorlesung.", List.of(feedbackElement1, feedbackElement2), FeedbackChannelStatus.NOT_STARTED);

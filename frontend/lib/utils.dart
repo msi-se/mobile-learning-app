@@ -1,5 +1,5 @@
-String getBackendUrl() {
+String getBackendUrl({String protocol = 'http'}) {
   // final String? backendUrl = Platform.environment['BACKEND_URL']; // later maybe
-  const String backendUrl = 'http://10.0.2.2:8080';
-  return backendUrl;
+  return '$protocol://10.0.2.2:8080';
+  // return '$protocol://localhost:8080';
 }
