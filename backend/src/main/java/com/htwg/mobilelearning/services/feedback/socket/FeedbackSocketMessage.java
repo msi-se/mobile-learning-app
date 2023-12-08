@@ -1,7 +1,10 @@
 package com.htwg.mobilelearning.services.feedback.socket;
 
+import org.bson.types.ObjectId;
+
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.htwg.mobilelearning.helper.ObjectIdTypeAdapter;
 import com.htwg.mobilelearning.models.feedback.FeedbackForm;
 
 public class FeedbackSocketMessage {
@@ -45,7 +48,7 @@ public class FeedbackSocketMessage {
     }
 
     public String toJson() {
-        Gson gson = new GsonBuilder().create();
+        Gson gson = new GsonBuilder().registerTypeAdapter(ObjectId.class, new ObjectIdTypeAdapter()).create();
         return gson.toJson(this);
     }
 }
