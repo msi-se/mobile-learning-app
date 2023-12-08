@@ -2,9 +2,6 @@ package com.htwg.mobilelearning.services;
 
 import java.util.List;
 
-import org.bson.types.ObjectId;
-import org.jboss.resteasy.reactive.RestPath;
-
 import com.htwg.mobilelearning.enums.FeedbackChannelStatus;
 import com.htwg.mobilelearning.enums.FeedbackElementType;
 import com.htwg.mobilelearning.models.auth.User;
@@ -16,8 +13,6 @@ import com.htwg.mobilelearning.repositories.UserRepository;
 
 import jakarta.inject.Inject;
 import jakarta.ws.rs.GET;
-import jakarta.ws.rs.PATCH;
-import jakarta.ws.rs.PUT;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;

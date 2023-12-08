@@ -7,7 +7,7 @@ import com.htwg.mobilelearning.models.feedback.FeedbackForm;
 public class FeedbackSocketMessage {
 
     // general
-    public String action; // CHANGE_FORM_STATUS, CHANGE_RESULT_VALUE, FORM_STATUS_CHANGED, RESULT_VALUE_CHANGED
+    public String action; // CHANGE_FORM_STATUS, ADD_RESULT, FORM_STATUS_CHANGED, RESULT_ADDED
     public String formStatus; // NOT_STARTED, STARTED, FINISHED
     public String role; // STUDENT, PROF, SERVER // not really used yet
     

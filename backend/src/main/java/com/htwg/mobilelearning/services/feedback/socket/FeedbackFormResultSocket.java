@@ -1,17 +1,11 @@
 package com.htwg.mobilelearning.services.feedback.socket;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.bson.types.ObjectId;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.htwg.mobilelearning.enums.FeedbackChannelStatus;
-import com.htwg.mobilelearning.helper.ObjectIdTypeAdapter;
 import com.htwg.mobilelearning.helper.SocketConnection;
 import com.htwg.mobilelearning.helper.SocketConnectionType;
 import com.htwg.mobilelearning.models.feedback.FeedbackChannel;
@@ -62,18 +56,8 @@ public class FeedbackFormResultSocket {
 
     @OnMessage
     public void onMessage(String message, @PathParam("channelId") String channelId, @PathParam("formId") String formId, @PathParam("userId") String userId) {
-
-        // type feedbackSocketMessage = {
-        //     "action": "CHANGE_FORM_STATUS" | "ADD_RESULT"
-        //     "formStatus": null | "NOT_STARTED" | "STARTED" | "FINISHED"
-        //     "resultElementId": null | string,
-        //     "resultValue": null | string | boolean,
-        //     "role": "STUDENT" | "PROF" | "SERVER"
-        // }
-
         FeedbackSocketMessage feedbackSocketMessage = new FeedbackSocketMessage(message);
         this.evaluateMessage(feedbackSocketMessage, channelId, formId, userId);
-
     }
 
     private void broadcast(String message, String channelId, String formId) {
