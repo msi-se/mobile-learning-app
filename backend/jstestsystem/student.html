@@ -25,10 +25,11 @@ webSocket.onopen = function (event) {
 
 webSocket.onmessage = function (event) {
     let data = JSON.parse(event.data);
-    console.log(data);
-
-    updateForm(data);
-
+    
+    if (data.action === "FORM_STATUS_CHANGED") {
+        console.log(data);
+        updateForm(data.form);
+    };
 }
 
 // first fetch the different elements of the form

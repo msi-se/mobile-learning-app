@@ -1,5 +1,8 @@
 package com.htwg.mobilelearning.services.feedback.socket;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -94,7 +97,7 @@ public class FeedbackFormResultSocket {
 
     private Boolean evaluateMessage(FeedbackSocketMessage feedbackSocketMessage, String channelId, String formId, String userId) {
         
-        // evaluate action
+        // evaluate action (TODO: maybe split this into multiple functions)
         if (feedbackSocketMessage.action == null || feedbackSocketMessage.action.equals("")) { 
             System.out.println("Action is null");
             return false;
@@ -133,9 +136,8 @@ public class FeedbackFormResultSocket {
             feedbackChannelRepository.update(channel);
 
             // send the updated form to all receivers (stringify the form)
-            Gson gson = new GsonBuilder().registerTypeAdapter(ObjectId.class, new ObjectIdTypeAdapter()).create();
-            String formString = gson.toJson(form);
-            this.broadcast(formString, channelId, formId);
+            FeedbackSocketMessage outgoingMessage = new FeedbackSocketMessage("FORM_STATUS_CHANGED", form.status.toString(), null, null, "SERVER", form);
+            this.broadcast(outgoingMessage.toJson(), channelId, formId);
             return true;
         }
 
@@ -182,9 +184,8 @@ public class FeedbackFormResultSocket {
             feedbackChannelRepository.update(channel);
 
             // send the updated form to all receivers (stringify the form)
-            Gson gson = new GsonBuilder().registerTypeAdapter(ObjectId.class, new ObjectIdTypeAdapter()).create();
-            String formString = gson.toJson(form);
-            this.broadcast(formString, channelId, formId);
+            FeedbackSocketMessage outgoingMessage = new FeedbackSocketMessage("RESULT_ADDED", null, feedbackSocketMessage.resultElementId, feedbackSocketMessage.resultValue, "SERVER", form);
+            this.broadcast(outgoingMessage.toJson(), channelId, formId);
             return true;
         }
 

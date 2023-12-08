@@ -2,14 +2,21 @@ package com.htwg.mobilelearning.services.feedback.socket;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.htwg.mobilelearning.models.feedback.FeedbackForm;
 
 public class FeedbackSocketMessage {
 
-    public String action; // CHANGE_FORM_STATUS, CHANGE_RESULT_VALUE
+    // general
+    public String action; // CHANGE_FORM_STATUS, CHANGE_RESULT_VALUE, FORM_STATUS_CHANGED, RESULT_VALUE_CHANGED
     public String formStatus; // NOT_STARTED, STARTED, FINISHED
+    public String role; // STUDENT, PROF, SERVER // not really used yet
+    
+    // incoming message
     public String resultElementId;
     public String resultValue;
-    public String role; // STUDENT, PROF, SERVER
+
+    // outgoing message
+    public FeedbackForm form;
 
     public FeedbackSocketMessage(String message) {
         Gson gson = new GsonBuilder().create();
@@ -19,12 +26,26 @@ public class FeedbackSocketMessage {
         this.resultElementId = feedbackSocketMessage.resultElementId;
         this.resultValue = feedbackSocketMessage.resultValue;
         this.role = feedbackSocketMessage.role;
+        this.form = null;
 
         System.out.println("Action: " + this.action);
         System.out.println("Form status: " + this.formStatus);
         System.out.println("Result element ID: " + this.resultElementId);
         System.out.println("Result value: " + this.resultValue);
         System.out.println("Role: " + this.role);
+    }
 
+    public FeedbackSocketMessage(String action, String formStatus, String resultElementId, String resultValue, String role, FeedbackForm form) {
+        this.action = action;
+        this.formStatus = formStatus;
+        this.resultElementId = resultElementId;
+        this.resultValue = resultValue;
+        this.role = role;
+        this.form = form;
+    }
+
+    public String toJson() {
+        Gson gson = new GsonBuilder().create();
+        return gson.toJson(this);
     }
 }

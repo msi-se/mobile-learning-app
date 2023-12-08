@@ -19,7 +19,7 @@
 <script>
 
 // type feedbackSocketMessage = {
-//     "action": "CHANGE_FORM_STATUS" | "ADD_RESULT"
+//     "action": "CHANGE_FORM_STATUS" | "ADD_RESULT" | "FORM_STATUS_CHANGED" | "RESULT_ADDED",
 //     "formStatus": null | "NOT_STARTED" | "STARTED" | "FINISHED"
 //     "resultElementId": null | string,
 //     "resultValue": null | string | boolean,
@@ -38,9 +38,9 @@ webSocket.onopen = function (event) {
 }
 
 webSocket.onmessage = function (event) {
-    let form = JSON.parse(event.data);
-    console.log("Received: " + JSON.stringify(form));
-    updateData(form);
+    let data = JSON.parse(event.data);
+    console.log("Received: " + JSON.stringify(data));
+    updateData(data.form);
 }
 
 webSocket.onclose = function (event) {
@@ -90,21 +90,21 @@ function updateData(form) {
     console.log("Updating data: ", form);
 
     if (form.status === "NOT_STARTED") {
-            document.getElementById("startFeedbackButton").style.display = "block";
-            document.getElementById("stopFeedbackButton").style.display = "none";
-            document.getElementById("results").style.display = "none";
-        }
+        document.getElementById("startFeedbackButton").style.display = "block";
+        document.getElementById("stopFeedbackButton").style.display = "none";
+        document.getElementById("results").style.display = "none";
+    }
 
-        if (form.status === "STARTED") {
-            document.getElementById("startFeedbackButton").style.display = "none";
-            document.getElementById("stopFeedbackButton").style.display = "block";
-            document.getElementById("results").style.display = "block";
-        }
-        if (form.status === "FINISHED") {
-            document.getElementById("startFeedbackButton").style.display = "block";
-            document.getElementById("stopFeedbackButton").style.display = "none";
-            document.getElementById("results").style.display = "none";
-        }
+    if (form.status === "STARTED") {
+        document.getElementById("startFeedbackButton").style.display = "none";
+        document.getElementById("stopFeedbackButton").style.display = "block";
+        document.getElementById("results").style.display = "block";
+    }
+    if (form.status === "FINISHED") {
+        document.getElementById("startFeedbackButton").style.display = "block";
+        document.getElementById("stopFeedbackButton").style.display = "none";
+        document.getElementById("results").style.display = "none";
+    }
 
 
     let resultscontainer = document.getElementById("resultscontainer");
