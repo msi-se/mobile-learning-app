@@ -1,7 +1,11 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:frontend/components/feedback/choose_feedback_channel.dart';
 import 'package:frontend/components/feedback/choose_feedback_form.dart';
 import 'package:frontend/models/feedback/feedback_channel.dart';
+import 'package:frontend/utils.dart';
+import 'package:http/http.dart' as http;
 
 class ChooseFeedbackPage extends StatefulWidget {
   const ChooseFeedbackPage({super.key});
@@ -20,40 +24,23 @@ class _ChooseFeedbackPageState extends State<ChooseFeedbackPage> {
   @override
   void initState() {
     super.initState();
-    setState(() {
-      _channels = getChannelsFromJson([
-        {
-          "id": "channel1",
-          "name": "Channel 1",
-          "description": "Channel 1 Description",
-          "feedbackForms": [
-            {
-              "id": "form1",
-              "name": "Form 1",
-              "description": "Form 1 Description",
-            },
-            {
-              "id": "form2",
-              "name": "Form 2",
-              "description": "Form 2 Description",
-            },
-          ]
-        },
-        {
-          "id": "channel2",
-          "name": "Channel 2",
-          "description": "Channel 2 Description",
-          "feedbackForms": []
-        },
-        {
-          "id": "channel3",
-          "name": "Channel 3",
-          "description": "Channel 3 Description",
-          "feedbackForms": []
-        },
-      ]);
-      _loading = false;
-    });
+
+    fetchChannels();
+  }
+
+  Future fetchChannels() async {
+    try {
+      final response = await http.get(Uri.parse("${getBackendUrl()}/feedback/channel"));
+      if (response.statusCode == 200) {
+        var data = jsonDecode(response.body);
+        setState(() {
+          _channels = getChannelsFromJson(data);
+          _loading = false;
+        });
+      }
+    } on http.ClientException catch (_) {
+      // TODO: handle error
+    }
   }
 
   List<FeedBackChannel> getChannelsFromJson(List<dynamic> json) {
