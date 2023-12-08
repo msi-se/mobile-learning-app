@@ -4,5 +4,5 @@ public enum FeedbackElementType {
     SLIDER,
     STARS,
     FULLTEXT,
-    // MULTIPLE_CHOICE,
+    YES_NO,
 }

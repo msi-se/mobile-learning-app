@@ -1,11 +1,12 @@
 package com.htwg.mobilelearning.models.feedback;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.bson.types.ObjectId;
 
 
-public class FeedbackChannel {
+public class FeedbackChannel implements Serializable {
     public ObjectId id;
     public String name;
     public String description;
@@ -35,5 +36,22 @@ public class FeedbackChannel {
 
     public List<FeedbackForm> getFeedbackForms() {
         return this.feedbackForms;
+    }
+
+    public void addFeedbackForm(FeedbackForm feedbackForm) {
+        this.feedbackForms.add(feedbackForm);
+    }
+
+    public void removeFeedbackForm(FeedbackForm feedbackForm) {
+        this.feedbackForms.remove(feedbackForm);
+    }
+
+    public FeedbackForm getFeedbackFormById(ObjectId feedbackFormId) {
+        for (FeedbackForm feedbackForm : this.feedbackForms) {
+            if (feedbackForm.getId().equals(feedbackFormId)) {
+                return feedbackForm;
+            }
+        }
+        return null;
     }
 }
