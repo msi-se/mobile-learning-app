@@ -1,13 +1,17 @@
 package com.htwg.mobilelearning.models.auth;
 
-public class user {
+import org.bson.types.ObjectId;
+
+public class User {
+    public ObjectId id;
     public String username;
     public String hashedPassword;
 
-    public user() {
+    public User() {
     }
 
-    public user(String username, String hashedPassword) {
+    public User(String username, String hashedPassword) {
+        this.id = new ObjectId();
         this.username = username;
         this.hashedPassword = hashedPassword;
     }

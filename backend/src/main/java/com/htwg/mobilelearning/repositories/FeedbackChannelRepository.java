@@ -14,8 +14,8 @@ public class FeedbackChannelRepository implements PanacheMongoRepository<Feedbac
     //     return find("id", id).firstResult();
     // }
 
-    public FeedbackChannel findByName(String name) {
-        return find("name", name).firstResult();
-    }
+    // public FeedbackChannel findByName(String name) {
+    //     return find("name", name).firstResult();
+    // }
 
 }

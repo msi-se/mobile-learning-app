@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student</title>
+</head>
+<body>
+    <h1>Student</h1>
+    <div id="questions"></div>
+</body>
+
+
+<script>
+
+const channelId = "65721e1303a29768d66c17e5";
+const formId = "65721e1303a29768d66c17e4";
+const studentUserId = "65721e1303a29768d66c17e7";
+
+let webSocket = new WebSocket(`ws://localhost:8080/feedback/channel/${channelId}/form/${formId}/subscribe/${studentUserId}`);
+
+webSocket.onopen = function (event) {
+    console.log("Connection established.");
+}
+
+webSocket.onmessage = function (event) {
+    let data = JSON.parse(event.data);
+    
+    if (data.action === "FORM_STATUS_CHANGED") {
+        console.log(data);
+        updateForm(data.form);
+    };
+}
+
+// first fetch the different elements of the form
+// /feedback/channel/{channelId}/form/{formId}
+fetch(`http://localhost:8080/feedback/channel/${channelId}/form/${formId}`)
+    .then(response => response.json())
+    .then(form => {
+        console.log(form);
+        // form.elements: array of elements
+        // element.type:  SLIDER | STARS | FULLTEXT | YES_NO
+        // element.id: string
+        // element.name: string
+        // element.description: string
+
+        updateForm(form);
+
+        form.elements?.forEach(element => {
+            // create a div for each element
+            let div = document.createElement("div");
+            div.id = element.id;
+            div.innerHTML = `
+                <h3>${element.name}</h3>
+                <p>${element.description}</p>
+            `;
+
+            // create the input element
+            let input = null;
+            if (element.type === "SLIDER") {
+                input = document.createElement("input");
+                input.type = "range";
+                input.min = "0";
+                input.max = "100";
+                input.value = "1";
+                input.step = "1";
+            }
+            if (element.type === "STARS") {
+                input = document.createElement("input");
+                input.type = "range";
+                input.min = "0";
+                input.max = "5";
+                input.value = "0";
+                input.step = "0.5";
+            }
+            if (element.type === "FULLTEXT") {
+                input = document.createElement("input");
+                input.type = "text";
+            }
+            if (element.type === "YES_NO") {
+                input = document.createElement("select");
+                let optionYes = document.createElement("option");
+                optionYes.value = "YES";
+                optionYes.innerHTML = "YES";
+                let optionNo = document.createElement("option");
+                optionNo.value = "NO";
+                optionNo.innerHTML = "NO";
+                input.appendChild(optionNo);
+                input.appendChild(optionYes);
+            }
+
+            // add the input element to the div
+            div.appendChild(input);
+
+            // add the div to the questions div
+            document.getElementById("questions").appendChild(div);
+
+            // add an event listener to the input element
+            input.addEventListener("change", (event) => {
+                // send a message to the server
+                let message = {
+                    "action": "ADD_RESULT",
+                    "resultElementId": element.id,
+                    "resultValue": input.value,
+                    "role": "STUDENT"
+                };
+                webSocket.send(JSON.stringify(message));
+            });
+        });
+    });
+
+function updateForm(form) {
+
+    console.log("Updating form: ", form);
+
+    if (form.status === "NOT_STARTED") {
+        document.getElementById("questions").style.display = "none";
+    }
+
+    if (form.status === "STARTED") {
+        document.getElementById("questions").style.display = "block";
+    }
+
+    if (form.status === "FINISHED") {
+        document.getElementById("questions").style.display = "none";
+    }
+}
+
+    
+
+</script>
+
+</html>

@@ -1,5 +1,6 @@
 package com.htwg.mobilelearning.models.feedback;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -7,7 +8,7 @@ import org.bson.types.ObjectId;
 
 import com.htwg.mobilelearning.enums.FeedbackChannelStatus;
 
-public class FeedbackForm {
+public class FeedbackForm implements Serializable {
     public ObjectId id;
     public String name;
     public String description;
@@ -44,6 +45,29 @@ public class FeedbackForm {
     public FeedbackChannelStatus getStatus() {
         return this.status;
     }
+
+    public void addElement(FeedbackElement element) {
+        this.elements.add(element);
+    }
+
+    public void removeElement(FeedbackElement element) {
+        this.elements.remove(element);
+    }
+
+    public FeedbackElement getElementById(ObjectId elementId) {
+        for (FeedbackElement element : this.elements) {
+            if (element.getId().equals(elementId)) {
+                return element;
+            }
+        }
+        return null;
+    }
+
+    public void setStatus(FeedbackChannelStatus status) {
+        this.status = status;
+    }
+
+
 
 }
 
