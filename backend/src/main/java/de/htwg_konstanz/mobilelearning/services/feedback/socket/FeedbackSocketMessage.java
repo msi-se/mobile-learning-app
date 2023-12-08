@@ -1,11 +1,11 @@
-package com.htwg.mobilelearning.services.feedback.socket;
+package de.htwg_konstanz.mobilelearning.services.feedback.socket;
 
 import org.bson.types.ObjectId;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.htwg.mobilelearning.helper.ObjectIdTypeAdapter;
-import com.htwg.mobilelearning.models.feedback.FeedbackForm;
+import de.htwg_konstanz.mobilelearning.helper.ObjectIdTypeAdapter;
+import de.htwg_konstanz.mobilelearning.models.feedback.FeedbackForm;
 
 public class FeedbackSocketMessage {
 

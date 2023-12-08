@@ -1,6 +1,6 @@
-package com.htwg.mobilelearning.repositories;
+package de.htwg_konstanz.mobilelearning.repositories;
 
-import com.htwg.mobilelearning.models.auth.User;
+import de.htwg_konstanz.mobilelearning.models.auth.User;
 
 import io.quarkus.mongodb.panache.PanacheMongoRepository;
 import jakarta.enterprise.context.ApplicationScoped;

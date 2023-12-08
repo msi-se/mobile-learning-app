@@ -1,18 +1,18 @@
-package com.htwg.mobilelearning.services.feedback.socket;
+package de.htwg_konstanz.mobilelearning.services.feedback.socket;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.bson.types.ObjectId;
 
-import com.htwg.mobilelearning.enums.FeedbackChannelStatus;
-import com.htwg.mobilelearning.helper.SocketConnection;
-import com.htwg.mobilelearning.helper.SocketConnectionType;
-import com.htwg.mobilelearning.models.feedback.FeedbackChannel;
-import com.htwg.mobilelearning.models.feedback.FeedbackElement;
-import com.htwg.mobilelearning.models.feedback.FeedbackForm;
-import com.htwg.mobilelearning.models.feedback.FeedbackResult;
-import com.htwg.mobilelearning.repositories.FeedbackChannelRepository;
+import de.htwg_konstanz.mobilelearning.enums.FeedbackChannelStatus;
+import de.htwg_konstanz.mobilelearning.helper.SocketConnection;
+import de.htwg_konstanz.mobilelearning.helper.SocketConnectionType;
+import de.htwg_konstanz.mobilelearning.models.feedback.FeedbackChannel;
+import de.htwg_konstanz.mobilelearning.models.feedback.FeedbackElement;
+import de.htwg_konstanz.mobilelearning.models.feedback.FeedbackForm;
+import de.htwg_konstanz.mobilelearning.models.feedback.FeedbackResult;
+import de.htwg_konstanz.mobilelearning.repositories.FeedbackChannelRepository;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;

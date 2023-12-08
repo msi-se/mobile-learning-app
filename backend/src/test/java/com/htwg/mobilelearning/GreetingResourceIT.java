@@ -1,4 +1,4 @@
-package com.htwg.mobilelearning;
+package de.htwg_konstanz.mobilelearning;
 
 import io.quarkus.test.junit.QuarkusIntegrationTest;
 

@@ -1,8 +1,8 @@
-package com.htwg.mobilelearning.repositories;
+package de.htwg_konstanz.mobilelearning.repositories;
 
 
 
-import com.htwg.mobilelearning.models.feedback.FeedbackChannel;
+import de.htwg_konstanz.mobilelearning.models.feedback.FeedbackChannel;
 
 import io.quarkus.mongodb.panache.PanacheMongoRepository;
 import jakarta.enterprise.context.ApplicationScoped;

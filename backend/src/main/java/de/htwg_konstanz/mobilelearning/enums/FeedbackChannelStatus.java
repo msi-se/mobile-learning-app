@@ -1,4 +1,4 @@
-package com.htwg.mobilelearning.enums;
+package de.htwg_konstanz.mobilelearning.enums;
 
 public enum FeedbackChannelStatus {
     STARTED,

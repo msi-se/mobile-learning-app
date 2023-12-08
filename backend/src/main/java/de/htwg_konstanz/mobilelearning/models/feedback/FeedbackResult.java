@@ -1,4 +1,4 @@
-package com.htwg.mobilelearning.models.feedback;
+package de.htwg_konstanz.mobilelearning.models.feedback;
 
 import org.bson.types.ObjectId;
 

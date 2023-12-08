@@ -1,15 +1,15 @@
-package com.htwg.mobilelearning.services;
+package de.htwg_konstanz.mobilelearning.services;
 
 import java.util.List;
 
-import com.htwg.mobilelearning.enums.FeedbackChannelStatus;
-import com.htwg.mobilelearning.enums.FeedbackElementType;
-import com.htwg.mobilelearning.models.auth.User;
-import com.htwg.mobilelearning.models.feedback.FeedbackChannel;
-import com.htwg.mobilelearning.models.feedback.FeedbackElement;
-import com.htwg.mobilelearning.models.feedback.FeedbackForm;
-import com.htwg.mobilelearning.repositories.FeedbackChannelRepository;
-import com.htwg.mobilelearning.repositories.UserRepository;
+import de.htwg_konstanz.mobilelearning.enums.FeedbackChannelStatus;
+import de.htwg_konstanz.mobilelearning.enums.FeedbackElementType;
+import de.htwg_konstanz.mobilelearning.models.auth.User;
+import de.htwg_konstanz.mobilelearning.models.feedback.FeedbackChannel;
+import de.htwg_konstanz.mobilelearning.models.feedback.FeedbackElement;
+import de.htwg_konstanz.mobilelearning.models.feedback.FeedbackForm;
+import de.htwg_konstanz.mobilelearning.repositories.FeedbackChannelRepository;
+import de.htwg_konstanz.mobilelearning.repositories.UserRepository;
 
 import jakarta.inject.Inject;
 import jakarta.ws.rs.GET;

@@ -1,4 +1,4 @@
-package com.htwg.mobilelearning.helper;
+package de.htwg_konstanz.mobilelearning.helper;
 
 import java.lang.reflect.Type;
 

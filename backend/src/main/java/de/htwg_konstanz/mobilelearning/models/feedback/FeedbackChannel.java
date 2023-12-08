@@ -1,4 +1,4 @@
-package com.htwg.mobilelearning.models.feedback;
+package de.htwg_konstanz.mobilelearning.models.feedback;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;

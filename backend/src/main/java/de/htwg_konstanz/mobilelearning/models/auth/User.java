@@ -1,4 +1,4 @@
-package com.htwg.mobilelearning.models.auth;
+package de.htwg_konstanz.mobilelearning.models.auth;
 
 import org.bson.types.ObjectId;
 

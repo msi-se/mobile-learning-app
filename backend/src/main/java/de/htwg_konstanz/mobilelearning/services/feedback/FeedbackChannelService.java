@@ -1,12 +1,12 @@
-package com.htwg.mobilelearning.services.feedback;
+package de.htwg_konstanz.mobilelearning.services.feedback;
 
 import java.util.List;
 
 import org.bson.types.ObjectId;
 import org.jboss.resteasy.reactive.RestPath;
 
-import com.htwg.mobilelearning.models.feedback.FeedbackChannel;
-import com.htwg.mobilelearning.repositories.FeedbackChannelRepository;
+import de.htwg_konstanz.mobilelearning.models.feedback.FeedbackChannel;
+import de.htwg_konstanz.mobilelearning.repositories.FeedbackChannelRepository;
 
 import jakarta.inject.Inject;
 import jakarta.ws.rs.GET;
