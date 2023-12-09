@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:frontend/components/feedback/elements/slider_feedback.dart';
+import 'package:frontend/components/feedback/elements/slider_result.dart';
 import 'package:frontend/components/feedback/elements/star_feedback.dart';
 import 'package:frontend/models/feedback/feedback_form.dart';
 import 'package:frontend/utils.dart';
@@ -26,7 +27,9 @@ class _AttendFeedbackPageState extends State<AttendFeedbackPage> {
   late String _status;
   late WebSocketChannel _socketChannel;
 
-  Map<String, dynamic> feedbackValues = {};
+  final Map<String, dynamic> _feedbackValues = {};
+
+  List<int> _testResults = [];
 
   @override
   void initState() {
@@ -54,10 +57,20 @@ class _AttendFeedbackPageState extends State<AttendFeedbackPage> {
               _status = data["formStatus"];
             });
           }
+          if (data["action"] == "RESULT_ADDED") {
+            setState(() {
+              _testResults = getTestResults(data["form"]);
+            });
+          }
+        }, onError: (error) {
+          setState(() {
+            _status = "ERROR";
+          });
         });
 
         setState(() {
           _form = FeedbackForm.fromJson(data);
+          _testResults = getTestResults(data);
           _status = data["status"];
           _loading = false;
         });
@@ -65,6 +78,11 @@ class _AttendFeedbackPageState extends State<AttendFeedbackPage> {
     } on http.ClientException catch (_) {
       // TODO: handle error
     }
+  }
+
+  List<int> getTestResults(Map<String, dynamic> json) {
+    List<dynamic> results = json["elements"][1]["results"];
+    return results.map((e) => int.parse(e["value"])).toList();
   }
 
   @override
@@ -134,14 +152,14 @@ class _AttendFeedbackPageState extends State<AttendFeedbackPage> {
                           rating: 3,
                           onRatingChanged: (newRating) {
                             setState(() {
-                              feedbackValues[element.id] = newRating;
+                              _feedbackValues[element.id] = newRating;
                             });
                           },
                         )
                       else if (element.type == 'SLIDER')
                         SliderFeedback(onFeedbackChanged: (newFeedback) {
                           setState(() {
-                            feedbackValues[element.id] = newFeedback;
+                            _feedbackValues[element.id] = newFeedback;
                           });
                         })
                       else
@@ -151,11 +169,15 @@ class _AttendFeedbackPageState extends State<AttendFeedbackPage> {
                 );
               },
             ),
+            Padding(
+              padding: const EdgeInsets.only(left: 32.0, right: 32.0, bottom: 32.0),
+              // child: SliderResult(results: [7, 8, 9, 10, 5, 10, 9, 7, 7, 8, 9, 6, 7, 8, 7, 6])),
+              child: SliderResult(results: _testResults)),
             ElevatedButton(
               child: const Text('Senden'),
               onPressed: () {
                 // Iterate over the feedbackValues Map and send each feedback value to the socket
-                for (var entry in feedbackValues.entries) {
+                for (var entry in _feedbackValues.entries) {
                   var message = {
                     "action": "ADD_RESULT",
                     "resultElementId": entry.key,
@@ -165,7 +187,7 @@ class _AttendFeedbackPageState extends State<AttendFeedbackPage> {
                   _socketChannel.sink.add(jsonEncode(message));
                 }
               },
-            )
+            ),
           ],
         ),
       ),
