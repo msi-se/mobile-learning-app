@@ -2,6 +2,8 @@ package de.htwg_konstanz.mobilelearning.services;
 
 import java.util.List;
 
+import org.bson.types.ObjectId;
+
 import de.htwg_konstanz.mobilelearning.enums.FeedbackChannelStatus;
 import de.htwg_konstanz.mobilelearning.enums.FeedbackElementType;
 import de.htwg_konstanz.mobilelearning.models.auth.User;
@@ -37,11 +39,13 @@ public class MockingService {
         FeedbackElement feedbackElement1 = new FeedbackElement("Frage 1", "Wie fandest du die letzte Vorlesung auf einer Skala von 1 bis 5?", FeedbackElementType.STARS, null);
         FeedbackElement feedbackElement2 = new FeedbackElement("Frage 2", "Würdest du die Vorlesung weiterempfehlen?", FeedbackElementType.YES_NO, null);
 
-        // generate a FeedbackForm
-        FeedbackForm feedbackForm1 = new FeedbackForm("Letzte Vorlesung", "Dies ist das Feedback zur letzten Vorlesung.", List.of(feedbackElement1, feedbackElement2), FeedbackChannelStatus.NOT_STARTED);
-
         // generate a FeedbackChannel
-        FeedbackChannel feedbackChannel1 = new FeedbackChannel("Diskrete Mathematik", "Feedback-Kanal für DiMa", List.of(feedbackForm1));
+        FeedbackChannel feedbackChannel1 = new FeedbackChannel("Diskrete Mathematik", "Feedback-Kanal für DiMa", null);
+
+        // generate a FeedbackForm
+        ObjectId feedbackChannel1Id = feedbackChannel1.getId();
+        FeedbackForm feedbackForm1 = new FeedbackForm(feedbackChannel1Id, "Letzte Vorlesung", "Dies ist das Feedback zur letzten Vorlesung.", List.of(feedbackElement1, feedbackElement2), FeedbackChannelStatus.NOT_STARTED);
+        feedbackChannel1.addFeedbackForm(feedbackForm1);
 
         // save the FeedbackChannel
         feedbackChannelRepository.persist(feedbackChannel1);
