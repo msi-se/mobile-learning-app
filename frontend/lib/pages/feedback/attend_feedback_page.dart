@@ -23,6 +23,7 @@ class _AttendFeedbackPageState extends State<AttendFeedbackPage> {
   static const studentUserId = "6573a251ed01282ce7782bcc";
 
   late FeedbackForm _form;
+  late String _status;
   late WebSocketChannel _socketChannel;
 
   Map<String, dynamic> feedbackValues = {};
@@ -46,8 +47,18 @@ class _AttendFeedbackPageState extends State<AttendFeedbackPage> {
               "${getBackendUrl(protocol: "ws")}/feedback/channel/$channelId/form/$formId/subscribe/$studentUserId"),
         );
 
+        _socketChannel.stream.listen((event) {
+          var data = jsonDecode(event);
+          if (data["action"] == "FORM_STATUS_CHANGED") {
+            setState(() {
+              _status = data["formStatus"];
+            });
+          }
+        });
+
         setState(() {
           _form = FeedbackForm.fromJson(data);
+          _status = data["status"];
           _loading = false;
         });
       }
@@ -57,11 +68,43 @@ class _AttendFeedbackPageState extends State<AttendFeedbackPage> {
   }
 
   @override
+  void dispose() {
+    _socketChannel.sink.close();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     if (_loading) {
       return const Scaffold(
         body: Center(
           child: CircularProgressIndicator(),
+        ),
+      );
+    }
+
+    final colors = Theme.of(context).colorScheme;
+
+    if (_status != "STARTED") {
+      return Scaffold(
+        body: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              const Padding(
+                padding: EdgeInsets.only(left: 20.0, right: 20.0),
+                child: Text(
+                    "Bitte warten Sie bis die Feedbackrunde gestartet wird"),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(20.0),
+                child: LinearProgressIndicator(
+                  valueColor: AlwaysStoppedAnimation<Color>(colors.primary),
+                  backgroundColor: colors.secondary.withAlpha(32),
+                ),
+              ),
+            ],
+          ),
         ),
       );
     }
