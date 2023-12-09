@@ -42,8 +42,8 @@ class _StarFeedbackState extends State<StarFeedback> {
         children: List.generate(5, (index) {
           return IconButton(
             icon: Icon(
-              size: 40.0,
               Icons.star,
+              size: 40.0,
               color: index < _rating
                   ? colors.primary
                   : colors.tertiary.withAlpha(48),
@@ -59,4 +59,5 @@ class _StarFeedbackState extends State<StarFeedback> {
       ),
     );
   }
+
 }

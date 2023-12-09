@@ -80,7 +80,7 @@ class _SliderFeedbackResultState extends State<SliderFeedbackResult> {
                   width: innerWidth,
                   height: 2,
                   decoration: BoxDecoration(
-                    color: colors.secondary.withAlpha(64),
+                    color: colors.tertiary.withAlpha(48),
                   ),
                 ),
               );
