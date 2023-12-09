@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:frontend/theme/assets.dart';
+import 'package:frontend/components/button.dart';
+import 'package:frontend/components/textfield.dart';
+//import 'package:frontend/theme/assets.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -9,6 +11,16 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
+  void signUserIn(BuildContext context) {
+    // Code, um zu überprüfen, ob der Benutzer von der HTWG ist
+
+    // Wenn der Benutzer von der HTWG ist, dann einloggen und zur Seite "/home" navigieren
+    Navigator.pushNamed(context, '/home');
+  }
+
+  final passwordController = TextEditingController();
+  final usernameController = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
     final colors = Theme.of(context).colorScheme;
@@ -17,7 +29,6 @@ class _LoginPageState extends State<LoginPage> {
       body: SafeArea(
         child: Column(
           children: [
-            // Oberer Abschnitt
             Container(
               color: colors.outlineVariant,
               child: SingleChildScrollView(
@@ -38,7 +49,7 @@ class _LoginPageState extends State<LoginPage> {
                         children: [
                           Text('Log In',
                               style: TextStyle(
-                                  fontSize: 30,
+                                  fontSize: 40,
                                   color: Colors.black,
                                   fontWeight: FontWeight.bold),
                               textAlign: TextAlign.left),
@@ -49,39 +60,58 @@ class _LoginPageState extends State<LoginPage> {
                 ),
               ),
             ),
-
-            // Unterer Abschnitt
             Container(
-              color:
-                  colors.surface, // Hintergrundfarbe für den unteren Abschnitt
+              color: colors.surface,
               child: SingleChildScrollView(
                 child: Column(
                   children: [
                     // Username TextField
+                    Container(
+                      margin:
+                          const EdgeInsets.only(left: 5, top: 15, bottom: 5),
+                      child: const Row(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          Text('Your E-Mail',
+                              style: TextStyle(
+                                fontSize: 15,
+                                color: Colors.grey,
+                              ),
+                              textAlign: TextAlign.left),
+                        ],
+                      ),
+                    ),
+                    MyTextField(
+                        controller: usernameController,
+                        hintText: 'Max.Mustermann@htwg-konstanz.de',
+                        obscureText: false),
 
                     // Password TextField
-
-                    const SizedBox(height: 400), //Placeholder
+                    Container(
+                      margin: const EdgeInsets.all(5.0),
+                      child: const Row(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          Text('Your Password',
+                              style: TextStyle(
+                                fontSize: 15,
+                                color: Colors.grey,
+                              ),
+                              textAlign: TextAlign.left),
+                        ],
+                      ),
+                    ),
+                    MyTextField(
+                        controller: passwordController,
+                        hintText: '***********',
+                        obscureText: true),
+                    const SizedBox(height: 10),
 
                     // Submit Button
-                    ElevatedButton(
-                      onPressed: () {
-                        Navigator.pushReplacementNamed(context, '/home');
+                    SubmitButton(
+                      onTap: () {
+                        signUserIn(context);
                       },
-                      style: ButtonStyle(
-                        backgroundColor:
-                            MaterialStateProperty.all(colors.primary),
-                        shape:
-                            MaterialStateProperty.all<RoundedRectangleBorder>(
-                          RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10.0),
-                          ),
-                        ),
-                      ),
-                      child: Text(
-                        'Login',
-                        style: TextStyle(color: colors.surface),
-                      ),
                     ),
                   ],
                 ),
