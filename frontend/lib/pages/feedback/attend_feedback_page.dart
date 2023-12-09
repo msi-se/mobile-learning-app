@@ -10,7 +10,9 @@ import 'package:web_socket_channel/web_socket_channel.dart';
 import 'package:http/http.dart' as http;
 
 class AttendFeedbackPage extends StatefulWidget {
-  const AttendFeedbackPage({super.key});
+  final String code;
+
+  const AttendFeedbackPage({super.key, required this.code});
 
   @override
   State<AttendFeedbackPage> createState() => _AttendFeedbackPageState();
@@ -19,13 +21,13 @@ class AttendFeedbackPage extends StatefulWidget {
 class _AttendFeedbackPageState extends State<AttendFeedbackPage> {
   bool _loading = true;
 
-  static const channelId = "6573a251ed01282ce7782bca";
-  static const formId = "6573a251ed01282ce7782bc9";
-  static const studentUserId = "6573a251ed01282ce7782bcc";
+  late String _channelId;
+  late String _formId;
+  static const studentUserId = "6574ddd385c3896638153102";
 
   late FeedbackForm _form;
   late String _status;
-  late WebSocketChannel _socketChannel;
+  WebSocketChannel? _socketChannel;
 
   final Map<String, dynamic> _feedbackValues = {};
 
@@ -35,22 +37,41 @@ class _AttendFeedbackPageState extends State<AttendFeedbackPage> {
   void initState() {
     super.initState();
 
-    fetchForm();
+    init();
+  }
+
+  Future init() async {
+    var code = widget.code;
+    try {
+      final response = await http
+          .get(Uri.parse("${getBackendUrl()}/feedback/connectto/$code"));
+      if (response.statusCode == 200) {
+        var data = jsonDecode(response.body);
+        _channelId = data["channelId"];
+        _formId = data["formId"];
+        fetchForm();
+        return;
+      }
+    } on http.ClientException catch (_) {
+      // TODO: handle error
+    }
+    if (!mounted) return;
+    Navigator.pop(context);
   }
 
   Future fetchForm() async {
     try {
       final response = await http.get(Uri.parse(
-          "${getBackendUrl()}/feedback/channel/$channelId/form/$formId"));
+          "${getBackendUrl()}/feedback/channel/$_channelId/form/$_formId"));
       if (response.statusCode == 200) {
         var data = jsonDecode(response.body);
 
         _socketChannel = WebSocketChannel.connect(
           Uri.parse(
-              "${getBackendUrl(protocol: "ws")}/feedback/channel/$channelId/form/$formId/subscribe/$studentUserId"),
+              "${getBackendUrl(protocol: "ws")}/feedback/channel/$_channelId/form/$_formId/subscribe/$studentUserId"),
         );
 
-        _socketChannel.stream.listen((event) {
+        _socketChannel!.stream.listen((event) {
           var data = jsonDecode(event);
           if (data["action"] == "FORM_STATUS_CHANGED") {
             setState(() {
@@ -87,7 +108,7 @@ class _AttendFeedbackPageState extends State<AttendFeedbackPage> {
 
   @override
   void dispose() {
-    _socketChannel.sink.close();
+    _socketChannel?.sink.close();
     super.dispose();
   }
 
@@ -170,9 +191,10 @@ class _AttendFeedbackPageState extends State<AttendFeedbackPage> {
               },
             ),
             Padding(
-              padding: const EdgeInsets.only(left: 32.0, right: 32.0, bottom: 32.0),
-              // child: SliderResult(results: [7, 8, 9, 10, 5, 10, 9, 7, 7, 8, 9, 6, 7, 8, 7, 6])),
-              child: SliderResult(results: _testResults)),
+                padding: const EdgeInsets.only(
+                    left: 32.0, right: 32.0, bottom: 32.0),
+                // child: SliderResult(results: [7, 8, 9, 10, 5, 10, 9, 7, 7, 8, 9, 6, 7, 8, 7, 6])),
+                child: SliderResult(results: _testResults)),
             ElevatedButton(
               child: const Text('Senden'),
               onPressed: () {
@@ -184,7 +206,7 @@ class _AttendFeedbackPageState extends State<AttendFeedbackPage> {
                     "resultValue": entry.value,
                     "role": "STUDENT"
                   };
-                  _socketChannel.sink.add(jsonEncode(message));
+                  _socketChannel?.sink.add(jsonEncode(message));
                 }
               },
             ),

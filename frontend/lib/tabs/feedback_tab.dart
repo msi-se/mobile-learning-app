@@ -1,5 +1,10 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:frontend/components/input_card.dart';
+import 'package:frontend/utils.dart';
+import 'package:http/http.dart' as http;
+
 
 class FeedbackTab extends StatefulWidget {
   const FeedbackTab({super.key});
@@ -14,6 +19,11 @@ class _FeedbackTabState extends State<FeedbackTab> {
   @override
   void initState() {
     super.initState();
+  }
+
+  void joinChannel() {
+    var code = _joinCodeController.text.replaceAll(' ', '');
+    Navigator.pushNamed(context, '/attend-feedback', arguments: code);
   }
 
   @override
@@ -46,7 +56,7 @@ class _FeedbackTabState extends State<FeedbackTab> {
                   );
                 },
                 onSubmit: () {
-                  Navigator.pushNamed(context, '/attend-feedback');
+                  joinChannel();
                 },
                 sublineText: 'Mit Code beitreten'),
             ElevatedButton(

@@ -20,9 +20,15 @@ class MyApp extends StatelessWidget {
       initialRoute: '/login',
       routes: <String, WidgetBuilder>{
         '/login': (_) => const LoginPage(),
-        '/home': (_) => const MainPage(),
+        '/main': (_) => const MainPage(),
         '/choose-feedback': (_) => const ChooseFeedbackPage(),
-        '/attend-feedback': (_) => const AttendFeedbackPage(),
+        '/attend-feedback': (context) {
+          var code = ModalRoute.of(context)!.settings.arguments as String?;
+          if (code == null) {
+            return const MainPage();
+          }
+          return AttendFeedbackPage(code: code);
+        },
       },
     );
   }

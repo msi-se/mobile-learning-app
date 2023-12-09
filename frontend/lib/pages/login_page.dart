@@ -66,7 +66,7 @@ class _LoginPageState extends State<LoginPage> {
                     // Submit Button
                     ElevatedButton(
                       onPressed: () {
-                        Navigator.pushReplacementNamed(context, '/home');
+                        Navigator.pushReplacementNamed(context, '/main');
                       },
                       style: ButtonStyle(
                         backgroundColor:
