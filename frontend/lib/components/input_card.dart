@@ -39,10 +39,12 @@ class _InputCardState extends State<InputCard> {
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(25),
       ),
+      margin: const EdgeInsets.symmetric(
+        horizontal: 25,
+        vertical: 20
+      ),
       // color: colors.secondary,
       child: SizedBox(
-        height: 130,
-        width: widget.size.width * 0.85,
         child: Stack(
           children: [
             Center(

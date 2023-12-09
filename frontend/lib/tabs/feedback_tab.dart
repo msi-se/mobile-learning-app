@@ -32,11 +32,11 @@ class _FeedbackTabState extends State<FeedbackTab> {
     Size size = MediaQuery.of(context).size;
 
     return Scaffold(
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            InputCard(
+      body: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: <Widget>[
+          Expanded(
+            child: InputCard(
                 size: size,
                 inputText: '123 456',
                 textInputController: _joinCodeController,
@@ -59,15 +59,70 @@ class _FeedbackTabState extends State<FeedbackTab> {
                   joinChannel();
                 },
                 sublineText: 'Mit Code beitreten'),
-            ElevatedButton(
-              onPressed: () {
-                Navigator.pushNamed(context, '/choose-feedback');
-              },
-              child: Text('Feedbackbogen auswählen',
-                  style: TextStyle(color: colors.primary)),
+          ),
+
+          Expanded(
+            child: Card(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(25),
+              ),
+              margin: const EdgeInsets.symmetric(
+                horizontal: 25,
+                vertical: 20
+              ),
+              child: InkWell(
+                onTap: () {
+                  Navigator.pushNamed(context, '/choose-feedback');
+                },
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: <Widget>[
+                      Text('Feedback erstellen',
+                          style: TextStyle(
+                              fontSize: 24.0, // Adjust font size
+                              fontWeight: FontWeight.bold,
+                              color: colors.primary)),
+                      Icon(Icons.add, color: colors.primary),
+                    ],
+                  ),
+                ),
+              ),
             ),
-          ],
-        ),
+          ),
+          
+          Expanded(
+            child: Card(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(25),
+              ),
+              margin: const EdgeInsets.symmetric(
+                horizontal: 25,
+                vertical: 20
+              ),
+              child: InkWell(
+                onTap: () {
+                  Navigator.pushNamed(context, '/history-feedback');
+                },
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: <Widget>[
+                      Text('Feedback Historie',
+                          style: TextStyle(
+                              fontSize: 24.0, // Adjust font size
+                              fontWeight: FontWeight.bold,
+                              color: colors.primary)),
+                      Icon(Icons.history, color: colors.primary),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }

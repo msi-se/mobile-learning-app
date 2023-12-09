@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/pages/feedback/attend_feedback_page.dart';
 import 'package:frontend/pages/feedback/choose_feedback_page.dart';
+import 'package:frontend/pages/feedback/history_feedback_page.dart';
 import 'package:frontend/pages/login_page.dart';
 import 'package:frontend/pages/main_page.dart';
 import 'package:frontend/theme/themes.dart';
@@ -29,6 +30,7 @@ class MyApp extends StatelessWidget {
           }
           return AttendFeedbackPage(code: code);
         },
+        '/history-feedback': (_) => const HistoryFeedbackPage(),
       },
     );
   }
