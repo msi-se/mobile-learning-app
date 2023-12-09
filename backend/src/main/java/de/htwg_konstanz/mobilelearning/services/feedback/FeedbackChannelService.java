@@ -10,6 +10,8 @@ import de.htwg_konstanz.mobilelearning.repositories.FeedbackChannelRepository;
 
 import jakarta.inject.Inject;
 import jakarta.ws.rs.GET;
+import jakarta.ws.rs.NotFoundException;
+import jakarta.ws.rs.POST;
 import jakarta.ws.rs.PUT;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
@@ -67,6 +69,10 @@ public class FeedbackChannelService {
         ObjectId channelObjectId = new ObjectId(channelId);
         FeedbackChannel feedbackChannelToUpdate = feedbackChannelRepository.findById(channelObjectId);
         
+        if (feedbackChannelToUpdate == null) {
+            throw new NotFoundException("Feedbackchannel not found");
+        }
+
         if (feedbackChannel.description != null) {
             feedbackChannelToUpdate.description = feedbackChannel.description;
         }
@@ -78,5 +84,15 @@ public class FeedbackChannelService {
         }
         feedbackChannelRepository.update(feedbackChannelToUpdate);
         return feedbackChannelToUpdate;
+    }
+
+    @POST
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path("")
+    public FeedbackChannel createFeedbackChannel(FeedbackChannel feedbackChannel) {
+        // TODO: add validation
+        feedbackChannel.id = new ObjectId();
+        feedbackChannelRepository.persist(feedbackChannel);
+        return feedbackChannel;
     }
 }

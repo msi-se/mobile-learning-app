@@ -12,6 +12,10 @@ import de.htwg_konstanz.mobilelearning.repositories.FeedbackChannelRepository;
 
 import jakarta.inject.Inject;
 import jakarta.ws.rs.GET;
+import jakarta.ws.rs.NotFoundException;
+import jakarta.ws.rs.PATCH;
+import jakarta.ws.rs.POST;
+import jakarta.ws.rs.PUT;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
@@ -24,7 +28,7 @@ public class FeedbackFormService {
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public List<FeedbackForm> getFeedbackChannels(@RestPath String channelId) {
+    public List<FeedbackForm> getFeedbackForms(@RestPath String channelId) {
         ObjectId channelObjectId = new ObjectId(channelId);
         FeedbackChannel feedbackChannel = feedbackChannelRepository.findById(channelObjectId);
         return feedbackChannel.getFeedbackForms();
@@ -33,37 +37,67 @@ public class FeedbackFormService {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @Path("/{formId}")
-    public FeedbackForm getFeedbackChannel(@RestPath String channelId, @RestPath String formId) {
+    public FeedbackForm getFeedbackForm(@RestPath String channelId, @RestPath String formId) {
 
-        // formId not considered yet
+        ObjectId channelObjectId = new ObjectId(channelId);
+        ObjectId formObjectId = new ObjectId(formId);
+
+        return feedbackChannelRepository.findFeedbackFormById(channelObjectId, formObjectId);
+    }
+
+    @PUT
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path("/{formId}")
+    public FeedbackForm updateFeedbackForm(@RestPath String channelId, @RestPath String formId, FeedbackForm feedbackForm) {
         ObjectId channelObjectId = new ObjectId(channelId);
         ObjectId formObjectId = new ObjectId(formId);
         FeedbackChannel feedbackChannel = feedbackChannelRepository.findById(channelObjectId);
-        List<FeedbackForm> feedbackForms = feedbackChannel.getFeedbackForms();
-
-        FeedbackForm feedbackForm = null;
-        for (FeedbackForm form : feedbackForms) {
-            if (form.getId().equals(formObjectId)) {
-                feedbackForm = form;
-                break;
-            }
+        FeedbackForm feedbackFormToUpdate = feedbackChannel.getFeedbackFormById(formObjectId);
+        
+        if (feedbackFormToUpdate == null) {
+            throw new NotFoundException("Feedbackchannel not found");
         }
-        return feedbackForm;
+
+        if (feedbackForm.description != null) {
+            feedbackFormToUpdate.description = feedbackForm.description;
+        }
+        else if (feedbackForm.name != null) {
+            feedbackFormToUpdate.name = feedbackForm.name;
+        }
+        else if (feedbackForm.elements != null) {
+            feedbackFormToUpdate.elements = feedbackForm.elements;
+        }
+        else if (feedbackForm.connectCode != null) {
+            feedbackFormToUpdate.connectCode = feedbackForm.connectCode;
+        }
+        else if (feedbackForm.status != null) {
+            feedbackFormToUpdate.status = feedbackForm.status;
+        }
+
+        feedbackChannelRepository.update(feedbackChannel);
+        return feedbackFormToUpdate;
     }
 
-    @GET
+    @POST
     @Produces(MediaType.APPLICATION_JSON)
-    @Path("/demoendpoint/insertmockdata")
-    public List<FeedbackForm> insertMockData() {
-        FeedbackChannel feedbackChannel = new FeedbackChannel("FeedbackChannel1", "Description1", null);
-        FeedbackForm feedbackForm1 = new FeedbackForm("FeedbackForm1", "Description1", null, FeedbackChannelStatus.NOT_STARTED);
-        FeedbackForm feedbackForm2 = new FeedbackForm("FeedbackForm2", "Description2", null, FeedbackChannelStatus.NOT_STARTED);
-        feedbackChannel.getFeedbackForms().add(feedbackForm1);
-        feedbackChannel.getFeedbackForms().add(feedbackForm2);
-        feedbackChannelRepository.persist(feedbackChannel);
+    @Path("")
+    public FeedbackForm createFeedbackForm(@RestPath String channelId, FeedbackForm feedbackForm) {
+        // TODO: add validation
+        ObjectId channelObjectId = new ObjectId(channelId);
+        FeedbackChannel feedbackChannel = feedbackChannelRepository.findById(channelObjectId);
+        
+        FeedbackForm newFeedbackForm = new FeedbackForm(
+            feedbackChannel.getId(),
+            feedbackForm.name,
+            feedbackForm.description,
+            feedbackForm.elements,
+            feedbackForm.status != null ? feedbackForm.status : FeedbackChannelStatus.NOT_STARTED
+        );
 
-        feedbackChannel = feedbackChannelRepository.findById(feedbackChannel.getId());
-        return feedbackChannel.getFeedbackForms();
+        feedbackChannel.addFeedbackForm(newFeedbackForm);
+        feedbackChannelRepository.update(feedbackChannel);
+
+        return feedbackForm;
     }
 
 }
