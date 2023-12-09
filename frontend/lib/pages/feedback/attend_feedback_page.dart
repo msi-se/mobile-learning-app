@@ -2,7 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:frontend/components/feedback/elements/slider_feedback.dart';
-import 'package:frontend/components/feedback/elements/slider_result.dart';
+import 'package:frontend/components/feedback/elements/slider_feedback_result.dart';
 import 'package:frontend/components/feedback/elements/star_feedback.dart';
 import 'package:frontend/models/feedback/feedback_form.dart';
 import 'package:frontend/utils.dart';
@@ -194,7 +194,10 @@ class _AttendFeedbackPageState extends State<AttendFeedbackPage> {
                 padding: const EdgeInsets.only(
                     left: 32.0, right: 32.0, bottom: 32.0),
                 // child: SliderResult(results: [7, 8, 9, 10, 5, 10, 9, 7, 7, 8, 9, 6, 7, 8, 7, 6])),
-                child: SliderResult(results: _testResults)),
+                child: SliderFeedbackResult(
+                    results: _testResults,
+                    min: 0,
+                    max: 10,)),
             ElevatedButton(
               child: const Text('Senden'),
               onPressed: () {

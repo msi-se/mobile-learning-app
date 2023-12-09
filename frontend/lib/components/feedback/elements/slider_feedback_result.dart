@@ -1,25 +1,36 @@
 import 'package:flutter/material.dart';
 
-class SliderResult extends StatefulWidget {
+class SliderFeedbackResult extends StatefulWidget {
   final List<int> results;
+  final int min;
+  final int max;
 
-  const SliderResult({super.key, required this.results});
+  const SliderFeedbackResult({
+    super.key,
+    required this.results,
+    required this.min,
+    required this.max,
+  });
 
   @override
-  State<SliderResult> createState() => _SliderResultState();
+  State<SliderFeedbackResult> createState() => _SliderFeedbackResultState();
 }
 
-class _SliderResultState extends State<SliderResult> {
+class _SliderFeedbackResultState extends State<SliderFeedbackResult> {
   late List<double> _normCounts;
+  late int _min;
+  late int _max;
 
   @override
   void initState() {
     super.initState();
+    _min = widget.min;
+    _max = widget.max;
     _updateCounts();
   }
 
   @override
-  void didUpdateWidget(SliderResult oldWidget) {
+  void didUpdateWidget(SliderFeedbackResult oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (widget.results != oldWidget.results) {
       _updateCounts();
@@ -27,9 +38,9 @@ class _SliderResultState extends State<SliderResult> {
   }
 
   void _updateCounts() {
-    var counts = List.generate(11, (index) => 0);
+    var counts = List.generate(_max - _min + 1, (index) => 0);
     for (var result in widget.results) {
-      if (result >= 0 && result <= 11) {
+      if (result >= _min && result <= _max) {
         counts[result]++;
       }
     }
@@ -60,7 +71,7 @@ class _SliderResultState extends State<SliderResult> {
         width: width, // Adjust this value to change the width of the box
         height: height, // Adjust this value to change the height of the box
         child: Stack(
-          children: List.generate(12, (index) {
+          children: List.generate(_max - _min + 2, (index) {
             if (index == 0) {
               return Positioned(
                 left: height / 2,
@@ -75,13 +86,14 @@ class _SliderResultState extends State<SliderResult> {
               );
             }
             index--;
-            var radius = 10 + _normCounts[index] * (height - 10);
+            var size = 10 + _normCounts[index] * (height - 10);
             return Positioned(
-              left: height / 2 + (index) * innerWidth / 10 - radius / 2,
-              top: height / 2 - radius / 2,
+              left:
+                  height / 2 + (index) * innerWidth / (_max - _min) - size / 2,
+              top: height / 2 - size / 2,
               child: Container(
-                width: radius,
-                height: radius,
+                width: size,
+                height: size,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
                   color: colors.primary.withOpacity(0.3),
