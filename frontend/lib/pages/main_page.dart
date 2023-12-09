@@ -28,7 +28,13 @@ class _MainPageState extends State<MainPage> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.primary,
-        title: const Text("Mobile App"),
+        title: const Text(
+          "Mobile App", 
+          style: TextStyle(
+            color: Colors.white, 
+            fontWeight: FontWeight.bold
+          )
+        ),
       ),
       body: SafeArea(
         child: <Widget>[
