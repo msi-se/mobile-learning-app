@@ -54,4 +54,13 @@ public class FeedbackChannel implements Serializable {
         }
         return null;
     }
+
+    public FeedbackForm getFeedbackFormByConnectCode(Integer connectCode) {
+        for (FeedbackForm feedbackForm : this.feedbackForms) {
+            if (feedbackForm.getConnectCode().equals(connectCode)) {
+                return feedbackForm;
+            }
+        }
+        return null;
+    }
 }

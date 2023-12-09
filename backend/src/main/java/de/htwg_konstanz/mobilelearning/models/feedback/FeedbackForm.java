@@ -10,20 +10,26 @@ import de.htwg_konstanz.mobilelearning.enums.FeedbackChannelStatus;
 
 public class FeedbackForm implements Serializable {
     public ObjectId id;
+    public ObjectId feedbackChannelId;
     public String name;
     public String description;
     public List<FeedbackElement> elements;
     public FeedbackChannelStatus status;
+    public Integer connectCode;
 
     public FeedbackForm() {
     }
 
-    public FeedbackForm(String name, String description, List<FeedbackElement> elements, FeedbackChannelStatus status) {
+    public FeedbackForm(ObjectId feedbackChannelId, String name, String description, List<FeedbackElement> elements, FeedbackChannelStatus status) {
         this.id = new ObjectId();
+        this.feedbackChannelId = feedbackChannelId;
         this.name = name;
         this.description = description;
         this.elements = elements != null ? elements : new ArrayList<FeedbackElement>();
         this.status = status;
+
+        // generate 6-digit connect code (100000 - 999999)
+        this.connectCode = (int) (Math.random() * 899999) + 100000;
     }
 
     public ObjectId getId() {
@@ -44,6 +50,10 @@ public class FeedbackForm implements Serializable {
 
     public FeedbackChannelStatus getStatus() {
         return this.status;
+    }
+
+    public Integer getConnectCode() {
+        return this.connectCode;
     }
 
     public void addElement(FeedbackElement element) {
