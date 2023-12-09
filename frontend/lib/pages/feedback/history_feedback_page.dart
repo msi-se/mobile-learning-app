@@ -32,7 +32,7 @@ class _HistoryFeedbackPageState extends State<HistoryFeedbackPage> {
         leading: IconButton(
           icon: Icon(Icons.arrow_back),
           onPressed: () {
-            Navigator.pushNamed(context, '/home');
+            Navigator.pushNamed(context, '/main');
           },
         ),
       ),
