@@ -146,7 +146,11 @@ class _AttendFeedbackPageState extends State<AttendFeedbackPage> {
     }
 
     return Scaffold(
-      body: Center(
+      appBar: AppBar(
+        title: Text(_form.name),
+        backgroundColor: colors.primary,
+      ),
+      body: SingleChildScrollView(
         child: Column(
           children: [
             ListView.builder(
@@ -204,6 +208,7 @@ class _AttendFeedbackPageState extends State<AttendFeedbackPage> {
                 }
               },
             ),
+            const SizedBox(height: 32),
           ],
         ),
       ),
