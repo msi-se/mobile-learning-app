@@ -21,8 +21,11 @@ class _LoginPageState extends State<LoginPage> {
   @override
   void initState() {
     super.initState();
+    checkLoggenIn();
+  }
 
-    if (session.userId != null) {
+  Future checkLoggenIn() async {
+    if (getSession() != null && mounted) {
       Navigator.pushReplacementNamed(context, '/main');
     }
   }
@@ -42,14 +45,15 @@ class _LoginPageState extends State<LoginPage> {
               body: body);
       if (response.statusCode == 200) {
         var data = jsonDecode(response.body);
-        session.userId = data["id"];
-        session.username = data["username"];
+        var userId = data["id"];
+        var username = data["username"];
+        await setSession(Session(userId: userId, username: username));
         if (!mounted) return;
         Navigator.pushReplacementNamed(context, '/main');
       } else {
         // TODO: wrong credentials
       }
-    } on http.ClientException catch (e) {
+    } on http.ClientException catch (_) {
       // TODO: handle error
     }
   }
