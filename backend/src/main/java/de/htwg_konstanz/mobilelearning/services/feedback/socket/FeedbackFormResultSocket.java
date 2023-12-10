@@ -119,6 +119,9 @@ public class FeedbackFormResultSocket {
             // if it is set to NOT_STARTED, remove all results
             if (formStatusEnum == FeedbackChannelStatus.NOT_STARTED) {
                 form.clearResults();
+                // send the event to all receivers
+                FeedbackSocketMessage outgoingMessage = new FeedbackSocketMessage("RESULT_ADDED", form.status.toString(), null, null, "SERVER", form);
+                this.broadcast(outgoingMessage.toJson(), channelId, formId);
             }
 
             // update the form in the database
