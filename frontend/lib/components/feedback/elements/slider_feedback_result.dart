@@ -20,7 +20,6 @@ class SliderFeedbackResult extends StatefulWidget {
 
 class _SliderFeedbackResultState extends State<SliderFeedbackResult> {
   late List<double> _normCounts;
-  late double _average;
   late int _min;
   late int _max;
   late int _itemCount;
@@ -28,7 +27,6 @@ class _SliderFeedbackResultState extends State<SliderFeedbackResult> {
   @override
   void initState() {
     super.initState();
-    _average = widget.average;
     _min = widget.min;
     _max = widget.max;
     _itemCount = _max - _min + 1;
@@ -38,7 +36,8 @@ class _SliderFeedbackResultState extends State<SliderFeedbackResult> {
   @override
   void didUpdateWidget(SliderFeedbackResult oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (widget.results != oldWidget.results) {
+    if (widget.results != oldWidget.results ||
+        widget.average != oldWidget.average) {
       _updateCounts();
     }
   }
@@ -51,8 +50,13 @@ class _SliderFeedbackResultState extends State<SliderFeedbackResult> {
       }
     }
 
-    int maxCount = counts.reduce((curr, next) => curr > next ? curr : next);
-    int minCount = counts.reduce((curr, next) => curr < next ? curr : next);
+    int maxCount = 0;
+    int minCount = 0;
+
+    if (counts.isNotEmpty) {
+      maxCount = counts.reduce((curr, next) => curr > next ? curr : next);
+      minCount = counts.reduce((curr, next) => curr < next ? curr : next);
+    }
 
     if (maxCount == minCount) {
       maxCount++;
@@ -95,8 +99,8 @@ class _SliderFeedbackResultState extends State<SliderFeedbackResult> {
             // Average line
             if (index == _itemCount + 1) {
               return Positioned(
-                left:
-                    height / 2 + (_average - _min) * innerWidth / (_max - _min),
+                left: height / 2 +
+                    (widget.average - _min) * innerWidth / (_max - _min),
                 top: 0,
                 child: Container(
                   width: 2,

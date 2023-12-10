@@ -98,8 +98,11 @@ class _FeedbackResultPageState extends State<FeedbackResultPage> {
       List<dynamic> results = element["results"];
       List<int> resultValues =
           results.map((result) => int.parse(result["value"])).toList();
-      double average = resultValues.reduce((curr, next) => curr + next) /
-          resultValues.length;
+      double average = 0;
+      if (resultValues.isNotEmpty) {
+        average = resultValues.reduce((curr, next) => curr + next) /
+            resultValues.length;
+      }
       return {"values": resultValues, "average": average};
     }).toList();
   }
