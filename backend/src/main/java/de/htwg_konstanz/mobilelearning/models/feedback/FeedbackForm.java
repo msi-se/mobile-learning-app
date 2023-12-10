@@ -77,7 +77,11 @@ public class FeedbackForm implements Serializable {
         this.status = status;
     }
 
-
+    public void clearResults() {
+        for (FeedbackElement element : this.elements) {
+            element.clearResults();
+        }
+    }
 
 }
 
