@@ -76,12 +76,12 @@ class _FeedbackTabState extends State<FeedbackTab> {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: <Widget>[
-                      Text('Feedback erstellen',
+                      Text('Feedback auswählen',
                           style: TextStyle(
                               fontSize: 24.0, // Adjust font size
                               fontWeight: FontWeight.bold,
                               color: colors.primary)),
-                      Icon(Icons.add, color: colors.primary),
+                      Icon(Icons.arrow_right, color: colors.primary),
                     ],
                   ),
                 ),
