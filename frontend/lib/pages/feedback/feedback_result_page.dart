@@ -9,9 +9,11 @@ import 'package:web_socket_channel/web_socket_channel.dart';
 import 'package:http/http.dart' as http;
 
 class FeedbackResultPage extends StatefulWidget {
-  final String code;
+  final String channelId;
+  final String formId;
 
-  const FeedbackResultPage({super.key, required this.code});
+  const FeedbackResultPage(
+      {super.key, required this.channelId, required this.formId});
 
   @override
   State<FeedbackResultPage> createState() => _FeedbackResultPageState();
@@ -38,22 +40,9 @@ class _FeedbackResultPageState extends State<FeedbackResultPage> {
   }
 
   Future init() async {
-    var code = widget.code;
-    try {
-      final response = await http
-          .get(Uri.parse("${getBackendUrl()}/feedback/connectto/$code"));
-      if (response.statusCode == 200) {
-        var data = jsonDecode(response.body);
-        _channelId = data["channelId"];
-        _formId = data["formId"];
-        fetchForm();
-        return;
-      }
-    } on http.ClientException catch (_) {
-      // TODO: handle error
-    }
-    if (!mounted) return;
-    Navigator.pop(context);
+    _channelId = widget.channelId;
+    _formId = widget.formId;
+    fetchForm();
   }
 
   Future fetchForm() async {

@@ -32,11 +32,16 @@ class MyApp extends StatelessWidget {
           return AttendFeedbackPage(code: code);
         },
         '/feedback-result': (context) {
-          var code = ModalRoute.of(context)!.settings.arguments as String?;
-          if (code == null) {
+          var arguments = ModalRoute.of(context)!.settings.arguments
+              as Map<String, dynamic>?;
+          if (arguments == null) {
             return const MainPage();
           }
-          return FeedbackResultPage(code: code);
+          print(arguments);
+          return FeedbackResultPage(
+            channelId: arguments["channelId"],
+            formId: arguments["formId"],
+          );
         },
         '/history-feedback': (_) => const HistoryFeedbackPage(),
       },
