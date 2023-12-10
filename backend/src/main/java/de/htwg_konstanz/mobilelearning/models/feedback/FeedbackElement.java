@@ -68,4 +68,8 @@ public class FeedbackElement {
         }
         return null;
     }
+
+    public void clearResults() {
+        this.results.clear();
+    }
 }

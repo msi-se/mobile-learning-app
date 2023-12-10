@@ -11,6 +11,7 @@ import de.htwg_konstanz.mobilelearning.models.feedback.FeedbackForm;
 import de.htwg_konstanz.mobilelearning.repositories.FeedbackChannelRepository;
 
 import jakarta.inject.Inject;
+import jakarta.ws.rs.DELETE;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.NotFoundException;
 import jakarta.ws.rs.PATCH;
@@ -97,6 +98,24 @@ public class FeedbackFormService {
         feedbackChannel.addFeedbackForm(newFeedbackForm);
         feedbackChannelRepository.update(feedbackChannel);
 
+        return feedbackForm;
+    }
+
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path("/{formId}/clearresults")
+    public FeedbackForm clearFeedbackFormResults(@RestPath String channelId, @RestPath String formId) {
+        ObjectId channelObjectId = new ObjectId(channelId);
+        ObjectId formObjectId = new ObjectId(formId);
+        FeedbackChannel feedbackChannel = feedbackChannelRepository.findById(channelObjectId);
+        FeedbackForm feedbackForm = feedbackChannel.getFeedbackFormById(formObjectId);
+
+        if (feedbackForm == null) {
+            throw new NotFoundException("Feedbackchannel not found");
+        }
+
+        feedbackForm.clearResults();
+        feedbackChannelRepository.update(feedbackChannel);
         return feedbackForm;
     }
 
