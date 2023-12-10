@@ -2,9 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:frontend/components/feedback/elements/slider_feedback.dart';
-import 'package:frontend/components/feedback/elements/slider_feedback_result.dart';
 import 'package:frontend/components/feedback/elements/star_feedback.dart';
-import 'package:frontend/components/feedback/elements/star_feedback_result.dart';
 import 'package:frontend/models/feedback/feedback_form.dart';
 import 'package:frontend/utils.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
@@ -31,8 +29,6 @@ class _AttendFeedbackPageState extends State<AttendFeedbackPage> {
   WebSocketChannel? _socketChannel;
 
   final Map<String, dynamic> _feedbackValues = {};
-
-  List<int> _testResults = [];
 
   @override
   void initState() {
@@ -79,11 +75,6 @@ class _AttendFeedbackPageState extends State<AttendFeedbackPage> {
               _status = data["formStatus"];
             });
           }
-          if (data["action"] == "RESULT_ADDED") {
-            setState(() {
-              _testResults = getTestResults(data["form"]);
-            });
-          }
         }, onError: (error) {
           setState(() {
             _status = "ERROR";
@@ -92,7 +83,6 @@ class _AttendFeedbackPageState extends State<AttendFeedbackPage> {
 
         setState(() {
           _form = FeedbackForm.fromJson(data);
-          _testResults = getTestResults(data);
           _status = data["status"];
           _loading = false;
         });
@@ -102,10 +92,6 @@ class _AttendFeedbackPageState extends State<AttendFeedbackPage> {
     }
   }
 
-  List<int> getTestResults(Map<String, dynamic> json) {
-    List<dynamic> results = json["elements"][1]["results"];
-    return results.map((e) => int.parse(e["value"])).toList();
-  }
 
   @override
   void dispose() {
@@ -190,19 +176,6 @@ class _AttendFeedbackPageState extends State<AttendFeedbackPage> {
                   ),
                 );
               },
-            ),
-            Padding(
-              padding:
-                  const EdgeInsets.only(left: 32.0, right: 32.0, bottom: 32.0),
-              child: SliderFeedbackResult(
-                results: _testResults,
-                min: 0,
-                max: 10,
-              ),
-            ),
-            const Padding(
-              padding: EdgeInsets.only(left: 32.0, right: 32.0, bottom: 32.0),
-              child: StarFeedbackResult(results: [3, 4]),
             ),
             ElevatedButton(
               child: const Text('Senden'),

@@ -28,7 +28,7 @@ class _FeedbackResultPageState extends State<FeedbackResultPage> {
   late String _status;
   WebSocketChannel? _socketChannel;
 
-  late List<List<int>> _resultValues;
+  late List<Map<String, dynamic>> _results;
 
   @override
   void initState() {
@@ -77,7 +77,7 @@ class _FeedbackResultPageState extends State<FeedbackResultPage> {
           }
           if (data["action"] == "RESULT_ADDED") {
             setState(() {
-              _resultValues = getTestResults(data["form"]);
+              _results = getTestResults(data["form"]);
             });
           }
         }, onError: (error) {
@@ -88,7 +88,7 @@ class _FeedbackResultPageState extends State<FeedbackResultPage> {
 
         setState(() {
           _form = FeedbackForm.fromJson(data);
-          _resultValues = getTestResults(data);
+          _results = getTestResults(data);
           _status = data["status"];
           _loading = false;
         });
@@ -98,11 +98,18 @@ class _FeedbackResultPageState extends State<FeedbackResultPage> {
     }
   }
 
-  List<List<int>> getTestResults(Map<String, dynamic> json) {
+  List<Map<String, dynamic>> getTestResults(Map<String, dynamic> json) {
     List<dynamic> elements = json["elements"];
     return elements.map((element) {
       List<dynamic> results = element["results"];
-      return results.map((result) => int.parse(result["value"])).toList();
+      List<int> resultValues =
+          results.map((result) => int.parse(result["value"])).toList();
+      double average = resultValues.reduce((curr, next) => curr + next) /
+          resultValues.length;
+      return {
+        "values": resultValues,
+        "average": average
+      };
     }).toList();
   }
 
@@ -169,10 +176,10 @@ class _FeedbackResultPageState extends State<FeedbackResultPage> {
                           style: const TextStyle(fontSize: 15),
                           textAlign: TextAlign.center),
                       if (element.type == 'STARS')
-                        StarFeedbackResult(results: _resultValues[index])
+                        StarFeedbackResult(average: _results[index]["average"])
                       else if (element.type == 'SLIDER')
                         SliderFeedbackResult(
-                          results: _resultValues[index],
+                          results: _results[index]["values"],
                           min: 0,
                           max: 10,
                         )
