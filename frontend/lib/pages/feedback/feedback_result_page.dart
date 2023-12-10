@@ -180,6 +180,7 @@ class _FeedbackResultPageState extends State<FeedbackResultPage> {
                       else if (element.type == 'SLIDER')
                         SliderFeedbackResult(
                           results: values,
+                          average: average,
                           min: 0,
                           max: 10,
                         )

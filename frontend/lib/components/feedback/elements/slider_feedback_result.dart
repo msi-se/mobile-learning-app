@@ -2,12 +2,14 @@ import 'package:flutter/material.dart';
 
 class SliderFeedbackResult extends StatefulWidget {
   final List<int> results;
+  final double average;
   final int min;
   final int max;
 
   const SliderFeedbackResult({
     super.key,
     required this.results,
+    required this.average,
     required this.min,
     required this.max,
   });
@@ -18,12 +20,14 @@ class SliderFeedbackResult extends StatefulWidget {
 
 class _SliderFeedbackResultState extends State<SliderFeedbackResult> {
   late List<double> _normCounts;
+  late double _average;
   late int _min;
   late int _max;
 
   @override
   void initState() {
     super.initState();
+    _average = widget.average;
     _min = widget.min;
     _max = widget.max;
     _updateCounts();
@@ -71,7 +75,8 @@ class _SliderFeedbackResultState extends State<SliderFeedbackResult> {
         width: width, // Adjust this value to change the width of the box
         height: height, // Adjust this value to change the height of the box
         child: Stack(
-          children: List.generate(_max - _min + 2, (index) {
+          children: List.generate(_max - _min + 1 + 2, (index) {
+            // Horizontal line
             if (index == 0) {
               return Positioned(
                 left: height / 2,
@@ -81,6 +86,21 @@ class _SliderFeedbackResultState extends State<SliderFeedbackResult> {
                   height: 2,
                   decoration: BoxDecoration(
                     color: colors.tertiary.withAlpha(48),
+                  ),
+                ),
+              );
+            }
+            // Average line
+            if (index == _max - _min + 1 + 1) {
+              return Positioned(
+                left:
+                    height / 2 + (_average - _min) * innerWidth / (_max - _min),
+                top: 0,
+                child: Container(
+                  width: 2,
+                  height: height,
+                  decoration: BoxDecoration(
+                    color: colors.secondary,
                   ),
                 ),
               );
@@ -96,7 +116,7 @@ class _SliderFeedbackResultState extends State<SliderFeedbackResult> {
                 height: size,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  color: colors.primary.withOpacity(0.3),
+                  color: colors.primary.withOpacity(0.4),
                 ),
               ),
             );
