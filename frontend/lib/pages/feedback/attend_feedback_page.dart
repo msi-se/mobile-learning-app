@@ -35,7 +35,7 @@ class _AttendFeedbackPageState extends State<AttendFeedbackPage> {
   void initState() {
     super.initState();
 
-    _userId = session.userId!;
+    _userId = getSession()!.userId;
     init();
   }
 

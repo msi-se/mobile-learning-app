@@ -38,7 +38,7 @@ class _FeedbackResultPageState extends State<FeedbackResultPage> {
   void initState() {
     super.initState();
 
-    _userId = session.userId!;
+    _userId = getSession()!.userId;
     init();
   }
 
