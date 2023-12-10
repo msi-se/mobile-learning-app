@@ -23,8 +23,6 @@ public class LdapHtwg {
 
         final String dn = "uid=" + username.trim() + "," + PRINCIPAL;
 
-        // Setup environment for authenticating
-
         Hashtable<String, String> environment = new Hashtable<String, String>();
         environment.put(Context.INITIAL_CONTEXT_FACTORY, "com.sun.jndi.ldap.LdapCtxFactory");
         environment.put(Context.PROVIDER_URL, ldapURL);
@@ -32,7 +30,6 @@ public class LdapHtwg {
         environment.put(Context.SECURITY_PRINCIPAL, dn);
         environment.put(Context.SECURITY_CREDENTIALS, password);
 
-        System.out.println("ldap " + ldapURL + " for " + dn);
         DirContext authContext = null;
         try {
             authContext = new InitialDirContext(environment);
@@ -53,19 +50,9 @@ public class LdapHtwg {
             if (results.hasMore()) {
                 SearchResult searchResult = (SearchResult) results.next();
                 Attributes attributes = searchResult.getAttributes();
-                // NamingEnumeration<? extends Attribute> attrs = attributes.getAll();
-                System.out.println(attributes.get("gidNumber") + "");
                 String isTeacher = attributes.get("gidNumber") + "";
                 user.setTeacher(isTeacher);
             }
-
-            System.out.println("User isTeacher=" + user.getIsTeacher()); // + authContext.getAttributes(dn).get("gecos") + "");
-            // name += "\n" + authContext.getAttributes(dn).get("givenName");
-            // name += "\n" + authContext.getAttributes(dn).get("sn");
-            // name += "\n" + authContext.getAttributes(dn).get("mail");
-            // name += "\n" + authContext.getAttributes(dn).get("gecos");
-            // name += "\n" + authContext.getAttributes(dn).get("uidNumber");
-            // name += "\n";
  
             return user;
         } catch (AuthenticationException ex) {
