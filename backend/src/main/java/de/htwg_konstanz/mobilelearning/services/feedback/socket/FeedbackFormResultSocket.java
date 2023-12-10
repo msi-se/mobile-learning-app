@@ -116,6 +116,11 @@ public class FeedbackFormResultSocket {
             // change the form status
             form.setStatus(formStatusEnum);
 
+            // if it is set to NOT_STARTED, remove all results
+            if (formStatusEnum == FeedbackChannelStatus.NOT_STARTED) {
+                form.clearResults();
+            }
+
             // update the form in the database
             feedbackChannelRepository.update(channel);
 
