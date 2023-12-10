@@ -1,7 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:frontend/components/feedback/preview_feedback.dart';
+import 'package:frontend/pages/feedback/feedback_preview_page.dart';
 import 'package:frontend/components/feedback/elements/slider_feedback_result.dart';
 import 'package:frontend/components/feedback/elements/star_feedback_result.dart';
 import 'package:frontend/global.dart';
@@ -92,6 +92,39 @@ class _FeedbackResultPageState extends State<FeedbackResultPage> {
     });
   }
 
+  void startForm() {
+    if (_socketChannel != null) {
+      _socketChannel!.sink.add(jsonEncode({
+        "action": "CHANGE_FORM_STATUS",
+        "formStatus": "STARTED",
+        "role": "PROF",
+        "userId": _userId,
+      }));
+    }
+  }
+
+  void stopForm() {
+    if (_socketChannel != null) {
+      _socketChannel!.sink.add(jsonEncode({
+        "action": "CHANGE_FORM_STATUS",
+        "formStatus": "FINISHED",
+        "role": "PROF",
+        "userId": _userId,
+      }));
+    }
+  }
+
+  void resetForm() {
+    if (_socketChannel != null) {
+      _socketChannel!.sink.add(jsonEncode({
+        "action": "CHANGE_FORM_STATUS",
+        "formStatus": "NOT_STARTED",
+        "role": "PROF",
+        "userId": _userId,
+      }));
+    }
+  }
+
   List<Map<String, dynamic>> getTestResults(Map<String, dynamic> json) {
     List<dynamic> elements = json["elements"];
     return elements.map((element) {
@@ -125,56 +158,100 @@ class _FeedbackResultPageState extends State<FeedbackResultPage> {
 
     final colors = Theme.of(context).colorScheme;
 
-    if (_status != "STARTED") {
-      return FeedbackPreviewComponent(
-        channelId: _channelId,
-        formId: _formId,
+    if (_status == "NOT_STARTED") {
+      var code = _form.connectCode;
+      code = "${code.substring(0, 3)} ${code.substring(3, 6)}";
+
+      return Scaffold(
+        appBar: AppBar(
+          title: Text(_form.name),
+          backgroundColor: colors.primary,
+        ),
+        body: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              Text(
+                code,
+                style: Theme.of(context).textTheme.headlineMedium,
+              ),
+              const SizedBox(height: 16),
+              ElevatedButton(
+                onPressed: startForm,
+                child: const Text('Feedback starten'),
+              ),
+            ],
+          ),
+        ),
       );
     }
 
     return Scaffold(
-      body: Center(
-        child: Column(
-          children: [
-            ListView.builder(
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              itemCount: _form.feedbackElements.length,
-              itemBuilder: (context, index) {
-                final element = _form.feedbackElements[index];
-                final double average = _results[index]["average"];
-                final roundAverage = (average * 100).round() / 100;
-                final values = _results[index]["values"];
-                return Padding(
-                  padding: const EdgeInsets.all(32.0),
-                  child: Column(
-                    children: <Widget>[
-                      Text(element.name,
-                          style: const TextStyle(
-                              fontSize: 24, fontWeight: FontWeight.bold)),
-                      Text(element.description,
-                          style: const TextStyle(fontSize: 15),
-                          textAlign: TextAlign.center),
-                      if (element.type == 'STARS')
-                        StarFeedbackResult(average: average)
-                      else if (element.type == 'SLIDER')
-                        SliderFeedbackResult(
-                          results: values,
-                          average: average,
-                          min: 0,
-                          max: 10,
-                        )
-                      else
-                        const Text('Unknown element type'),
-                      Text("$roundAverage",
-                          style: const TextStyle(fontSize: 20),
-                          textAlign: TextAlign.center),
-                    ],
+      body: SingleChildScrollView(
+        child: Center(
+          child: Column(
+            children: [
+              Column(
+                children: [
+                  ListView.builder(
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    itemCount: _form.feedbackElements.length,
+                    itemBuilder: (context, index) {
+                      final element = _form.feedbackElements[index];
+                      final double average = _results[index]["average"];
+                      final roundAverage = (average * 100).round() / 100;
+                      final values = _results[index]["values"];
+                      return Padding(
+                        padding: const EdgeInsets.all(32.0),
+                        child: Column(
+                          children: <Widget>[
+                            Text(element.name,
+                                style: const TextStyle(
+                                    fontSize: 24, fontWeight: FontWeight.bold)),
+                            Text(element.description,
+                                style: const TextStyle(fontSize: 15),
+                                textAlign: TextAlign.center),
+                            if (element.type == 'STARS')
+                              StarFeedbackResult(average: average)
+                            else if (element.type == 'SLIDER')
+                              SliderFeedbackResult(
+                                results: values,
+                                average: average,
+                                min: 0,
+                                max: 10,
+                              )
+                            else
+                              const Text('Unknown element type'),
+                            Text("$roundAverage",
+                                style: const TextStyle(fontSize: 20),
+                                textAlign: TextAlign.center),
+                          ],
+                        ),
+                      );
+                    },
                   ),
-                );
-              },
-            ),
-          ],
+                ],
+              ),
+              if (_status == "STARTED")
+                ElevatedButton(
+                  onPressed: stopForm,
+                  child: const Text('Feedback beenden'),
+                ),
+              if (_status == "FINISHED")
+                ElevatedButton(
+                  onPressed: startForm,
+                  child: const Text('Feedback fortsetzen'),
+                ),
+              if (_status == "FINISHED")
+                ElevatedButton(
+                  onPressed: resetForm,
+                  child: Text('Feedback zurücksetzen',
+                      style: TextStyle(color: colors.error)),
+                ),
+              const SizedBox(height: 32),
+            ],
+          ),
         ),
       ),
     );

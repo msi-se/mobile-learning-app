@@ -5,21 +5,21 @@ import 'dart:convert';
 import 'package:frontend/models/feedback/feedback_form.dart';
 import 'package:frontend/utils.dart';
 
-class FeedbackPreviewComponent extends StatefulWidget {
+class FeedbackPreviewPage extends StatefulWidget {
   final String channelId;
   final String formId;
 
-  const FeedbackPreviewComponent({
+  const FeedbackPreviewPage({
     Key? key,
     required this.channelId,
     required this.formId,
   }) : super(key: key);
 
   @override
-  _FeedbackPreviewComponentState createState() => _FeedbackPreviewComponentState();
+  State<FeedbackPreviewPage> createState() => _FeedbackPreviewPageState();
 }
 
-class _FeedbackPreviewComponentState extends State<FeedbackPreviewComponent> {
+class _FeedbackPreviewPageState extends State<FeedbackPreviewPage> {
   bool _loading = true;
   FeedbackForm? _form;
 
@@ -57,13 +57,8 @@ class _FeedbackPreviewComponentState extends State<FeedbackPreviewComponent> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.primary,
-        title: const Text(
-          "Feedback History", 
-          style: TextStyle(
-            color: Colors.white, 
-            fontWeight: FontWeight.bold
-          )
-        ),
+        title: const Text("Feedback Info",
+            style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
       ),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16.0),
@@ -73,8 +68,8 @@ class _FeedbackPreviewComponentState extends State<FeedbackPreviewComponent> {
                 children: [
                   Container(
                     width: double.infinity,
-                    padding: EdgeInsets.all(16),
-                    margin: EdgeInsets.symmetric(vertical: 16),
+                    padding: const EdgeInsets.all(16),
+                    margin: const EdgeInsets.symmetric(vertical: 16),
                     decoration: BoxDecoration(
                       color: Colors.grey[200],
                       borderRadius: BorderRadius.circular(8),
@@ -92,7 +87,8 @@ class _FeedbackPreviewComponentState extends State<FeedbackPreviewComponent> {
                       margin: EdgeInsets.zero,
                       child: ListView.separated(
                         itemCount: _form?.feedbackElements.length ?? 0,
-                        separatorBuilder: (context, index) => Divider(height: 1),
+                        separatorBuilder: (context, index) =>
+                            const Divider(height: 1),
                         itemBuilder: (context, index) {
                           var element = _form!.feedbackElements[index];
                           return ListTile(
@@ -105,11 +101,34 @@ class _FeedbackPreviewComponentState extends State<FeedbackPreviewComponent> {
                   Container(
                     width: double.infinity,
                     padding: const EdgeInsets.symmetric(vertical: 8),
-                    child: FilledButton(
-                      onPressed: () {
-                        // TODO
-                      },
-                      child: const Text('Feedback starten'),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        Expanded(
+                          child: FilledButton(
+                            onPressed: () {
+                              Navigator.pushNamed(context, '/feedback-result',
+                                  arguments: {
+                                    "channelId": widget.channelId,
+                                    "formId": widget.formId,
+                                  });
+                            },
+                            child: _form!.status == "NOT_STARTED"
+                                ? const Text('Starten')
+                                : const Text('Ergebnisse'),
+                          ),
+                        ),
+                        const SizedBox(width: 10),
+                        Expanded(
+                          child: FilledButton(
+                            onPressed: () {
+                              Navigator.pushNamed(context, '/attend-feedback',
+                                  arguments: _form!.connectCode);
+                            },
+                            child: const Text('Beitreten'),
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 ],

@@ -92,7 +92,7 @@ class _ChooseFeedbackPageState extends State<ChooseFeedbackPage> {
             : ChooseFeedbackForm(
                 channel: _selectedChannel!,
                 choose: (id) {
-                  Navigator.pushNamed(context, '/feedback-result', arguments: {
+                  Navigator.pushNamed(context, '/feedback-info', arguments: {
                     "channelId": _selectedChannel!.id,
                     "formId": id,
                   });
