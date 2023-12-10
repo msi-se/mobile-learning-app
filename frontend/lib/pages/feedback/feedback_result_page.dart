@@ -106,10 +106,7 @@ class _FeedbackResultPageState extends State<FeedbackResultPage> {
           results.map((result) => int.parse(result["value"])).toList();
       double average = resultValues.reduce((curr, next) => curr + next) /
           resultValues.length;
-      return {
-        "values": resultValues,
-        "average": average
-      };
+      return {"values": resultValues, "average": average};
     }).toList();
   }
 
@@ -164,7 +161,10 @@ class _FeedbackResultPageState extends State<FeedbackResultPage> {
               physics: const NeverScrollableScrollPhysics(),
               itemCount: _form.feedbackElements.length,
               itemBuilder: (context, index) {
-                var element = _form.feedbackElements[index];
+                final element = _form.feedbackElements[index];
+                final double average = _results[index]["average"];
+                final roundAverage = (average * 100).round() / 100;
+                final values = _results[index]["values"];
                 return Padding(
                   padding: const EdgeInsets.all(32.0),
                   child: Column(
@@ -176,15 +176,18 @@ class _FeedbackResultPageState extends State<FeedbackResultPage> {
                           style: const TextStyle(fontSize: 15),
                           textAlign: TextAlign.center),
                       if (element.type == 'STARS')
-                        StarFeedbackResult(average: _results[index]["average"])
+                        StarFeedbackResult(average: average)
                       else if (element.type == 'SLIDER')
                         SliderFeedbackResult(
-                          results: _results[index]["values"],
+                          results: values,
                           min: 0,
                           max: 10,
                         )
                       else
-                        const Text('Unknown element type')
+                        const Text('Unknown element type'),
+                      Text("$roundAverage",
+                          style: const TextStyle(fontSize: 20),
+                          textAlign: TextAlign.center),
                     ],
                   ),
                 );
