@@ -1,7 +1,11 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:frontend/components/button.dart';
 import 'package:frontend/components/textfield.dart';
-//import 'package:frontend/theme/assets.dart';
+import 'package:frontend/global.dart';
+import 'package:frontend/utils.dart';
+import 'package:http/http.dart' as http;
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -11,15 +15,45 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
-  void signUserIn(BuildContext context) {
-    // Code, um zu überprüfen, ob der Benutzer von der HTWG ist
+  final usernameController = TextEditingController();
+  final passwordController = TextEditingController();
 
-    // Wenn der Benutzer von der HTWG ist, dann einloggen und zur Seite "/home" navigieren
-    Navigator.pushNamed(context, '/main');
+  @override
+  void initState() {
+    super.initState();
+
+    if (session.userId != null) {
+      Navigator.pushReplacementNamed(context, '/main');
+    }
   }
 
-  final passwordController = TextEditingController();
-  final usernameController = TextEditingController();
+  Future signUserIn(BuildContext context) async {
+    try {
+      String body = jsonEncode({
+        "id": null,
+        "username": usernameController.text,
+        "password": passwordController.text
+      });
+      final response =
+          await http.post(Uri.parse("${getBackendUrl()}/auth/login"),
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: body);
+      print(response.statusCode);
+      if (response.statusCode == 200) {
+        var data = jsonDecode(response.body);
+        session.userId = data["id"];
+        session.username = data["username"];
+        if (!mounted) return;
+        Navigator.pushReplacementNamed(context, '/main');
+      } else {
+        // TODO: wrong credentials
+      }
+    } on http.ClientException catch (e) {
+      // TODO: handle error
+    }
+  }
 
   @override
   Widget build(BuildContext context) {

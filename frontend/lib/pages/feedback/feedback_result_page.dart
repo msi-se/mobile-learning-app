@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:frontend/components/feedback/elements/slider_feedback_result.dart';
 import 'package:frontend/components/feedback/elements/star_feedback_result.dart';
+import 'package:frontend/global.dart';
 import 'package:frontend/models/feedback/feedback_form.dart';
 import 'package:frontend/utils.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
@@ -24,7 +25,7 @@ class _FeedbackResultPageState extends State<FeedbackResultPage> {
 
   late String _channelId;
   late String _formId;
-  static const userId = "6575ee7fc157be6e8437e790";
+  late String _userId;
 
   late FeedbackForm _form;
   late String _status;
@@ -36,6 +37,7 @@ class _FeedbackResultPageState extends State<FeedbackResultPage> {
   void initState() {
     super.initState();
 
+    _userId = session.userId!;
     init();
   }
 
@@ -67,7 +69,7 @@ class _FeedbackResultPageState extends State<FeedbackResultPage> {
   void startWebsocket() {
     _socketChannel = WebSocketChannel.connect(
       Uri.parse(
-          "${getBackendUrl(protocol: "ws")}/feedback/channel/$_channelId/form/$_formId/subscribe/$userId"),
+          "${getBackendUrl(protocol: "ws")}/feedback/channel/$_channelId/form/$_formId/subscribe/$_userId"),
     );
 
     _socketChannel!.stream.listen((event) {

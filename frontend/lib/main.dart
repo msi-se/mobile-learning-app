@@ -37,7 +37,6 @@ class MyApp extends StatelessWidget {
           if (arguments == null) {
             return const MainPage();
           }
-          print(arguments);
           return FeedbackResultPage(
             channelId: arguments["channelId"],
             formId: arguments["formId"],
