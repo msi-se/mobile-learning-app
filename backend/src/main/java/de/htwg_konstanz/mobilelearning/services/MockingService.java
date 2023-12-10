@@ -36,23 +36,93 @@ public class MockingService {
         userRepository.deleteAll();
 
         // generate some FeedbackElements
-        FeedbackElement feedbackElement1 = new FeedbackElement("Frage 1", "Wie fandest du die letzte Vorlesung auf einer Skala von 1 bis 5?", FeedbackElementType.STARS, null);
-        FeedbackElement feedbackElement2 = new FeedbackElement("Frage 2", "Würdest du die Vorlesung weiterempfehlen?", FeedbackElementType.SLIDER, null);
+        FeedbackElement feedbackElement1 = new FeedbackElement(
+            "Verständlichkeit",
+            "Wie verständlich war das Thema Kombinatorik?",
+            FeedbackElementType.STARS,
+            null
+        );
+        FeedbackElement feedbackElement2 = new FeedbackElement(
+            "Kurzweiligkeit",
+            "Wie kurzweilig war die Vorlesung? (links = langweilig, rechts = kurzweilig)",
+            FeedbackElementType.SLIDER,
+            null
+        );
+        FeedbackElement feedbackElement3 = new FeedbackElement(
+            "Praxisbezug",
+            "Wie bewerten Sie den Praxisbezug der Vorlesung? (links = wenig Praxisbezug, rechts = viel Praxisbezug)",
+            FeedbackElementType.SLIDER,
+            null
+        );
+        FeedbackElement feedbackElement4 = new FeedbackElement(
+            "Sprachbarriere",
+            "Die Vorlesung wurde auf Englisch gehalten. Wie fanden Sie die Verständlichkeit?",
+            FeedbackElementType.SLIDER,
+            null
+        );
+        FeedbackElement feedbackElement5 = new FeedbackElement(
+            "Prüfungsvorbereitung",
+            "Wenn jetzt direkt die Prüfung wäre, wie gut fühlen Sie sich vorbereitet?",
+            FeedbackElementType.STARS,
+            null
+        );
+        FeedbackElement feedbackElement6 = new FeedbackElement(
+            "Technische Mittel",
+            "Wie bewerten Sie die technischen Mittel, die in der Vorlesung verwendet wurden?",
+            FeedbackElementType.STARS,
+            null
+        );
 
         // generate a FeedbackChannel
-        FeedbackChannel feedbackChannel1 = new FeedbackChannel("Diskrete Mathematik", "Feedback-Kanal für DiMa", null);
+        FeedbackChannel feedbackChannelDima = new FeedbackChannel("Diskrete Mathematik", "Feedback-Kanal für DiMa", null);
+        FeedbackChannel feedbackChannelAUME = new FeedbackChannel("AUME", "Feedback-Kanal für Agile Vorgehensmodelle und Mobile Kommunikation", null);
+        FeedbackChannel feedbackChannelCloud = new FeedbackChannel("Cloud Application Development", "Feedback-Kanal für Cloud Application Development", null);
 
         // generate a FeedbackForm
-        ObjectId feedbackChannel1Id = feedbackChannel1.getId();
-        FeedbackForm feedbackForm1 = new FeedbackForm(feedbackChannel1Id, "Letzte Vorlesung", "Dies ist das Feedback zur letzten Vorlesung.", List.of(feedbackElement1, feedbackElement2), FeedbackChannelStatus.NOT_STARTED);
-        feedbackChannel1.addFeedbackForm(feedbackForm1);
+        ObjectId feedbackChannelDimaId = feedbackChannelDima.getId();
+        ObjectId feedbackChannelAUMEId = feedbackChannelAUME.getId();
+        ObjectId feedbackChannelCloudId = feedbackChannelCloud.getId();
+        FeedbackForm feedbackForm1 = new FeedbackForm(
+            feedbackChannelDimaId,
+            "1. Monat im neuen Semester",
+            "Dies ist das Feedback für den 1. Monat im neuen Semester",
+            List.of(feedbackElement2, feedbackElement4, feedbackElement5),
+            FeedbackChannelStatus.NOT_STARTED
+        );
+        feedbackChannelDima.addFeedbackForm(feedbackForm1);
+        FeedbackForm feedbackForm2 = new FeedbackForm(
+            feedbackChannelDimaId,
+            "Kombinatorik",
+            "Dies ist das Feedback zum Thema Kombinatorik",
+            List.of(feedbackElement1, feedbackElement2, feedbackElement3, feedbackElement4, feedbackElement5, feedbackElement6),
+            FeedbackChannelStatus.NOT_STARTED
+        );
+        feedbackChannelDima.addFeedbackForm(feedbackForm2);
+        FeedbackForm feedbackForm3 = new FeedbackForm(
+            feedbackChannelAUMEId,
+            "1. Monat im neuen Semester",
+            "Dies ist das Feedback für den 1. Monat im neuen Semester",
+            List.of(feedbackElement2, feedbackElement4, feedbackElement5),
+            FeedbackChannelStatus.NOT_STARTED
+        );
+        feedbackChannelAUME.addFeedbackForm(feedbackForm3);
+        FeedbackForm feedbackForm4 = new FeedbackForm(
+            feedbackChannelCloudId,
+            "1. Monat im neuen Semester",
+            "Dies ist das Feedback für den 1. Monat im neuen Semester",
+            List.of(feedbackElement2, feedbackElement4, feedbackElement5),
+            FeedbackChannelStatus.NOT_STARTED
+        );
+        feedbackChannelCloud.addFeedbackForm(feedbackForm4);
 
         // save the FeedbackChannel
-        feedbackChannelRepository.persist(feedbackChannel1);
+        feedbackChannelRepository.persist(feedbackChannelDima);
+        feedbackChannelRepository.persist(feedbackChannelAUME);
+        feedbackChannelRepository.persist(feedbackChannelCloud);
 
         // create dummy user
-        User user1 = new User("Johannes", "password1");
-        User user2 = new User("Fabi", "password2");
+        User user1 = new User("Johannes", "");
+        User user2 = new User("Fabi", "");
 
         // save the user
         userRepository.persist(user1);
@@ -60,5 +130,14 @@ public class MockingService {
 
         // return all FeedbackChannels and Users
         return List.of(feedbackChannelRepository.listAll(), userRepository.listAll());
+    }
+
+
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path("/deleteallchannels")
+    public String deleteAllFeedbackChannels() {
+        feedbackChannelRepository.deleteAll();
+        return "All FeedbackChannels deleted";
     }
 }
