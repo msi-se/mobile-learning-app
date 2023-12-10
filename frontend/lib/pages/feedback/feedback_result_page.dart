@@ -24,7 +24,7 @@ class _FeedbackResultPageState extends State<FeedbackResultPage> {
 
   late String _channelId;
   late String _formId;
-  static const userId = "6574ddd385c3896638153102";
+  static const userId = "6575ee7fc157be6e8437e790";
 
   late FeedbackForm _form;
   late String _status;
@@ -51,30 +51,7 @@ class _FeedbackResultPageState extends State<FeedbackResultPage> {
           "${getBackendUrl()}/feedback/channel/$_channelId/form/$_formId"));
       if (response.statusCode == 200) {
         var data = jsonDecode(response.body);
-
-        _socketChannel = WebSocketChannel.connect(
-          Uri.parse(
-              "${getBackendUrl(protocol: "ws")}/feedback/channel/$_channelId/form/$_formId/subscribe/$userId"),
-        );
-
-        _socketChannel!.stream.listen((event) {
-          var data = jsonDecode(event);
-          if (data["action"] == "FORM_STATUS_CHANGED") {
-            setState(() {
-              _status = data["formStatus"];
-            });
-          }
-          if (data["action"] == "RESULT_ADDED") {
-            setState(() {
-              _results = getTestResults(data["form"]);
-            });
-          }
-        }, onError: (error) {
-          setState(() {
-            _status = "ERROR";
-          });
-        });
-
+        startWebsocket();
         setState(() {
           _form = FeedbackForm.fromJson(data);
           _results = getTestResults(data);
@@ -85,6 +62,31 @@ class _FeedbackResultPageState extends State<FeedbackResultPage> {
     } on http.ClientException catch (_) {
       // TODO: handle error
     }
+  }
+
+  void startWebsocket() {
+    _socketChannel = WebSocketChannel.connect(
+      Uri.parse(
+          "${getBackendUrl(protocol: "ws")}/feedback/channel/$_channelId/form/$_formId/subscribe/$userId"),
+    );
+
+    _socketChannel!.stream.listen((event) {
+      var data = jsonDecode(event);
+      if (data["action"] == "FORM_STATUS_CHANGED") {
+        setState(() {
+          _status = data["formStatus"];
+        });
+      }
+      if (data["action"] == "RESULT_ADDED") {
+        setState(() {
+          _results = getTestResults(data["form"]);
+        });
+      }
+    }, onError: (error) {
+      setState(() {
+        _status = "ERROR";
+      });
+    });
   }
 
   List<Map<String, dynamic>> getTestResults(Map<String, dynamic> json) {
