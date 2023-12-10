@@ -40,7 +40,6 @@ class _LoginPageState extends State<LoginPage> {
                 "Content-Type": "application/json",
               },
               body: body);
-      print(response.statusCode);
       if (response.statusCode == 200) {
         var data = jsonDecode(response.body);
         session.userId = data["id"];
