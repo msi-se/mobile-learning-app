@@ -5,34 +5,36 @@ import org.bson.types.ObjectId;
 public class User {
     public ObjectId id;
     public String username;
-    public String hashedPassword;
+    public String password;
 
     public User() {
     }
 
-    public User(String username, String hashedPassword) {
+    public User(String username, String password) {
         this.id = new ObjectId();
         this.username = username;
-        this.hashedPassword = hashedPassword;
+        this.password = password;
     }
 
     public String getUsername() {
         return this.username;
     }
 
-    public String getHashedPassword() {
-        return this.hashedPassword;
+    public String getPassword() {
+        return this.password;
     }
 
     public void setUsername(String username) {
         this.username = username;
     }
 
-    public void setHashedPassword(String hashedPassword) {
-        this.hashedPassword = hashedPassword;
+    public void setPassword(String password) {
+        this.password = password;
     }
 
     public boolean authenticate(String password) {
-        return this.hashedPassword.equals(password);
+        return this.password.equals(password);
     }
+
+
 }
