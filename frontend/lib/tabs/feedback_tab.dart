@@ -1,9 +1,5 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:frontend/components/input_card.dart';
-import 'package:frontend/utils.dart';
-import 'package:http/http.dart' as http;
 
 
 class FeedbackTab extends StatefulWidget {
@@ -24,6 +20,7 @@ class _FeedbackTabState extends State<FeedbackTab> {
   void joinChannel() {
     var code = _joinCodeController.text.replaceAll(' ', '');
     Navigator.pushNamed(context, '/attend-feedback', arguments: code);
+    // Navigator.pushNamed(context, '/feedback-result', arguments: code);
   }
 
   @override

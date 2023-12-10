@@ -23,6 +23,7 @@ class _SliderFeedbackResultState extends State<SliderFeedbackResult> {
   late double _average;
   late int _min;
   late int _max;
+  late int _itemCount;
 
   @override
   void initState() {
@@ -30,6 +31,7 @@ class _SliderFeedbackResultState extends State<SliderFeedbackResult> {
     _average = widget.average;
     _min = widget.min;
     _max = widget.max;
+    _itemCount = _max - _min + 1;
     _updateCounts();
   }
 
@@ -42,7 +44,7 @@ class _SliderFeedbackResultState extends State<SliderFeedbackResult> {
   }
 
   void _updateCounts() {
-    var counts = List.generate(_max - _min + 1, (index) => 0);
+    var counts = List.generate(_itemCount, (index) => 0);
     for (var result in widget.results) {
       if (result >= _min && result <= _max) {
         counts[result]++;
@@ -64,18 +66,18 @@ class _SliderFeedbackResultState extends State<SliderFeedbackResult> {
   @override
   Widget build(BuildContext context) {
     final colors = Theme.of(context).colorScheme;
-    const height = 80.0;
 
     return LayoutBuilder(
         builder: (BuildContext context, BoxConstraints constraints) {
       double width = constraints.maxWidth;
+      double height = width / 4;
       double innerWidth = constraints.maxWidth - height;
 
       return SizedBox(
-        width: width, // Adjust this value to change the width of the box
-        height: height, // Adjust this value to change the height of the box
+        width: width,
+        height: height,
         child: Stack(
-          children: List.generate(_max - _min + 1 + 2, (index) {
+          children: List.generate(_itemCount + 2, (index) {
             // Horizontal line
             if (index == 0) {
               return Positioned(
@@ -91,7 +93,7 @@ class _SliderFeedbackResultState extends State<SliderFeedbackResult> {
               );
             }
             // Average line
-            if (index == _max - _min + 1 + 1) {
+            if (index == _itemCount + 1) {
               return Positioned(
                 left:
                     height / 2 + (_average - _min) * innerWidth / (_max - _min),

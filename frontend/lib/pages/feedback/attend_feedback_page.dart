@@ -81,8 +81,17 @@ class _AttendFeedbackPageState extends State<AttendFeedbackPage> {
           });
         });
 
+        var form = FeedbackForm.fromJson(data);
+        for (var element in form.feedbackElements) {
+          if (element.type == "STARS") {
+            _feedbackValues[element.id] = 3;
+          } else if (element.type == "SLIDER") {
+            _feedbackValues[element.id] = 5;
+          }
+        }
+
         setState(() {
-          _form = FeedbackForm.fromJson(data);
+          _form = form;
           _status = data["status"];
           _loading = false;
         });
@@ -91,7 +100,6 @@ class _AttendFeedbackPageState extends State<AttendFeedbackPage> {
       // TODO: handle error
     }
   }
-
 
   @override
   void dispose() {
@@ -157,7 +165,7 @@ class _AttendFeedbackPageState extends State<AttendFeedbackPage> {
                           textAlign: TextAlign.center),
                       if (element.type == 'STARS')
                         StarFeedback(
-                          rating: 3,
+                          initialRating: _feedbackValues[element.id],
                           onRatingChanged: (newRating) {
                             setState(() {
                               _feedbackValues[element.id] = newRating;
@@ -165,11 +173,13 @@ class _AttendFeedbackPageState extends State<AttendFeedbackPage> {
                           },
                         )
                       else if (element.type == 'SLIDER')
-                        SliderFeedback(onFeedbackChanged: (newFeedback) {
-                          setState(() {
-                            _feedbackValues[element.id] = newFeedback;
-                          });
-                        })
+                        SliderFeedback(
+                            initialFeedback: _feedbackValues[element.id],
+                            onFeedbackChanged: (newFeedback) {
+                              setState(() {
+                                _feedbackValues[element.id] = newFeedback;
+                              });
+                            })
                       else
                         const Text('Unknown element type')
                     ],

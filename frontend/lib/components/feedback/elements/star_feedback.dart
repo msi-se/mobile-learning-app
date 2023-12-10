@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 
 class StarFeedback extends StatefulWidget {
-  final int rating;
+  final int initialRating;
   final ValueChanged<int> onRatingChanged;
 
   const StarFeedback(
-      {super.key, this.rating = 0, required this.onRatingChanged});
+      {super.key, this.initialRating = 0, required this.onRatingChanged});
 
   @override
   State<StarFeedback> createState() => _StarFeedbackState();
@@ -17,7 +17,7 @@ class _StarFeedbackState extends State<StarFeedback> {
   @override
   void initState() {
     super.initState();
-    _rating = widget.rating;
+    _rating = widget.initialRating;
   }
 
   @override
