@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:frontend/components/feedback/preview_feedback.dart';
 import 'package:frontend/components/feedback/elements/slider_feedback_result.dart';
 import 'package:frontend/components/feedback/elements/star_feedback_result.dart';
 import 'package:frontend/global.dart';
@@ -122,26 +123,9 @@ class _FeedbackResultPageState extends State<FeedbackResultPage> {
     final colors = Theme.of(context).colorScheme;
 
     if (_status != "STARTED") {
-      return Scaffold(
-        body: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              const Padding(
-                padding: EdgeInsets.only(left: 20.0, right: 20.0),
-                child: Text(
-                    "Bitte warten Sie bis die Feedbackrunde gestartet wird"),
-              ),
-              Padding(
-                padding: const EdgeInsets.all(20.0),
-                child: LinearProgressIndicator(
-                  valueColor: AlwaysStoppedAnimation<Color>(colors.primary),
-                  backgroundColor: colors.secondary.withAlpha(32),
-                ),
-              ),
-            ],
-          ),
-        ),
+      return FeedbackPreviewComponent(
+        channelId: _channelId,
+        formId: _formId,
       );
     }
 
