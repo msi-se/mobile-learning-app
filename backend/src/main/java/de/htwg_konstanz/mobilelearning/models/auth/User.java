@@ -3,36 +3,76 @@ package de.htwg_konstanz.mobilelearning.models.auth;
 import org.bson.types.ObjectId;
 
 public class User {
-    public ObjectId id;
-    public String username;
-    public String hashedPassword;
+    private ObjectId id;
+	private String email;
+	private boolean isTeacher;
+    private String name;
+    private String username;
 
     public User() {
     }
 
-    public User(String username, String hashedPassword) {
+    public User(String email, String name, String username) {
         this.id = new ObjectId();
+        this.email = email;
+        this.isTeacher = false;
+        this.name = name;
         this.username = username;
-        this.hashedPassword = hashedPassword;
+        try {
+			this.email = email.split(": ")[1];
+			this.name = name.split(": ")[1];
+            this.username = username.split(": ")[1];
+        } catch (Exception e) {
+			;
+		}
+    }
+
+    public String getEmail() {
+        return this.email;
+    }
+
+    public boolean getIsTeacher() {
+        return this.isTeacher;
+    }
+
+    public String getName() {
+        return this.name;
     }
 
     public String getUsername() {
         return this.username;
     }
 
-    public String getHashedPassword() {
-        return this.hashedPassword;
+    public void setEmail(String name) {
+        this.name = name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     public void setUsername(String username) {
         this.username = username;
     }
 
-    public void setHashedPassword(String hashedPassword) {
-        this.hashedPassword = hashedPassword;
-    }
+	public void setTeacher(String id) {
+		if (id == null || id.isBlank()){
+			return;
+        }
+		try {
+			id = id.split(":")[1].trim();
 
-    public boolean authenticate(String password) {
-        return this.hashedPassword.equals(password);
-    }
+			if (id != null && (Integer.valueOf(id) == 121) || (Integer.valueOf(id) == 103)
+					|| (Integer.valueOf(id) == 137)) {
+				isTeacher = true;
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+    @Override
+	public String toString() {
+		return (name + "; " + email + "; isProf=" + isTeacher +" " + username);
+	}
 }

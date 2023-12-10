@@ -51,8 +51,8 @@ public class MockingService {
         feedbackChannelRepository.persist(feedbackChannel1);
 
         // create dummy user
-        User user1 = new User("Johannes", "password1");
-        User user2 = new User("Fabi", "password2");
+        User user1 = new User("Johannes@example.com","Johannes", "jo123joe");
+        User user2 = new User("Fabi@example.com","Fabi", "fa123fae");
 
         // save the user
         userRepository.persist(user1);
