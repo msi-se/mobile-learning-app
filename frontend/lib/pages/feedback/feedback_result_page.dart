@@ -1,25 +1,23 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:frontend/components/feedback/elements/slider_feedback.dart';
 import 'package:frontend/components/feedback/elements/slider_feedback_result.dart';
-import 'package:frontend/components/feedback/elements/star_feedback.dart';
 import 'package:frontend/components/feedback/elements/star_feedback_result.dart';
 import 'package:frontend/models/feedback/feedback_form.dart';
 import 'package:frontend/utils.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 import 'package:http/http.dart' as http;
 
-class AttendFeedbackPage extends StatefulWidget {
+class FeedbackResultPage extends StatefulWidget {
   final String code;
 
-  const AttendFeedbackPage({super.key, required this.code});
+  const FeedbackResultPage({super.key, required this.code});
 
   @override
-  State<AttendFeedbackPage> createState() => _AttendFeedbackPageState();
+  State<FeedbackResultPage> createState() => _FeedbackResultPageState();
 }
 
-class _AttendFeedbackPageState extends State<AttendFeedbackPage> {
+class _FeedbackResultPageState extends State<FeedbackResultPage> {
   bool _loading = true;
 
   late String _channelId;
@@ -30,9 +28,7 @@ class _AttendFeedbackPageState extends State<AttendFeedbackPage> {
   late String _status;
   WebSocketChannel? _socketChannel;
 
-  final Map<String, dynamic> _feedbackValues = {};
-
-  List<int> _testResults = [];
+  late List<List<int>> _resultValues;
 
   @override
   void initState() {
@@ -81,7 +77,7 @@ class _AttendFeedbackPageState extends State<AttendFeedbackPage> {
           }
           if (data["action"] == "RESULT_ADDED") {
             setState(() {
-              _testResults = getTestResults(data["form"]);
+              _resultValues = getTestResults(data["form"]);
             });
           }
         }, onError: (error) {
@@ -92,7 +88,7 @@ class _AttendFeedbackPageState extends State<AttendFeedbackPage> {
 
         setState(() {
           _form = FeedbackForm.fromJson(data);
-          _testResults = getTestResults(data);
+          _resultValues = getTestResults(data);
           _status = data["status"];
           _loading = false;
         });
@@ -102,9 +98,12 @@ class _AttendFeedbackPageState extends State<AttendFeedbackPage> {
     }
   }
 
-  List<int> getTestResults(Map<String, dynamic> json) {
-    List<dynamic> results = json["elements"][1]["results"];
-    return results.map((e) => int.parse(e["value"])).toList();
+  List<List<int>> getTestResults(Map<String, dynamic> json) {
+    List<dynamic> elements = json["elements"];
+    return elements.map((element) {
+      List<dynamic> results = element["results"];
+      return results.map((result) => int.parse(result["value"])).toList();
+    }).toList();
   }
 
   @override
@@ -170,53 +169,18 @@ class _AttendFeedbackPageState extends State<AttendFeedbackPage> {
                           style: const TextStyle(fontSize: 15),
                           textAlign: TextAlign.center),
                       if (element.type == 'STARS')
-                        StarFeedback(
-                          rating: 3,
-                          onRatingChanged: (newRating) {
-                            setState(() {
-                              _feedbackValues[element.id] = newRating;
-                            });
-                          },
-                        )
+                        StarFeedbackResult(results: _resultValues[index])
                       else if (element.type == 'SLIDER')
-                        SliderFeedback(onFeedbackChanged: (newFeedback) {
-                          setState(() {
-                            _feedbackValues[element.id] = newFeedback;
-                          });
-                        })
+                        SliderFeedbackResult(
+                          results: _resultValues[index],
+                          min: 0,
+                          max: 10,
+                        )
                       else
                         const Text('Unknown element type')
                     ],
                   ),
                 );
-              },
-            ),
-            Padding(
-              padding:
-                  const EdgeInsets.only(left: 32.0, right: 32.0, bottom: 32.0),
-              child: SliderFeedbackResult(
-                results: _testResults,
-                min: 0,
-                max: 10,
-              ),
-            ),
-            const Padding(
-              padding: EdgeInsets.only(left: 32.0, right: 32.0, bottom: 32.0),
-              child: StarFeedbackResult(results: [3, 4]),
-            ),
-            ElevatedButton(
-              child: const Text('Senden'),
-              onPressed: () {
-                // Iterate over the feedbackValues Map and send each feedback value to the socket
-                for (var entry in _feedbackValues.entries) {
-                  var message = {
-                    "action": "ADD_RESULT",
-                    "resultElementId": entry.key,
-                    "resultValue": entry.value,
-                    "role": "STUDENT"
-                  };
-                  _socketChannel?.sink.add(jsonEncode(message));
-                }
               },
             ),
           ],

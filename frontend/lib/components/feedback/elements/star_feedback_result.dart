@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 
 class StarFeedbackResult extends StatefulWidget {
-  final double rating;
+  final List<int> results;
 
-  const StarFeedbackResult({super.key, required this.rating});
+  const StarFeedbackResult({super.key, required this.results});
 
   @override
   State<StarFeedbackResult> createState() => _StarFeedbackResultState();
@@ -15,7 +15,20 @@ class _StarFeedbackResultState extends State<StarFeedbackResult> {
   @override
   void initState() {
     super.initState();
-    _rating = widget.rating;
+    _updateRating();
+  }
+
+  @override
+  void didUpdateWidget(StarFeedbackResult oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.results != oldWidget.results) {
+      _updateRating();
+    }
+  }
+
+  void _updateRating() {
+    _rating = widget.results.reduce((curr, next) => curr + next) /
+        widget.results.length;
   }
 
   @override

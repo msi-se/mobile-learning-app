@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/pages/feedback/attend_feedback_page.dart';
 import 'package:frontend/pages/feedback/choose_feedback_page.dart';
+import 'package:frontend/pages/feedback/feedback_result_page.dart';
 import 'package:frontend/pages/feedback/history_feedback_page.dart';
 import 'package:frontend/pages/login_page.dart';
 import 'package:frontend/pages/main_page.dart';
@@ -29,6 +30,13 @@ class MyApp extends StatelessWidget {
             return const MainPage();
           }
           return AttendFeedbackPage(code: code);
+        },
+        '/feedback-result': (context) {
+          var code = ModalRoute.of(context)!.settings.arguments as String?;
+          if (code == null) {
+            return const MainPage();
+          }
+          return FeedbackResultPage(code: code);
         },
         '/history-feedback': (_) => const HistoryFeedbackPage(),
       },
