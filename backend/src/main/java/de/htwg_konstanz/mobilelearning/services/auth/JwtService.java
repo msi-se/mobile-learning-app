@@ -1,6 +1,5 @@
 package de.htwg_konstanz.mobilelearning.services.auth;
 
-import java.util.Arrays;
 import java.util.HashSet;
 
 import org.eclipse.microprofile.jwt.Claims;
@@ -13,17 +12,27 @@ import jakarta.enterprise.context.ApplicationScoped;
 public class JwtService {
 
         public String getToken(User user) {
-            String role;
-            if(user.getIsTeacher()){
-                role = "Teacher";
-            }else{
-                role = "Student";
+
+
+            // evaluate the needed fields for the token
+            if (user == null) {
+                return null;
             }
+            if (user.getName() == null || user.getName().isEmpty()) {
+                return null;
+            }
+            if (user.getEmail() == null || user.getEmail().isEmpty()) {
+                return null;
+            }
+            if (user.getUsername() == null || user.getUsername().isEmpty()) {
+                return null;
+            }
+
             String token =
                 Jwt.claim(Claims.full_name.name(), user.getName())
                         .claim(Claims.email.name(), user.getEmail())
                         .claim(Claims.preferred_username.name(), user.getUsername())
-                        .groups(new HashSet<>(Arrays.asList(role)))
+                        .groups(new HashSet<String>(user.getRolesAsString()))
                         .expiresAt(System.currentTimeMillis() + 172800000L)
                         .sign();
             return token;

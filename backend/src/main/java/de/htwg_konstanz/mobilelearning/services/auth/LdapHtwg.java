@@ -34,8 +34,13 @@ public class LdapHtwg {
         try {
             authContext = new InitialDirContext(environment);
 
-            User user = new User(authContext.getAttributes(dn).get("mail") + "", authContext.getAttributes(dn).get("cn") + "",
-                    authContext.getAttributes(dn).get("uid") + "", "");
+            // create user object
+            User user = new User(
+                authContext.getAttributes(dn).get("mail") + "",
+                authContext.getAttributes(dn).get("cn") + "",
+                authContext.getAttributes(dn).get("uid") + "",
+                ""
+            );
         
             SearchControls controls = new SearchControls();
             controls.setSearchScope(SearchControls.SUBTREE_SCOPE);
@@ -50,8 +55,8 @@ public class LdapHtwg {
             if (results.hasMore()) {
                 SearchResult searchResult = (SearchResult) results.next();
                 Attributes attributes = searchResult.getAttributes();
-                String isTeacher = attributes.get("gidNumber") + "";
-                user.setTeacher(isTeacher);
+                String gidNumber = attributes.get("gidNumber") + "";
+                user.assignProfAndStudentRoleByLdapId(gidNumber);
             }
  
             return user;
