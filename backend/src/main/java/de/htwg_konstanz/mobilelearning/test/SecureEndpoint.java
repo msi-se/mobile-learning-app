@@ -1,5 +1,7 @@
 package de.htwg_konstanz.mobilelearning.test;
 
+import de.htwg_konstanz.mobilelearning.models.auth.UserRole;
+
 import org.eclipse.microprofile.jwt.JsonWebToken;
 
 import io.smallrye.jwt.auth.principal.ParseException;
@@ -33,17 +35,17 @@ public class SecureEndpoint {
 
     @GET
     @Path("roles-allowed")
-    @RolesAllowed({ "Student", "Teacher" })
+    @RolesAllowed({ UserRole.STUDENT })
     @Produces(MediaType.TEXT_PLAIN)
     public String helloRolesAllowed(@Context SecurityContext ctx) throws ParseException {
         return getResponseString(ctx);
     }
 
     @GET
-    @Path("roles-allowed-Teacher")
-    @RolesAllowed("Teacher")
+    @Path("roles-allowed-Prof")
+    @RolesAllowed({ UserRole.PROF })
     @Produces(MediaType.TEXT_PLAIN)
-    public String helloRolesAllowedTeacher(@Context SecurityContext ctx) {
+    public String helloRolesAllowedProf(@Context SecurityContext ctx) {
         return getResponseString(ctx);
     }
 

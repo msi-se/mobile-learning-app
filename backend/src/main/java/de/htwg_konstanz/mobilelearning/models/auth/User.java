@@ -1,15 +1,17 @@
 package de.htwg_konstanz.mobilelearning.models.auth;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.bson.types.ObjectId;
 
 public class User {
-    private ObjectId id;
-	private String email;
-	private boolean isTeacher;
-    private String name;
-    private String username;
-    private String password;
-    
+    public ObjectId id;
+	public String email;
+    public String name;
+    public String username;
+    public String password;
+    public List<String> roles;
 
     public User() {
     }
@@ -17,25 +19,26 @@ public class User {
     public User(String email, String name, String username, String password) {
         this.id = new ObjectId();
         this.email = email;
-        this.isTeacher = false;
         this.name = name;
         this.username = username;
         this.password = password;
-        try {
-			this.email = email.split(": ")[1];
-			this.name = name.split(": ")[1];
-            this.username = username.split(": ")[1];
-        } catch (Exception e) {
-			;
-		}
+        this.roles = new ArrayList<String>();
+
+        // check if email, name and username have ": " in it and if so, only take the part after it
+        if (this.email.contains(": ")) {
+            this.email = this.email.split(": ")[1];
+        }
+        if (this.name.contains(": ")) {
+            this.name = this.name.split(": ")[1];
+        }
+        if (this.username.contains(": ")) {
+            this.username = this.username.split(": ")[1];
+        }
+        System.out.println("User constructed: " + this.toString());
     }
 
     public String getEmail() {
         return this.email;
-    }
-
-    public boolean getIsTeacher() {
-        return this.isTeacher;
     }
 
     public String getName() {
@@ -46,8 +49,8 @@ public class User {
         return this.username;
     }
 
-    public void setEmail(String name) {
-        this.name = name;
+    public void setEmail(String email) {
+        this.email = email;
     }
 
     public void setName(String name) {
@@ -58,7 +61,7 @@ public class User {
         this.username = username;
     }
 
-	public void setTeacher(String id) {
+	public void assignProfAndStudentRoleByLdapId(String id) {
 		if (id == null || id.isBlank()){
 			return;
         }
@@ -67,27 +70,59 @@ public class User {
 
 			if (id != null && (Integer.valueOf(id) == 121) || (Integer.valueOf(id) == 103)
 					|| (Integer.valueOf(id) == 137)) {
-				isTeacher = true;
-			}
+				this.roles.add(UserRole.PROF);
+			} else {
+                this.roles.add(UserRole.STUDENT);
+            }
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
+
+    public Boolean checkIsProf() {
+        return this.roles.contains(UserRole.PROF);
+    }
+
+    public Boolean checkIsStudent() {
+        return this.roles.contains(UserRole.STUDENT);
+    }
+
+    public Boolean checkIsAdmin() {
+        return this.roles.contains(UserRole.ADMIN);
+    }
+
     public void setPassword(String password) {
         this.password = password;
     }
 
     @Override
 	public String toString() {
-		return (name + "; " + email + "; isProf=" + isTeacher +" " + username);
+        return "User [id=" + this.id.toHexString() + ", email=" + this.email + ", name=" + this.name + ", username=" + this.username + ", password="
+                + this.password + ", roles=" + this.roles + "]";
 	}
+
     public boolean authenticate(String password) {
         return this.password.equals(password);
     }
 
     public String getPassword() {
-        return null;
+        return this.password;
     }
 
+    public ObjectId getId() {
+        return this.id;
+    }
+
+    public void setRoles(List<String> roles) {
+        this.roles = roles;
+    }
+
+    public List<String> getRoles() {
+        return this.roles;
+    }
+
+    public void addRole(String role) {
+        this.roles.add(role);
+    }
 
 }

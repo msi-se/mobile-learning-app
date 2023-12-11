@@ -39,6 +39,7 @@ dependencies:
   flutter_svg: ^2.0.9
   web_socket_channel: ^2.4.0
   shared_preferences: ^2.2.2
+  jwt_decoder: ^2.0.1
 
 dev_dependencies:
   flutter_test:
