@@ -65,13 +65,14 @@ class _LoginPageState extends State<LoginPage> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: colors.outlineVariant,
+        toolbarHeight: 5,
       ),
       body: SafeArea(
-        child: Column(
-          children: [
-            Container(
-              color: colors.outlineVariant,
-              child: SingleChildScrollView(
+        child: SingleChildScrollView(
+          child: Column(
+            children: [
+              Container(
+                color: colors.outlineVariant,
                 child: Column(
                   children: [
                     Container(
@@ -99,10 +100,8 @@ class _LoginPageState extends State<LoginPage> {
                   ],
                 ),
               ),
-            ),
-            Container(
-              color: colors.surface,
-              child: SingleChildScrollView(
+              Container(
+                color: colors.surface,
                 child: Column(
                   children: [
                     // Username TextField
@@ -112,7 +111,7 @@ class _LoginPageState extends State<LoginPage> {
                       child: const Row(
                         mainAxisAlignment: MainAxisAlignment.start,
                         children: [
-                          Text('Your E-Mail',
+                          Text('Benutzername',
                               style: TextStyle(
                                 fontSize: 15,
                                 color: Colors.grey,
@@ -123,7 +122,7 @@ class _LoginPageState extends State<LoginPage> {
                     ),
                     MyTextField(
                         controller: usernameController,
-                        hintText: 'Max.Mustermann@htwg-konstanz.de',
+                        hintText: 'Max.Mustermann',
                         obscureText: false),
 
                     // Password TextField
@@ -133,7 +132,7 @@ class _LoginPageState extends State<LoginPage> {
                       child: const Row(
                         mainAxisAlignment: MainAxisAlignment.start,
                         children: [
-                          Text('Your Password',
+                          Text('Passwort',
                               style: TextStyle(
                                 fontSize: 15,
                                 color: Colors.grey,
@@ -157,8 +156,8 @@ class _LoginPageState extends State<LoginPage> {
                   ],
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

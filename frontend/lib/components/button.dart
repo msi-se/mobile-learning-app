@@ -11,7 +11,8 @@ class SubmitButton extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        padding: const EdgeInsets.all(25),
+        height: 60,
+        padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 5),
         margin: const EdgeInsets.symmetric(horizontal: 20),
         decoration: BoxDecoration(
           color: colors.primary,
