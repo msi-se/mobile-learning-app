@@ -47,8 +47,6 @@ class _LoginPageState extends State<LoginPage> {
         var jwt = JwtDecoder.decode(response.body);
         var userId = jwt["sub"];
         var username = jwt["preferred_username"];
-        print(userId);
-        print(username);
         await setSession(Session(userId: userId, username: username));
         if (!mounted) return;
         Navigator.pushReplacementNamed(context, '/main');
