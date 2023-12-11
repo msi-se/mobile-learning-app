@@ -35,7 +35,7 @@ public class LdapHtwg {
             authContext = new InitialDirContext(environment);
 
             User user = new User(authContext.getAttributes(dn).get("mail") + "", authContext.getAttributes(dn).get("cn") + "",
-                    authContext.getAttributes(dn).get("uid") + "");
+                    authContext.getAttributes(dn).get("uid") + "", "");
         
             SearchControls controls = new SearchControls();
             controls.setSearchScope(SearchControls.SUBTREE_SCOPE);

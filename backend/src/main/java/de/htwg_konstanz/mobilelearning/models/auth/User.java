@@ -8,16 +8,19 @@ public class User {
 	private boolean isTeacher;
     private String name;
     private String username;
+    private String password;
+    
 
     public User() {
     }
 
-    public User(String email, String name, String username) {
+    public User(String email, String name, String username, String password) {
         this.id = new ObjectId();
         this.email = email;
         this.isTeacher = false;
         this.name = name;
         this.username = username;
+        this.password = password;
         try {
 			this.email = email.split(": ")[1];
 			this.name = name.split(": ")[1];
@@ -80,6 +83,10 @@ public class User {
 	}
     public boolean authenticate(String password) {
         return this.password.equals(password);
+    }
+
+    public String getPassword() {
+        return null;
     }
 
 

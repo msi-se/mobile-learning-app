@@ -121,8 +121,8 @@ public class MockingService {
         feedbackChannelRepository.persist(feedbackChannelCloud);
 
         // create dummy user
-        User user1 = new User("Johannes@example.com","Johannes", "jo123joe");
-        User user2 = new User("Fabi@example.com","Fabi", "fa123fae");
+        User user1 = new User("Johannes@example.com","Johannes", "jo123joe", "");
+        User user2 = new User("Fabi@example.com","Fabi", "fa123fae", "");
 
         // save the user
         userRepository.persist(user1);

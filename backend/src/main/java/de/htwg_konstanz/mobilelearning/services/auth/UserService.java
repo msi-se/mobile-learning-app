@@ -1,14 +1,12 @@
 package de.htwg_konstanz.mobilelearning.services.auth;
 
 import org.bson.types.ObjectId;
-import org.jboss.resteasy.reactive.RestPath;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
 import de.htwg_konstanz.mobilelearning.helper.ObjectIdTypeAdapter;
 import de.htwg_konstanz.mobilelearning.models.auth.User;
-import de.htwg_konstanz.mobilelearning.models.feedback.FeedbackForm;
 import de.htwg_konstanz.mobilelearning.repositories.UserRepository;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.POST;
@@ -34,7 +32,7 @@ public class UserService {
         User existingUser = userRepository.findByUsername(user.getUsername());
 
         if (existingUser == null) {
-            user = new User(user.getUsername(), user.getPassword());
+            user = new User(user.getEmail(), user.getName(), user.getUsername(), user.getPassword());
             userRepository.persist(user);
         } else {
 
