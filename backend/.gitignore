@@ -18,6 +18,10 @@ bin/
 *.iml
 *.iws
 
+#Keys
+publicKey.pem
+privateKey.pem
+
 # NetBeans
 nb-configuration.xml
 
