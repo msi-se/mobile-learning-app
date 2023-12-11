@@ -40,28 +40,6 @@ public class FeedbackChannelService {
         return feedbackChannels;
     }
 
-    @GET
-    @Produces(MediaType.APPLICATION_JSON)
-    @Path("/demoendpoint/deleteall")
-    public String deleteAllFeedbackChannels() {
-        feedbackChannelRepository.deleteAll();
-        return "All FeedbackChannels deleted";
-    }
-
-    @GET
-    @Produces(MediaType.APPLICATION_JSON)
-    @Path("/demoendpoint/insertmockdata")
-    public List<FeedbackChannel> insertMockData() {
-        feedbackChannelRepository.deleteAll();
-        FeedbackChannel feedbackChannel = new FeedbackChannel("FeedbackChannel1", "Description1", null);
-        feedbackChannelRepository.persist(feedbackChannel);
-        feedbackChannel = new FeedbackChannel("FeedbackChannel2", "Description2", null);
-        feedbackChannelRepository.persist(feedbackChannel);
-        feedbackChannel = new FeedbackChannel("FeedbackChannel3", "Description3", null);
-        feedbackChannelRepository.persist(feedbackChannel);
-        return feedbackChannelRepository.listAll();
-    }
-
     @PUT
     @Produces(MediaType.APPLICATION_JSON)
     @Path("/{channelId}")

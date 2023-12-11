@@ -70,9 +70,17 @@ public class User {
 			e.printStackTrace();
 		}
 	}
+    public void setPassword(String password) {
+        this.password = password;
+    }
 
     @Override
 	public String toString() {
 		return (name + "; " + email + "; isProf=" + isTeacher +" " + username);
 	}
+    public boolean authenticate(String password) {
+        return this.password.equals(password);
+    }
+
+
 }
