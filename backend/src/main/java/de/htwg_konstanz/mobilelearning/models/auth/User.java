@@ -11,7 +11,7 @@ public class User {
     public String name;
     public String username;
     public String password;
-    public List<UserRole> roles;
+    public List<String> roles;
 
     public User() {
     }
@@ -22,7 +22,7 @@ public class User {
         this.name = name;
         this.username = username;
         this.password = password;
-        this.roles = new ArrayList<UserRole>();
+        this.roles = new ArrayList<String>();
 
         // check if email, name and username have ": " in it and if so, only take the part after it
         if (this.email.contains(": ")) {
@@ -113,21 +113,12 @@ public class User {
         return this.id;
     }
 
-    public void setRoles(List<UserRole> roles) {
+    public void setRoles(List<String> roles) {
         this.roles = roles;
     }
 
-    public List<UserRole> getRoles() {
+    public List<String> getRoles() {
         return this.roles;
     }
-
-    public List<String> getRolesAsString() {
-        List<String> rolesAsString = new ArrayList<String>();
-        for (UserRole role : this.roles) {
-            rolesAsString.add(role.toString());
-        }
-        return rolesAsString;
-    }
-
 
 }

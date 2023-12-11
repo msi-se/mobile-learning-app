@@ -32,7 +32,7 @@ public class JwtService {
                 Jwt.claim(Claims.full_name.name(), user.getName())
                         .claim(Claims.email.name(), user.getEmail())
                         .claim(Claims.preferred_username.name(), user.getUsername())
-                        .groups(new HashSet<String>(user.getRolesAsString()))
+                        .groups(new HashSet<String>(user.getRoles()))
                         .expiresAt(System.currentTimeMillis() + 172800000L)
                         .sign();
             return token;
