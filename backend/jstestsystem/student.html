@@ -13,9 +13,9 @@
 
 <script>
 
-const channelId = "65721e1303a29768d66c17e5";
-const formId = "65721e1303a29768d66c17e4";
-const studentUserId = "65721e1303a29768d66c17e7";
+const channelId = "657623aec157be6e8437e7cb";
+const formId = "657623aec157be6e8437e7cc";
+const studentUserId = "657623d7c157be6e8437e7cf";
 
 let webSocket = new WebSocket(`ws://localhost:8080/feedback/channel/${channelId}/form/${formId}/subscribe/${studentUserId}`);
 
@@ -61,17 +61,17 @@ fetch(`http://localhost:8080/feedback/channel/${channelId}/form/${formId}`)
                 input = document.createElement("input");
                 input.type = "range";
                 input.min = "0";
-                input.max = "100";
-                input.value = "1";
+                input.max = "10";
+                input.value = "0";
                 input.step = "1";
             }
             if (element.type === "STARS") {
                 input = document.createElement("input");
                 input.type = "range";
-                input.min = "0";
+                input.min = "1";
                 input.max = "5";
-                input.value = "0";
-                input.step = "0.5";
+                input.value = "1";
+                input.step = "1";
             }
             if (element.type === "FULLTEXT") {
                 input = document.createElement("input");

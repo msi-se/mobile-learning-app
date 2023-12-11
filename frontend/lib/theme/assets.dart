@@ -1,3 +1,5 @@
+const String htwgLogo = 'assets/logo/HTWG.png';
+
 //Background assets
 const String onboardingLight = 'assets/backgrounds/onboarding-light.svg';
 const String onboardingDark = 'assets/backgrounds/onboarding-dark.svg';

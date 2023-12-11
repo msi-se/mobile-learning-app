@@ -15,7 +15,7 @@ class _MainPageState extends State<MainPage> {
   @override
   void initState() {
     super.initState();
-    
+
     setState(() {
       _tabIndex = 0;
     });
@@ -23,35 +23,47 @@ class _MainPageState extends State<MainPage> {
 
   @override
   Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
+
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: const Text("Mobile App"),
+        backgroundColor: Theme.of(context).colorScheme.primary,
+        title: const Text(
+          "Mobile App", 
+          style: TextStyle(
+            color: Colors.white, 
+            fontWeight: FontWeight.bold
+          )
+        ),
       ),
       body: SafeArea(
         child: <Widget>[
-          const HomeTab(title: "Home"),
+          const HomeTab(title: "HTWG App"),
           const FeedbackTab(),
         ][_tabIndex],
       ),
       bottomNavigationBar: NavigationBar(
-        destinations: const [
-          NavigationDestination(
-            icon: Icon(Icons.home),
-            label: 'Home',
-          ),
-          NavigationDestination(
-            icon: Icon(Icons.map),
-            label: 'Feedback',
-          ),
-        ],
-        onDestinationSelected: (index) {
-          setState(() {
-            _tabIndex = index;
-          });
-        },
-        selectedIndex: _tabIndex),
-
+          destinations: [
+            NavigationDestination(
+              icon: Icon(Icons.home, color: colors.secondary),
+              label: 'Home',
+            ),
+            NavigationDestination(
+              icon: Icon(Icons.feedback, color: colors.secondary),
+              label: 'Feedback',
+            ),
+            NavigationDestination(
+              enabled: false,
+              icon: Icon(Icons.quiz, color: colors.secondary.withAlpha(64)),
+              label: 'Quiz',
+            ),
+          ],
+          onDestinationSelected: (index) {
+            setState(() {
+              _tabIndex = index;
+            });
+          },
+          selectedIndex: _tabIndex),
     );
   }
 }
