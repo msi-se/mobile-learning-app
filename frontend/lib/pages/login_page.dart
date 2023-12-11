@@ -18,14 +18,15 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage> {
   final usernameController = TextEditingController();
   final passwordController = TextEditingController();
+  bool _isLoading = false;
 
   @override
   void initState() {
     super.initState();
-    checkLoggenIn();
+    checkLoggedIn();
   }
 
-  Future checkLoggenIn() async {
+  Future checkLoggedIn() async {
     if (getSession() != null && mounted) {
       Navigator.pushReplacementNamed(context, '/main');
     }
@@ -51,7 +52,23 @@ class _LoginPageState extends State<LoginPage> {
         if (!mounted) return;
         Navigator.pushReplacementNamed(context, '/main');
       } else {
-        // TODO: wrong credentials
+        if (!mounted) return;
+        showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: const Text('Falsche Anmeldeinformationen'),
+              actions: <Widget>[
+                TextButton(
+                  child: const Text('Schließen'),
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                ),
+              ],
+            );
+          },
+        );
       }
     } on http.ClientException catch (_) {
       // TODO: handle error
@@ -148,11 +165,20 @@ class _LoginPageState extends State<LoginPage> {
                     const SizedBox(height: 10),
 
                     // Submit Button
-                    SubmitButton(
-                      onTap: () {
-                        signUserIn(context);
-                      },
-                    ),
+                    if (_isLoading)
+                      const CircularProgressIndicator()
+                    else
+                      SubmitButton(
+                        onTap: () async {
+                          setState(() {
+                            _isLoading = true;
+                          });
+                          await signUserIn(context);
+                          setState(() {
+                            _isLoading = false;
+                          });
+                        },
+                      ),
                   ],
                 ),
               ),
