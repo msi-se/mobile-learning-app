@@ -1,13 +1,12 @@
 package de.htwg_konstanz.mobilelearning.test;
 
-import jakarta.annotation.security.DenyAll;
-import jakarta.annotation.security.RolesAllowed;
-import jakarta.enterprise.context.RequestScoped;
-import org.eclipse.microprofile.jwt.Claim;
-import org.eclipse.microprofile.jwt.Claims;
 import org.eclipse.microprofile.jwt.JsonWebToken;
 
+import io.smallrye.jwt.auth.principal.ParseException;
+import jakarta.annotation.security.DenyAll;
 import jakarta.annotation.security.PermitAll;
+import jakarta.annotation.security.RolesAllowed;
+import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.InternalServerErrorException;
@@ -23,9 +22,6 @@ public class SecureEndpoint {
 
     @Inject
     JsonWebToken jwt;
-    @Inject
-    @Claim(standard = Claims.birthdate)
-    String birthdate;
 
     @GET
     @Path("permit-all")
@@ -37,18 +33,18 @@ public class SecureEndpoint {
 
     @GET
     @Path("roles-allowed")
-    @RolesAllowed({ "User", "Admin" })
+    @RolesAllowed({ "Student", "Teacher" })
     @Produces(MediaType.TEXT_PLAIN)
-    public String helloRolesAllowed(@Context SecurityContext ctx) {
-        return getResponseString(ctx) + ", birthdate: " + jwt.getClaim("birthdate").toString();
+    public String helloRolesAllowed(@Context SecurityContext ctx) throws ParseException {
+        return getResponseString(ctx);
     }
 
     @GET
-    @Path("roles-allowed-admin")
-    @RolesAllowed("Admin")
+    @Path("roles-allowed-Teacher")
+    @RolesAllowed("Teacher")
     @Produces(MediaType.TEXT_PLAIN)
-    public String helloRolesAllowedAdmin(@Context SecurityContext ctx) {
-        return getResponseString(ctx) + ", birthdate: " + birthdate;
+    public String helloRolesAllowedTeacher(@Context SecurityContext ctx) {
+        return getResponseString(ctx);
     }
 
     @GET
