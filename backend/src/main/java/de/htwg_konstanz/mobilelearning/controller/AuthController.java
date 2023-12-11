@@ -5,13 +5,18 @@ import java.util.Base64;
 import org.jboss.resteasy.reactive.RestHeader;
 
 import de.htwg_konstanz.mobilelearning.models.auth.User;
+import de.htwg_konstanz.mobilelearning.services.auth.JwtService;
 import de.htwg_konstanz.mobilelearning.services.auth.LdapHtwg;
+import jakarta.inject.Inject;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.core.Response;
 
 @Path("/auth")
 public class AuthController {
+
+    @Inject
+    JwtService JwtService;
 
     @GET
     public Response auth(@RestHeader("Authorization") String authorization) throws Exception {
@@ -24,7 +29,7 @@ public class AuthController {
 
             LdapHtwg ldapUser = new LdapHtwg();
             User user = ldapUser.doLogin(username, password);
-            return Response.ok(user).build();
+            return Response.ok(JwtService.getToken(user)).build();
         } catch (Exception e) {
             return Response.status(Response.Status.UNAUTHORIZED).build();
         }
