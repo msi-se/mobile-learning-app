@@ -58,7 +58,8 @@ public class UserService {
         }
 
         // check if user exists in db
-        User existingUser = userRepository.findByUsername(userFromLdap.getUsername());
+        String usernameFromLdap = userFromLdap.getUsername();
+        User existingUser = userRepository.findByUsername(usernameFromLdap);
         System.out.println("Existing user: " + existingUser);
         User user = null;
 

@@ -6,12 +6,12 @@ import java.util.List;
 import org.bson.types.ObjectId;
 
 public class User {
-    private ObjectId id;
-	private String email;
-    private String name;
-    private String username;
-    private String password;
-    private List<UserRole> roles;
+    public ObjectId id;
+	public String email;
+    public String name;
+    public String username;
+    public String password;
+    public List<UserRole> roles;
 
     public User() {
     }
@@ -34,6 +34,7 @@ public class User {
         if (this.username.contains(": ")) {
             this.username = this.username.split(": ")[1];
         }
+        System.out.println("User constructed: " + this.toString());
     }
 
     public String getEmail() {
@@ -48,8 +49,8 @@ public class User {
         return this.username;
     }
 
-    public void setEmail(String name) {
-        this.name = name;
+    public void setEmail(String email) {
+        this.email = email;
     }
 
     public void setName(String name) {
@@ -96,7 +97,8 @@ public class User {
 
     @Override
 	public String toString() {
-        return "User [email=" + email + ", name=" + name + ", username=" + username + ", password=" + password + ", roles=" + roles + "]";
+        return "User [id=" + this.id.toHexString() + ", email=" + this.email + ", name=" + this.name + ", username=" + this.username + ", password="
+                + this.password + ", roles=" + this.roles + "]";
 	}
 
     public boolean authenticate(String password) {
