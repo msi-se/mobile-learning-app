@@ -21,6 +21,9 @@ public class JwtService {
             if (user.getName() == null || user.getName().isEmpty()) {
                 return null;
             }
+            if (user.getId() == null) {
+                return null;
+            }
             if (user.getEmail() == null || user.getEmail().isEmpty()) {
                 return null;
             }
@@ -29,12 +32,14 @@ public class JwtService {
             }
 
             String token =
-                Jwt.claim(Claims.full_name.name(), user.getName())
-                        .claim(Claims.email.name(), user.getEmail())
-                        .claim(Claims.preferred_username.name(), user.getUsername())
-                        .groups(new HashSet<String>(user.getRoles()))
-                        .expiresAt(System.currentTimeMillis() + 172800000L)
-                        .sign();
+                Jwt
+                    .claim(Claims.full_name.name(), user.getName())
+                    .claim(Claims.sub.name(), user.getId().toString())
+                    .claim(Claims.email.name(), user.getEmail())
+                    .claim(Claims.preferred_username.name(), user.getUsername())
+                    .groups(new HashSet<String>(user.getRoles()))
+                    .expiresAt(System.currentTimeMillis() + 172800000L)
+                    .sign();
             return token;
     }    
 }

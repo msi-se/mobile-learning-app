@@ -8,6 +8,7 @@ import com.google.gson.GsonBuilder;
 
 import de.htwg_konstanz.mobilelearning.helper.ObjectIdTypeAdapter;
 import de.htwg_konstanz.mobilelearning.models.auth.User;
+import de.htwg_konstanz.mobilelearning.models.auth.UserRole;
 import de.htwg_konstanz.mobilelearning.repositories.UserRepository;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.POST;
@@ -38,9 +39,36 @@ public class UserService {
         String encodedString = authorization.split(" ")[1];
         byte[] decodedBytes = java.util.Base64.getDecoder().decode(encodedString);
         String decodedString = new String(decodedBytes);
-        String username = decodedString.split(":")[0];
-        String password = decodedString.split(":")[1];
+        String username = "";
+        String password = "";
+        try { username = decodedString.split(":")[0]; } catch (Exception e) {}
+        try { password = decodedString.split(":")[1]; } catch (Exception e) {}
         User userFromLdap = null;
+
+        // TEMP: bypass ldap (student, prof, admin as username)
+        if (username.equals("Student") || username.equals("Prof") || username.equals("Admin")) {
+            User newUser = new User(
+                username + "@htwg-konstanz.de",
+                "Test" + username,
+                username,
+                password
+            );
+
+            if (username.equals("Student")) {
+                newUser.addRole(UserRole.STUDENT);
+            } else if (username.equals("Prof")) {
+                newUser.addRole(UserRole.PROF);
+            } else if (username.equals("Admin")) {
+                newUser.addRole(UserRole.ADMIN);
+            }
+
+            userRepository.persist(newUser);
+            String json = JwtService.getToken(newUser);
+            if (json == null) {
+                return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
+            }
+            return Response.ok(json).build();
+        }
 
         try {
             // fetch user from ldap

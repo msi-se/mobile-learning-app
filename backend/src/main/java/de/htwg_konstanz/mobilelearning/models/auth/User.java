@@ -121,4 +121,8 @@ public class User {
         return this.roles;
     }
 
+    public void addRole(String role) {
+        this.roles.add(role);
+    }
+
 }
