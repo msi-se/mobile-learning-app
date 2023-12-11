@@ -1,19 +1,17 @@
-package de.htwg_konstanz.mobilelearning.controller;
+package de.htwg_konstanz.mobilelearning.services.auth;
 
 import java.util.Base64;
 
 import org.jboss.resteasy.reactive.RestHeader;
 
 import de.htwg_konstanz.mobilelearning.models.auth.User;
-import de.htwg_konstanz.mobilelearning.services.auth.JwtService;
-import de.htwg_konstanz.mobilelearning.services.auth.LdapHtwg;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.core.Response;
 
 @Path("/auth")
-public class AuthController {
+public class AuthService {
 
     @Inject
     JwtService JwtService;
