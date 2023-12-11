@@ -65,98 +65,100 @@ class _LoginPageState extends State<LoginPage> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: colors.outlineVariant,
-        toolbarHeight: 5,
+        toolbarHeight: 0,
       ),
       body: SafeArea(
-        child: SingleChildScrollView(
-          child: Column(
-            children: [
-              Container(
-                color: colors.outlineVariant,
-                child: Column(
-                  children: [
-                    Container(
-                      margin: const EdgeInsets.all(20.0),
-                      child: Image.asset(
-                        'assets/logo/HTWG_extended.png',
-                        height: 100.0,
+        child: Expanded(
+          child: SingleChildScrollView(
+            child: Column(
+              children: [
+                Container(
+                  color: colors.outlineVariant,
+                  child: Column(
+                    children: [
+                      Container(
+                        margin: const EdgeInsets.all(20.0),
+                        child: Image.asset(
+                          'assets/logo/HTWG_extended.png',
+                          height: 100.0,
+                        ),
                       ),
-                    ),
-                    // Login Text
-                    Container(
-                      margin: const EdgeInsets.all(18.0),
-                      child: const Row(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: [
-                          Text('Log In',
-                              style: TextStyle(
-                                  fontSize: 40,
-                                  color: Colors.black,
-                                  fontWeight: FontWeight.bold),
-                              textAlign: TextAlign.left),
-                        ],
+                      // Login Text
+                      Container(
+                        margin: const EdgeInsets.all(18.0),
+                        child: const Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            Text('Log In',
+                                style: TextStyle(
+                                    fontSize: 40,
+                                    color: Colors.black,
+                                    fontWeight: FontWeight.bold),
+                                textAlign: TextAlign.left),
+                          ],
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
-              ),
-              Container(
-                color: colors.surface,
-                child: Column(
-                  children: [
-                    // Username TextField
-                    Container(
-                      padding: const EdgeInsets.only(top: 10),
-                      margin: const EdgeInsets.symmetric(horizontal: 20),
-                      child: const Row(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: [
-                          Text('Benutzername',
-                              style: TextStyle(
-                                fontSize: 15,
-                                color: Colors.grey,
-                              ),
-                              textAlign: TextAlign.left),
-                        ],
+                Container(
+                  color: colors.surface,
+                  child: Column(
+                    children: [
+                      // Username TextField
+                      Container(
+                        padding: const EdgeInsets.only(top: 10),
+                        margin: const EdgeInsets.symmetric(horizontal: 20),
+                        child: const Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            Text('Benutzername',
+                                style: TextStyle(
+                                  fontSize: 15,
+                                  color: Colors.grey,
+                                ),
+                                textAlign: TextAlign.left),
+                          ],
+                        ),
                       ),
-                    ),
-                    MyTextField(
-                        controller: usernameController,
-                        hintText: 'Max.Mustermann',
-                        obscureText: false),
+                      MyTextField(
+                          controller: usernameController,
+                          hintText: 'Max.Mustermann',
+                          obscureText: false),
 
-                    // Password TextField
-                    Container(
-                      padding: const EdgeInsets.only(top: 10),
-                      margin: const EdgeInsets.symmetric(horizontal: 20),
-                      child: const Row(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: [
-                          Text('Passwort',
-                              style: TextStyle(
-                                fontSize: 15,
-                                color: Colors.grey,
-                              ),
-                              textAlign: TextAlign.left),
-                        ],
+                      // Password TextField
+                      Container(
+                        padding: const EdgeInsets.only(top: 10),
+                        margin: const EdgeInsets.symmetric(horizontal: 20),
+                        child: const Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            Text('Passwort',
+                                style: TextStyle(
+                                  fontSize: 15,
+                                  color: Colors.grey,
+                                ),
+                                textAlign: TextAlign.left),
+                          ],
+                        ),
                       ),
-                    ),
-                    MyTextField(
-                        controller: passwordController,
-                        hintText: '***********',
-                        obscureText: true),
-                    const SizedBox(height: 10),
+                      MyTextField(
+                          controller: passwordController,
+                          hintText: '***********',
+                          obscureText: true),
+                      const SizedBox(height: 10),
 
-                    // Submit Button
-                    SubmitButton(
-                      onTap: () {
-                        signUserIn(context);
-                      },
-                    ),
-                  ],
+                      // Submit Button
+                      SubmitButton(
+                        onTap: () {
+                          signUserIn(context);
+                        },
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),
