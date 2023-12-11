@@ -47,6 +47,19 @@ public class UserService {
 
         // TEMP: bypass ldap (student, prof, admin as username)
         if (username.equals("Student") || username.equals("Prof") || username.equals("Admin")) {
+
+            // check if user exists in db
+            User existingUser = userRepository.findByUsername(username);
+            if (existingUser != null) {
+                // return jwt token
+                String json = JwtService.getToken(existingUser);
+                if (json == null) {
+                    return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
+                }
+                System.out.println("User exists: " + existingUser.getId().toString());
+                return Response.ok(json).build();
+            }
+
             User newUser = new User(
                 username + "@htwg-konstanz.de",
                 "Test" + username,
