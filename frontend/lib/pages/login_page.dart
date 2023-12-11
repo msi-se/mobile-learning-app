@@ -63,6 +63,9 @@ class _LoginPageState extends State<LoginPage> {
     final colors = Theme.of(context).colorScheme;
 
     return Scaffold(
+      appBar: AppBar(
+        backgroundColor: colors.outlineVariant,
+      ),
       body: SafeArea(
         child: Column(
           children: [
@@ -80,7 +83,7 @@ class _LoginPageState extends State<LoginPage> {
                     ),
                     // Login Text
                     Container(
-                      margin: const EdgeInsets.all(30.0),
+                      margin: const EdgeInsets.all(18.0),
                       child: const Row(
                         mainAxisAlignment: MainAxisAlignment.start,
                         children: [
@@ -104,8 +107,8 @@ class _LoginPageState extends State<LoginPage> {
                   children: [
                     // Username TextField
                     Container(
-                      margin:
-                          const EdgeInsets.only(left: 5, top: 15, bottom: 5),
+                      padding: const EdgeInsets.only(top: 10),
+                      margin: const EdgeInsets.symmetric(horizontal: 20),
                       child: const Row(
                         mainAxisAlignment: MainAxisAlignment.start,
                         children: [
@@ -125,7 +128,8 @@ class _LoginPageState extends State<LoginPage> {
 
                     // Password TextField
                     Container(
-                      margin: const EdgeInsets.all(5.0),
+                      padding: const EdgeInsets.only(top: 10),
+                      margin: const EdgeInsets.symmetric(horizontal: 20),
                       child: const Row(
                         mainAxisAlignment: MainAxisAlignment.start,
                         children: [
