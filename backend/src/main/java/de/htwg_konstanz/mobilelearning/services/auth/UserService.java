@@ -1,12 +1,7 @@
 package de.htwg_konstanz.mobilelearning.services.auth;
 
-import org.bson.types.ObjectId;
 import org.jboss.resteasy.reactive.RestHeader;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-
-import de.htwg_konstanz.mobilelearning.helper.ObjectIdTypeAdapter;
 import de.htwg_konstanz.mobilelearning.models.auth.User;
 import de.htwg_konstanz.mobilelearning.models.auth.UserRole;
 import de.htwg_konstanz.mobilelearning.repositories.UserRepository;
