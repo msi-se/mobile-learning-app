@@ -40,36 +40,56 @@ public class MockingService {
             "Verständlichkeit",
             "Wie verständlich war das Thema Kombinatorik?",
             FeedbackElementType.STARS,
+            null,
             null
         );
         FeedbackElement feedbackElement2 = new FeedbackElement(
             "Kurzweiligkeit",
             "Wie kurzweilig war die Vorlesung? (links = langweilig, rechts = kurzweilig)",
             FeedbackElementType.SLIDER,
+            null,
             null
         );
         FeedbackElement feedbackElement3 = new FeedbackElement(
             "Praxisbezug",
             "Wie bewerten Sie den Praxisbezug der Vorlesung? (links = wenig Praxisbezug, rechts = viel Praxisbezug)",
             FeedbackElementType.SLIDER,
+            null,
             null
         );
         FeedbackElement feedbackElement4 = new FeedbackElement(
             "Sprachbarriere",
             "Die Vorlesung wurde auf Englisch gehalten. Wie fanden Sie die Verständlichkeit?",
             FeedbackElementType.SLIDER,
+            null,
             null
         );
         FeedbackElement feedbackElement5 = new FeedbackElement(
             "Prüfungsvorbereitung",
             "Wenn jetzt direkt die Prüfung wäre, wie gut fühlen Sie sich vorbereitet?",
             FeedbackElementType.STARS,
+            null,
             null
         );
         FeedbackElement feedbackElement6 = new FeedbackElement(
             "Technische Mittel",
             "Wie bewerten Sie die technischen Mittel, die in der Vorlesung verwendet wurden?",
             FeedbackElementType.STARS,
+            null,
+            null
+        );
+        FeedbackElement feedbackElement7 = new FeedbackElement(
+            "Schwierigstes Thema",
+            "Welches Thema war für Sie am schwierigsten?",
+            FeedbackElementType.SINGLE_CHOICE,
+            List.of("Kombinatorik", "Graphen", "Relationen", "Formale Sprachen", "Endliche Automaten", "Turingmaschinen", "Berechenbarkeit"),
+            null
+        );
+        FeedbackElement feedbackElement8 = new FeedbackElement(
+            "Schwierigstes Thema",
+            "Welches Thema war für Sie am schwierigsten?",
+            FeedbackElementType.SINGLE_CHOICE,
+            List.of("Multitenancy", "Microservices", "Cloud Foundry", "Docker", "Kubernetes", "Cloud Native", "Cloud Native Buildpacks"),
             null
         );
 
@@ -94,7 +114,7 @@ public class MockingService {
             feedbackChannelDimaId,
             "Kombinatorik",
             "Dies ist das Feedback zum Thema Kombinatorik",
-            List.of(feedbackElement1, feedbackElement2, feedbackElement3, feedbackElement4, feedbackElement5, feedbackElement6),
+            List.of(feedbackElement1, feedbackElement2, feedbackElement3, feedbackElement4, feedbackElement5, feedbackElement6, feedbackElement7),
             FeedbackChannelStatus.NOT_STARTED
         );
         feedbackChannelDima.addFeedbackForm(feedbackForm2);
@@ -110,7 +130,7 @@ public class MockingService {
             feedbackChannelCloudId,
             "1. Monat im neuen Semester",
             "Dies ist das Feedback für den 1. Monat im neuen Semester",
-            List.of(feedbackElement2, feedbackElement4, feedbackElement5),
+            List.of(feedbackElement2, feedbackElement4, feedbackElement5, feedbackElement8),
             FeedbackChannelStatus.NOT_STARTED
         );
         feedbackChannelCloud.addFeedbackForm(feedbackForm4);

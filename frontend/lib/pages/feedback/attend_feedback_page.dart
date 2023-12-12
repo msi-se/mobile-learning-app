@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:frontend/components/feedback/elements/single_choice_feedback.dart';
 import 'package:frontend/components/feedback/elements/slider_feedback.dart';
 import 'package:frontend/components/feedback/elements/star_feedback.dart';
 import 'package:frontend/global.dart';
@@ -89,6 +90,8 @@ class _AttendFeedbackPageState extends State<AttendFeedbackPage> {
             _feedbackValues[element.id] = 3;
           } else if (element.type == "SLIDER") {
             _feedbackValues[element.id] = 5;
+          } else if (element.type == "SINGLE_CHOICE") {
+            _feedbackValues[element.id] = 0;
           }
         }
 
@@ -182,6 +185,15 @@ class _AttendFeedbackPageState extends State<AttendFeedbackPage> {
                         )
                       else if (element.type == 'SLIDER')
                         SliderFeedback(
+                            initialFeedback: _feedbackValues[element.id],
+                            onFeedbackChanged: (newFeedback) {
+                              setState(() {
+                                _feedbackValues[element.id] = newFeedback;
+                              });
+                            })
+                      else if (element.type == 'SINGLE_CHOICE')
+                        SingleChoiceFeedback(
+                            options: element.options,
                             initialFeedback: _feedbackValues[element.id],
                             onFeedbackChanged: (newFeedback) {
                               setState(() {

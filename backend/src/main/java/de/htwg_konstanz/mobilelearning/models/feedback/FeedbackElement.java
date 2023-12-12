@@ -1,5 +1,6 @@
 package de.htwg_konstanz.mobilelearning.models.feedback;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.bson.types.ObjectId;
@@ -12,24 +13,27 @@ public class FeedbackElement {
     public String description;
     public FeedbackElementType type;
     public List<FeedbackResult> results;
+    public List<String> options;
 
     public FeedbackElement() {
     }
 
-    public FeedbackElement(String name, String description, FeedbackElementType type, List<FeedbackResult> results) {
+    public FeedbackElement(String name, String description, FeedbackElementType type, List<String> options, List<FeedbackResult> results) {
         this.id = new ObjectId();
         this.name = name;
         this.description = description;
         this.type = type;
-        this.results = results != null ? results : new java.util.ArrayList<FeedbackResult>();
+        this.options = options != null ? options : new ArrayList<String>();
+        this.results = results != null ? results : new ArrayList<FeedbackResult>();
     }
 
-    public FeedbackElement(String name, String description, FeedbackElementType type) {
+    public FeedbackElement(String name, String description, FeedbackElementType type, List<String> options) {
         this.id = new ObjectId();
         this.name = name;
         this.description = description;
         this.type = type;
-        this.results = new java.util.ArrayList<FeedbackResult>();
+        this.options = options != null ? options : new ArrayList<String>();
+        this.results = new ArrayList<FeedbackResult>();
     }
 
     public ObjectId getId() {
@@ -46,6 +50,10 @@ public class FeedbackElement {
 
     public FeedbackElementType getType() {
         return this.type;
+    }
+
+    public List<String> getOptions() {
+        return this.options;
     }
 
     public List<FeedbackResult> getResults() {
