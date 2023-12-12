@@ -126,6 +126,12 @@ class _AttendFeedbackPageState extends State<AttendFeedbackPage> {
 
     if (_status != "STARTED") {
       return Scaffold(
+        appBar: AppBar(
+          title: Text(_form.name,
+              style: const TextStyle(
+                  color: Colors.white, fontWeight: FontWeight.bold)),
+          backgroundColor: colors.primary,
+        ),
         body: Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
