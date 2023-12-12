@@ -147,7 +147,9 @@ class _AttendFeedbackPageState extends State<AttendFeedbackPage> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(_form.name),
+        title: Text(_form.name,
+            style: const TextStyle(
+                color: Colors.white, fontWeight: FontWeight.bold)),
         backgroundColor: colors.primary,
       ),
       body: SingleChildScrollView(

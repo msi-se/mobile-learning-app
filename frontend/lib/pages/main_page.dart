@@ -29,7 +29,7 @@ class _MainPageState extends State<MainPage> {
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.primary,
         title: const Text(
-          "Mobile App", 
+          "HTWG App", 
           style: TextStyle(
             color: Colors.white, 
             fontWeight: FontWeight.bold

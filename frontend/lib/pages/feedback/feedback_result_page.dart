@@ -163,7 +163,9 @@ class _FeedbackResultPageState extends State<FeedbackResultPage> {
 
       return Scaffold(
         appBar: AppBar(
-          title: Text(_form.name),
+          title: Text(_form.name,
+              style: const TextStyle(
+                  color: Colors.white, fontWeight: FontWeight.bold)),
           backgroundColor: colors.primary,
         ),
         body: Center(
@@ -187,7 +189,9 @@ class _FeedbackResultPageState extends State<FeedbackResultPage> {
 
     return Scaffold(
         appBar: AppBar(
-          title: Text(_form.name),
+          title: Text(_form.name,
+              style: const TextStyle(
+                  color: Colors.white, fontWeight: FontWeight.bold)),
           backgroundColor: colors.primary,
         ),
         body: Stack(

@@ -30,7 +30,8 @@ class _ChooseFeedbackPageState extends State<ChooseFeedbackPage> {
 
   Future fetchChannels() async {
     try {
-      final response = await http.get(Uri.parse("${getBackendUrl()}/feedback/channel"));
+      final response =
+          await http.get(Uri.parse("${getBackendUrl()}/feedback/channel"));
       if (response.statusCode == 200) {
         var data = jsonDecode(response.body);
         setState(() {
@@ -74,9 +75,12 @@ class _ChooseFeedbackPageState extends State<ChooseFeedbackPage> {
       child: Scaffold(
         appBar: AppBar(
           backgroundColor: Theme.of(context).colorScheme.primary,
-          title: Text(_selectedChannel != null
-              ? _selectedChannel!.name
-              : "Feedbackbogen auswählen"),
+          title: Text(
+              _selectedChannel != null
+                  ? _selectedChannel!.name
+                  : "Feedbackbogen auswählen",
+              style: const TextStyle(
+                  color: Colors.white, fontWeight: FontWeight.bold)),
         ),
         // display _channels in list view with clickable tiles
         body: _selectedChannel == null
