@@ -249,15 +249,19 @@ class _FeedbackResultPageState extends State<FeedbackResultPage> {
                       child: const Text('Feedback beenden'),
                     ),
                   if (_status == "FINISHED")
-                    ElevatedButton(
-                      onPressed: startForm,
-                      child: const Text('Feedback fortsetzen'),
-                    ),
-                  if (_status == "FINISHED")
-                    ElevatedButton(
-                      onPressed: resetForm,
-                      child: Text('Feedback zurücksetzen',
-                          style: TextStyle(color: colors.error)),
+                    Column(
+                      children: [
+                        ElevatedButton(
+                          onPressed: startForm,
+                          child: const Text('Feedback fortsetzen'),
+                        ),
+                        const SizedBox(height: 8),
+                        ElevatedButton(
+                          onPressed: resetForm,
+                          child: Text('Feedback zurücksetzen',
+                              style: TextStyle(color: colors.error)),
+                        ),
+                      ],
                     ),
                   const SizedBox(height: 32),
                 ],
