@@ -45,9 +45,7 @@ class _StarFeedbackResultState extends State<StarFeedbackResult> {
               child: Icon(
                 Icons.star,
                 size: 40.0,
-                color: index < _rating
-                    ? colors.primary
-                    : colors.tertiary.withAlpha(48),
+                color: colors.primary,
               ),
             ),
           ],
@@ -64,7 +62,10 @@ class _StarClipper extends CustomClipper<Rect> {
 
   @override
   Rect getClip(Size size) {
-    return Rect.fromLTRB(0, 0, size.width * widthFactor, size.height);
+    // TODO: better way for this?
+    const margin = 0.09; // because icon size is smaller than container
+    final width = (margin + widthFactor * (1 - margin * 2)) * size.width;
+    return Rect.fromLTRB(0, 0, width, size.height);
   }
 
   @override
