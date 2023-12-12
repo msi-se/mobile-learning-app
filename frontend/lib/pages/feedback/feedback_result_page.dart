@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:frontend/components/feedback/elements/single_choice_feedback_result.dart';
 import 'package:frontend/components/feedback/elements/slider_feedback_result.dart';
 import 'package:frontend/components/feedback/elements/star_feedback_result.dart';
 import 'package:frontend/global.dart';
@@ -231,11 +232,18 @@ class _FeedbackResultPageState extends State<FeedbackResultPage> {
                                     min: 0,
                                     max: 10,
                                   )
+                                else if (element.type == 'SINGLE_CHOICE')
+                                  SingleChoiceFeedbackResult(
+                                    results: values,
+                                    options: element.options,
+                                  )
                                 else
                                   const Text('Unknown element type'),
-                                Text("$roundAverage",
-                                    style: const TextStyle(fontSize: 20),
-                                    textAlign: TextAlign.center),
+                                if (element.type == 'STARS' ||
+                                    element.type == 'SLIDER')
+                                  Text("$roundAverage",
+                                      style: const TextStyle(fontSize: 20),
+                                      textAlign: TextAlign.center),
                               ],
                             ),
                           );

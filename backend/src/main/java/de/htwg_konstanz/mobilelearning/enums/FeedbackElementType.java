@@ -5,4 +5,5 @@ public enum FeedbackElementType {
     STARS,
     FULLTEXT,
     YES_NO,
+    SINGLE_CHOICE,
 }

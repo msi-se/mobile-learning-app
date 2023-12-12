@@ -139,7 +139,7 @@ class _LoginPageState extends State<LoginPage> {
                     ),
                     MyTextField(
                         controller: usernameController,
-                        hintText: 'Max.Mustermann',
+                        hintText: '',
                         obscureText: false),
 
                     // Password TextField
@@ -160,7 +160,7 @@ class _LoginPageState extends State<LoginPage> {
                     ),
                     MyTextField(
                         controller: passwordController,
-                        hintText: '***********',
+                        hintText: '',
                         obscureText: true),
                     const SizedBox(height: 10),
 
