@@ -7,24 +7,24 @@ import jakarta.websocket.Session;
 public class SocketConnection {
     public ObjectId id;
     public Session session;
-    public ObjectId channelId;
+    public ObjectId courseId;
     public ObjectId formId;
     public ObjectId userId;
     public SocketConnectionType type;
 
-    public SocketConnection(Session session, ObjectId channelId, ObjectId formId, ObjectId userId, SocketConnectionType type) {
+    public SocketConnection(Session session, ObjectId courseId, ObjectId formId, ObjectId userId, SocketConnectionType type) {
         this.id = new ObjectId();
         this.session = session;
-        this.channelId = channelId;
+        this.courseId = courseId;
         this.formId = formId;
         this.userId = userId;
         this.type = type;
     }
     
-    public SocketConnection(Session session, String channelId, String formId, String userId, SocketConnectionType type) {
+    public SocketConnection(Session session, String courseId, String formId, String userId, SocketConnectionType type) {
         this.id = new ObjectId();
         this.session = session;
-        this.channelId = new ObjectId(channelId);
+        this.courseId = new ObjectId(courseId);
         this.formId = new ObjectId(formId);
         this.userId = new ObjectId(userId);
         this.type = type;
@@ -38,8 +38,8 @@ public class SocketConnection {
         return session;
     }
 
-    public ObjectId getChannelId() {
-        return channelId;
+    public ObjectId getCourseId() {
+        return courseId;
     }
 
     public ObjectId getFormId() {

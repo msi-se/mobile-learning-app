@@ -1,23 +1,23 @@
-package de.htwg_konstanz.mobilelearning.models.feedback;
+package de.htwg_konstanz.mobilelearning.models;
 
 import org.bson.types.ObjectId;
 
-public class FeedbackResult {
-    public ObjectId resultId;
+public class Result {
+    public ObjectId id;
     public ObjectId userId;
     public String value;
 
-    public FeedbackResult() {
+    public Result() {
     }
 
-    public FeedbackResult(ObjectId userId, String value) {
-        this.resultId = new ObjectId();
+    public Result(ObjectId userId, String value) {
+        this.id = new ObjectId();
         this.userId = userId;
         this.value = value;
     }
 
-    public ObjectId getResultId() {
-        return this.resultId;
+    public ObjectId getId() {
+        return this.id;
     }
 
     public ObjectId getUserId() {
