@@ -15,6 +15,7 @@ Gerade bei Programieraufgaben interessant.
 --> auch eher Umfragetool als Quiztool
 
 ### Würden Sie (Oder haben Sie) digitale Tools wie Menti in der Lehre einsetzen (für Quizzes/Feedback von Studierenden)?
+(schon beantwortet)
 
 ### Was stört Sie an den digitalen Tools (gerne auch Kleinigkeiten)?
 - Verknüfung von allen Tools schwierig, man hat viele input tools die man verwalten muss.

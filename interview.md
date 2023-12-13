@@ -33,6 +33,8 @@ Was stört Sie an den digitalen Tools (gerne auch Kleinigkeiten)?
 
 Welche Features würden Sie sich von einer HTWG-Quiz-und-Feedback-App wünschen?
 
+Welche Feedback Elemente finden Sie sinnvoll (Volltext, Slider, Multiple choice)
+
 
 ### Interview Studierende
 
