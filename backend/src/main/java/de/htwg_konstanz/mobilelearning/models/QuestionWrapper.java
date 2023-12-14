@@ -41,6 +41,7 @@ public class QuestionWrapper {
 
     public void setQuestionContent(Question question) {
         if (question == null) {
+            this.questionContent = null;
             return;
         }
         this.questionContent = question.copy();
