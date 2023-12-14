@@ -125,7 +125,6 @@ public class FeedbackFormResultSocket {
                 FeedbackSocketMessage outgoingMessage = new FeedbackSocketMessage("RESULT_ADDED", form.status.toString(), null, null, "SERVER", form);
                 this.broadcast(outgoingMessage.toJson(), courseId, formId);
             }
-
             
             // send the updated form to all receivers (stringify the form)
             FeedbackSocketMessage outgoingMessage = new FeedbackSocketMessage("FORM_STATUS_CHANGED", form.status.toString(), null, null, "SERVER", form);
