@@ -45,9 +45,7 @@ public class FeedbackFormService {
         // fill the questionContent with the linked question
         Course course = feedbackChannelRepository.findById(courseObjectId);
         FeedbackForm feedbackForm = course.getFeedbackFormById(formObjectId);
-        feedbackForm.questions.forEach(question -> {
-            question.questionContent = course.getFeedbackQuestionById(question.questionId);
-        });
+        feedbackForm.fillQuestionContents(course);
 
         return feedbackForm;
     }

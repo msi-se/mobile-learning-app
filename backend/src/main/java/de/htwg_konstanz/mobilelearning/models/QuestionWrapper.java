@@ -39,7 +39,11 @@ public class QuestionWrapper {
         this.results.add(result);
     }
 
-    public void setQuestion(Question question) {
+    public void setQuestionContent(Question question) {
         this.questionContent = question;
+    }
+
+    public ObjectId getQuestionId() {
+        return questionId;
     }
 }

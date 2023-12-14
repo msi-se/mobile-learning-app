@@ -64,7 +64,7 @@ public class FeedbackFormResultSocket {
     private void broadcast(String message, String courseId, String formId) {
         connections.values().forEach(connection -> {
 
-            // check if the channel ID and form ID match
+            // check if the course ID and form ID match
             if (!connection.getCourseId().equals(new ObjectId(courseId))) {
                 return;
             }
@@ -103,12 +103,12 @@ public class FeedbackFormResultSocket {
             System.out.println("Form status enum: " + formStatusEnum);
 
             // get the form
-            Course channel = feedbackChannelRepository.findById(new ObjectId(courseId));
-            if (channel == null) {
+            Course course = feedbackChannelRepository.findById(new ObjectId(courseId));
+            if (course == null) {
                 System.out.println("Channel not found");
                 return false;
             }
-            FeedbackForm form = channel.getFeedbackFormById(new ObjectId(formId));
+            FeedbackForm form = course.getFeedbackFormById(new ObjectId(formId));
             if (form == null) {
                 System.out.println("Form not found");
                 return false;
@@ -116,6 +116,7 @@ public class FeedbackFormResultSocket {
 
             // change the form status
             form.setStatus(formStatusEnum);
+            form.fillQuestionContents(course);
 
             // if it is set to NOT_STARTED, remove all results
             if (formStatusEnum == FormStatus.NOT_STARTED) {
@@ -125,12 +126,15 @@ public class FeedbackFormResultSocket {
                 this.broadcast(outgoingMessage.toJson(), courseId, formId);
             }
 
-            // update the form in the database
-            feedbackChannelRepository.update(channel);
-
+            
             // send the updated form to all receivers (stringify the form)
             FeedbackSocketMessage outgoingMessage = new FeedbackSocketMessage("FORM_STATUS_CHANGED", form.status.toString(), null, null, "SERVER", form);
             this.broadcast(outgoingMessage.toJson(), courseId, formId);
+
+            // update the form in the database
+            form.clearQuestionContents();
+            feedbackChannelRepository.update(course);
+
             return true;
         }
 
@@ -151,16 +155,17 @@ public class FeedbackFormResultSocket {
             }
 
             // get the form
-            Course channel = feedbackChannelRepository.findById(new ObjectId(courseId));
-            if (channel == null) {
+            Course course = feedbackChannelRepository.findById(new ObjectId(courseId));
+            if (course == null) {
                 System.out.println("Channel not found");
                 return false;
             }
-            FeedbackForm form = channel.getFeedbackFormById(new ObjectId(formId));
+            FeedbackForm form = course.getFeedbackFormById(new ObjectId(formId));
             if (form == null) {
                 System.out.println("Form not found");
                 return false;
             }
+            form.fillQuestionContents(course);
 
             // get the element
             QuestionWrapper element = form.getQuestionById(new ObjectId(feedbackSocketMessage.resultElementId));
@@ -173,12 +178,14 @@ public class FeedbackFormResultSocket {
             Result result = new Result(new ObjectId(userId), feedbackSocketMessage.resultValue);
             element.addResult(result);
 
-            // update the form in the database
-            feedbackChannelRepository.update(channel);
-
             // send the updated form to all receivers (stringify the form)
             FeedbackSocketMessage outgoingMessage = new FeedbackSocketMessage("RESULT_ADDED", null, feedbackSocketMessage.resultElementId, feedbackSocketMessage.resultValue, "SERVER", form);
             this.broadcast(outgoingMessage.toJson(), courseId, formId);
+
+
+            // update the form in the database
+            form.clearQuestionContents();
+            feedbackChannelRepository.update(course);
             return true;
         }
 
