@@ -30,6 +30,10 @@ public abstract class Question {
         return this.id;
     }
 
+    public void setId(ObjectId id) {
+        this.id = id;
+    }
+
     public String getName() {
         return this.name;
     }
