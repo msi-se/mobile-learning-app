@@ -14,6 +14,8 @@ public class QuestionWrapper {
     public List<Result> results;
     public Analytics analytics;
 
+    public Question questionContent;
+
     public QuestionWrapper() {
     }
 
@@ -22,6 +24,7 @@ public class QuestionWrapper {
         this.questionId = questionId;
         this.results = results != null ? results : new ArrayList<Result>();
         this.analytics = new Analytics();
+        this.questionContent = null;
     }
 
     public ObjectId getId() {
@@ -34,5 +37,9 @@ public class QuestionWrapper {
 
     public void addResult(Result result) {
         this.results.add(result);
+    }
+
+    public void setQuestion(Question question) {
+        this.questionContent = question;
     }
 }

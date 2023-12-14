@@ -1,11 +1,13 @@
 package de.htwg_konstanz.mobilelearning.services.feedback;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.bson.types.ObjectId;
 import org.jboss.resteasy.reactive.RestPath;
 
 import de.htwg_konstanz.mobilelearning.models.Course;
+import de.htwg_konstanz.mobilelearning.models.QuestionWrapper;
 import de.htwg_konstanz.mobilelearning.repositories.CourseRepository;
 
 import jakarta.inject.Inject;
@@ -37,6 +39,14 @@ public class CourseService {
     @Produces(MediaType.APPLICATION_JSON)
     public List<Course> getCourses() {
         List<Course> courses = courseRepository.listAll();
+        courses.forEach(course -> {
+            course.feedbackForms.forEach(form -> {
+                form.questions = null;
+            });
+            course.quizForms.forEach(form -> {
+                form.questions = null;
+            });
+        });
         return courses;
     }
 

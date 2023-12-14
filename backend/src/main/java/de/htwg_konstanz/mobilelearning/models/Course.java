@@ -130,6 +130,15 @@ public class Course implements Serializable {
         return this.feedbackQuestions;
     }
 
+    public FeedbackQuestion getFeedbackQuestionById(ObjectId feedbackQuestionId) {
+        for (FeedbackQuestion feedbackQuestion : this.feedbackQuestions) {
+            if (feedbackQuestion.getId().equals(feedbackQuestionId)) {
+                return feedbackQuestion;
+            }
+        }
+        return null;
+    }
+
     public void setFeedbackQuestions(List<FeedbackQuestion> feedbackQuestions) {
         this.feedbackQuestions = feedbackQuestions;
     }

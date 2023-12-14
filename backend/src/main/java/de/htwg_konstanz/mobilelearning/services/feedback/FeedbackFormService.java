@@ -7,6 +7,7 @@ import org.jboss.resteasy.reactive.RestPath;
 
 import de.htwg_konstanz.mobilelearning.enums.FormStatus;
 import de.htwg_konstanz.mobilelearning.models.Course;
+import de.htwg_konstanz.mobilelearning.models.QuestionWrapper;
 import de.htwg_konstanz.mobilelearning.models.feedback.FeedbackForm;
 import de.htwg_konstanz.mobilelearning.repositories.CourseRepository;
 
@@ -28,8 +29,8 @@ public class FeedbackFormService {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public List<FeedbackForm> getFeedbackForms(@RestPath String courseId) {
-        ObjectId channelObjectId = new ObjectId(courseId);
-        Course feedbackChannel = feedbackChannelRepository.findById(channelObjectId);
+        ObjectId courseObjectId = new ObjectId(courseId);
+        Course feedbackChannel = feedbackChannelRepository.findById(courseObjectId);
         return feedbackChannel.getFeedbackForms();
     }
 
@@ -38,23 +39,30 @@ public class FeedbackFormService {
     @Path("/{formId}")
     public FeedbackForm getFeedbackForm(@RestPath String courseId, @RestPath String formId) {
 
-        ObjectId channelObjectId = new ObjectId(courseId);
+        ObjectId courseObjectId = new ObjectId(courseId);
         ObjectId formObjectId = new ObjectId(formId);
 
-        return feedbackChannelRepository.findFeedbackFormByIds(channelObjectId, formObjectId);
+        // fill the questionContent with the linked question
+        Course course = feedbackChannelRepository.findById(courseObjectId);
+        FeedbackForm feedbackForm = course.getFeedbackFormById(formObjectId);
+        feedbackForm.questions.forEach(question -> {
+            question.questionContent = course.getFeedbackQuestionById(question.questionId);
+        });
+
+        return feedbackForm;
     }
 
     @PUT
     @Produces(MediaType.APPLICATION_JSON)
     @Path("/{formId}")
     public FeedbackForm updateFeedbackForm(@RestPath String courseId, @RestPath String formId, FeedbackForm feedbackForm) {
-        ObjectId channelObjectId = new ObjectId(courseId);
+        ObjectId courseObjectId = new ObjectId(courseId);
         ObjectId formObjectId = new ObjectId(formId);
-        Course feedbackChannel = feedbackChannelRepository.findById(channelObjectId);
+        Course feedbackChannel = feedbackChannelRepository.findById(courseObjectId);
         FeedbackForm feedbackFormToUpdate = feedbackChannel.getFeedbackFormById(formObjectId);
         
         if (feedbackFormToUpdate == null) {
-            throw new NotFoundException("Feedbackchannel not found");
+            throw new NotFoundException("Feedbackcourse not found");
         }
 
         if (feedbackForm.description != null) {
@@ -83,8 +91,8 @@ public class FeedbackFormService {
     public FeedbackForm createFeedbackForm(@RestPath String courseId, FeedbackForm feedbackForm) {
         
         // TODO: add validation
-        ObjectId channelObjectId = new ObjectId(courseId);
-        Course feedbackChannel = feedbackChannelRepository.findById(channelObjectId);
+        ObjectId courseObjectId = new ObjectId(courseId);
+        Course feedbackChannel = feedbackChannelRepository.findById(courseObjectId);
         
         FeedbackForm newFeedbackForm = new FeedbackForm(
             feedbackChannel.getId(),
@@ -104,13 +112,13 @@ public class FeedbackFormService {
     @Produces(MediaType.APPLICATION_JSON)
     @Path("/{formId}/clearresults")
     public FeedbackForm clearFeedbackFormResults(@RestPath String courseId, @RestPath String formId) {
-        ObjectId channelObjectId = new ObjectId(courseId);
+        ObjectId courseObjectId = new ObjectId(courseId);
         ObjectId formObjectId = new ObjectId(formId);
-        Course feedbackChannel = feedbackChannelRepository.findById(channelObjectId);
+        Course feedbackChannel = feedbackChannelRepository.findById(courseObjectId);
         FeedbackForm feedbackForm = feedbackChannel.getFeedbackFormById(formObjectId);
 
         if (feedbackForm == null) {
-            throw new NotFoundException("Feedbackchannel not found");
+            throw new NotFoundException("Feedbackcourse not found");
         }
 
         feedbackForm.clearResults();
