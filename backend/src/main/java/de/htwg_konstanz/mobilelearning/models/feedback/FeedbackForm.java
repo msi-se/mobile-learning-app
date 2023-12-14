@@ -20,7 +20,7 @@ public class FeedbackForm extends Form {
     public void fillQuestionContents(Course course) {
         for (QuestionWrapper questionWrapper : this.questions) {
             questionWrapper.setQuestionContent(course.getFeedbackQuestionById(questionWrapper.getQuestionId()));
-            questionWrapper.questionContent.setId(questionWrapper.getQuestionId());
+            questionWrapper.questionContent.setId(questionWrapper.getId());
         }
     }
 
