@@ -6,12 +6,12 @@ import 'package:frontend/models/feedback/feedback_form.dart';
 import 'package:frontend/utils.dart';
 
 class FeedbackPreviewPage extends StatefulWidget {
-  final String channelId;
+  final String courseId;
   final String formId;
 
   const FeedbackPreviewPage({
     Key? key,
-    required this.channelId,
+    required this.courseId,
     required this.formId,
   }) : super(key: key);
 
@@ -31,8 +31,9 @@ class _FeedbackPreviewPageState extends State<FeedbackPreviewPage> {
 
   Future<void> fetchForm() async {
     try {
+      print("${getBackendUrl()}/course/${widget.courseId}/feedback/form/${widget.formId}");
       final response = await http.get(Uri.parse(
-          "${getBackendUrl()}/feedback/channel/${widget.channelId}/form/${widget.formId}"));
+          "${getBackendUrl()}/course/${widget.courseId}/feedback/form/${widget.formId}"));
       if (response.statusCode == 200) {
         setState(() {
           _form = FeedbackForm.fromJson(json.decode(response.body));
@@ -40,15 +41,15 @@ class _FeedbackPreviewPageState extends State<FeedbackPreviewPage> {
         });
       } else {
         // TODO: Handle the case where the server returns a non-200 status code
-        setState(() {
-          _loading = false;
-        });
+        // setState(() {
+        //   _loading = false;
+        // });
       }
     } catch (e) {
       // TODO: Handle any exceptions
-      setState(() {
-        _loading = false;
-      });
+      // setState(() {
+      //   _loading = false;
+      // });
     }
   }
 
@@ -86,11 +87,11 @@ class _FeedbackPreviewPageState extends State<FeedbackPreviewPage> {
                     child: Card(
                       margin: EdgeInsets.zero,
                       child: ListView.separated(
-                        itemCount: _form?.feedbackElements.length ?? 0,
+                        itemCount: _form?.questions.length ?? 0,
                         separatorBuilder: (context, index) =>
                             const Divider(height: 1),
                         itemBuilder: (context, index) {
-                          var element = _form!.feedbackElements[index];
+                          var element = _form!.questions[index];
                           return ListTile(
                             title: Text(element.description),
                           );
@@ -109,7 +110,7 @@ class _FeedbackPreviewPageState extends State<FeedbackPreviewPage> {
                             onPressed: () {
                               Navigator.pushNamed(context, '/feedback-result',
                                   arguments: {
-                                    "channelId": widget.channelId,
+                                    "courseId": widget.courseId,
                                     "formId": widget.formId,
                                   });
                             },

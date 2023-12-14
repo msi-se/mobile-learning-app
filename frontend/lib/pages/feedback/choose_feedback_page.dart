@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:frontend/components/feedback/choose_feedback_channel.dart';
 import 'package:frontend/components/feedback/choose_feedback_form.dart';
-import 'package:frontend/models/feedback/feedback_channel.dart';
+import 'package:frontend/models/feedback/feedback_course.dart';
 import 'package:frontend/utils.dart';
 import 'package:http/http.dart' as http;
 
@@ -15,9 +15,9 @@ class ChooseFeedbackPage extends StatefulWidget {
 }
 
 class _ChooseFeedbackPageState extends State<ChooseFeedbackPage> {
-  late List<FeedbackChannel> _channels;
+  late List<FeedbackCourse> _courses;
 
-  FeedbackChannel? _selectedChannel;
+  FeedbackCourse? _selectedCourse;
 
   bool _loading = true;
 
@@ -25,17 +25,17 @@ class _ChooseFeedbackPageState extends State<ChooseFeedbackPage> {
   void initState() {
     super.initState();
 
-    fetchChannels();
+    fetchCourses();
   }
 
-  Future fetchChannels() async {
+  Future fetchCourses() async {
     try {
       final response =
-          await http.get(Uri.parse("${getBackendUrl()}/feedback/channel"));
+          await http.get(Uri.parse("${getBackendUrl()}/course"));
       if (response.statusCode == 200) {
         var data = jsonDecode(response.body);
         setState(() {
-          _channels = getChannelsFromJson(data);
+          _courses = getCoursesFromJson(data);
           _loading = false;
         });
       }
@@ -44,8 +44,8 @@ class _ChooseFeedbackPageState extends State<ChooseFeedbackPage> {
     }
   }
 
-  List<FeedbackChannel> getChannelsFromJson(List<dynamic> json) {
-    return json.map((e) => FeedbackChannel.fromJson(e)).toList();
+  List<FeedbackCourse> getCoursesFromJson(List<dynamic> json) {
+    return json.map((e) => FeedbackCourse.fromJson(e)).toList();
   }
 
   @override
@@ -64,9 +64,9 @@ class _ChooseFeedbackPageState extends State<ChooseFeedbackPage> {
         if (didPop) {
           return;
         }
-        if (_selectedChannel != null) {
+        if (_selectedCourse != null) {
           setState(() {
-            _selectedChannel = null;
+            _selectedCourse = null;
           });
         } else {
           Navigator.pop(context);
@@ -76,28 +76,28 @@ class _ChooseFeedbackPageState extends State<ChooseFeedbackPage> {
         appBar: AppBar(
           backgroundColor: Theme.of(context).colorScheme.primary,
           title: Text(
-              _selectedChannel != null
-                  ? _selectedChannel!.name
+              _selectedCourse != null
+                  ? _selectedCourse!.name
                   : "Feedbackbogen auswählen",
               style: const TextStyle(
                   color: Colors.white, fontWeight: FontWeight.bold)),
         ),
-        // display _channels in list view with clickable tiles
-        body: _selectedChannel == null
-            ? ChooseFeedbackChannel(
-                channels: _channels,
+        // display _courses in list view with clickable tiles
+        body: _selectedCourse == null
+            ? ChooseFeedbackCourse(
+                courses: _courses,
                 choose: (id) {
                   setState(() {
-                    _selectedChannel =
-                        _channels.firstWhere((element) => element.id == id);
+                    _selectedCourse =
+                        _courses.firstWhere((element) => element.id == id);
                   });
                 },
               )
             : ChooseFeedbackForm(
-                channel: _selectedChannel!,
+                course: _selectedCourse!,
                 choose: (id) {
                   Navigator.pushNamed(context, '/feedback-info', arguments: {
-                    "channelId": _selectedChannel!.id,
+                    "courseId": _selectedCourse!.id,
                     "formId": id,
                   });
                 },

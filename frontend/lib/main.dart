@@ -42,7 +42,7 @@ class MyApp extends StatelessWidget {
             return const MainPage();
           }
           return FeedbackPreviewPage(
-            channelId: arguments["channelId"],
+            courseId: arguments["courseId"],
             formId: arguments["formId"],
           );
         },
@@ -53,7 +53,7 @@ class MyApp extends StatelessWidget {
             return const MainPage();
           }
           return FeedbackResultPage(
-            channelId: arguments["channelId"],
+            courseId: arguments["courseId"],
             formId: arguments["formId"],
           );
         },

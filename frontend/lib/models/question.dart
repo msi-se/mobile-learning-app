@@ -1,11 +1,11 @@
-class FeedbackElement {
+class Question {
   final String id;
   final String name;
   final String description;
   final String type;
   final List<String> options;
 
-  FeedbackElement({
+  Question({
     required this.id,
     required this.name,
     required this.description,
@@ -13,8 +13,8 @@ class FeedbackElement {
     required this.options,
   });
 
-  factory FeedbackElement.fromJson(Map<String, dynamic> json) {
-    return FeedbackElement(
+  factory Question.fromJson(Map<String, dynamic> json) {
+    return Question(
       id: json['id'],
       name: json['name'],
       description: json['description'],
