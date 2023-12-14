@@ -56,4 +56,5 @@ public abstract class Question {
     public void removeResult(Result result) {
     }
 
+    public abstract Question copy();
 }

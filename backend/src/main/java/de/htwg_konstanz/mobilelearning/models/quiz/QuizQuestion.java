@@ -1,14 +1,11 @@
 package de.htwg_konstanz.mobilelearning.models.quiz;
 
-import java.util.ArrayList;
 import java.util.List;
-
-import org.bson.types.ObjectId;
 
 import de.htwg_konstanz.mobilelearning.enums.QuestionType;
 import de.htwg_konstanz.mobilelearning.models.Question;
 
-public abstract class QuizQuestion extends Question {
+public class QuizQuestion extends Question {
 
     public String correctAnswer;
     
@@ -20,4 +17,7 @@ public abstract class QuizQuestion extends Question {
         this.correctAnswer = correctAnswer;
     }
 
+    public QuizQuestion copy() {
+        return new QuizQuestion(this.name, this.description, this.type, this.options, this.correctAnswer);
+    }
 }

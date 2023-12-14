@@ -40,7 +40,7 @@ public class QuestionWrapper {
     }
 
     public void setQuestionContent(Question question) {
-        this.questionContent = question;
+        this.questionContent = question.copy();
     }
 
     public ObjectId getQuestionId() {

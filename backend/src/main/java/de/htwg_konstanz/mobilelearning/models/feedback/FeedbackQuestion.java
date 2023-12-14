@@ -21,4 +21,7 @@ public class FeedbackQuestion extends Question {
         this.options = options != null ? options : new ArrayList<String>();
     }
 
+    public FeedbackQuestion copy() {
+        return new FeedbackQuestion(this.name, this.description, this.type, this.options);
+    }
 }
