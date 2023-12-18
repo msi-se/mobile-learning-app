@@ -33,3 +33,5 @@
 ## Welche Features würden Sie sich von einer HTWG-Quiz-und-Feedback-App wünschen?
 - Veranstaltungskalender (Öffentliche & halböffentliche Veranstaltungen. Welche Veranstaltugen gibt es heute?)
 - Htwg veranstaltungskalender sehr rudimentär hat nicht alles drin
+- Unterteilung der Leaderboards um nicht nur insgesamt besten oben stehen zu haben
+  - Motivation von Studis die weiter unten sind 
