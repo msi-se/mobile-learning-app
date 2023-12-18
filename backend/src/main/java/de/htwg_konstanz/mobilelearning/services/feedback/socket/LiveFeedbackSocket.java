@@ -13,6 +13,7 @@ import de.htwg_konstanz.mobilelearning.models.Course;
 import de.htwg_konstanz.mobilelearning.models.Question;
 import de.htwg_konstanz.mobilelearning.models.QuestionWrapper;
 import de.htwg_konstanz.mobilelearning.models.Result;
+import de.htwg_konstanz.mobilelearning.models.auth.UserRole;
 import de.htwg_konstanz.mobilelearning.models.feedback.FeedbackForm;
 import de.htwg_konstanz.mobilelearning.repositories.CourseRepository;
 
@@ -101,6 +102,11 @@ public class LiveFeedbackSocket {
     };
 
     private Boolean changeFormStatus(LiveFeedbackSocketMessage feedbackSocketMessage, String courseId, String formId, String userId) {
+
+        if(feedbackSocketMessage.role.equals(UserRole.STUDENT)){
+            System.out.println("STUDENT is not allowed to start feedback");
+            return false;
+        }
 
         System.out.println("Change form status");
 
