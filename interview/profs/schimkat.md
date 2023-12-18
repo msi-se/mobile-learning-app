@@ -1,6 +1,6 @@
-### Interview Prof. Schimkat
+## Interview Prof. Schimkat
 
-Welche digitalen Methoden verwenden Sie aktuell in der Lehre und warum?
+### Welche digitalen Methoden verwenden Sie aktuell in der Lehre und warum?
 
 - Menti am Anfang
   - die ersten 5-20 min
@@ -12,18 +12,19 @@ Welche digitalen Methoden verwenden Sie aktuell in der Lehre und warum?
   - Werthaltigkeit
     - vertiefen
     - wiederholen
-  - Quiz zwischen Vorlesung wäre gut
+  - Quiz zwischen Vorlesung wäre gut (Studis können wissen parat halten)
 - Menti am Ende
   - als Feedbackmethode
 - Screensharing beim Coden
 - Lernvideos
   - wäre auch möglich in der App
+  - auch als Erklärung von Fragen mit videos/link zu videos
 - Google Slides
   - als Whiteboard
 - Miro
 - Google Sheets für Teamzusammenstellung
 
-Fragen Sie Studierende häufig nach Feedback zu Lehrveranstaltungen?
+### Fragen Sie Studierende häufig nach Feedback zu Lehrveranstaltungen?
 
 - EvaSys
   - als offizielles Feedbacktool
@@ -37,12 +38,12 @@ Fragen Sie Studierende häufig nach Feedback zu Lehrveranstaltungen?
   - direkt
   - nicht anonymisiert
 
-Welche Erfahrungen haben Sie mit dem Einsatz von Quiz- und Feedback in der Lehre gemacht?
+### Welche Erfahrungen haben Sie mit dem Einsatz von Quiz- und Feedback in der Lehre gemacht?
 
 - Quiz sehr beliebt bei Studierenden
   - "Wissensinhalte" sehr gut abfragbar
 
-Was stört Sie an bisher eingesetzten digitalen Tools (gerne auch Kleinigkeiten) und warum?
+### Was stört Sie an bisher eingesetzten digitalen Tools (gerne auch Kleinigkeiten) und warum?
 
 - mobiles Lernen vernachlässigt
   - nichts auf dem Smartphone
@@ -64,11 +65,13 @@ Was stört Sie an bisher eingesetzten digitalen Tools (gerne auch Kleinigkeiten)
   - wie gut klappt das Feedback
   - "Wie viel Feebackfragen wurden heute schon gestellt?"
 
-- Abkürzungen
+- Abkürzungen (Anzahl der klicks zu hoch z.b. bei Moodle)
   - Autosave
   - Vorschläge für Quiz/Feedback vom System anhand von Tageszeit und Historie
 
-(Warum) denken Sie, dass eine HTWG-App die Verbreitung von Feedback steigern könnte?
+- Chat/kommentarsektion (evtl auf Kurs, Vl oder Fragenebende?)
+
+### (Warum) denken Sie, dass eine HTWG-App die Verbreitung von Feedback steigern könnte?
 
 - gewinnbringend sind Studies
   - Emoji-Reinschmeißen-Funktion begeistert
