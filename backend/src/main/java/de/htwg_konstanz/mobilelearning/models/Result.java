@@ -6,6 +6,7 @@ public class Result {
     public ObjectId id;
     public ObjectId userId;
     public String value;
+    public String hashedUserId;
 
     public Result() {
     }
@@ -14,6 +15,14 @@ public class Result {
         this.id = new ObjectId();
         this.userId = userId;
         this.value = value;
+        this.hashedUserId = null;
+    }
+
+    public Result(String hashedUserId, String value) {
+        this.id = new ObjectId();
+        this.hashedUserId = hashedUserId;
+        this.value = value;
+        this.userId = null;
     }
 
     public ObjectId getId() {

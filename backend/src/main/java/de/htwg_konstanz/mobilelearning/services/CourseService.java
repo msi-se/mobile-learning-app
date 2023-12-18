@@ -1,4 +1,4 @@
-package de.htwg_konstanz.mobilelearning.services.feedback;
+package de.htwg_konstanz.mobilelearning.services;
 
 import java.util.ArrayList;
 import java.util.List;

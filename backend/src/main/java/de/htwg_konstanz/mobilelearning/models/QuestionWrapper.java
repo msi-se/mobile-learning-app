@@ -35,8 +35,24 @@ public class QuestionWrapper {
         this.results.clear();
     }
 
-    public void addResult(Result result) {
+    public Boolean addResult(Result result) {
+
+        if (result == null) {
+            return false;
+        }
+
+        // check if the user already submitted a result
+        for (Result r : this.results) {
+            if (r.hashedUserId != null && r.hashedUserId.equals(result.hashedUserId)) {
+                return false;
+            }
+            if (r.userId != null && r.userId.equals(result.userId)) {
+                return false;
+            }
+        }
+
         this.results.add(result);
+        return true;
     }
 
     public void setQuestionContent(Question question) {
