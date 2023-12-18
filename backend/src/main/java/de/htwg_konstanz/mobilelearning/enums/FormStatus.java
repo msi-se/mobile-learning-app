@@ -1,6 +1,6 @@
 package de.htwg_konstanz.mobilelearning.enums;
 
-public enum FeedbackChannelStatus {
+public enum FormStatus {
     STARTED,
     FINISHED,
     NOT_STARTED

@@ -1,6 +1,6 @@
 package de.htwg_konstanz.mobilelearning.enums;
 
-public enum FeedbackElementType {
+public enum QuestionType {
     SLIDER,
     STARS,
     FULLTEXT,

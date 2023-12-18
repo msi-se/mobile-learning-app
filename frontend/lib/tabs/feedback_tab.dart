@@ -17,7 +17,7 @@ class _FeedbackTabState extends State<FeedbackTab> {
     super.initState();
   }
 
-  void joinChannel() {
+  void joinCourse() {
     var code = _joinCodeController.text.replaceAll(' ', '');
     Navigator.pushNamed(context, '/attend-feedback', arguments: code);
     // Navigator.pushNamed(context, '/feedback-result', arguments: code);
@@ -53,7 +53,7 @@ class _FeedbackTabState extends State<FeedbackTab> {
                   );
                 },
                 onSubmit: () {
-                  joinChannel();
+                  joinCourse();
                 },
                 sublineText: 'Mit Code beitreten'),
           ),

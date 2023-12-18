@@ -11,11 +11,11 @@ import 'package:web_socket_channel/web_socket_channel.dart';
 import 'package:http/http.dart' as http;
 
 class FeedbackResultPage extends StatefulWidget {
-  final String channelId;
+  final String courseId;
   final String formId;
 
   const FeedbackResultPage(
-      {super.key, required this.channelId, required this.formId});
+      {super.key, required this.courseId, required this.formId});
 
   @override
   State<FeedbackResultPage> createState() => _FeedbackResultPageState();
@@ -24,7 +24,7 @@ class FeedbackResultPage extends StatefulWidget {
 class _FeedbackResultPageState extends State<FeedbackResultPage> {
   bool _loading = true;
 
-  late String _channelId;
+  late String _courseId;
   late String _formId;
   late String _userId;
 
@@ -43,7 +43,7 @@ class _FeedbackResultPageState extends State<FeedbackResultPage> {
   }
 
   Future init() async {
-    _channelId = widget.channelId;
+    _courseId = widget.courseId;
     _formId = widget.formId;
     fetchForm();
   }
@@ -51,7 +51,7 @@ class _FeedbackResultPageState extends State<FeedbackResultPage> {
   Future fetchForm() async {
     try {
       final response = await http.get(Uri.parse(
-          "${getBackendUrl()}/feedback/channel/$_channelId/form/$_formId"));
+          "${getBackendUrl()}/course/$_courseId/feedback/form/$_formId"));
       if (response.statusCode == 200) {
         var data = jsonDecode(response.body);
         startWebsocket();
@@ -70,7 +70,7 @@ class _FeedbackResultPageState extends State<FeedbackResultPage> {
   void startWebsocket() {
     _socketChannel = WebSocketChannel.connect(
       Uri.parse(
-          "${getBackendUrl(protocol: "ws")}/feedback/channel/$_channelId/form/$_formId/subscribe/$_userId"),
+          "${getBackendUrl(protocol: "ws")}/course/$_courseId/feedback/form/$_formId/subscribe/$_userId"),
     );
 
     _socketChannel!.stream.listen((event) {
@@ -126,7 +126,7 @@ class _FeedbackResultPageState extends State<FeedbackResultPage> {
   }
 
   List<Map<String, dynamic>> getTestResults(Map<String, dynamic> json) {
-    List<dynamic> elements = json["elements"];
+    List<dynamic> elements = json["questions"];
     return elements.map((element) {
       List<dynamic> results = element["results"];
       List<int> resultValues =
@@ -206,9 +206,9 @@ class _FeedbackResultPageState extends State<FeedbackResultPage> {
                       ListView.builder(
                         shrinkWrap: true,
                         physics: const NeverScrollableScrollPhysics(),
-                        itemCount: _form.feedbackElements.length,
+                        itemCount: _form.questions.length,
                         itemBuilder: (context, index) {
-                          final element = _form.feedbackElements[index];
+                          final element = _form.questions[index];
                           final double average = _results[index]["average"];
                           final roundAverage = (average * 100).round() / 100;
                           final values = _results[index]["values"];

@@ -4,13 +4,14 @@ import java.util.List;
 
 import org.bson.types.ObjectId;
 
-import de.htwg_konstanz.mobilelearning.enums.FeedbackChannelStatus;
-import de.htwg_konstanz.mobilelearning.enums.FeedbackElementType;
+import de.htwg_konstanz.mobilelearning.enums.FormStatus;
+import de.htwg_konstanz.mobilelearning.enums.QuestionType;
+import de.htwg_konstanz.mobilelearning.models.Course;
+import de.htwg_konstanz.mobilelearning.models.QuestionWrapper;
 import de.htwg_konstanz.mobilelearning.models.auth.User;
-import de.htwg_konstanz.mobilelearning.models.feedback.FeedbackChannel;
-import de.htwg_konstanz.mobilelearning.models.feedback.FeedbackElement;
 import de.htwg_konstanz.mobilelearning.models.feedback.FeedbackForm;
-import de.htwg_konstanz.mobilelearning.repositories.FeedbackChannelRepository;
+import de.htwg_konstanz.mobilelearning.models.feedback.FeedbackQuestion;
+import de.htwg_konstanz.mobilelearning.repositories.CourseRepository;
 import de.htwg_konstanz.mobilelearning.repositories.UserRepository;
 
 import jakarta.inject.Inject;
@@ -23,7 +24,7 @@ import jakarta.ws.rs.core.MediaType;
 public class MockingService {
 
     @Inject
-    private FeedbackChannelRepository feedbackChannelRepository;
+    private CourseRepository courseRepository;
 
     @Inject
     private UserRepository userRepository;
@@ -32,113 +33,144 @@ public class MockingService {
     @Produces(MediaType.APPLICATION_JSON)
     @Path("/mock")
     public List<Object> addData() {
-        feedbackChannelRepository.deleteAll();
+        courseRepository.deleteAll();
         userRepository.deleteAll();
 
-        // generate some FeedbackElements
-        FeedbackElement feedbackElement1 = new FeedbackElement(
+        // generate some FeedbackQuestions
+        FeedbackQuestion question1 = new FeedbackQuestion(
             "Verständlichkeit",
             "Wie verständlich war das Thema Kombinatorik?",
-            FeedbackElementType.STARS,
-            null,
+            QuestionType.STARS,
             null
         );
-        FeedbackElement feedbackElement2 = new FeedbackElement(
+        FeedbackQuestion question2 = new FeedbackQuestion(
             "Kurzweiligkeit",
             "Wie kurzweilig war die Vorlesung? (links = langweilig, rechts = kurzweilig)",
-            FeedbackElementType.SLIDER,
-            null,
+            QuestionType.SLIDER,
             null
         );
-        FeedbackElement feedbackElement3 = new FeedbackElement(
+        FeedbackQuestion question3 = new FeedbackQuestion(
             "Praxisbezug",
             "Wie bewerten Sie den Praxisbezug der Vorlesung? (links = wenig Praxisbezug, rechts = viel Praxisbezug)",
-            FeedbackElementType.SLIDER,
-            null,
+            QuestionType.SLIDER,
             null
         );
-        FeedbackElement feedbackElement4 = new FeedbackElement(
+        FeedbackQuestion question4 = new FeedbackQuestion(
             "Sprachbarriere",
             "Die Vorlesung wurde auf Englisch gehalten. Wie fanden Sie die Verständlichkeit?",
-            FeedbackElementType.SLIDER,
-            null,
+            QuestionType.SLIDER,
             null
         );
-        FeedbackElement feedbackElement5 = new FeedbackElement(
+        FeedbackQuestion question5 = new FeedbackQuestion(
             "Prüfungsvorbereitung",
             "Wenn jetzt direkt die Prüfung wäre, wie gut fühlen Sie sich vorbereitet?",
-            FeedbackElementType.STARS,
-            null,
+            QuestionType.STARS,
             null
         );
-        FeedbackElement feedbackElement6 = new FeedbackElement(
+        FeedbackQuestion question6 = new FeedbackQuestion(
             "Technische Mittel",
             "Wie bewerten Sie die technischen Mittel, die in der Vorlesung verwendet wurden?",
-            FeedbackElementType.STARS,
-            null,
+            QuestionType.STARS,
             null
         );
-        FeedbackElement feedbackElement7 = new FeedbackElement(
+        FeedbackQuestion question7 = new FeedbackQuestion(
             "Schwierigstes Thema",
             "Welches Thema war für Sie am schwierigsten?",
-            FeedbackElementType.SINGLE_CHOICE,
-            List.of("Kombinatorik", "Graphen", "Relationen", "Formale Sprachen", "Endliche Automaten", "Turingmaschinen", "Berechenbarkeit"),
-            null
+            QuestionType.SINGLE_CHOICE,
+            List.of("Kombinatorik", "Graphen", "Relationen", "Formale Sprachen", "Endliche Automaten", "Turingmaschinen", "Berechenbarkeit")
         );
-        FeedbackElement feedbackElement8 = new FeedbackElement(
+        FeedbackQuestion question8 = new FeedbackQuestion(
             "Schwierigstes Thema",
             "Welches Thema war für Sie am schwierigsten?",
-            FeedbackElementType.SINGLE_CHOICE,
-            List.of("Multitenancy", "Microservices", "Cloud Foundry", "Docker", "Kubernetes", "Cloud Native", "Cloud Native Buildpacks"),
-            null
+            QuestionType.SINGLE_CHOICE,
+            List.of("Multitenancy", "Microservices", "Cloud Foundry", "Docker", "Kubernetes", "Cloud Native", "Cloud Native Buildpacks")
         );
 
         // generate a FeedbackChannel
-        FeedbackChannel feedbackChannelDima = new FeedbackChannel("Diskrete Mathematik", "Feedback-Kanal für DiMa", null);
-        FeedbackChannel feedbackChannelAUME = new FeedbackChannel("AUME", "Feedback-Kanal für Agile Vorgehensmodelle und Mobile Kommunikation", null);
-        FeedbackChannel feedbackChannelCloud = new FeedbackChannel("Cloud Application Development", "Feedback-Kanal für Cloud Application Development", null);
+        Course courseDima = new Course("Diskrete Mathematik", "Feedback-Kanal für DiMa");
+        Course courseAUME = new Course("AUME", "Feedback-Kanal für Agile Vorgehensmodelle und Mobile Kommunikation");
+        Course courseCloud = new Course("Cloud Application Development", "Feedback-Kanal für Cloud Application Development");
+
+        // add the FeedbackQuestions to the FeedbackChannel
+        courseDima.addFeedbackQuestion(question1);
+        courseDima.addFeedbackQuestion(question2);
+        courseDima.addFeedbackQuestion(question3);
+        courseDima.addFeedbackQuestion(question4);
+        courseDima.addFeedbackQuestion(question5);
+        courseDima.addFeedbackQuestion(question6);
+        courseDima.addFeedbackQuestion(question7);
+        
+        courseAUME.addFeedbackQuestion(question2);
+        courseAUME.addFeedbackQuestion(question4);
+        courseAUME.addFeedbackQuestion(question5);
+
+        courseCloud.addFeedbackQuestion(question2);
+        courseCloud.addFeedbackQuestion(question4);
+        courseCloud.addFeedbackQuestion(question5);
+        courseCloud.addFeedbackQuestion(question8); 
+        
 
         // generate a FeedbackForm
-        ObjectId feedbackChannelDimaId = feedbackChannelDima.getId();
-        ObjectId feedbackChannelAUMEId = feedbackChannelAUME.getId();
-        ObjectId feedbackChannelCloudId = feedbackChannelCloud.getId();
+        ObjectId courseDimaId = courseDima.getId();
+        ObjectId courseAUMEId = courseAUME.getId();
+        ObjectId courseCloudId = courseCloud.getId();
         FeedbackForm feedbackForm1 = new FeedbackForm(
-            feedbackChannelDimaId,
+            courseDimaId,
             "1. Monat im neuen Semester",
             "Dies ist das Feedback für den 1. Monat im neuen Semester",
-            List.of(feedbackElement2, feedbackElement4, feedbackElement5),
-            FeedbackChannelStatus.NOT_STARTED
+            List.of(
+                new QuestionWrapper(question2.getId(), null), 
+                new QuestionWrapper(question4.getId(), null), 
+                new QuestionWrapper(question5.getId(), null)
+            ),
+            FormStatus.NOT_STARTED
         );
-        feedbackChannelDima.addFeedbackForm(feedbackForm1);
+        courseDima.addFeedbackForm(feedbackForm1);
         FeedbackForm feedbackForm2 = new FeedbackForm(
-            feedbackChannelDimaId,
+            courseDimaId,
             "Kombinatorik",
             "Dies ist das Feedback zum Thema Kombinatorik",
-            List.of(feedbackElement1, feedbackElement2, feedbackElement3, feedbackElement4, feedbackElement5, feedbackElement6, feedbackElement7),
-            FeedbackChannelStatus.NOT_STARTED
+            List.of(
+                new QuestionWrapper(question1.getId(), null), 
+                new QuestionWrapper(question2.getId(), null), 
+                new QuestionWrapper(question3.getId(), null), 
+                new QuestionWrapper(question4.getId(), null), 
+                new QuestionWrapper(question5.getId(), null), 
+                new QuestionWrapper(question6.getId(), null), 
+                new QuestionWrapper(question7.getId(), null)),
+            FormStatus.NOT_STARTED
         );
-        feedbackChannelDima.addFeedbackForm(feedbackForm2);
+        courseDima.addFeedbackForm(feedbackForm2);
         FeedbackForm feedbackForm3 = new FeedbackForm(
-            feedbackChannelAUMEId,
+            courseAUMEId,
             "1. Monat im neuen Semester",
             "Dies ist das Feedback für den 1. Monat im neuen Semester",
-            List.of(feedbackElement2, feedbackElement4, feedbackElement5),
-            FeedbackChannelStatus.NOT_STARTED
+            List.of(
+                new QuestionWrapper(question2.getId(), null), 
+                new QuestionWrapper(question4.getId(), null), 
+                new QuestionWrapper(question5.getId(), null)
+            ),
+            FormStatus.NOT_STARTED
         );
-        feedbackChannelAUME.addFeedbackForm(feedbackForm3);
+        courseAUME.addFeedbackForm(feedbackForm3);
         FeedbackForm feedbackForm4 = new FeedbackForm(
-            feedbackChannelCloudId,
+            courseCloudId,
             "1. Monat im neuen Semester",
             "Dies ist das Feedback für den 1. Monat im neuen Semester",
-            List.of(feedbackElement2, feedbackElement4, feedbackElement5, feedbackElement8),
-            FeedbackChannelStatus.NOT_STARTED
+            List.of(
+                new QuestionWrapper(question2.getId(), null), 
+                new QuestionWrapper(question4.getId(), null), 
+                new QuestionWrapper(question5.getId(), null),
+                new QuestionWrapper(question8.getId(), null)
+            ),
+            FormStatus.NOT_STARTED
         );
-        feedbackChannelCloud.addFeedbackForm(feedbackForm4);
+        courseCloud.addFeedbackForm(feedbackForm4);
 
         // save the FeedbackChannel
-        feedbackChannelRepository.persist(feedbackChannelDima);
-        feedbackChannelRepository.persist(feedbackChannelAUME);
-        feedbackChannelRepository.persist(feedbackChannelCloud);
+        courseRepository.persist(courseDima);
+        courseRepository.persist(courseAUME);
+        courseRepository.persist(courseCloud);
 
         // create dummy user
         User user1 = new User("Johannes@example.com","Johannes", "jo123joe", "");
@@ -149,7 +181,7 @@ public class MockingService {
         userRepository.persist(user2);
 
         // return all FeedbackChannels and Users
-        return List.of(feedbackChannelRepository.listAll(), userRepository.listAll());
+        return List.of(courseRepository.listAll(), userRepository.listAll());
     }
 
 
@@ -157,7 +189,7 @@ public class MockingService {
     @Produces(MediaType.APPLICATION_JSON)
     @Path("/deleteallchannels")
     public String deleteAllFeedbackChannels() {
-        feedbackChannelRepository.deleteAll();
+        courseRepository.deleteAll();
         return "All FeedbackChannels deleted";
     }
 }

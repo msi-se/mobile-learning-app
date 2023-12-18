@@ -7,7 +7,7 @@ import com.google.gson.GsonBuilder;
 import de.htwg_konstanz.mobilelearning.helper.ObjectIdTypeAdapter;
 import de.htwg_konstanz.mobilelearning.models.feedback.FeedbackForm;
 
-public class FeedbackSocketMessage {
+public class LiveFeedbackSocketMessage {
 
     // general
     public String action; // CHANGE_FORM_STATUS, ADD_RESULT, FORM_STATUS_CHANGED, RESULT_ADDED
@@ -21,9 +21,9 @@ public class FeedbackSocketMessage {
     // outgoing message
     public FeedbackForm form;
 
-    public FeedbackSocketMessage(String message) {
+    public LiveFeedbackSocketMessage(String message) {
         Gson gson = new GsonBuilder().create();
-        FeedbackSocketMessage feedbackSocketMessage = gson.fromJson(message, FeedbackSocketMessage.class);
+        LiveFeedbackSocketMessage feedbackSocketMessage = gson.fromJson(message, LiveFeedbackSocketMessage.class);
         this.action = feedbackSocketMessage.action;
         this.formStatus = feedbackSocketMessage.formStatus;
         this.resultElementId = feedbackSocketMessage.resultElementId;
@@ -38,7 +38,7 @@ public class FeedbackSocketMessage {
         System.out.println("Role: " + this.role);
     }
 
-    public FeedbackSocketMessage(String action, String formStatus, String resultElementId, String resultValue, String role, FeedbackForm form) {
+    public LiveFeedbackSocketMessage(String action, String formStatus, String resultElementId, String resultValue, String role, FeedbackForm form) {
         this.action = action;
         this.formStatus = formStatus;
         this.resultElementId = resultElementId;

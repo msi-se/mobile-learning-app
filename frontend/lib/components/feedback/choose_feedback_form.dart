@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:frontend/models/feedback/feedback_channel.dart';
+import 'package:frontend/models/feedback/feedback_course.dart';
 
 class ChooseFeedbackForm extends StatefulWidget {
-  final FeedbackChannel channel;
+  final FeedbackCourse course;
   final Function(String id) choose;
 
-  const ChooseFeedbackForm({super.key, required this.channel, required this.choose});
+  const ChooseFeedbackForm({super.key, required this.course, required this.choose});
 
   @override
   State<ChooseFeedbackForm> createState() => _ChooseFeedbackFormState();
@@ -14,7 +14,7 @@ class ChooseFeedbackForm extends StatefulWidget {
 class _ChooseFeedbackFormState extends State<ChooseFeedbackForm> {
   @override
   Widget build(BuildContext context) {
-    var forms = widget.channel.feedbackForms;
+    var forms = widget.course.feedbackForms;
 
     return Scaffold(
       body: ListView.builder(

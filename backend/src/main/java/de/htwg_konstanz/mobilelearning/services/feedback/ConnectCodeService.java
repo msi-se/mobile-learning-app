@@ -3,9 +3,9 @@ package de.htwg_konstanz.mobilelearning.services.feedback;
 import org.jboss.resteasy.reactive.RestPath;
 import org.json.JSONObject;
 
-import de.htwg_konstanz.mobilelearning.models.feedback.FeedbackChannel;
+import de.htwg_konstanz.mobilelearning.models.Course;
 import de.htwg_konstanz.mobilelearning.models.feedback.FeedbackForm;
-import de.htwg_konstanz.mobilelearning.repositories.FeedbackChannelRepository;
+import de.htwg_konstanz.mobilelearning.repositories.CourseRepository;
 
 import jakarta.inject.Inject;
 import jakarta.ws.rs.GET;
@@ -14,24 +14,23 @@ import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 
-@Path("/feedback/connectto")
+@Path("/connectto")
 public class ConnectCodeService {
     
     @Inject
-    private FeedbackChannelRepository feedbackChannelRepository;
+    private CourseRepository courseRepository;
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    @Path("/{connectCode}")
-    public String getFeedbackChannelByConnectCode(@RestPath Integer connectCode) {
-        System.out.println("Connect code: " + connectCode);
-        FeedbackChannel feedbackChannel = feedbackChannelRepository.findByFormConnectCode(connectCode);
-        if (feedbackChannel == null) {
-            throw new NotFoundException("Feedback channel with connect code " + connectCode + " not found.");
+    @Path("/feedback/{connectCode}")
+    public String getFeedbackFormConnectCode(@RestPath Integer connectCode) {
+        Course course = courseRepository.findByFeedbackFormConnectCode(connectCode);
+        if (course == null) {
+            throw new NotFoundException("Course with feedback form connect code " + connectCode + " not found.");
         }
 
         FeedbackForm feedbackForm = null;
-        for (FeedbackForm form : feedbackChannel.getFeedbackForms()) {
+        for (FeedbackForm form : course.getFeedbackForms()) {
             if (form.getConnectCode().equals(connectCode)) {
                 feedbackForm = form;
             }
@@ -42,7 +41,33 @@ public class ConnectCodeService {
         }
 
         JSONObject jsonObject = new JSONObject();
-        jsonObject.put("channelId", feedbackChannel.getId().toHexString());
+        jsonObject.put("courseId", course.getId().toHexString());
+        jsonObject.put("formId", feedbackForm.getId().toHexString());
+        return jsonObject.toString();
+    }
+
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path("/quiz/{connectCode}")
+    public String getQuizFormConnectCode(@RestPath Integer connectCode) {
+        Course course = courseRepository.findByQuizFormConnectCode(connectCode);
+        if (course == null) {
+            throw new NotFoundException("Course with quiz form connect code " + connectCode + " not found.");
+        }
+
+        FeedbackForm feedbackForm = null;
+        for (FeedbackForm form : course.getFeedbackForms()) {
+            if (form.getConnectCode().equals(connectCode)) {
+                feedbackForm = form;
+            }
+        };
+
+        if (feedbackForm == null) {
+            throw new NotFoundException("Quiz form with connect code " + connectCode + " not found.");
+        }
+
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("courseId", course.getId().toHexString());
         jsonObject.put("formId", feedbackForm.getId().toHexString());
         return jsonObject.toString();
     }

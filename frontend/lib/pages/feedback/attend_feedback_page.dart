@@ -22,7 +22,7 @@ class AttendFeedbackPage extends StatefulWidget {
 class _AttendFeedbackPageState extends State<AttendFeedbackPage> {
   bool _loading = true;
 
-  late String _channelId;
+  late String _courseId;
   late String _formId;
   late String _userId;
 
@@ -44,10 +44,10 @@ class _AttendFeedbackPageState extends State<AttendFeedbackPage> {
     var code = widget.code;
     try {
       final response = await http
-          .get(Uri.parse("${getBackendUrl()}/feedback/connectto/$code"));
+          .get(Uri.parse("${getBackendUrl()}/connectto/feedback/$code"));
       if (response.statusCode == 200) {
         var data = jsonDecode(response.body);
-        _channelId = data["channelId"];
+        _courseId = data["courseId"];
         _formId = data["formId"];
         fetchForm();
         return;
@@ -62,13 +62,13 @@ class _AttendFeedbackPageState extends State<AttendFeedbackPage> {
   Future fetchForm() async {
     try {
       final response = await http.get(Uri.parse(
-          "${getBackendUrl()}/feedback/channel/$_channelId/form/$_formId"));
+          "${getBackendUrl()}/course/$_courseId/feedback/form/$_formId"));
       if (response.statusCode == 200) {
         var data = jsonDecode(response.body);
 
         _socketChannel = WebSocketChannel.connect(
           Uri.parse(
-              "${getBackendUrl(protocol: "ws")}/feedback/channel/$_channelId/form/$_formId/subscribe/$_userId"),
+              "${getBackendUrl(protocol: "ws")}/course/$_courseId/feedback/form/$_formId/subscribe/$_userId"),
         );
 
         _socketChannel!.stream.listen((event) {
@@ -85,7 +85,7 @@ class _AttendFeedbackPageState extends State<AttendFeedbackPage> {
         });
 
         var form = FeedbackForm.fromJson(data);
-        for (var element in form.feedbackElements) {
+        for (var element in form.questions) {
           if (element.type == "STARS") {
             _feedbackValues[element.id] = 3;
           } else if (element.type == "SLIDER") {
@@ -167,9 +167,9 @@ class _AttendFeedbackPageState extends State<AttendFeedbackPage> {
             ListView.builder(
               shrinkWrap: true,
               physics: const NeverScrollableScrollPhysics(),
-              itemCount: _form.feedbackElements.length,
+              itemCount: _form.questions.length,
               itemBuilder: (context, index) {
-                var element = _form.feedbackElements[index];
+                var element = _form.questions[index];
                 return Padding(
                   padding: const EdgeInsets.all(32.0),
                   child: Column(

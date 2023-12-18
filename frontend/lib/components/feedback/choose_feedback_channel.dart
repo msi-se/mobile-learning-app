@@ -1,31 +1,31 @@
 import 'package:flutter/material.dart';
-import 'package:frontend/models/feedback/feedback_channel.dart';
+import 'package:frontend/models/feedback/feedback_course.dart';
 
-class ChooseFeedbackChannel extends StatefulWidget {
-  final List<FeedbackChannel> channels;
+class ChooseFeedbackCourse extends StatefulWidget {
+  final List<FeedbackCourse> courses;
   final Function(String id) choose;
 
-  const ChooseFeedbackChannel({super.key, required this.channels, required this.choose});
+  const ChooseFeedbackCourse({super.key, required this.courses, required this.choose});
 
   @override
-  State<ChooseFeedbackChannel> createState() => _ChooseFeedbackChannelState();
+  State<ChooseFeedbackCourse> createState() => _ChooseFeedbackCourseState();
 }
 
-class _ChooseFeedbackChannelState extends State<ChooseFeedbackChannel> {
+class _ChooseFeedbackCourseState extends State<ChooseFeedbackCourse> {
 
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: ListView.builder(
-        itemCount: widget.channels.length,
+        itemCount: widget.courses.length,
         itemBuilder: (context, index) {
           return ListTile(
-            title: Text(widget.channels[index].name),
-            subtitle: Text(widget.channels[index].description),
+            title: Text(widget.courses[index].name),
+            subtitle: Text(widget.courses[index].description),
             trailing: const Icon(Icons.arrow_forward_ios),
             onTap: () {
-              widget.choose(widget.channels[index].id);
+              widget.choose(widget.courses[index].id);
             },
           );
         },
