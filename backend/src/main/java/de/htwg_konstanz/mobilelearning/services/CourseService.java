@@ -8,8 +8,9 @@ import org.jboss.resteasy.reactive.RestPath;
 
 import de.htwg_konstanz.mobilelearning.models.Course;
 import de.htwg_konstanz.mobilelearning.models.QuestionWrapper;
+import de.htwg_konstanz.mobilelearning.models.auth.UserRole;
 import de.htwg_konstanz.mobilelearning.repositories.CourseRepository;
-
+import jakarta.annotation.security.RolesAllowed;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.NotFoundException;
@@ -52,6 +53,7 @@ public class CourseService {
 
     @PUT
     @Produces(MediaType.APPLICATION_JSON)
+    @RolesAllowed({ UserRole.PROF })
     @Path("/{courseId}")
     public Course updateCourse(@RestPath String courseId, Course course) {
         ObjectId courseObjectId = new ObjectId(courseId);
@@ -88,6 +90,7 @@ public class CourseService {
 
     @POST
     @Produces(MediaType.APPLICATION_JSON)
+    @RolesAllowed({ UserRole.PROF })
     @Path("")
     public Course createCourse(Course course) {
         // TODO: add validation

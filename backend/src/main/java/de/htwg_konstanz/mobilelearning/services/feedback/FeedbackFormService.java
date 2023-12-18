@@ -8,9 +8,10 @@ import org.jboss.resteasy.reactive.RestPath;
 import de.htwg_konstanz.mobilelearning.enums.FormStatus;
 import de.htwg_konstanz.mobilelearning.models.Course;
 import de.htwg_konstanz.mobilelearning.models.QuestionWrapper;
+import de.htwg_konstanz.mobilelearning.models.auth.UserRole;
 import de.htwg_konstanz.mobilelearning.models.feedback.FeedbackForm;
 import de.htwg_konstanz.mobilelearning.repositories.CourseRepository;
-
+import jakarta.annotation.security.RolesAllowed;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.NotFoundException;
@@ -52,6 +53,7 @@ public class FeedbackFormService {
 
     @PUT
     @Produces(MediaType.APPLICATION_JSON)
+    @RolesAllowed({ UserRole.PROF })
     @Path("/{formId}")
     public FeedbackForm updateFeedbackForm(@RestPath String courseId, @RestPath String formId, FeedbackForm feedbackForm) {
         ObjectId courseObjectId = new ObjectId(courseId);
@@ -85,6 +87,7 @@ public class FeedbackFormService {
 
     @POST
     @Produces(MediaType.APPLICATION_JSON)
+    @RolesAllowed({ UserRole.PROF })
     @Path("")
     public FeedbackForm createFeedbackForm(@RestPath String courseId, FeedbackForm feedbackForm) {
         
