@@ -27,6 +27,7 @@ class _FeedbackResultPageState extends State<FeedbackResultPage> {
   late String _courseId;
   late String _formId;
   late String _userId;
+  late String _role;
 
   late FeedbackForm _form;
   late String _status;
@@ -39,6 +40,7 @@ class _FeedbackResultPageState extends State<FeedbackResultPage> {
     super.initState();
 
     _userId = getSession()!.userId;
+    _role = getSession()!.role;
     init();
   }
 
@@ -97,7 +99,7 @@ class _FeedbackResultPageState extends State<FeedbackResultPage> {
       _socketChannel!.sink.add(jsonEncode({
         "action": "CHANGE_FORM_STATUS",
         "formStatus": "STARTED",
-        "role": "PROF",
+        "role": _role,
         "userId": _userId,
       }));
     }
@@ -108,7 +110,7 @@ class _FeedbackResultPageState extends State<FeedbackResultPage> {
       _socketChannel!.sink.add(jsonEncode({
         "action": "CHANGE_FORM_STATUS",
         "formStatus": "FINISHED",
-        "role": "PROF",
+        "role": _role,
         "userId": _userId,
       }));
     }
@@ -119,7 +121,7 @@ class _FeedbackResultPageState extends State<FeedbackResultPage> {
       _socketChannel!.sink.add(jsonEncode({
         "action": "CHANGE_FORM_STATUS",
         "formStatus": "NOT_STARTED",
-        "role": "PROF",
+        "role": _role,
         "userId": _userId,
       }));
     }
