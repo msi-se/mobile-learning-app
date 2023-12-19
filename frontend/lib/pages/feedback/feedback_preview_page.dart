@@ -4,6 +4,7 @@ import 'dart:convert';
 
 import 'package:frontend/models/feedback/feedback_form.dart';
 import 'package:frontend/utils.dart';
+import 'package:frontend/global.dart';
 
 class FeedbackPreviewPage extends StatefulWidget {
   final String courseId;
@@ -31,9 +32,16 @@ class _FeedbackPreviewPageState extends State<FeedbackPreviewPage> {
 
   Future<void> fetchForm() async {
     try {
-      print("${getBackendUrl()}/course/${widget.courseId}/feedback/form/${widget.formId}");
-      final response = await http.get(Uri.parse(
-          "${getBackendUrl()}/course/${widget.courseId}/feedback/form/${widget.formId}"));
+      print(
+          "${getBackendUrl()}/course/${widget.courseId}/feedback/form/${widget.formId}");
+      final response = await http.get(
+        Uri.parse(
+            "${getBackendUrl()}/course/${widget.courseId}/feedback/form/${widget.formId}"),
+        headers: {
+          "Content-Type": "application/json",
+          "AUTHORIZATION": "Bearer ${getSession()!.jwt}",
+        },
+      );
       if (response.statusCode == 200) {
         setState(() {
           _form = FeedbackForm.fromJson(json.decode(response.body));

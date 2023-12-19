@@ -1,13 +1,11 @@
 package de.htwg_konstanz.mobilelearning.services;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.bson.types.ObjectId;
 import org.jboss.resteasy.reactive.RestPath;
 
 import de.htwg_konstanz.mobilelearning.models.Course;
-import de.htwg_konstanz.mobilelearning.models.QuestionWrapper;
 import de.htwg_konstanz.mobilelearning.models.auth.UserRole;
 import de.htwg_konstanz.mobilelearning.repositories.CourseRepository;
 import jakarta.annotation.security.RolesAllowed;
@@ -29,6 +27,7 @@ public class CourseService {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @Path("/{courseId}")
+    @RolesAllowed({ UserRole.PROF, UserRole.STUDENT })
     public Course getCourse(@RestPath String courseId) {
         ObjectId courseObjectId = new ObjectId(courseId);
         Course course = courseRepository.findById(courseObjectId);
@@ -38,6 +37,7 @@ public class CourseService {
     @GET
     @Path("")
     @Produces(MediaType.APPLICATION_JSON)
+    @RolesAllowed({ UserRole.PROF, UserRole.STUDENT })
     public List<Course> getCourses() {
         List<Course> courses = courseRepository.listAll();
         courses.forEach(course -> {
@@ -53,8 +53,8 @@ public class CourseService {
 
     @PUT
     @Produces(MediaType.APPLICATION_JSON)
-    @RolesAllowed({ UserRole.PROF })
     @Path("/{courseId}")
+    @RolesAllowed({ UserRole.PROF })
     public Course updateCourse(@RestPath String courseId, Course course) {
         ObjectId courseObjectId = new ObjectId(courseId);
         Course courseToUpdate = courseRepository.findById(courseObjectId);
@@ -90,8 +90,8 @@ public class CourseService {
 
     @POST
     @Produces(MediaType.APPLICATION_JSON)
-    @RolesAllowed({ UserRole.PROF })
     @Path("")
+    @RolesAllowed({ UserRole.PROF })
     public Course createCourse(Course course) {
         // TODO: add validation
         course.id = new ObjectId();

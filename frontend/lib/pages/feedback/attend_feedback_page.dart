@@ -61,8 +61,14 @@ class _AttendFeedbackPageState extends State<AttendFeedbackPage> {
 
   Future fetchForm() async {
     try {
-      final response = await http.get(Uri.parse(
-          "${getBackendUrl()}/course/$_courseId/feedback/form/$_formId"));
+      final response = await http.get(
+        Uri.parse(
+            "${getBackendUrl()}/course/$_courseId/feedback/form/$_formId"),
+        headers: {
+          "Content-Type": "application/json",
+          "AUTHORIZATION": "Bearer ${getSession()!.jwt}",
+        },
+      );
       if (response.statusCode == 200) {
         var data = jsonDecode(response.body);
 

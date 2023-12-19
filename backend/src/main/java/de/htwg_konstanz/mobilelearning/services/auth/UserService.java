@@ -5,6 +5,7 @@ import org.jboss.resteasy.reactive.RestHeader;
 import de.htwg_konstanz.mobilelearning.models.auth.User;
 import de.htwg_konstanz.mobilelearning.models.auth.UserRole;
 import de.htwg_konstanz.mobilelearning.repositories.UserRepository;
+import jakarta.annotation.security.PermitAll;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
@@ -26,6 +27,7 @@ public class UserService {
     JwtService JwtService;
     
     @POST
+    @PermitAll
     @Produces(MediaType.APPLICATION_JSON)
     @Path("/login")
     public Response login(@RestHeader("Authorization") String authorization) throws Exception {
