@@ -114,7 +114,7 @@ public class FeedbackFormService {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @Path("/{formId}/clearresults")
-    @RolesAllowed({ UserRole.PROF, UserRole.STUDENT })
+    @RolesAllowed({ UserRole.PROF })
     public FeedbackForm clearFeedbackFormResults(@RestPath String courseId, @RestPath String formId) {
         ObjectId courseObjectId = new ObjectId(courseId);
         ObjectId formObjectId = new ObjectId(formId);

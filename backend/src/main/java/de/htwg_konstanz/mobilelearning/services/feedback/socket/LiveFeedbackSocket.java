@@ -104,7 +104,7 @@ public class LiveFeedbackSocket {
     private Boolean changeFormStatus(LiveFeedbackSocketMessage feedbackSocketMessage, String courseId, String formId, String userId) {
 
         if(feedbackSocketMessage.role.equals(UserRole.STUDENT)){
-            System.out.println("STUDENT is not allowed to start feedback");
+            System.out.println("STUDENT is not allowed to change feedback status");
             return false;
         }
 

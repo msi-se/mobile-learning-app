@@ -4,9 +4,10 @@ import org.jboss.resteasy.reactive.RestPath;
 import org.json.JSONObject;
 
 import de.htwg_konstanz.mobilelearning.models.Course;
+import de.htwg_konstanz.mobilelearning.models.auth.UserRole;
 import de.htwg_konstanz.mobilelearning.models.feedback.FeedbackForm;
 import de.htwg_konstanz.mobilelearning.repositories.CourseRepository;
-
+import jakarta.annotation.security.RolesAllowed;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.NotFoundException;
@@ -23,6 +24,7 @@ public class ConnectCodeService {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @Path("/feedback/{connectCode}")
+    @RolesAllowed({ UserRole.PROF, UserRole.STUDENT })
     public String getFeedbackFormConnectCode(@RestPath Integer connectCode) {
         Course course = courseRepository.findByFeedbackFormConnectCode(connectCode);
         if (course == null) {
@@ -49,6 +51,7 @@ public class ConnectCodeService {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @Path("/quiz/{connectCode}")
+    @RolesAllowed({ UserRole.PROF, UserRole.STUDENT })
     public String getQuizFormConnectCode(@RestPath Integer connectCode) {
         Course course = courseRepository.findByQuizFormConnectCode(connectCode);
         if (course == null) {

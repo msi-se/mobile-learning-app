@@ -43,8 +43,13 @@ class _AttendFeedbackPageState extends State<AttendFeedbackPage> {
   Future init() async {
     var code = widget.code;
     try {
-      final response = await http
-          .get(Uri.parse("${getBackendUrl()}/connectto/feedback/$code"));
+      final response = await http.get(
+        Uri.parse("${getBackendUrl()}/connectto/feedback/$code"),
+        headers: {
+          "Content-Type": "application/json",
+          "AUTHORIZATION": "Bearer ${getSession()!.jwt}",
+        },
+      );
       if (response.statusCode == 200) {
         var data = jsonDecode(response.body);
         _courseId = data["courseId"];
