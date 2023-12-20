@@ -48,7 +48,7 @@ public class JwtService {
                     .claim(Claims.email.name(), user.getEmail())
                     .claim(Claims.preferred_username.name(), user.getUsername())
                     .groups(new HashSet<String>(user.getRoles()))
-                    .expiresAt(System.currentTimeMillis() + 172800000L)
+                    .expiresAt((System.currentTimeMillis() + 172800000L)/1000L)
                     .sign();
             return token;
     }    
