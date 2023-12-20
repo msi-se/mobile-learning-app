@@ -1,15 +1,25 @@
 package de.htwg_konstanz.mobilelearning.services.auth;
 
-import java.util.HashSet;
+import java.nio.charset.StandardCharsets;
+import java.util.*;
 
+import io.smallrye.jwt.auth.principal.DefaultJWTCallerPrincipal;
 import org.eclipse.microprofile.jwt.Claims;
 
 import de.htwg_konstanz.mobilelearning.models.auth.User;
 import io.smallrye.jwt.build.Jwt;
 import jakarta.enterprise.context.ApplicationScoped;
+import org.jose4j.jwt.JwtClaims;
+import org.jose4j.jwt.consumer.InvalidJwtException;
 
 @ApplicationScoped
 public class JwtService {
+
+        public DefaultJWTCallerPrincipal getJwtClaims(String jwt) throws InvalidJwtException {
+            String jwtJson = new String(Base64.getUrlDecoder().decode(jwt.split("\\.")[1]), StandardCharsets.UTF_8);
+            DefaultJWTCallerPrincipal defaultJWTCallerPrincipal = new DefaultJWTCallerPrincipal(JwtClaims.parse(jwtJson));
+            return defaultJWTCallerPrincipal;
+        }
 
         public String getToken(User user) {
 

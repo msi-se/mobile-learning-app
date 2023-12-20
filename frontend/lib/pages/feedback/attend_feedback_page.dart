@@ -79,7 +79,7 @@ class _AttendFeedbackPageState extends State<AttendFeedbackPage> {
 
         _socketChannel = WebSocketChannel.connect(
           Uri.parse(
-              "${getBackendUrl(protocol: "ws")}/course/$_courseId/feedback/form/$_formId/subscribe/$_userId"),
+              "${getBackendUrl(protocol: "ws")}/course/$_courseId/feedback/form/$_formId/subscribe/$_userId/${getSession()!.jwt}"),
         );
 
         _socketChannel!.stream.listen((event) {
