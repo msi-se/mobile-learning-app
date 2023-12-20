@@ -27,7 +27,7 @@ class _FeedbackResultPageState extends State<FeedbackResultPage> {
   late String _courseId;
   late String _formId;
   late String _userId;
-  late String _role;
+  late List<String> _role;
 
   late FeedbackForm _form;
   late String _status;
@@ -40,7 +40,7 @@ class _FeedbackResultPageState extends State<FeedbackResultPage> {
     super.initState();
 
     _userId = getSession()!.userId;
-    _role = getSession()!.role;
+    _role = getSession()!.roles;
     init();
   }
 

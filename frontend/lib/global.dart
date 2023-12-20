@@ -4,12 +4,12 @@ class Session {
   String jwt;
   String userId;
   String username;
-  String role;
+  List<String> roles;
 
   Session(
       {required this.userId,
       required this.username,
-      required this.role,
+      required this.roles,
       required this.jwt});
 }
 
@@ -23,11 +23,11 @@ Session? getSession() {
   var jwt = _preferences?.getString("jwt");
   var userId = _preferences?.getString("userId");
   var username = _preferences?.getString("username");
-  var role = _preferences?.getString("role");
+  var roles = _preferences?.getStringList("roles");
   if (userId == null || username == null) {
     return null;
   }
-  return Session(jwt:jwt!, userId: userId, username: username, role: role!);
+  return Session(jwt:jwt!, userId: userId, username: username, roles: roles!);
 }
 
 Future<void> setSession(Session session) async {
@@ -37,5 +37,5 @@ Future<void> setSession(Session session) async {
   _preferences!.setString("jwt", session.jwt);
   _preferences!.setString("userId", session.userId);
   _preferences!.setString("username", session.username);
-  _preferences!.setString("role", session.role);
+  _preferences!.setStringList("roles", session.roles);
 }

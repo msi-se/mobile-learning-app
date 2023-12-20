@@ -103,7 +103,7 @@ public class LiveFeedbackSocket {
 
     private Boolean changeFormStatus(LiveFeedbackSocketMessage feedbackSocketMessage, String courseId, String formId, String userId) {
 
-        if(feedbackSocketMessage.role.equals(UserRole.STUDENT)){
+        if(!feedbackSocketMessage.roles.contains(UserRole.PROF)){
             System.out.println("STUDENT is not allowed to change feedback status");
             return false;
         }
@@ -140,12 +140,12 @@ public class LiveFeedbackSocket {
         if (formStatusEnum == FormStatus.NOT_STARTED) {
             form.clearResults();
             // send the event to all receivers
-            LiveFeedbackSocketMessage outgoingMessage = new LiveFeedbackSocketMessage("RESULT_ADDED", form.status.toString(), null, null, "SERVER", form);
+            LiveFeedbackSocketMessage outgoingMessage = new LiveFeedbackSocketMessage("RESULT_ADDED", form.status.toString(), null, null, null, form);
             this.broadcast(outgoingMessage.toJson(), courseId, formId);
         }
         
         // send the updated form to all receivers (stringify the form)
-        LiveFeedbackSocketMessage outgoingMessage = new LiveFeedbackSocketMessage("FORM_STATUS_CHANGED", form.status.toString(), null, null, "SERVER", form);
+        LiveFeedbackSocketMessage outgoingMessage = new LiveFeedbackSocketMessage("FORM_STATUS_CHANGED", form.status.toString(), null, null, null, form);
         this.broadcast(outgoingMessage.toJson(), courseId, formId);
 
         // update the form in the database
@@ -201,7 +201,7 @@ public class LiveFeedbackSocket {
         }
 
         // send the updated form to all receivers (stringify the form)
-        LiveFeedbackSocketMessage outgoingMessage = new LiveFeedbackSocketMessage("RESULT_ADDED", null, feedbackSocketMessage.resultElementId, feedbackSocketMessage.resultValue, "SERVER", form);
+        LiveFeedbackSocketMessage outgoingMessage = new LiveFeedbackSocketMessage("RESULT_ADDED", null, feedbackSocketMessage.resultElementId, feedbackSocketMessage.resultValue, feedbackSocketMessage.roles, form);
         this.broadcast(outgoingMessage.toJson(), courseId, formId);
 
         // update the form in the database
