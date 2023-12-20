@@ -78,7 +78,7 @@ class _FeedbackResultPageState extends State<FeedbackResultPage> {
   void startWebsocket() {
     _socketChannel = WebSocketChannel.connect(
       Uri.parse(
-          "${getBackendUrl(protocol: "ws")}/course/$_courseId/feedback/form/$_formId/subscribe/$_userId"),
+          "${getBackendUrl(protocol: "ws")}/course/$_courseId/feedback/form/$_formId/subscribe/$_userId/${getSession()!.jwt}"),
     );
 
     _socketChannel!.stream.listen((event) {
@@ -105,7 +105,7 @@ class _FeedbackResultPageState extends State<FeedbackResultPage> {
       _socketChannel!.sink.add(jsonEncode({
         "action": "CHANGE_FORM_STATUS",
         "formStatus": "STARTED",
-        "role": _role,
+        "roles": _role,
         "userId": _userId,
       }));
     }
@@ -116,7 +116,7 @@ class _FeedbackResultPageState extends State<FeedbackResultPage> {
       _socketChannel!.sink.add(jsonEncode({
         "action": "CHANGE_FORM_STATUS",
         "formStatus": "FINISHED",
-        "role": _role,
+        "roles": _role,
         "userId": _userId,
       }));
     }
@@ -127,7 +127,7 @@ class _FeedbackResultPageState extends State<FeedbackResultPage> {
       _socketChannel!.sink.add(jsonEncode({
         "action": "CHANGE_FORM_STATUS",
         "formStatus": "NOT_STARTED",
-        "role": _role,
+        "roles": _role,
         "userId": _userId,
       }));
     }
