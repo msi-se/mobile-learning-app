@@ -27,6 +27,7 @@ class _FeedbackResultPageState extends State<FeedbackResultPage> {
   late String _courseId;
   late String _formId;
   late String _userId;
+  late List<String> _role;
 
   late FeedbackForm _form;
   late String _status;
@@ -39,6 +40,7 @@ class _FeedbackResultPageState extends State<FeedbackResultPage> {
     super.initState();
 
     _userId = getSession()!.userId;
+    _role = getSession()!.roles;
     init();
   }
 
@@ -50,8 +52,14 @@ class _FeedbackResultPageState extends State<FeedbackResultPage> {
 
   Future fetchForm() async {
     try {
-      final response = await http.get(Uri.parse(
-          "${getBackendUrl()}/course/$_courseId/feedback/form/$_formId"));
+      final response = await http.get(
+        Uri.parse(
+            "${getBackendUrl()}/course/$_courseId/feedback/form/$_formId"),
+        headers: {
+          "Content-Type": "application/json",
+          "AUTHORIZATION": "Bearer ${getSession()!.jwt}",
+        },
+      );
       if (response.statusCode == 200) {
         var data = jsonDecode(response.body);
         startWebsocket();
@@ -70,7 +78,7 @@ class _FeedbackResultPageState extends State<FeedbackResultPage> {
   void startWebsocket() {
     _socketChannel = WebSocketChannel.connect(
       Uri.parse(
-          "${getBackendUrl(protocol: "ws")}/course/$_courseId/feedback/form/$_formId/subscribe/$_userId"),
+          "${getBackendUrl(protocol: "ws")}/course/$_courseId/feedback/form/$_formId/subscribe/$_userId/${getSession()!.jwt}"),
     );
 
     _socketChannel!.stream.listen((event) {
@@ -97,7 +105,7 @@ class _FeedbackResultPageState extends State<FeedbackResultPage> {
       _socketChannel!.sink.add(jsonEncode({
         "action": "CHANGE_FORM_STATUS",
         "formStatus": "STARTED",
-        "role": "PROF",
+        "roles": _role,
         "userId": _userId,
       }));
     }
@@ -108,7 +116,7 @@ class _FeedbackResultPageState extends State<FeedbackResultPage> {
       _socketChannel!.sink.add(jsonEncode({
         "action": "CHANGE_FORM_STATUS",
         "formStatus": "FINISHED",
-        "role": "PROF",
+        "roles": _role,
         "userId": _userId,
       }));
     }
@@ -119,7 +127,7 @@ class _FeedbackResultPageState extends State<FeedbackResultPage> {
       _socketChannel!.sink.add(jsonEncode({
         "action": "CHANGE_FORM_STATUS",
         "formStatus": "NOT_STARTED",
-        "role": "PROF",
+        "roles": _role,
         "userId": _userId,
       }));
     }

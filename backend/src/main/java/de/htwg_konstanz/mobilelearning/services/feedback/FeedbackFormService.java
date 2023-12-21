@@ -8,9 +8,10 @@ import org.jboss.resteasy.reactive.RestPath;
 import de.htwg_konstanz.mobilelearning.enums.FormStatus;
 import de.htwg_konstanz.mobilelearning.models.Course;
 import de.htwg_konstanz.mobilelearning.models.QuestionWrapper;
+import de.htwg_konstanz.mobilelearning.models.auth.UserRole;
 import de.htwg_konstanz.mobilelearning.models.feedback.FeedbackForm;
 import de.htwg_konstanz.mobilelearning.repositories.CourseRepository;
-
+import jakarta.annotation.security.RolesAllowed;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.NotFoundException;
@@ -28,6 +29,7 @@ public class FeedbackFormService {
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
+    @RolesAllowed({ UserRole.PROF, UserRole.STUDENT })
     public List<FeedbackForm> getFeedbackForms(@RestPath String courseId) {
         ObjectId courseObjectId = new ObjectId(courseId);
         Course feedbackChannel = feedbackChannelRepository.findById(courseObjectId);
@@ -37,6 +39,7 @@ public class FeedbackFormService {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @Path("/{formId}")
+    @RolesAllowed({ UserRole.PROF, UserRole.STUDENT })
     public FeedbackForm getFeedbackForm(@RestPath String courseId, @RestPath String formId) {
 
         ObjectId courseObjectId = new ObjectId(courseId);
@@ -53,6 +56,7 @@ public class FeedbackFormService {
     @PUT
     @Produces(MediaType.APPLICATION_JSON)
     @Path("/{formId}")
+    @RolesAllowed({ UserRole.PROF })
     public FeedbackForm updateFeedbackForm(@RestPath String courseId, @RestPath String formId, FeedbackForm feedbackForm) {
         ObjectId courseObjectId = new ObjectId(courseId);
         ObjectId formObjectId = new ObjectId(formId);
@@ -86,6 +90,7 @@ public class FeedbackFormService {
     @POST
     @Produces(MediaType.APPLICATION_JSON)
     @Path("")
+    @RolesAllowed({ UserRole.PROF })
     public FeedbackForm createFeedbackForm(@RestPath String courseId, FeedbackForm feedbackForm) {
         
         // TODO: add validation
@@ -109,6 +114,7 @@ public class FeedbackFormService {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @Path("/{formId}/clearresults")
+    @RolesAllowed({ UserRole.PROF })
     public FeedbackForm clearFeedbackFormResults(@RestPath String courseId, @RestPath String formId) {
         ObjectId courseObjectId = new ObjectId(courseId);
         ObjectId formObjectId = new ObjectId(formId);

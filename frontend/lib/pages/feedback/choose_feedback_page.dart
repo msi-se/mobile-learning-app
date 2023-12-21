@@ -6,6 +6,7 @@ import 'package:frontend/components/feedback/choose_feedback_form.dart';
 import 'package:frontend/models/feedback/feedback_course.dart';
 import 'package:frontend/utils.dart';
 import 'package:http/http.dart' as http;
+import 'package:frontend/global.dart';
 
 class ChooseFeedbackPage extends StatefulWidget {
   const ChooseFeedbackPage({super.key});
@@ -31,7 +32,11 @@ class _ChooseFeedbackPageState extends State<ChooseFeedbackPage> {
   Future fetchCourses() async {
     try {
       final response =
-          await http.get(Uri.parse("${getBackendUrl()}/course"));
+          await http.get(Uri.parse("${getBackendUrl()}/course"), headers: {
+          "Content-Type": "application/json",
+          "AUTHORIZATION":
+              "Bearer ${getSession()!.jwt}",
+        },);
       if (response.statusCode == 200) {
         var data = jsonDecode(response.body);
         setState(() {

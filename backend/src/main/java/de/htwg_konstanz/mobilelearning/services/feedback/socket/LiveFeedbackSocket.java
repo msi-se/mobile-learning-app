@@ -1,8 +1,16 @@
 package de.htwg_konstanz.mobilelearning.services.feedback.socket;
 
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.Base64;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import de.htwg_konstanz.mobilelearning.services.auth.JwtService;
+import io.smallrye.jwt.auth.principal.DefaultJWTCallerPrincipal;
+import io.smallrye.jwt.auth.principal.JWTParser;
+import io.smallrye.jwt.auth.principal.ParseException;
 import org.bson.types.ObjectId;
 
 import de.htwg_konstanz.mobilelearning.enums.FormStatus;
@@ -10,9 +18,9 @@ import de.htwg_konstanz.mobilelearning.helper.Hasher;
 import de.htwg_konstanz.mobilelearning.helper.SocketConnection;
 import de.htwg_konstanz.mobilelearning.helper.SocketConnectionType;
 import de.htwg_konstanz.mobilelearning.models.Course;
-import de.htwg_konstanz.mobilelearning.models.Question;
 import de.htwg_konstanz.mobilelearning.models.QuestionWrapper;
 import de.htwg_konstanz.mobilelearning.models.Result;
+import de.htwg_konstanz.mobilelearning.models.auth.UserRole;
 import de.htwg_konstanz.mobilelearning.models.feedback.FeedbackForm;
 import de.htwg_konstanz.mobilelearning.repositories.CourseRepository;
 
@@ -25,24 +33,34 @@ import jakarta.websocket.OnOpen;
 import jakarta.websocket.server.PathParam;
 import jakarta.websocket.server.ServerEndpoint;
 import jakarta.websocket.Session;
+import org.eclipse.microprofile.jwt.JsonWebToken;
+import org.jose4j.jwt.JwtClaims;
+import org.jose4j.jwt.consumer.InvalidJwtException;
 
 
-@ServerEndpoint("/course/{courseId}/feedback/form/{formId}/subscribe/{userId}")
+@ServerEndpoint("/course/{courseId}/feedback/form/{formId}/subscribe/{userId}/{jwt}")
 @ApplicationScoped
 public class LiveFeedbackSocket {
     Map<String, SocketConnection> connections = new ConcurrentHashMap<>();
 
     @Inject
     private CourseRepository feedbackChannelRepository;
+    @Inject
+    JwtService jwtService;
 
     @OnOpen
-    public void onOpen(Session session, @PathParam("courseId") String courseId, @PathParam("formId") String formId, @PathParam("userId") String userId) {
+    public void onOpen(Session session, @PathParam("courseId") String courseId, @PathParam("formId") String formId, @PathParam("userId") String userId, @PathParam("jwt") String jwt) throws Exception {
+        //UserId from Jwt has to match userId from path
+        if(jwtService.getJwtClaims(jwt).getSubject().equals(userId)){
         System.out.println("New connection with session ID: " + session.getId());
         System.out.println("Channel ID: " + courseId);
         System.out.println("Form ID: " + formId);
         System.out.println("User ID: " + userId);
         SocketConnection socketMember = new SocketConnection(session, courseId, formId, userId, SocketConnectionType.RECEIVER);
         connections.put(session.getId(), socketMember);
+        }else{
+            connections.remove(session.getId());
+        }
     }
 
     @OnClose
@@ -102,6 +120,11 @@ public class LiveFeedbackSocket {
 
     private Boolean changeFormStatus(LiveFeedbackSocketMessage feedbackSocketMessage, String courseId, String formId, String userId) {
 
+        if(!feedbackSocketMessage.roles.contains(UserRole.PROF)){
+            System.out.println("You need the role Prof to change the form status");
+            return false;
+        }
+
         System.out.println("Change form status");
 
         // evaluate formStatus
@@ -134,12 +157,12 @@ public class LiveFeedbackSocket {
         if (formStatusEnum == FormStatus.NOT_STARTED) {
             form.clearResults();
             // send the event to all receivers
-            LiveFeedbackSocketMessage outgoingMessage = new LiveFeedbackSocketMessage("RESULT_ADDED", form.status.toString(), null, null, "SERVER", form);
+            LiveFeedbackSocketMessage outgoingMessage = new LiveFeedbackSocketMessage("RESULT_ADDED", form.status.toString(), null, null, null, form);
             this.broadcast(outgoingMessage.toJson(), courseId, formId);
         }
         
         // send the updated form to all receivers (stringify the form)
-        LiveFeedbackSocketMessage outgoingMessage = new LiveFeedbackSocketMessage("FORM_STATUS_CHANGED", form.status.toString(), null, null, "SERVER", form);
+        LiveFeedbackSocketMessage outgoingMessage = new LiveFeedbackSocketMessage("FORM_STATUS_CHANGED", form.status.toString(), null, null, null, form);
         this.broadcast(outgoingMessage.toJson(), courseId, formId);
 
         // update the form in the database
@@ -195,7 +218,7 @@ public class LiveFeedbackSocket {
         }
 
         // send the updated form to all receivers (stringify the form)
-        LiveFeedbackSocketMessage outgoingMessage = new LiveFeedbackSocketMessage("RESULT_ADDED", null, feedbackSocketMessage.resultElementId, feedbackSocketMessage.resultValue, "SERVER", form);
+        LiveFeedbackSocketMessage outgoingMessage = new LiveFeedbackSocketMessage("RESULT_ADDED", null, feedbackSocketMessage.resultElementId, feedbackSocketMessage.resultValue, feedbackSocketMessage.roles, form);
         this.broadcast(outgoingMessage.toJson(), courseId, formId);
 
         // update the form in the database

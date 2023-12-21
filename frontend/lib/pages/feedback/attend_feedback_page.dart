@@ -43,8 +43,13 @@ class _AttendFeedbackPageState extends State<AttendFeedbackPage> {
   Future init() async {
     var code = widget.code;
     try {
-      final response = await http
-          .get(Uri.parse("${getBackendUrl()}/connectto/feedback/$code"));
+      final response = await http.get(
+        Uri.parse("${getBackendUrl()}/connectto/feedback/$code"),
+        headers: {
+          "Content-Type": "application/json",
+          "AUTHORIZATION": "Bearer ${getSession()!.jwt}",
+        },
+      );
       if (response.statusCode == 200) {
         var data = jsonDecode(response.body);
         _courseId = data["courseId"];
@@ -61,14 +66,20 @@ class _AttendFeedbackPageState extends State<AttendFeedbackPage> {
 
   Future fetchForm() async {
     try {
-      final response = await http.get(Uri.parse(
-          "${getBackendUrl()}/course/$_courseId/feedback/form/$_formId"));
+      final response = await http.get(
+        Uri.parse(
+            "${getBackendUrl()}/course/$_courseId/feedback/form/$_formId"),
+        headers: {
+          "Content-Type": "application/json",
+          "AUTHORIZATION": "Bearer ${getSession()!.jwt}",
+        },
+      );
       if (response.statusCode == 200) {
         var data = jsonDecode(response.body);
 
         _socketChannel = WebSocketChannel.connect(
           Uri.parse(
-              "${getBackendUrl(protocol: "ws")}/course/$_courseId/feedback/form/$_formId/subscribe/$_userId"),
+              "${getBackendUrl(protocol: "ws")}/course/$_courseId/feedback/form/$_formId/subscribe/$_userId/${getSession()!.jwt}"),
         );
 
         _socketChannel!.stream.listen((event) {
