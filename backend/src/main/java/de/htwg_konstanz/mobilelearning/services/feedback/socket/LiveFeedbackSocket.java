@@ -1,16 +1,10 @@
 package de.htwg_konstanz.mobilelearning.services.feedback.socket;
 
-import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.Base64;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import de.htwg_konstanz.mobilelearning.services.auth.JwtService;
-import io.smallrye.jwt.auth.principal.DefaultJWTCallerPrincipal;
-import io.smallrye.jwt.auth.principal.JWTParser;
-import io.smallrye.jwt.auth.principal.ParseException;
+
 import org.bson.types.ObjectId;
 
 import de.htwg_konstanz.mobilelearning.enums.FormStatus;
@@ -20,10 +14,11 @@ import de.htwg_konstanz.mobilelearning.helper.SocketConnectionType;
 import de.htwg_konstanz.mobilelearning.models.Course;
 import de.htwg_konstanz.mobilelearning.models.QuestionWrapper;
 import de.htwg_konstanz.mobilelearning.models.Result;
+import de.htwg_konstanz.mobilelearning.models.auth.User;
 import de.htwg_konstanz.mobilelearning.models.auth.UserRole;
 import de.htwg_konstanz.mobilelearning.models.feedback.FeedbackForm;
 import de.htwg_konstanz.mobilelearning.repositories.CourseRepository;
-
+import de.htwg_konstanz.mobilelearning.repositories.UserRepository;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.websocket.OnClose;
@@ -33,10 +28,6 @@ import jakarta.websocket.OnOpen;
 import jakarta.websocket.server.PathParam;
 import jakarta.websocket.server.ServerEndpoint;
 import jakarta.websocket.Session;
-import org.eclipse.microprofile.jwt.JsonWebToken;
-import org.jose4j.jwt.JwtClaims;
-import org.jose4j.jwt.consumer.InvalidJwtException;
-
 
 @ServerEndpoint("/course/{courseId}/feedback/form/{formId}/subscribe/{userId}/{jwt}")
 @ApplicationScoped
@@ -44,21 +35,49 @@ public class LiveFeedbackSocket {
     Map<String, SocketConnection> connections = new ConcurrentHashMap<>();
 
     @Inject
-    private CourseRepository feedbackChannelRepository;
+    private CourseRepository courseRepository;
+
+    @Inject
+    private UserRepository userRepository;
+
     @Inject
     JwtService jwtService;
 
     @OnOpen
     public void onOpen(Session session, @PathParam("courseId") String courseId, @PathParam("formId") String formId, @PathParam("userId") String userId, @PathParam("jwt") String jwt) throws Exception {
-        //UserId from Jwt has to match userId from path
-        if(jwtService.getJwtClaims(jwt).getSubject().equals(userId)){
-        System.out.println("New connection with session ID: " + session.getId());
-        System.out.println("Channel ID: " + courseId);
-        System.out.println("Form ID: " + formId);
-        System.out.println("User ID: " + userId);
-        SocketConnection socketMember = new SocketConnection(session, courseId, formId, userId, SocketConnectionType.RECEIVER);
-        connections.put(session.getId(), socketMember);
-        }else{
+        // userId from Jwt has to match userId from path
+        if (jwtService.getJwtClaims(jwt).getSubject().equals(userId)){
+
+            // check if course, form and user exist
+            Course course = courseRepository.findById(new ObjectId(courseId));
+            if (course == null) {
+                System.out.println("Course not found");
+                return;
+            }
+            FeedbackForm form = course.getFeedbackFormById(new ObjectId(formId));
+            if (form == null) {
+                System.out.println("Form not found");
+                return;
+            }
+            User user = userRepository.findById(new ObjectId(userId));
+            if (user == null) {
+                System.out.println("User not found");
+                return;
+            }
+
+            System.out.println("New connection with session ID: " + session.getId());
+            System.out.println("Course ID: " + courseId);
+            System.out.println("Form ID: " + formId);
+            System.out.println("User ID: " + userId);
+
+            // check if the user is a participant or a owner (by checking if the user is owner of the course)
+            Boolean isOwner = course.isOwner(userId);
+            SocketConnectionType type = isOwner ? SocketConnectionType.OWNER : SocketConnectionType.PARTICIPANT;
+
+            // add the connection to the list
+            SocketConnection socketMember = new SocketConnection(session, courseId, formId, userId, type);
+            connections.put(session.getId(), socketMember);
+        } else {
             connections.remove(session.getId());
         }
     }
@@ -80,7 +99,7 @@ public class LiveFeedbackSocket {
         this.evaluateMessage(feedbackSocketMessage, courseId, formId, userId);
     }
 
-    private void broadcast(String message, String courseId, String formId) {
+    private void broadcast(LiveFeedbackSocketMessage message, String courseId, String formId) {
         connections.values().forEach(connection -> {
 
             // check if the course ID and form ID match
@@ -91,7 +110,22 @@ public class LiveFeedbackSocket {
                 return;
             }
 
-            connection.session.getAsyncRemote().sendObject(message, result ->  {
+            // check what the user is allowed to see and if the user has to be notified
+            // if the user doesn't have to be notified, return
+            if (message.action.equals("RESULT_ADDED") && connection.getType().equals(SocketConnectionType.PARTICIPANT)) {
+                return;
+            }
+            if (connection.getType().equals(SocketConnectionType.PARTICIPANT)) {
+                // not show the results
+                message.form = message.form.copyWithoutResultsButWithQuestionContents(courseRepository.findById(new ObjectId(courseId)));
+            } else {
+                // show the results
+                message.form = message.form.copyWithQuestionContents(courseRepository.findById(new ObjectId(courseId)));
+            }
+
+            // send the message
+            String messageString = message.toJson();
+            connection.session.getAsyncRemote().sendObject(messageString, result ->  {
                 if (result.getException() != null) {
                     System.out.println("Unable to send message: " + result.getException());
                 }
@@ -120,10 +154,23 @@ public class LiveFeedbackSocket {
 
     private Boolean changeFormStatus(LiveFeedbackSocketMessage feedbackSocketMessage, String courseId, String formId, String userId) {
 
+        // check if the user has the role Prof
         if(!feedbackSocketMessage.roles.contains(UserRole.PROF)){
             System.out.println("You need the role Prof to change the form status");
             return false;
         }
+
+        // check if the user is an owner of the course
+        Course course = courseRepository.findById(new ObjectId(courseId));
+        if (course == null) {
+            System.out.println("Course not found");
+            return false;
+        }
+        if (!course.isOwner(userId)) {
+            System.out.println("Not an owner of the course");
+            return false;
+        }
+        
 
         System.out.println("Change form status");
 
@@ -138,11 +185,6 @@ public class LiveFeedbackSocket {
         System.out.println("Form status enum: " + formStatusEnum);
 
         // get the form
-        Course course = feedbackChannelRepository.findById(new ObjectId(courseId));
-        if (course == null) {
-            System.out.println("Channel not found");
-            return false;
-        }
         FeedbackForm form = course.getFeedbackFormById(new ObjectId(formId));
         if (form == null) {
             System.out.println("Form not found");
@@ -151,23 +193,22 @@ public class LiveFeedbackSocket {
 
         // change the form status
         form.setStatus(formStatusEnum);
-        form.fillQuestionContents(course);
 
         // if it is set to NOT_STARTED, remove all results
         if (formStatusEnum == FormStatus.NOT_STARTED) {
             form.clearResults();
             // send the event to all receivers
             LiveFeedbackSocketMessage outgoingMessage = new LiveFeedbackSocketMessage("RESULT_ADDED", form.status.toString(), null, null, null, form);
-            this.broadcast(outgoingMessage.toJson(), courseId, formId);
+            this.broadcast(outgoingMessage, courseId, formId);
         }
         
         // send the updated form to all receivers (stringify the form)
         LiveFeedbackSocketMessage outgoingMessage = new LiveFeedbackSocketMessage("FORM_STATUS_CHANGED", form.status.toString(), null, null, null, form);
-        this.broadcast(outgoingMessage.toJson(), courseId, formId);
+        this.broadcast(outgoingMessage, courseId, formId);
 
         // update the form in the database
         form.clearQuestionContents();
-        feedbackChannelRepository.update(course);
+        courseRepository.update(course);
 
         return true;
     };
@@ -189,9 +230,9 @@ public class LiveFeedbackSocket {
         }
 
         // get the form
-        Course course = feedbackChannelRepository.findById(new ObjectId(courseId));
+        Course course = courseRepository.findById(new ObjectId(courseId));
         if (course == null) {
-            System.out.println("Channel not found");
+            System.out.println("Course not found");
             return false;
         }
         FeedbackForm form = course.getFeedbackFormById(new ObjectId(formId));
@@ -199,7 +240,6 @@ public class LiveFeedbackSocket {
             System.out.println("Form not found");
             return false;
         }
-        form.fillQuestionContents(course);
 
         // get the element
         QuestionWrapper element = form.getQuestionById(new ObjectId(feedbackSocketMessage.resultElementId));
@@ -217,13 +257,12 @@ public class LiveFeedbackSocket {
             return false;
         }
 
+        // update the form in the database
+        courseRepository.update(course);
+
         // send the updated form to all receivers (stringify the form)
         LiveFeedbackSocketMessage outgoingMessage = new LiveFeedbackSocketMessage("RESULT_ADDED", null, feedbackSocketMessage.resultElementId, feedbackSocketMessage.resultValue, feedbackSocketMessage.roles, form);
-        this.broadcast(outgoingMessage.toJson(), courseId, formId);
-
-        // update the form in the database
-        form.clearQuestionContents();
-        feedbackChannelRepository.update(course);
+        this.broadcast(outgoingMessage, courseId, formId);
         return true;
     };
     

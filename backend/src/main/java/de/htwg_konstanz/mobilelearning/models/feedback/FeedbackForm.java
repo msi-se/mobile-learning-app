@@ -28,4 +28,29 @@ public class FeedbackForm extends Form {
             questionWrapper.setQuestionContent(null);
         }
     }
+
+    public FeedbackForm copy() {
+        FeedbackForm copy = new FeedbackForm(this.courseId, this.name, this.description, this.questions, this.status);
+        copy.id = this.id;
+        copy.connectCode = this.connectCode;
+        return copy;
+    }
+
+    public FeedbackForm copyWithoutResults() {
+        FeedbackForm copy = this.copy();
+        copy.clearResults();
+        return copy;
+    }
+
+    public FeedbackForm copyWithoutResultsButWithQuestionContents(Course course) {
+        FeedbackForm copy = this.copyWithoutResults();
+        copy.fillQuestionContents(course);
+        return copy;
+    }
+
+    public FeedbackForm copyWithQuestionContents(Course course) {
+        FeedbackForm copy = this.copy();
+        copy.fillQuestionContents(course);
+        return copy;
+    }
 }

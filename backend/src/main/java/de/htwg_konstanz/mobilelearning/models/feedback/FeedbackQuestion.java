@@ -9,7 +9,7 @@ import de.htwg_konstanz.mobilelearning.enums.QuestionType;
 import de.htwg_konstanz.mobilelearning.models.Question;
 
 public class FeedbackQuestion extends Question {
-    
+
     public FeedbackQuestion() {
     }
 
@@ -22,6 +22,8 @@ public class FeedbackQuestion extends Question {
     }
 
     public FeedbackQuestion copy() {
-        return new FeedbackQuestion(this.name, this.description, this.type, this.options);
+        FeedbackQuestion copy = new FeedbackQuestion(this.name, this.description, this.type, this.options);
+        copy.id = this.id;
+        return copy;
     }
 }
