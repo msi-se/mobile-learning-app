@@ -1,7 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:frontend/components/feedback/choose_feedback_channel.dart';
+import 'package:frontend/components/choose_course.dart';
 import 'package:frontend/components/feedback/choose_feedback_form.dart';
 import 'package:frontend/models/feedback/feedback_course.dart';
 import 'package:frontend/utils.dart';
@@ -89,7 +89,7 @@ class _CoursesTabState extends State<CoursesTab> {
         // ),
         // display _courses in list view with clickable tiles
         body: _selectedCourse == null
-            ? ChooseFeedbackCourse(
+            ? ChooseCourse(
                 courses: _courses,
                 choose: (id) {
                   setState(() {
