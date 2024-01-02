@@ -2,14 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:frontend/components/input_card.dart';
 
 
-class FeedbackTab extends StatefulWidget {
-  const FeedbackTab({super.key});
+class LiveTab extends StatefulWidget {
+  const LiveTab({super.key});
 
   @override
-  State<FeedbackTab> createState() => _FeedbackTabState();
+  State<LiveTab> createState() => _LiveTabState();
 }
 
-class _FeedbackTabState extends State<FeedbackTab> {
+class _LiveTabState extends State<LiveTab> {
   final TextEditingController _joinCodeController = TextEditingController();
 
   @override
@@ -32,7 +32,8 @@ class _FeedbackTabState extends State<FeedbackTab> {
       body: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: <Widget>[
-          Expanded(
+          SizedBox(
+            height: 300,
             child: InputCard(
                 size: size,
                 inputText: '123 456',
@@ -56,37 +57,6 @@ class _FeedbackTabState extends State<FeedbackTab> {
                   joinCourse();
                 },
                 sublineText: 'Mit Code beitreten'),
-          ),
-
-          Expanded(
-            child: Card(
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(25),
-              ),
-              margin: const EdgeInsets.symmetric(
-                horizontal: 25,
-                vertical: 20
-              ),
-              child: InkWell(
-                onTap: () {
-                  Navigator.pushNamed(context, '/choose-feedback');
-                },
-                child: Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: <Widget>[
-                      Text('Feedback auswählen',
-                          style: TextStyle(
-                              fontSize: 24.0, // Adjust font size
-                              fontWeight: FontWeight.bold,
-                              color: colors.primary)),
-                      Icon(Icons.arrow_right, color: colors.primary),
-                    ],
-                  ),
-                ),
-              ),
-            ),
           ),
         ],
       ),
