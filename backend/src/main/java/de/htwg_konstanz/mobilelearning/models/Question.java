@@ -50,11 +50,5 @@ public abstract class Question {
         return this.options;
     }
 
-    public void addResult(Result result) {
-    }
-
-    public void removeResult(Result result) {
-    }
-
     public abstract Question copy();
 }

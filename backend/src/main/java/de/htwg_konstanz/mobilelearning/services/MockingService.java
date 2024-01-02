@@ -8,7 +8,6 @@ import de.htwg_konstanz.mobilelearning.enums.FormStatus;
 import de.htwg_konstanz.mobilelearning.enums.QuestionType;
 import de.htwg_konstanz.mobilelearning.models.Course;
 import de.htwg_konstanz.mobilelearning.models.QuestionWrapper;
-import de.htwg_konstanz.mobilelearning.models.auth.User;
 import de.htwg_konstanz.mobilelearning.models.feedback.FeedbackForm;
 import de.htwg_konstanz.mobilelearning.models.feedback.FeedbackQuestion;
 import de.htwg_konstanz.mobilelearning.repositories.CourseRepository;
@@ -32,7 +31,7 @@ public class MockingService {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @Path("/mock")
-    public List<Object> addData() {
+    public Object addData() {
         courseRepository.deleteAll();
         userRepository.deleteAll();
 
@@ -172,16 +171,9 @@ public class MockingService {
         courseRepository.persist(courseAUME);
         courseRepository.persist(courseCloud);
 
-        // create dummy user
-        User user1 = new User("Johannes@example.com","Johannes", "jo123joe", "");
-        User user2 = new User("Fabi@example.com","Fabi", "fa123fae", "");
+        // return all Courses but read it from the database
+        return courseRepository.listAll();
 
-        // save the user
-        userRepository.persist(user1);
-        userRepository.persist(user2);
-
-        // return all FeedbackChannels and Users
-        return List.of(courseRepository.listAll(), userRepository.listAll());
     }
 
 

@@ -125,4 +125,8 @@ public class User {
         this.roles.add(role);
     }
 
+    public void setId(ObjectId id) {
+        this.id = id;
+    }
+
 }

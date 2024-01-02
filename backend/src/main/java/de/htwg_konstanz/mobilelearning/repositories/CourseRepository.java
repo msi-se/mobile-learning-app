@@ -13,7 +13,10 @@ import jakarta.enterprise.context.ApplicationScoped;
 
 @ApplicationScoped
 public class CourseRepository implements PanacheMongoRepository<Course> {
-    
+
+    public Course findByName(String name) {
+        return find("name", name).firstResult();
+    }
 
     public Course findByFeedbackFormConnectCode(Integer connectCode) {
         return find("feedbackForms.connectCode", connectCode).firstResult();

@@ -2,8 +2,10 @@ package de.htwg_konstanz.mobilelearning.services.auth;
 
 import org.jboss.resteasy.reactive.RestHeader;
 
+import de.htwg_konstanz.mobilelearning.models.Course;
 import de.htwg_konstanz.mobilelearning.models.auth.User;
 import de.htwg_konstanz.mobilelearning.models.auth.UserRole;
+import de.htwg_konstanz.mobilelearning.repositories.CourseRepository;
 import de.htwg_konstanz.mobilelearning.repositories.UserRepository;
 import jakarta.annotation.security.PermitAll;
 import jakarta.inject.Inject;
@@ -22,6 +24,9 @@ public class UserService {
 
     @Inject
     UserRepository userRepository;
+
+    @Inject
+    CourseRepository courseRepository; // only for testing (TODO: remove)
 
     @Inject
     JwtService JwtService;
@@ -73,6 +78,16 @@ public class UserService {
             }
 
             userRepository.persist(newUser);
+
+            // add course "Diskrete Mathematik" to prof
+            if (username.equals("Prof")) {
+                Course course = courseRepository.findByName("Diskrete Mathematik");
+                if (course != null) {
+                    course.addOwner(newUser.getId());
+                    courseRepository.update(course);
+                }
+            }
+
             String json = JwtService.getToken(newUser);
             if (json == null) {
                 return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
