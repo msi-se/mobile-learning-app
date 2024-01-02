@@ -128,7 +128,7 @@ public class LiveQuizSocket {
             }
             if (connection.getType().equals(SocketConnectionType.PARTICIPANT)) {
                 // not show the results
-                message.form = message.form.copyWithoutResultsButWithQuestionContents(courseRepository.findById(new ObjectId(courseId)));
+                message.form = message.form.copyWithoutResultsAndScoreButWithQuestionContents(courseRepository.findById(new ObjectId(courseId)));
             } else {
                 // show the results
                 message.form = message.form.copyWithQuestionContents(courseRepository.findById(new ObjectId(courseId)));

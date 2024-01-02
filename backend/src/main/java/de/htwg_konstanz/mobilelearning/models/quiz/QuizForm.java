@@ -146,4 +146,10 @@ public class QuizForm extends Form {
     private void clearScores() {
         this.scores.clear();
     }
+
+    public QuizForm copyWithoutResultsAndScoreButWithQuestionContents(Course byId) {
+        QuizForm copy = this.copyWithoutResultsButWithQuestionContents(byId);
+        copy.clearScores();
+        return copy;
+    }
 }
