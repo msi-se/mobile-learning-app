@@ -25,15 +25,15 @@ import jakarta.ws.rs.core.MediaType;
 public class FeedbackFormService {
 
     @Inject
-    private CourseRepository feedbackChannelRepository;
+    private CourseRepository courseRepository;
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @RolesAllowed({ UserRole.PROF, UserRole.STUDENT })
     public List<FeedbackForm> getFeedbackForms(@RestPath String courseId) {
         ObjectId courseObjectId = new ObjectId(courseId);
-        Course feedbackChannel = feedbackChannelRepository.findById(courseObjectId);
-        return feedbackChannel.getFeedbackForms();
+        Course course = courseRepository.findById(courseObjectId);
+        return course.getFeedbackForms();
     }
 
     @GET
@@ -46,7 +46,7 @@ public class FeedbackFormService {
         ObjectId formObjectId = new ObjectId(formId);
 
         // fill the questionContent with the linked question
-        Course course = feedbackChannelRepository.findById(courseObjectId);
+        Course course = courseRepository.findById(courseObjectId);
         FeedbackForm feedbackForm = course.getFeedbackFormById(formObjectId);
         feedbackForm.fillQuestionContents(course);
 
@@ -60,8 +60,8 @@ public class FeedbackFormService {
     public FeedbackForm updateFeedbackForm(@RestPath String courseId, @RestPath String formId, FeedbackForm feedbackForm) {
         ObjectId courseObjectId = new ObjectId(courseId);
         ObjectId formObjectId = new ObjectId(formId);
-        Course feedbackChannel = feedbackChannelRepository.findById(courseObjectId);
-        FeedbackForm feedbackFormToUpdate = feedbackChannel.getFeedbackFormById(formObjectId);
+        Course course = courseRepository.findById(courseObjectId);
+        FeedbackForm feedbackFormToUpdate = course.getFeedbackFormById(formObjectId);
         
         if (feedbackFormToUpdate == null) {
             throw new NotFoundException("Feedbackcourse not found");
@@ -83,7 +83,7 @@ public class FeedbackFormService {
             feedbackFormToUpdate.status = feedbackForm.status;
         }
 
-        feedbackChannelRepository.update(feedbackChannel);
+        courseRepository.update(course);
         return feedbackFormToUpdate;
     }
 
@@ -95,18 +95,18 @@ public class FeedbackFormService {
         
         // TODO: add validation
         ObjectId courseObjectId = new ObjectId(courseId);
-        Course feedbackChannel = feedbackChannelRepository.findById(courseObjectId);
+        Course course = courseRepository.findById(courseObjectId);
         
         FeedbackForm newFeedbackForm = new FeedbackForm(
-            feedbackChannel.getId(),
+            course.getId(),
             feedbackForm.getName(),
             feedbackForm.getDescription(),
             feedbackForm.getQuestions(),
             FormStatus.NOT_STARTED
         );
 
-        feedbackChannel.addFeedbackForm(newFeedbackForm);
-        feedbackChannelRepository.update(feedbackChannel);
+        course.addFeedbackForm(newFeedbackForm);
+        courseRepository.update(course);
 
         return feedbackForm;
     }
@@ -118,15 +118,15 @@ public class FeedbackFormService {
     public FeedbackForm clearFeedbackFormResults(@RestPath String courseId, @RestPath String formId) {
         ObjectId courseObjectId = new ObjectId(courseId);
         ObjectId formObjectId = new ObjectId(formId);
-        Course feedbackChannel = feedbackChannelRepository.findById(courseObjectId);
-        FeedbackForm feedbackForm = feedbackChannel.getFeedbackFormById(formObjectId);
+        Course course = courseRepository.findById(courseObjectId);
+        FeedbackForm feedbackForm = course.getFeedbackFormById(formObjectId);
 
         if (feedbackForm == null) {
             throw new NotFoundException("Feedbackcourse not found");
         }
 
         feedbackForm.clearResults();
-        feedbackChannelRepository.update(feedbackChannel);
+        courseRepository.update(course);
         return feedbackForm;
     }
 
