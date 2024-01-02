@@ -192,6 +192,15 @@ public class Course implements Serializable {
         return this.quizQuestions;
     }
 
+    public QuizQuestion getQuizQuestionById(ObjectId quizQuestionId) {
+        for (QuizQuestion quizQuestion : this.quizQuestions) {
+            if (quizQuestion.getId().equals(quizQuestionId)) {
+                return quizQuestion;
+            }
+        }
+        return null;
+    }
+
     public void setQuizQuestions(List<QuizQuestion> quizQuestions) {
         this.quizQuestions = quizQuestions;
     }

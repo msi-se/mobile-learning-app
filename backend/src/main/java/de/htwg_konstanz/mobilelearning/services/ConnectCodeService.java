@@ -1,4 +1,4 @@
-package de.htwg_konstanz.mobilelearning.services.feedback;
+package de.htwg_konstanz.mobilelearning.services;
 
 import org.jboss.resteasy.reactive.RestPath;
 import org.json.JSONObject;

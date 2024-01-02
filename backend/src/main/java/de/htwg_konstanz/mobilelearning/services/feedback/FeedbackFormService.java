@@ -48,9 +48,9 @@ public class FeedbackFormService {
         // fill the questionContent with the linked question
         Course course = courseRepository.findById(courseObjectId);
         FeedbackForm feedbackForm = course.getFeedbackFormById(formObjectId);
-        feedbackForm.fillQuestionContents(course);
+        FeedbackForm feedbackFormWithQuestionContents = feedbackForm.copyWithoutResultsButWithQuestionContents(course);
 
-        return feedbackForm;
+        return feedbackFormWithQuestionContents;
     }
 
     @PUT
