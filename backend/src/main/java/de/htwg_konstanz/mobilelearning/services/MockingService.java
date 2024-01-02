@@ -5,7 +5,7 @@ import java.util.List;
 import org.bson.types.ObjectId;
 
 import de.htwg_konstanz.mobilelearning.enums.FormStatus;
-import de.htwg_konstanz.mobilelearning.enums.QuestionType;
+import de.htwg_konstanz.mobilelearning.enums.FeedbackQuestionType;
 import de.htwg_konstanz.mobilelearning.models.Course;
 import de.htwg_konstanz.mobilelearning.models.QuestionWrapper;
 import de.htwg_konstanz.mobilelearning.models.feedback.FeedbackForm;
@@ -39,49 +39,49 @@ public class MockingService {
         FeedbackQuestion question1 = new FeedbackQuestion(
             "Verständlichkeit",
             "Wie verständlich war das Thema Kombinatorik?",
-            QuestionType.STARS,
+            FeedbackQuestionType.STARS,
             null
         );
         FeedbackQuestion question2 = new FeedbackQuestion(
             "Kurzweiligkeit",
             "Wie kurzweilig war die Vorlesung? (links = langweilig, rechts = kurzweilig)",
-            QuestionType.SLIDER,
+            FeedbackQuestionType.SLIDER,
             null
         );
         FeedbackQuestion question3 = new FeedbackQuestion(
             "Praxisbezug",
             "Wie bewerten Sie den Praxisbezug der Vorlesung? (links = wenig Praxisbezug, rechts = viel Praxisbezug)",
-            QuestionType.SLIDER,
+            FeedbackQuestionType.SLIDER,
             null
         );
         FeedbackQuestion question4 = new FeedbackQuestion(
             "Sprachbarriere",
             "Die Vorlesung wurde auf Englisch gehalten. Wie fanden Sie die Verständlichkeit?",
-            QuestionType.SLIDER,
+            FeedbackQuestionType.SLIDER,
             null
         );
         FeedbackQuestion question5 = new FeedbackQuestion(
             "Prüfungsvorbereitung",
             "Wenn jetzt direkt die Prüfung wäre, wie gut fühlen Sie sich vorbereitet?",
-            QuestionType.STARS,
+            FeedbackQuestionType.STARS,
             null
         );
         FeedbackQuestion question6 = new FeedbackQuestion(
             "Technische Mittel",
             "Wie bewerten Sie die technischen Mittel, die in der Vorlesung verwendet wurden?",
-            QuestionType.STARS,
+            FeedbackQuestionType.STARS,
             null
         );
         FeedbackQuestion question7 = new FeedbackQuestion(
             "Schwierigstes Thema",
             "Welches Thema war für Sie am schwierigsten?",
-            QuestionType.SINGLE_CHOICE,
+            FeedbackQuestionType.SINGLE_CHOICE,
             List.of("Kombinatorik", "Graphen", "Relationen", "Formale Sprachen", "Endliche Automaten", "Turingmaschinen", "Berechenbarkeit")
         );
         FeedbackQuestion question8 = new FeedbackQuestion(
             "Schwierigstes Thema",
             "Welches Thema war für Sie am schwierigsten?",
-            QuestionType.SINGLE_CHOICE,
+            FeedbackQuestionType.SINGLE_CHOICE,
             List.of("Multitenancy", "Microservices", "Cloud Foundry", "Docker", "Kubernetes", "Cloud Native", "Cloud Native Buildpacks")
         );
 

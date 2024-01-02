@@ -5,7 +5,7 @@ import java.util.List;
 
 import org.bson.types.ObjectId;
 
-import de.htwg_konstanz.mobilelearning.enums.QuestionType;
+import de.htwg_konstanz.mobilelearning.enums.FeedbackQuestionType;
 import de.htwg_konstanz.mobilelearning.models.Question;
 
 public class FeedbackQuestion extends Question {
@@ -13,7 +13,7 @@ public class FeedbackQuestion extends Question {
     public FeedbackQuestion() {
     }
 
-    public FeedbackQuestion(String name, String description, QuestionType type, List<String> options) {
+    public FeedbackQuestion(String name, String description, FeedbackQuestionType type, List<String> options) {
         this.id = new ObjectId();
         this.name = name;
         this.description = description;

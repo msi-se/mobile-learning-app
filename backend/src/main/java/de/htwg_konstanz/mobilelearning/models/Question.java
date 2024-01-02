@@ -5,20 +5,20 @@ import java.util.List;
 
 import org.bson.types.ObjectId;
 
-import de.htwg_konstanz.mobilelearning.enums.QuestionType;
+import de.htwg_konstanz.mobilelearning.enums.FeedbackQuestionType;
 
 public abstract class Question {
     
     public ObjectId id;
     public String name;
     public String description;
-    public QuestionType type;
+    public FeedbackQuestionType type;
     public List<String> options;
 
     public Question() {
     }
 
-    public Question(String name, String description, QuestionType type, List<String> options) {
+    public Question(String name, String description, FeedbackQuestionType type, List<String> options) {
         this.id = new ObjectId();
         this.name = name;
         this.description = description;
@@ -42,7 +42,7 @@ public abstract class Question {
         return this.description;
     }
 
-    public QuestionType getType() {
+    public FeedbackQuestionType getType() {
         return this.type;
     }
 

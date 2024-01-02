@@ -2,7 +2,7 @@ package de.htwg_konstanz.mobilelearning.models.quiz;
 
 import java.util.List;
 
-import de.htwg_konstanz.mobilelearning.enums.QuestionType;
+import de.htwg_konstanz.mobilelearning.enums.FeedbackQuestionType;
 import de.htwg_konstanz.mobilelearning.models.Question;
 
 public class QuizQuestion extends Question {
@@ -12,7 +12,7 @@ public class QuizQuestion extends Question {
     public QuizQuestion() {
     }
 
-    public QuizQuestion(String name, String description, QuestionType type, List<String> options, String correctAnswer) {
+    public QuizQuestion(String name, String description, FeedbackQuestionType type, List<String> options, String correctAnswer) {
         super(name, description, type, options);
         this.correctAnswer = correctAnswer;
     }
