@@ -29,6 +29,7 @@ class _MainPageState extends State<MainPage> {
     final colors = Theme.of(context).colorScheme;
 
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.primary,
         title: Image.asset(htwgWhiteExtendedLogo, height: 50),
