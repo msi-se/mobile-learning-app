@@ -143,7 +143,7 @@ public class QuizForm extends Form {
         return Arrays.asList();
     }
 
-    private void clearScores() {
+    public void clearScores() {
         this.scores.clear();
     }
 
