@@ -60,7 +60,6 @@ class _ChooseFormState extends State<ChooseForm> {
           )),
       body: Column(
         children: [
-          // Add two Buttons "Feedback" and "Quiz" in a row
           Row(
             children: [
               Expanded(
@@ -131,7 +130,6 @@ class _ChooseFormState extends State<ChooseForm> {
               ),
             ],
           ),
-          // horizontal line
           const Divider(
             thickness: 1,
           ),

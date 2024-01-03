@@ -32,9 +32,9 @@ class _MainPageState extends State<MainPage> {
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.primary,
         title: Image.asset(htwgWhiteExtendedLogo, height: 50),
-        // centerTitle: true,
+        centerTitle: true,
         leading: popFunction != null ? IconButton(
-          icon: Icon(Icons.arrow_back, color: colors.tertiary),
+          icon: Icon(Icons.arrow_back, color: colors.onBackground),
           onPressed: () {
             popFunction!();
           },
