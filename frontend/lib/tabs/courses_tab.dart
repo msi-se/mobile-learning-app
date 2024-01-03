@@ -9,7 +9,9 @@ import 'package:http/http.dart' as http;
 import 'package:frontend/global.dart';
 
 class CoursesTab extends StatefulWidget {
-  const CoursesTab({super.key});
+  final Function(Function?) setPopFunction;
+
+  const CoursesTab({super.key, required this.setPopFunction});
 
   @override
   State<CoursesTab> createState() => _CoursesTabState();
@@ -54,6 +56,15 @@ class _CoursesTabState extends State<CoursesTab> {
     return json.map((e) => FeedbackCourse.fromJson(e)).toList();
   }
 
+  void pop() {
+    if (_selectedCourse != null) {
+      setState(() {
+        _selectedCourse = null;
+      });
+    }
+    widget.setPopFunction(null);
+  }
+
   @override
   Widget build(BuildContext context) {
     if (_loading) {
@@ -63,18 +74,12 @@ class _CoursesTabState extends State<CoursesTab> {
     }
 
     return PopScope(
-      canPop: false,
+      canPop: _selectedCourse == null,
       onPopInvoked: (bool didPop) {
         if (didPop) {
           return;
         }
-        if (_selectedCourse != null) {
-          setState(() {
-            _selectedCourse = null;
-          });
-        } else {
-          Navigator.pop(context);
-        }
+        pop();
       },
       child: _selectedCourse == null
           ? ChooseCourse(
@@ -84,6 +89,7 @@ class _CoursesTabState extends State<CoursesTab> {
                   _selectedCourse =
                       _courses.firstWhere((element) => element.id == id);
                 });
+                widget.setPopFunction(pop);
               },
             )
           : ChooseForm(
