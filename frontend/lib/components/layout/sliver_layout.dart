@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 
 class SliverLayout extends StatelessWidget {
@@ -19,7 +21,7 @@ class SliverLayout extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     double heightWithoutappBarNavBar = MediaQuery.of(context).size.height -
-        (kBottomNavigationBarHeight + kToolbarHeight);
+        (kBottomNavigationBarHeight + Scaffold.of(context).appBarMaxHeight!);
 
     final colors = Theme.of(context).colorScheme;
 
@@ -59,7 +61,7 @@ class SliverLayout extends StatelessWidget {
       delegate: SliverChildListDelegate([
         ConstrainedBox(
           constraints: BoxConstraints(
-            minHeight: heightWithoutappBarNavBar - 130,
+            minHeight: heightWithoutappBarNavBar - 80,
           ),
           child: Card(
             shape: const RoundedRectangleBorder(

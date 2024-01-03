@@ -28,8 +28,7 @@ class _LiveTabState extends State<LiveTab> {
     final colors = Theme.of(context).colorScheme;
     Size size = MediaQuery.of(context).size;
 
-    return Scaffold(
-      body: Column(
+    return Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: <Widget>[
           SizedBox(
@@ -59,7 +58,6 @@ class _LiveTabState extends State<LiveTab> {
                 sublineText: 'Mit Code beitreten'),
           ),
         ],
-      ),
-    );
+      );
   }
 }
