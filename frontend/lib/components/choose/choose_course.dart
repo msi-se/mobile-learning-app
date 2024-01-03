@@ -42,28 +42,31 @@ class _ChooseCourseState extends State<ChooseCourse> {
           alignment: Alignment.bottomRight,
         ),
       ),
-      list: ListView.builder(
-        shrinkWrap: true,
-        physics: const NeverScrollableScrollPhysics(),
-        itemCount: widget.courses.length,
-        itemBuilder: (context, index) {
-          return Card(
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(10.0),
-            ),
-            elevation: 1.0,
-            surfaceTintColor: Colors.white,
-            child: ListTile(
-              title: Text(widget.courses[index].name),
-              subtitle: Text(widget.courses[index].description),
-              // dense: true,
-              // trailing: const Icon(Icons.arrow_forward_ios),
-              onTap: () {
-                widget.choose(widget.courses[index].id);
-              },
-            ),
-          );
-        },
+      body: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: ListView.builder(
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          itemCount: widget.courses.length,
+          itemBuilder: (context, index) {
+            return Card(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10.0),
+              ),
+              elevation: 1.0,
+              surfaceTintColor: Colors.white,
+              child: ListTile(
+                title: Text(widget.courses[index].name),
+                subtitle: Text(widget.courses[index].description),
+                // dense: true,
+                // trailing: const Icon(Icons.arrow_forward_ios),
+                onTap: () {
+                  widget.choose(widget.courses[index].id);
+                },
+              ),
+            );
+          },
+        ),
       ),
     );
   }

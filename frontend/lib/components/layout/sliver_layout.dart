@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 class SliverLayout extends StatelessWidget {
   final Widget Function(double) title;
   final Widget background;
-  final Widget list;
+  final Widget body;
 
   final double expandedTitleScale;
   final double headerHeight;
@@ -12,7 +12,7 @@ class SliverLayout extends StatelessWidget {
       {super.key,
       required this.title,
       required this.background,
-      required this.list,
+      required this.body,
       this.headerHeight = 140,
       this.expandedTitleScale = 2});
 
@@ -68,10 +68,7 @@ class SliverLayout extends StatelessWidget {
             ),
             color: colors.background,
             margin: const EdgeInsets.only(top: 0),
-            child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: list,
-            ),
+            child: body,
           ),
         ),
       ]),

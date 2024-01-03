@@ -38,42 +38,95 @@ class _ChooseFormState extends State<ChooseForm> {
       },
       // round button in Background with "Moodle"
       background: Padding(
-        padding: const EdgeInsets.only(right: 20),
-        child: Align(
-          alignment: Alignment.centerRight,
-          child: ElevatedButton(
-            onPressed: () {},
-            style: ElevatedButton.styleFrom(
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(20.0),
+          padding: const EdgeInsets.only(right: 20),
+          child: Align(
+            alignment: Alignment.centerRight,
+            child: ElevatedButton(
+              onPressed: () {},
+              style: ElevatedButton.styleFrom(
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(20.0),
+                ),
               ),
+              child: Image.asset(moodleLogo, width: 80),
             ),
-            child: Image.asset(moodleLogo, width: 80),
+          )),
+      body: Column(
+        children: [
+          // Add two Buttons "Feedback" and "Quiz" in a row
+          Row(
+            children: [
+              Expanded(
+                child: TextButton(
+                  onPressed: () {},
+                  child: const Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(
+                        Icons.feedback,
+                        color: Colors.black,
+                      ),
+                      SizedBox(width: 10),
+                      Text(
+                        "Feedback",
+                        style: TextStyle(color: Colors.black),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              Expanded(
+                child: TextButton(
+                  onPressed: () {},
+                  child: const Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(
+                        Icons.quiz,
+                        color: Colors.black,
+                      ),
+                      SizedBox(width: 10),
+                      Text(
+                        "Quiz",
+                        style: TextStyle(color: Colors.black),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ],
           ),
-        )
-      ),
-      list: ListView.builder(
-        shrinkWrap: true,
-        physics: const NeverScrollableScrollPhysics(),
-        itemCount: forms.length,
-        itemBuilder: (context, index) {
-          return Card(
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(10.0),
-            ),
-            elevation: 1.0,
-            surfaceTintColor: Colors.white,
-            child: ListTile(
-              title: Text(forms[index].name),
-              subtitle: Text(forms[index].description),
-              // trailing: const Icon(Icons.arrow_forward_ios),
-              // TODO: display status of form
-              onTap: () {
-                widget.choose(forms[index].id);
+          // horizontal line
+          const Divider(
+            thickness: 1,
+          ),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: ListView.builder(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              itemCount: forms.length,
+              itemBuilder: (context, index) {
+                return Card(
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10.0),
+                  ),
+                  elevation: 1.0,
+                  surfaceTintColor: Colors.white,
+                  child: ListTile(
+                    title: Text(forms[index].name),
+                    subtitle: Text(forms[index].description),
+                    // trailing: const Icon(Icons.arrow_forward_ios),
+                    // TODO: display status of form
+                    onTap: () {
+                      widget.choose(forms[index].id);
+                    },
+                  ),
+                );
               },
             ),
-          );
-        },
+          ),
+        ],
       ),
     );
   }
