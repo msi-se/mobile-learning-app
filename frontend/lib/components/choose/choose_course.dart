@@ -26,10 +26,10 @@ class _ChooseCourseState extends State<ChooseCourse> {
         return Padding(
           padding: EdgeInsets.only(
               left: 18.0 * percentage, bottom: 12 + 6.0 * percentage),
-          child: const Text(
+          child: Text(
             "Kurse",
             style: TextStyle(
-              color: Colors.black,
+              color: colors.onSurface,
               fontWeight: FontWeight.bold,
             ),
           ),

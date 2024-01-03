@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/svg.dart';
 import 'package:frontend/components/layout/sliver_layout.dart';
 import 'package:frontend/models/feedback/feedback_course.dart';
 import 'package:frontend/theme/assets.dart';
@@ -15,8 +14,16 @@ class ChooseForm extends StatefulWidget {
 }
 
 class _ChooseFormState extends State<ChooseForm> {
+  String feedbackOrQuiz = "Feedback";
+
+  @override
+  void initState() {
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
     var forms = widget.course.feedbackForms;
 
     return SliverLayout(
@@ -28,8 +35,8 @@ class _ChooseFormState extends State<ChooseForm> {
             padding: EdgeInsets.only(right: percentage < 0.2 ? 0 : 120),
             child: Text(
               widget.course.name,
-              style: const TextStyle(
-                color: Colors.black,
+              style: TextStyle(
+                color: colors.onSurface,
                 fontWeight: FontWeight.bold,
               ),
             ),
@@ -58,18 +65,32 @@ class _ChooseFormState extends State<ChooseForm> {
             children: [
               Expanded(
                 child: TextButton(
-                  onPressed: () {},
-                  child: const Row(
+                  onPressed: () {
+                    setState(() {
+                      feedbackOrQuiz = "Feedback";
+                    });
+                  },
+                  child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Icon(
                         Icons.feedback,
-                        color: Colors.black,
+                        color: feedbackOrQuiz == "Feedback"
+                            ? colors.primary
+                            : colors.tertiary,
                       ),
-                      SizedBox(width: 10),
+                      const SizedBox(width: 10),
                       Text(
                         "Feedback",
-                        style: TextStyle(color: Colors.black),
+                        style: feedbackOrQuiz == "Feedback"
+                            ? TextStyle(
+                                color: colors.primary,
+                                fontWeight: FontWeight.bold,
+                              )
+                            : TextStyle(
+                                color: colors.tertiary,
+                                fontWeight: FontWeight.normal,
+                              ),
                       ),
                     ],
                   ),
@@ -77,18 +98,32 @@ class _ChooseFormState extends State<ChooseForm> {
               ),
               Expanded(
                 child: TextButton(
-                  onPressed: () {},
-                  child: const Row(
+                  onPressed: () {
+                    setState(() {
+                      feedbackOrQuiz = "Quiz";
+                    });
+                  },
+                  child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Icon(
                         Icons.quiz,
-                        color: Colors.black,
+                        color: feedbackOrQuiz == "Quiz"
+                            ? colors.primary
+                            : colors.tertiary,
                       ),
-                      SizedBox(width: 10),
+                      const SizedBox(width: 10),
                       Text(
                         "Quiz",
-                        style: TextStyle(color: Colors.black),
+                        style: feedbackOrQuiz == "Quiz"
+                            ? TextStyle(
+                                color: colors.primary,
+                                fontWeight: FontWeight.bold,
+                              )
+                            : TextStyle(
+                                color: colors.tertiary,
+                                fontWeight: FontWeight.normal,
+                              ),
                       ),
                     ],
                   ),
