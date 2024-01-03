@@ -1,21 +1,21 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:frontend/components/feedback/choose_feedback_channel.dart';
-import 'package:frontend/components/feedback/choose_feedback_form.dart';
+import 'package:frontend/components/choose/choose_course.dart';
+import 'package:frontend/components/choose/choose_form.dart';
 import 'package:frontend/models/feedback/feedback_course.dart';
 import 'package:frontend/utils.dart';
 import 'package:http/http.dart' as http;
 import 'package:frontend/global.dart';
 
-class ChooseFeedbackPage extends StatefulWidget {
-  const ChooseFeedbackPage({super.key});
+class CoursesTab extends StatefulWidget {
+  const CoursesTab({super.key});
 
   @override
-  State<ChooseFeedbackPage> createState() => _ChooseFeedbackPageState();
+  State<CoursesTab> createState() => _CoursesTabState();
 }
 
-class _ChooseFeedbackPageState extends State<ChooseFeedbackPage> {
+class _CoursesTabState extends State<CoursesTab> {
   late List<FeedbackCourse> _courses;
 
   FeedbackCourse? _selectedCourse;
@@ -78,18 +78,18 @@ class _ChooseFeedbackPageState extends State<ChooseFeedbackPage> {
         }
       },
       child: Scaffold(
-        appBar: AppBar(
-          backgroundColor: Theme.of(context).colorScheme.primary,
-          title: Text(
-              _selectedCourse != null
-                  ? _selectedCourse!.name
-                  : "Feedbackbogen auswählen",
-              style: const TextStyle(
-                  color: Colors.white, fontWeight: FontWeight.bold)),
-        ),
+        // appBar: AppBar(
+        //   backgroundColor: Theme.of(context).colorScheme.primary,
+        //   title: Text(
+        //       _selectedCourse != null
+        //           ? _selectedCourse!.name
+        //           : "Feedbackbogen auswählen",
+        //       style: const TextStyle(
+        //           color: Colors.white, fontWeight: FontWeight.bold)),
+        // ),
         // display _courses in list view with clickable tiles
         body: _selectedCourse == null
-            ? ChooseFeedbackCourse(
+            ? ChooseCourse(
                 courses: _courses,
                 choose: (id) {
                   setState(() {
@@ -98,7 +98,7 @@ class _ChooseFeedbackPageState extends State<ChooseFeedbackPage> {
                   });
                 },
               )
-            : ChooseFeedbackForm(
+            : ChooseForm(
                 course: _selectedCourse!,
                 choose: (id) {
                   Navigator.pushNamed(context, '/feedback-info', arguments: {

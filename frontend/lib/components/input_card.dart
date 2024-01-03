@@ -36,6 +36,7 @@ class _InputCardState extends State<InputCard> {
     final colors = Theme.of(context).colorScheme;
 
     return Card(
+      color: colors.background,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(25),
       ),

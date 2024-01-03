@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:frontend/tabs/feedback_tab.dart';
+import 'package:frontend/tabs/courses_tab.dart';
+import 'package:frontend/tabs/live_tab.dart';
 import 'package:frontend/tabs/home_tab.dart';
 
 class MainPage extends StatefulWidget {
@@ -39,7 +40,8 @@ class _MainPageState extends State<MainPage> {
       body: SafeArea(
         child: <Widget>[
           const HomeTab(title: "HTWG App"),
-          const FeedbackTab(),
+          const CoursesTab(),
+          const LiveTab(),
         ][_tabIndex],
       ),
       bottomNavigationBar: NavigationBar(
@@ -49,13 +51,12 @@ class _MainPageState extends State<MainPage> {
               label: 'Home',
             ),
             NavigationDestination(
-              icon: Icon(Icons.feedback, color: colors.secondary),
-              label: 'Feedback',
+              icon: Icon(Icons.school, color: colors.secondary),
+              label: 'Kurse',
             ),
             NavigationDestination(
-              enabled: false,
-              icon: Icon(Icons.quiz, color: colors.secondary.withAlpha(64)),
-              label: 'Quiz',
+              icon: Icon(Icons.sensors, color: colors.secondary),
+              label: 'Live',
             ),
           ],
           onDestinationSelected: (index) {
