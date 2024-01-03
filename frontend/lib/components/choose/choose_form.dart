@@ -24,7 +24,7 @@ class _ChooseFormState extends State<ChooseForm> {
   @override
   Widget build(BuildContext context) {
     final colors = Theme.of(context).colorScheme;
-    var forms = widget.course.feedbackForms;
+    var forms = feedbackOrQuiz == "Feedback" ? widget.course.feedbackForms : [];
 
     return SliverLayout(
       expandedTitleScale: 1,
