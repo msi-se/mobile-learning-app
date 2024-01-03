@@ -1,8 +1,8 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:frontend/components/choose_course.dart';
-import 'package:frontend/components/feedback/choose_feedback_form.dart';
+import 'package:frontend/components/choose/choose_course.dart';
+import 'package:frontend/components/choose/choose_form.dart';
 import 'package:frontend/models/feedback/feedback_course.dart';
 import 'package:frontend/utils.dart';
 import 'package:http/http.dart' as http;
@@ -98,7 +98,7 @@ class _CoursesTabState extends State<CoursesTab> {
                   });
                 },
               )
-            : ChooseFeedbackForm(
+            : ChooseForm(
                 course: _selectedCourse!,
                 choose: (id) {
                   Navigator.pushNamed(context, '/feedback-info', arguments: {

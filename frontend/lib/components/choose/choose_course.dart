@@ -19,9 +19,6 @@ class _ChooseCourseState extends State<ChooseCourse> {
 
   @override
   Widget build(BuildContext context) {
-    double heightWithoutappBarNavBar = MediaQuery.of(context).size.height -
-        (kBottomNavigationBarHeight + kToolbarHeight);
-
     final colors = Theme.of(context).colorScheme;
 
     return SliverLayout(

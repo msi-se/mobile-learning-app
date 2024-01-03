@@ -1,4 +1,5 @@
 const String htwgLogo = 'assets/logo/HTWG.png';
+const String moodleLogo = 'assets/logo/moodle.png';
 
 //Background assets
 const String onboardingLight = 'assets/backgrounds/onboarding-light.svg';

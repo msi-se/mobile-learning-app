@@ -5,6 +5,7 @@ class SliverLayout extends StatelessWidget {
   final Widget background;
   final Widget list;
 
+  final double expandedTitleScale;
   final double headerHeight;
 
   const SliverLayout(
@@ -12,7 +13,8 @@ class SliverLayout extends StatelessWidget {
       required this.title,
       required this.background,
       required this.list,
-      this.headerHeight = 140});
+      this.headerHeight = 140,
+      this.expandedTitleScale = 2});
 
   @override
   Widget build(BuildContext context) {
@@ -37,7 +39,7 @@ class SliverLayout extends StatelessWidget {
       expandedHeight: headerHeight,
       pinned: true,
       flexibleSpace: FlexibleSpaceBar(
-        expandedTitleScale: 2,
+        expandedTitleScale: expandedTitleScale,
         titlePadding: const EdgeInsetsDirectional.only(start: 16),
         title: LayoutBuilder(
           builder: (context, constraints) {
