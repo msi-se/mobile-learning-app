@@ -1,24 +1,20 @@
 package de.htwg_konstanz.mobilelearning.models.feedback;
 
-import java.util.ArrayList;
 import java.util.List;
-
-import org.bson.types.ObjectId;
 
 import de.htwg_konstanz.mobilelearning.enums.FeedbackQuestionType;
 import de.htwg_konstanz.mobilelearning.models.Question;
 
 public class FeedbackQuestion extends Question {
 
+    public FeedbackQuestionType type;
+
     public FeedbackQuestion() {
     }
 
     public FeedbackQuestion(String name, String description, FeedbackQuestionType type, List<String> options) {
-        this.id = new ObjectId();
-        this.name = name;
-        this.description = description;
+        super(name, description, options);
         this.type = type;
-        this.options = options != null ? options : new ArrayList<String>();
     }
 
     public FeedbackQuestion copy() {

@@ -2,24 +2,27 @@ package de.htwg_konstanz.mobilelearning.models.quiz;
 
 import java.util.List;
 
-import de.htwg_konstanz.mobilelearning.enums.FeedbackQuestionType;
+import de.htwg_konstanz.mobilelearning.enums.QuizQuestionType;
 import de.htwg_konstanz.mobilelearning.models.Question;
 
 public class QuizQuestion extends Question {
 
     public Boolean hasCorrectAnswer;
     public String correctAnswer;
+    public QuizQuestionType type;
     
     public QuizQuestion() {
     }
 
-    public QuizQuestion(String name, String description, FeedbackQuestionType type, List<String> options, String correctAnswer) {
-        super(name, description, type, options);
+    public QuizQuestion(String name, String description, QuizQuestionType type, List<String> options, Boolean hasCorrectAnswer, String correctAnswer) {
+        super(name, description, options);
+        this.type = type;
+        this.hasCorrectAnswer = hasCorrectAnswer;
         this.correctAnswer = correctAnswer;
     }
 
     public QuizQuestion copy() {
-        return new QuizQuestion(this.name, this.description, this.type, this.options, this.correctAnswer);
+        return new QuizQuestion(this.name, this.description, this.type, this.options, this.hasCorrectAnswer, this.correctAnswer);
     }
 
     public Boolean getHasCorrectAnswer() {

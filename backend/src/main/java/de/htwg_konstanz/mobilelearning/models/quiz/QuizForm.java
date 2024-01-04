@@ -32,6 +32,7 @@ public class QuizForm extends Form {
         super(courseId, name, description, questions, status);
         this.currentQuestionIndex = currentQuestionIndex;
         this.currentQuestionFinished = currentQuestionFinished;
+        this.participants = List.of();
     }
 
     public void fillQuestionContents(Course course) {
