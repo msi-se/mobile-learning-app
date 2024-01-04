@@ -1,0 +1,24 @@
+{
+    "courseId": "6596e799c8a16a43031a3cc5",
+    "name": "Quiz Bogen Test 1",
+    "description": "Beschreibung des Quiz Bogens",
+    "questions": [
+        {
+            "name": "Höchster Berg der Welt",
+            "description": "Wie heißt der höchste Berg der Welt?",
+            "type": "SINGLE_CHOICE",
+            "options": [ "Mount Everest", "K2", "Matterhorn", "Zugspitze"],
+            "hasCorrectAnswer": true,
+            "correctAnswer": "Mount Everest"
+        },
+        {
+            "name": "Befahrbarkeit des Mount Everest",
+            "description": "Ist der Mount Everest mit dem Fahrrad befahrbar?",
+            "type": "YES_NO",
+            "options": [],
+            "hasCorrectAnswer": true,
+            "correctAnswer": "false"
+        }
+    ]
+}
+

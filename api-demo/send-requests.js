@@ -39,20 +39,20 @@ async function main() {
     // let createdCourse = await createCourseResponse.json();
     // console.log(`Created course: ${JSON.stringify(createdCourse)}`);
 
-    // ##### Feedback Forms #####
-    // create a new feedback form from the "feedback-form-1.json" file
-    const feedbackForm1 = require('./feedback-form-1.json');
-    console.log(`Creating feedback form: ${feedbackForm1.name}`);
-    let createFeedbackFormResponse = await fetch(`${BACKEND_URL}/public/course/feedback/form`, {
+    // ##### Quiz Forms #####
+    // create a new quiz form from the "quiz-form-1.json" file
+    const quizForm1 = require('./quiz-form-1.json');
+    console.log(`Creating quiz form: ${quizForm1.name}`);
+    let createQuizFormResponse = await fetch(`${BACKEND_URL}/public/course/quiz/form`, {
         method: 'POST',
         headers: {
             "AUTHORIZATION": `Bearer ${jwt}`,
             "Content-Type": "application/json"
         },
-        body: JSON.stringify(feedbackForm1)
+        body: JSON.stringify(quizForm1)
     });
-    let createdFeedbackForm = await createFeedbackFormResponse.json();
-    console.log(`Created feedback form: ${JSON.stringify(createdFeedbackForm)}`);
+    let createdQuizForm = await createQuizFormResponse.json();
+    console.log(`Created quiz form: ${JSON.stringify(createdQuizForm)}`);
 
 }
 
