@@ -1,4 +1,7 @@
 const String htwgLogo = 'assets/logo/HTWG.png';
+const String htwgExtendedLogo = 'assets/logo/HTWG_extended.png';
+const String htwgWhiteExtendedLogo = 'assets/logo/HTWG_white_extended.png';
+const String moodleLogo = 'assets/logo/moodle.png';
 
 //Background assets
 const String onboardingLight = 'assets/backgrounds/onboarding-light.svg';
@@ -8,6 +11,9 @@ const String usernameDark = 'assets/backgrounds/username-dark.svg';
 const String rotatePhone = 'assets/backgrounds/rotatePhone.svg';
 
 //Icon assets
+const String undrawEducation = 'assets/icons/undraw_education_f8ru.svg';
+const String undrawQuestions = 'assets/icons/undraw_questions_re_1fy7.svg';
+
 //mobile
 const String menu = 'assets/icons/mobile/menu.svg';
 const String circle = 'assets/icons/mobile/circle.svg';

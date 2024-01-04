@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:frontend/tabs/feedback_tab.dart';
+import 'package:frontend/tabs/courses_tab.dart';
+import 'package:frontend/tabs/live_tab.dart';
 import 'package:frontend/tabs/home_tab.dart';
+import 'package:frontend/theme/assets.dart';
 
 class MainPage extends StatefulWidget {
   const MainPage({super.key});
@@ -11,6 +13,7 @@ class MainPage extends StatefulWidget {
 
 class _MainPageState extends State<MainPage> {
   int _tabIndex = 0;
+  Function? popFunction;
 
   @override
   void initState() {
@@ -26,20 +29,27 @@ class _MainPageState extends State<MainPage> {
     final colors = Theme.of(context).colorScheme;
 
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.primary,
-        title: const Text(
-          "HTWG App", 
-          style: TextStyle(
-            color: Colors.white, 
-            fontWeight: FontWeight.bold
-          )
-        ),
+        title: Image.asset(htwgWhiteExtendedLogo, height: 50),
+        centerTitle: true,
+        leading: popFunction != null ? IconButton(
+          icon: Icon(Icons.arrow_back, color: colors.onBackground),
+          onPressed: () {
+            popFunction!();
+          },
+        ) : null
       ),
       body: SafeArea(
         child: <Widget>[
           const HomeTab(title: "HTWG App"),
-          const FeedbackTab(),
+          CoursesTab(setPopFunction: (popFunction) {
+            setState(() {
+              this.popFunction = popFunction;
+            });
+          }),
+          const LiveTab(),
         ][_tabIndex],
       ),
       bottomNavigationBar: NavigationBar(
@@ -49,17 +59,18 @@ class _MainPageState extends State<MainPage> {
               label: 'Home',
             ),
             NavigationDestination(
-              icon: Icon(Icons.feedback, color: colors.secondary),
-              label: 'Feedback',
+              icon: Icon(Icons.school, color: colors.secondary),
+              label: 'Kurse',
             ),
             NavigationDestination(
-              enabled: false,
-              icon: Icon(Icons.quiz, color: colors.secondary.withAlpha(64)),
-              label: 'Quiz',
+              icon: Icon(Icons.sensors, color: colors.secondary),
+              label: 'Live',
             ),
           ],
           onDestinationSelected: (index) {
+            if (_tabIndex == index) return;
             setState(() {
+              popFunction = null;
               _tabIndex = index;
             });
           },
