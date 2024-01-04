@@ -1,9 +1,9 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:frontend/components/feedback/elements/single_choice_feedback_result.dart';
-import 'package:frontend/components/feedback/elements/slider_feedback_result.dart';
-import 'package:frontend/components/feedback/elements/star_feedback_result.dart';
+import 'package:frontend/components/elements/feedback/single_choice_feedback_result.dart';
+import 'package:frontend/components/elements/feedback/slider_feedback_result.dart';
+import 'package:frontend/components/elements/feedback/star_feedback_result.dart';
 import 'package:frontend/global.dart';
 import 'package:frontend/models/feedback/feedback_form.dart';
 import 'package:frontend/utils.dart';
