@@ -77,7 +77,7 @@ public class Course implements Serializable {
     }
 
     public boolean isOwner(User user) {
-        return this.owners.contains(user.getId().toString());
+        return this.owners.contains(user.getId().toHexString());
     }
 
     // description

@@ -19,7 +19,7 @@ import de.htwg_konstanz.mobilelearning.models.auth.User;
 import de.htwg_konstanz.mobilelearning.models.auth.UserRole;
 import de.htwg_konstanz.mobilelearning.models.quiz.QuizForm;
 import de.htwg_konstanz.mobilelearning.models.quiz.QuizQuestion;
-import de.htwg_konstanz.mobilelearning.models.quiz.QuizScore;
+import de.htwg_konstanz.mobilelearning.models.quiz.QuizParticipant;
 import de.htwg_konstanz.mobilelearning.repositories.CourseRepository;
 import de.htwg_konstanz.mobilelearning.repositories.UserRepository;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -72,6 +72,13 @@ public class LiveQuizSocket {
             User user = userRepository.findById(new ObjectId(userId));
             if (user == null) {
                 System.out.println("User not found");
+                return;
+            }
+
+            // check if the user is a participant of the course (is registered)
+            Boolean isParticipant = form.isParticipant(userId);
+            if (!isParticipant) {
+                System.out.println("User is not a participant of the course. Please register first.");
                 return;
             }
 
@@ -128,7 +135,7 @@ public class LiveQuizSocket {
             }
             if (connection.getType().equals(SocketConnectionType.PARTICIPANT)) {
                 // not show the results
-                message.form = message.form.copyWithoutResultsAndScoreButWithQuestionContents(courseRepository.findById(new ObjectId(courseId)));
+                message.form = message.form.copyWithoutResultsAndParticipantsButWithQuestionContents(courseRepository.findById(new ObjectId(courseId)));
             } else {
                 // show the results
                 message.form = message.form.copyWithQuestionContents(courseRepository.findById(new ObjectId(courseId)));
@@ -280,8 +287,7 @@ public class LiveQuizSocket {
         }
         if (question.getHasCorrectAnswer()) {
             Integer gainedPoints = question.checkAnswer(quizSocketMessage.resultValue);
-            String userAlias = this.connections.get(userId).getUserAlias();
-            form.increaseScoreOfUser(new ObjectId(userId), userAlias, gainedPoints);
+            form.increaseScoreOfParticipant(new ObjectId(userId), gainedPoints);
         }
 
         // update the form in the database

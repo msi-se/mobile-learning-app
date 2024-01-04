@@ -44,7 +44,7 @@ public class JwtService {
             String token =
                 Jwt
                     .claim(Claims.full_name.name(), user.getName())
-                    .claim(Claims.sub.name(), user.getId().toString())
+                    .claim(Claims.sub.name(), user.getId().toHexString())
                     .claim(Claims.email.name(), user.getEmail())
                     .claim(Claims.preferred_username.name(), user.getUsername())
                     .groups(new HashSet<String>(user.getRoles()))

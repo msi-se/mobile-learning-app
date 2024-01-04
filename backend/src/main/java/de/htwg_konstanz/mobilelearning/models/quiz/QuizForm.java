@@ -15,7 +15,7 @@ public class QuizForm extends Form {
     public Integer currentQuestionIndex;
     public Boolean currentQuestionFinished;
 
-    public List<QuizScore> scores;
+    public List<QuizParticipant> participants;
 
     public QuizForm() {
     }
@@ -57,7 +57,7 @@ public class QuizForm extends Form {
                 this.currentQuestionFinished);
         copy.id = new ObjectId(this.id.toHexString());
         copy.connectCode = this.connectCode;
-        copy.scores = this.scores;
+        copy.participants = this.participants;
         return copy;
     }
 
@@ -79,27 +79,20 @@ public class QuizForm extends Form {
         return copy;
     }
 
-    public Integer increaseScoreOfUser(ObjectId userId, String userAlias, Integer by) {
-
-        if (userId == null || by == null) {
-            return null;
+    public void addParticipant(ObjectId userId, String userAlias) {
+        if (this.participants == null) {
+            this.participants = new java.util.ArrayList<QuizParticipant>();
         }
+        this.participants.add(new QuizParticipant(userId, userAlias));
+    }
 
-        if (this.scores == null) {
-            this.scores = new java.util.ArrayList<QuizScore>();
-        }
-
-        for (QuizScore score : this.scores) {
-            if (score.userId.equals(userId)) {
-                score.increaseScore(by);
-                return score.score;
+    public Integer increaseScoreOfParticipant(ObjectId userId, Integer by) {
+        for (QuizParticipant participant : this.participants) {
+            if (participant.getUserId().equals(userId)) {
+                return participant.increaseScore(by);
             }
         }
-
-        // score not found, create new one
-        QuizScore score = new QuizScore(userId, "unknown", by);
-        this.scores.add(score);
-        return score.score;
+        return null;
     }
 
     public List<String> next() {
@@ -136,20 +129,32 @@ public class QuizForm extends Form {
             this.currentQuestionIndex = 0;
             this.currentQuestionFinished = false;
             this.clearResults();
-            this.clearScores();
+            this.clearParticipants();
             return Arrays.asList("FORM_STATUS_CHANGED");
         }
 
         return Arrays.asList();
     }
 
-    public void clearScores() {
-        this.scores.clear();
+    public void clearParticipants() {
+        this.participants.clear();
     }
 
-    public QuizForm copyWithoutResultsAndScoreButWithQuestionContents(Course byId) {
+    public QuizForm copyWithoutResultsAndParticipantsButWithQuestionContents(Course byId) {
         QuizForm copy = this.copyWithoutResultsButWithQuestionContents(byId);
-        copy.clearScores();
+        copy.clearParticipants();
         return copy;
+    }
+
+    public Boolean isParticipant(String userId) {
+        if (this.participants == null) {
+            return false;
+        }
+        for (QuizParticipant participant : this.participants) {
+            if (participant.getUserId().toHexString().equals(userId)) {
+                return true;
+            }
+        }
+        return false;
     }
 }

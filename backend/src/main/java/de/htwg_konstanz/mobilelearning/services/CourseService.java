@@ -48,7 +48,7 @@ public class CourseService {
             course.quizForms.forEach(form -> {
                 form.questions = List.of();
                 form.clearResults();
-                form.clearScores();
+                form.clearParticipants();
             });
         });
         return courses;
