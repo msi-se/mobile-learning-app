@@ -22,6 +22,7 @@ class _ChooseCourseState extends State<ChooseCourse> {
     final colors = Theme.of(context).colorScheme;
 
     return SliverLayout(
+      collapsable: true,
       title: (percentage) {
         return Padding(
           padding: EdgeInsets.only(

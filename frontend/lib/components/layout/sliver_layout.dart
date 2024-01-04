@@ -4,19 +4,21 @@ import 'package:flutter/material.dart';
 
 class SliverLayout extends StatelessWidget {
   final Widget Function(double) title;
-  final Widget background;
+  final Widget? background;
   final Widget body;
 
   final double expandedTitleScale;
   final double headerHeight;
+  final bool collapsable;
 
   const SliverLayout(
       {super.key,
       required this.title,
-      required this.background,
+      this.background,
       required this.body,
       this.headerHeight = 140,
-      this.expandedTitleScale = 2});
+      this.expandedTitleScale = 2,
+      this.collapsable = false});
 
   @override
   Widget build(BuildContext context) {
@@ -39,6 +41,7 @@ class SliverLayout extends StatelessWidget {
     return SliverAppBar(
       surfaceTintColor: colors.background,
       expandedHeight: headerHeight,
+      collapsedHeight: collapsable ? kToolbarHeight : headerHeight,
       pinned: true,
       flexibleSpace: FlexibleSpaceBar(
         expandedTitleScale: expandedTitleScale,
