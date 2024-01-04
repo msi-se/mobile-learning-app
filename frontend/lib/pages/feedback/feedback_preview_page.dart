@@ -79,7 +79,7 @@ class _FeedbackPreviewPageState extends State<FeedbackPreviewPage> {
       ),
       body: SliverLayout(
         collapsable: false,
-        headerHeight: 100,
+        headerHeight: 120,
         navBarHeight: 0,
         title: (_) {
           return Padding(
@@ -93,16 +93,18 @@ class _FeedbackPreviewPageState extends State<FeedbackPreviewPage> {
                     fontWeight: FontWeight.bold,
                   ),
                 ),
+                const SizedBox(height: 10),
                 Row(
                   children: [
                     Expanded(
                       child: FilledButton(
-                        onPressed: () {
-                          Navigator.pushNamed(context, '/feedback-result',
+                        onPressed: () async {
+                          final _ = await Navigator.pushNamed(context, '/feedback-result',
                               arguments: {
                                 "courseId": widget.courseId,
                                 "formId": widget.formId,
                               });
+                          fetchForm();
                         },
                         child: _form!.status == "NOT_STARTED"
                             ? const Text('Starten')
@@ -112,9 +114,10 @@ class _FeedbackPreviewPageState extends State<FeedbackPreviewPage> {
                     const SizedBox(width: 10),
                     Expanded(
                       child: FilledButton(
-                        onPressed: () {
-                          Navigator.pushNamed(context, '/attend-feedback',
+                        onPressed: () async {
+                          final _ = await Navigator.pushNamed(context, '/attend-feedback',
                               arguments: _form!.connectCode);
+                          fetchForm();
                         },
                         child: const Text('Beitreten'),
                       ),

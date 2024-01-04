@@ -6,6 +6,7 @@ import org.json.JSONObject;
 import de.htwg_konstanz.mobilelearning.models.Course;
 import de.htwg_konstanz.mobilelearning.models.auth.UserRole;
 import de.htwg_konstanz.mobilelearning.models.feedback.FeedbackForm;
+import de.htwg_konstanz.mobilelearning.models.quiz.QuizForm;
 import de.htwg_konstanz.mobilelearning.repositories.CourseRepository;
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.inject.Inject;
@@ -58,20 +59,20 @@ public class ConnectCodeService {
             throw new NotFoundException("Course with quiz form connect code " + connectCode + " not found.");
         }
 
-        FeedbackForm feedbackForm = null;
-        for (FeedbackForm form : course.getFeedbackForms()) {
+        QuizForm quizForm = null;
+        for (QuizForm form : course.getQuizForms()) {
             if (form.getConnectCode().equals(connectCode)) {
-                feedbackForm = form;
+                quizForm = form;
             }
         };
 
-        if (feedbackForm == null) {
+        if (quizForm == null) {
             throw new NotFoundException("Quiz form with connect code " + connectCode + " not found.");
         }
 
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("courseId", course.getId().toHexString());
-        jsonObject.put("formId", feedbackForm.getId().toHexString());
+        jsonObject.put("formId", quizForm.getId().toHexString());
         return jsonObject.toString();
     }
 }

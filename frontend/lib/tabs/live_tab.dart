@@ -35,8 +35,7 @@ class _LiveTabState extends State<LiveTab> {
               const EdgeInsets.only(top: 32.0, bottom: 32, left: 16, right: 16),
           child: Row(
             children: [
-              const SizedBox(
-                width: 200,
+              const Expanded(
                 child: Text(
                   "Live Umfrage",
                   style: TextStyle(fontSize: 40, fontWeight: FontWeight.bold),

@@ -5,6 +5,7 @@ import 'package:frontend/pages/feedback/feedback_preview_page.dart';
 import 'package:frontend/pages/feedback/feedback_result_page.dart';
 import 'package:frontend/pages/login_page.dart';
 import 'package:frontend/pages/main_page.dart';
+import 'package:frontend/pages/quiz/attend_quiz_page.dart';
 import 'package:frontend/pages/quiz/quiz_preview_page.dart';
 import 'package:frontend/theme/themes.dart';
 
@@ -26,13 +27,6 @@ class MyApp extends StatelessWidget {
       routes: <String, WidgetBuilder>{
         '/login': (_) => const LoginPage(),
         '/main': (_) => const MainPage(),
-        '/attend-feedback': (context) {
-          var code = ModalRoute.of(context)!.settings.arguments as String?;
-          if (code == null) {
-            return const MainPage();
-          }
-          return AttendFeedbackPage(code: code);
-        },
         '/feedback-info': (context) {
           var arguments = ModalRoute.of(context)!.settings.arguments
               as Map<String, dynamic>?;
@@ -43,6 +37,13 @@ class MyApp extends StatelessWidget {
             courseId: arguments["courseId"],
             formId: arguments["formId"],
           );
+        },
+        '/attend-feedback': (context) {
+          var code = ModalRoute.of(context)!.settings.arguments as String?;
+          if (code == null) {
+            return const MainPage();
+          }
+          return AttendFeedbackPage(code: code);
         },
         '/feedback-result': (context) {
           var arguments = ModalRoute.of(context)!.settings.arguments
@@ -66,6 +67,13 @@ class MyApp extends StatelessWidget {
             courseId: arguments["courseId"],
             formId: arguments["formId"],
           );
+        },
+        '/attend-quiz': (context) {
+          var code = ModalRoute.of(context)!.settings.arguments as String?;
+          if (code == null) {
+            return const MainPage();
+          }
+          return AttendQuizPage(code: code);
         },
       },
     );
