@@ -1,0 +1,20 @@
+{
+    "courseId": "6596e799c8a16a43031a3cc5",
+    "name": "Feedback Bogen Test 1",
+    "description": "Beschreibung des Feedback Bogens",
+    "questions": [
+        {
+            "name": "Erste 5 Wochen",
+            "description": "Wie gut hat Ihnen der Kurs bisher gefallen?",
+            "type": "SLIDER",
+            "options": []
+        },
+        {
+            "name": "Sprachbarriere",
+            "description": "Haben Sie das Englisch verstanden?",
+            "type": "SINGLE_CHOICE",
+            "options": [ "Ja", "Nein", "Zum Teil" ]
+        }
+    ]
+}
+

@@ -16,7 +16,7 @@ public class Course implements Serializable {
     public ObjectId id;
     public String name;
     public String description;
-    public List<String> owners;
+    public List<ObjectId> owners;
 
     // feedback
     public List<FeedbackForm> feedbackForms;
@@ -34,7 +34,7 @@ public class Course implements Serializable {
         this.id = new ObjectId();
         this.name = name;
         this.description = description;
-        this.owners = new ArrayList<String>();
+        this.owners = new ArrayList<ObjectId>();
         this.feedbackForms = new ArrayList<FeedbackForm>();
         this.feedbackQuestions = new ArrayList<FeedbackQuestion>();
         this.quizForms = new ArrayList<QuizForm>();
@@ -56,28 +56,32 @@ public class Course implements Serializable {
     }
 
     // owners
-    public List<String> getOwners() {
+    public List<ObjectId> getOwners() {
         return this.owners;
     }
 
     public void addOwner(ObjectId owner) {
-        this.owners.add(owner.toString());
+        this.owners.add(owner);
     }
 
     public void removeOwner(ObjectId owner) {
-        this.owners.remove(owner.toString());
+        this.owners.remove(owner);
     }
 
-    public void setOwners(List<String> owners) {
+    public void setOwners(List<ObjectId> owners) {
         this.owners = owners;
     }
 
     public boolean isOwner(String userId) {
+        return this.owners.contains(new ObjectId(userId));
+    }
+
+    public boolean isOwner(ObjectId userId) {
         return this.owners.contains(userId);
     }
 
     public boolean isOwner(User user) {
-        return this.owners.contains(user.getId().toHexString());
+        return this.owners.contains(user.getId());
     }
 
     // description
