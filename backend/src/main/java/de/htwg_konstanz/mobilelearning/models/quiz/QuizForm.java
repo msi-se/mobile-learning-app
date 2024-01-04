@@ -37,7 +37,7 @@ public class QuizForm extends Form {
 
     public void fillQuestionContents(Course course) {
         for (QuestionWrapper questionWrapper : this.questions) {
-            questionWrapper.setQuestionContent(course.getFeedbackQuestionById(questionWrapper.getQuestionId()));
+            questionWrapper.setQuestionContent(course.getQuizQuestionById(questionWrapper.getQuestionId()));
         }
     }
 
