@@ -1,9 +1,12 @@
 import 'package:frontend/models/feedback/feedback_question.dart';
 import 'package:frontend/models/form.dart';
 
-class FeedbackForm extends Form {
+class QuizForm extends Form {
 
-  FeedbackForm({
+  int currentQuestionIndex = 0;
+  bool currentQuestionFinished = false;
+
+  QuizForm({
     required super.id,
     required super.courseId,
     required super.name,
@@ -13,8 +16,8 @@ class FeedbackForm extends Form {
     required super.questions,
   });
 
-  factory FeedbackForm.fromJson(Map<String, dynamic> json) {
-    return FeedbackForm(
+  factory QuizForm.fromJson(Map<String, dynamic> json) {
+    return QuizForm(
       id: json['id'],
       courseId: json['courseId'],
       name: json['name'],

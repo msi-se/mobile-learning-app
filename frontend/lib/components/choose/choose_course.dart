@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:frontend/components/layout/sliver_layout.dart';
-import 'package:frontend/models/feedback/feedback_course.dart';
+import 'package:frontend/models/course.dart';
 import 'package:frontend/theme/assets.dart';
 
 class ChooseCourse extends StatefulWidget {
-  final List<FeedbackCourse> courses;
+  final List<Course> courses;
   final Function(String id) choose;
 
   const ChooseCourse({super.key, required this.courses, required this.choose});

@@ -1,16 +1,16 @@
 import 'package:frontend/models/question.dart';
 
-class FeedbackQuestion extends Question {
+class QuizQuestion extends Question {
   
-  FeedbackQuestion(
+  QuizQuestion(
       {required super.id,
       required super.name,
       required super.description,
       required super.type,
       required super.options});
 
-  factory FeedbackQuestion.fromJson(Map<String, dynamic> json) {
-    return FeedbackQuestion(
+  factory QuizQuestion.fromJson(Map<String, dynamic> json) {
+    return QuizQuestion(
       id: json['id'],
       name: json['name'],
       description: json['description'],
