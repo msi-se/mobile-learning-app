@@ -27,13 +27,14 @@ class _ChooseFormState extends State<ChooseForm> {
     var forms = feedbackOrQuiz == "Feedback" ? widget.course.feedbackForms : [];
 
     return SliverLayout(
-      collapsable: true,
+      collapsable: false,
       expandedTitleScale: 1,
       title: (percentage) {
         return Align(
           alignment: Alignment.centerLeft,
           child: Padding(
-            padding: EdgeInsets.only(right: percentage < 0.2 ? 0 : 120),
+            padding:
+                EdgeInsets.only(left: 16, right: percentage < 0.2 ? 0 : 120),
             child: Text(
               widget.course.name,
               style: TextStyle(

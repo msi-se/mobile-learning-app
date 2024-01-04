@@ -10,6 +10,7 @@ class SliverLayout extends StatelessWidget {
   final double expandedTitleScale;
   final double headerHeight;
   final bool collapsable;
+  final double navBarHeight;
 
   const SliverLayout(
       {super.key,
@@ -18,7 +19,8 @@ class SliverLayout extends StatelessWidget {
       required this.body,
       this.headerHeight = 140,
       this.expandedTitleScale = 2,
-      this.collapsable = false});
+      this.collapsable = false,
+      this.navBarHeight = 80});
 
   @override
   Widget build(BuildContext context) {
@@ -43,9 +45,10 @@ class SliverLayout extends StatelessWidget {
       expandedHeight: headerHeight,
       collapsedHeight: collapsable ? kToolbarHeight : headerHeight,
       pinned: true,
+      automaticallyImplyLeading: false,
       flexibleSpace: FlexibleSpaceBar(
         expandedTitleScale: expandedTitleScale,
-        titlePadding: const EdgeInsetsDirectional.only(start: 16),
+        titlePadding: const EdgeInsetsDirectional.only(start: 0),
         title: LayoutBuilder(
           builder: (context, constraints) {
             double percentage = ((constraints.biggest.height - kToolbarHeight) /
@@ -64,7 +67,12 @@ class SliverLayout extends StatelessWidget {
       delegate: SliverChildListDelegate([
         ConstrainedBox(
           constraints: BoxConstraints(
-            minHeight: heightWithoutappBarNavBar - 80,
+            minHeight: collapsable
+                ? heightWithoutappBarNavBar - navBarHeight
+                : heightWithoutappBarNavBar -
+                    headerHeight +
+                    kToolbarHeight -
+                    navBarHeight,
           ),
           child: Card(
             shape: const RoundedRectangleBorder(
