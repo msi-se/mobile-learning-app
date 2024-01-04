@@ -21,7 +21,9 @@ import jakarta.ws.rs.POST;
 import jakarta.ws.rs.PUT;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.SecurityContext;
 
 @Path("/course/{courseId}/quiz/form")
 public class QuizFormService {
@@ -53,4 +55,30 @@ public class QuizFormService {
 
         return quizFormWithQuestionContents;
     }
+
+    /*
+     * Endpoint to participate in a quiz
+     * The user has to be registered with the user id and he has to provide an alias (String)
+     */
+    @POST
+    @Produces(MediaType.APPLICATION_JSON)
+    @RolesAllowed({ UserRole.STUDENT, UserRole.PROF })
+    @Path("/{formId}/participate")
+    public String participate(@Context SecurityContext ctx, String alias, @RestPath String courseId, @RestPath String formId) {
+        String userId = ctx.getUserPrincipal().getName();
+        ObjectId courseObjectId = new ObjectId(courseId);
+        ObjectId formObjectId = new ObjectId(formId);
+
+        Course course = courseRepository.findById(courseObjectId);
+        if (course == null) { throw new NotFoundException("Course not found"); }
+        QuizForm quizForm = course.getQuizFormById(formObjectId);
+
+        if (quizForm == null) { throw new NotFoundException("QuizForm not found"); }
+
+        quizForm.addParticipant(new ObjectId(userId), alias);
+        courseRepository.update(course);
+
+        return "OK";
+    }
+
 }

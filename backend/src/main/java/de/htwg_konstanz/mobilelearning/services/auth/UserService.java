@@ -58,7 +58,7 @@ public class UserService {
                 if (json == null) {
                     return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
                 }
-                System.out.println("User exists: " + existingUser.getId().toString());
+                System.out.println("User exists: " + existingUser.getId().toHexString());
                 return Response.ok(json).build();
             }
 

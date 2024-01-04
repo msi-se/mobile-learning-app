@@ -2,19 +2,19 @@ package de.htwg_konstanz.mobilelearning.models.quiz;
 
 import org.bson.types.ObjectId;
 
-public class QuizScore {
+public class QuizParticipant {
 
     public ObjectId userId;
     public String userAlias;
     public Integer score;
 
-    public QuizScore() {
+    public QuizParticipant() {
     }
 
-    public QuizScore(ObjectId userId, String userAlias, Integer score) {
+    public QuizParticipant(ObjectId userId, String userAlias) {
         this.userId = userId;
         this.userAlias = userAlias;
-        this.score = score;
+        this.score = 0;
     }
 
     public String getUseralias() {
