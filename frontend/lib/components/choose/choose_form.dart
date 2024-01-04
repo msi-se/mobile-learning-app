@@ -29,12 +29,14 @@ class _ChooseFormState extends State<ChooseForm> {
         : widget.course.quizForms;
 
     return SliverLayout(
+      collapsable: true,
       expandedTitleScale: 1,
       title: (percentage) {
         return Align(
           alignment: Alignment.centerLeft,
           child: Padding(
-            padding: EdgeInsets.only(right: percentage < 0.2 ? 0 : 120),
+            padding:
+                EdgeInsets.only(left: 16, right: percentage < 0.2 ? 0 : 120),
             child: Text(
               widget.course.name,
               style: TextStyle(
