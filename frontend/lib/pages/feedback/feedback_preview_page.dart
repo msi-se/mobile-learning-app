@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/components/layout/sliver_layout.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
@@ -63,85 +64,88 @@ class _FeedbackPreviewPageState extends State<FeedbackPreviewPage> {
 
   @override
   Widget build(BuildContext context) {
+    if (_loading) {
+      return const Scaffold(
+        body: Center(child: CircularProgressIndicator()),
+      );
+    }
+    final colors = Theme.of(context).colorScheme;
+
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.primary,
         title: const Text("Feedback Info",
             style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
       ),
-      body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16.0),
-        child: _loading
-            ? const Center(child: CircularProgressIndicator())
-            : Column(
-                children: [
-                  Container(
-                    width: double.infinity,
-                    padding: const EdgeInsets.all(16),
-                    margin: const EdgeInsets.symmetric(vertical: 16),
-                    decoration: BoxDecoration(
-                      color: Colors.grey[200],
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: Text(
-                      _form?.name ?? 'Loading...',
-                      style: const TextStyle(
-                        fontSize: 24,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
+      body: SliverLayout(
+        collapsable: false,
+        headerHeight: 100,
+        navBarHeight: 0,
+        title: (_) {
+          return Padding(
+            padding: const EdgeInsets.only(left: 16, top: 16, right: 16),
+            child: Column(
+              children: [
+                Text(
+                  _form!.name,
+                  style: TextStyle(
+                    color: colors.onSurface,
+                    fontWeight: FontWeight.bold,
                   ),
-                  Expanded(
-                    child: Card(
-                      margin: EdgeInsets.zero,
-                      child: ListView.separated(
-                        itemCount: _form?.questions.length ?? 0,
-                        separatorBuilder: (context, index) =>
-                            const Divider(height: 1),
-                        itemBuilder: (context, index) {
-                          var element = _form!.questions[index];
-                          return ListTile(
-                            title: Text(element.description),
-                          );
+                ),
+                Row(
+                  children: [
+                    Expanded(
+                      child: FilledButton(
+                        onPressed: () {
+                          Navigator.pushNamed(context, '/feedback-result',
+                              arguments: {
+                                "courseId": widget.courseId,
+                                "formId": widget.formId,
+                              });
                         },
+                        child: _form!.status == "NOT_STARTED"
+                            ? const Text('Starten')
+                            : const Text('Ergebnisse'),
                       ),
                     ),
-                  ),
-                  Container(
-                    width: double.infinity,
-                    padding: const EdgeInsets.symmetric(vertical: 8),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        Expanded(
-                          child: FilledButton(
-                            onPressed: () {
-                              Navigator.pushNamed(context, '/feedback-result',
-                                  arguments: {
-                                    "courseId": widget.courseId,
-                                    "formId": widget.formId,
-                                  });
-                            },
-                            child: _form!.status == "NOT_STARTED"
-                                ? const Text('Starten')
-                                : const Text('Ergebnisse'),
-                          ),
-                        ),
-                        const SizedBox(width: 10),
-                        Expanded(
-                          child: FilledButton(
-                            onPressed: () {
-                              Navigator.pushNamed(context, '/attend-feedback',
-                                  arguments: _form!.connectCode);
-                            },
-                            child: const Text('Beitreten'),
-                          ),
-                        ),
-                      ],
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: FilledButton(
+                        onPressed: () {
+                          Navigator.pushNamed(context, '/attend-feedback',
+                              arguments: _form!.connectCode);
+                        },
+                        child: const Text('Beitreten'),
+                      ),
                     ),
-                  ),
-                ],
-              ),
+                  ],
+                ),
+              ],
+            ),
+          );
+        },
+        body: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: ListView.builder(
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            itemCount: _form!.questions.length,
+            itemBuilder: (context, index) {
+              var element = _form!.questions[index];
+              return Card(
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10.0),
+                ),
+                elevation: 1.0,
+                surfaceTintColor: Colors.white,
+                child: ListTile(
+                  title: Text(element.description),
+                ),
+              );
+            },
+          ),
+        ),
       ),
     );
   }
