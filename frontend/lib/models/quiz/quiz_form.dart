@@ -1,5 +1,5 @@
-import 'package:frontend/models/feedback/feedback_question.dart';
 import 'package:frontend/models/form.dart';
+import 'package:frontend/models/quiz/quiz_question.dart';
 
 class QuizForm extends Form {
 
@@ -27,7 +27,7 @@ class QuizForm extends Form {
       questions: json['questions'] == null
           ? []
           : (json['questions'] as List<dynamic>)
-              .map((e) => FeedbackQuestion.fromJson(e['questionContent']))
+              .map((e) => QuizQuestion.fromJson(e['questionContent']))
               .toList(),
     );
   }
