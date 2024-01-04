@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:frontend/components/choose/choose_course.dart';
 import 'package:frontend/components/choose/choose_form.dart';
-import 'package:frontend/models/feedback/feedback_course.dart';
+import 'package:frontend/models/course.dart';
 import 'package:frontend/utils.dart';
 import 'package:http/http.dart' as http;
 import 'package:frontend/global.dart';
@@ -18,9 +18,9 @@ class CoursesTab extends StatefulWidget {
 }
 
 class _CoursesTabState extends State<CoursesTab> {
-  late List<FeedbackCourse> _courses;
+  late List<Course> _courses;
 
-  FeedbackCourse? _selectedCourse;
+  Course? _selectedCourse;
 
   bool _loading = true;
 
@@ -52,8 +52,8 @@ class _CoursesTabState extends State<CoursesTab> {
     }
   }
 
-  List<FeedbackCourse> getCoursesFromJson(List<dynamic> json) {
-    return json.map((e) => FeedbackCourse.fromJson(e)).toList();
+  List<Course> getCoursesFromJson(List<dynamic> json) {
+    return json.map((e) => Course.fromJson(e)).toList();
   }
 
   void pop() {
@@ -94,11 +94,18 @@ class _CoursesTabState extends State<CoursesTab> {
             )
           : ChooseForm(
               course: _selectedCourse!,
-              choose: (id) {
-                Navigator.pushNamed(context, '/feedback-info', arguments: {
-                  "courseId": _selectedCourse!.id,
-                  "formId": id,
-                });
+              choose: (id, feedbackOrQuiz) {
+                if (feedbackOrQuiz == "Feedback") {
+                  Navigator.pushNamed(context, '/feedback-info', arguments: {
+                    "courseId": _selectedCourse!.id,
+                    "formId": id,
+                  });
+                } else if (feedbackOrQuiz == "Quiz") {
+                  Navigator.pushNamed(context, '/quiz-info', arguments: {
+                    "courseId": _selectedCourse!.id,
+                    "formId": id,
+                  });
+                }
               },
             ),
     );
