@@ -54,7 +54,7 @@ class _FeedbackResultPageState extends State<FeedbackResultPage> {
     try {
       final response = await http.get(
         Uri.parse(
-            "${getBackendUrl()}/course/$_courseId/feedback/form/$_formId"),
+            "${getBackendUrl()}/course/$_courseId/feedback/form/$_formId?results=true"),
         headers: {
           "Content-Type": "application/json",
           "AUTHORIZATION": "Bearer ${getSession()!.jwt}",
