@@ -11,7 +11,6 @@ public class SocketConnection {
     public ObjectId formId;
     public ObjectId userId;
     public SocketConnectionType type;
-    public String userAlias;
 
     public SocketConnection(Session session, ObjectId courseId, ObjectId formId, ObjectId userId, SocketConnectionType type) {
         this.id = new ObjectId();
@@ -20,7 +19,6 @@ public class SocketConnection {
         this.formId = formId;
         this.userId = userId;
         this.type = type;
-        this.userAlias = null;
     }
     
     public SocketConnection(Session session, String courseId, String formId, String userId, SocketConnectionType type) {
@@ -30,17 +28,6 @@ public class SocketConnection {
         this.formId = new ObjectId(formId);
         this.userId = new ObjectId(userId);
         this.type = type;
-        this.userAlias = null;
-    }
-
-    public SocketConnection(Session session, String courseId, String formId, String userId, SocketConnectionType type, String userAlias) {
-        this.id = new ObjectId();
-        this.session = session;
-        this.courseId = new ObjectId(courseId);
-        this.formId = new ObjectId(formId);
-        this.userId = new ObjectId(userId);
-        this.type = type;
-        this.userAlias = userAlias;
     }
 
     public ObjectId getId() {
@@ -66,9 +53,4 @@ public class SocketConnection {
     public SocketConnectionType getType() {
         return this.type;
     }
-
-    public String getUserAlias() {
-        return this.userAlias;
-    }
-
 }

@@ -32,7 +32,7 @@ import jakarta.websocket.server.PathParam;
 import jakarta.websocket.server.ServerEndpoint;
 import jakarta.websocket.Session;
 
-@ServerEndpoint("/course/{courseId}/quiz/form/{formId}/subscribe/{userId}/{userAlias}/{jwt}")
+@ServerEndpoint("/course/{courseId}/quiz/form/{formId}/subscribe/{userId}/{jwt}")
 @ApplicationScoped
 public class LiveQuizSocket {
     Map<String, SocketConnection> connections = new ConcurrentHashMap<>();
@@ -52,8 +52,7 @@ public class LiveQuizSocket {
         @PathParam("courseId") String courseId,
         @PathParam("formId") String formId,
         @PathParam("userId") String userId,
-        @PathParam("jwt") String jwt,
-        @PathParam("userAlias") String userAlias
+        @PathParam("jwt") String jwt
         ) throws Exception {
         // userId from Jwt has to match userId from path
         if (jwtService.getJwtClaims(jwt).getSubject().equals(userId)){
@@ -86,14 +85,13 @@ public class LiveQuizSocket {
             System.out.println("Course ID: " + courseId);
             System.out.println("Form ID: " + formId);
             System.out.println("User ID: " + userId);
-            System.out.println("User alias: " + userAlias);
 
             // check if the user is a participant or a owner (by checking if the user is owner of the course)
             Boolean isOwner = course.isOwner(userId);
             SocketConnectionType type = isOwner ? SocketConnectionType.OWNER : SocketConnectionType.PARTICIPANT;
 
             // add the connection to the list
-            SocketConnection socketMember = new SocketConnection(session, courseId, formId, userId, type, userAlias);
+            SocketConnection socketMember = new SocketConnection(session, courseId, formId, userId, type);
             connections.put(session.getId(), socketMember);
         } else {
             connections.remove(session.getId());
