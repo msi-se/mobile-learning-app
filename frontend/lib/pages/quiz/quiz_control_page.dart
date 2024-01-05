@@ -216,107 +216,93 @@ class _QuizControlPageState extends State<QuizControlPage> {
       );
     }
 
+    final element = _form.questions[_form.currentQuestionIndex];
+
     return Scaffold(
-        appBar: AppBar(
-          title: Text(_form.name,
-              style: const TextStyle(
-                  color: Colors.white, fontWeight: FontWeight.bold)),
-          backgroundColor: colors.primary,
-        ),
-        body: Stack(
-          children: [
-            SingleChildScrollView(
-              child: Column(
-                children: <Widget>[
-                  const SizedBox(height: 16),
+      appBar: AppBar(
+        title: Text(_form.name,
+            style: const TextStyle(
+                color: Colors.white, fontWeight: FontWeight.bold)),
+        backgroundColor: colors.primary,
+      ),
+      body: Stack(
+        children: [
+          SizedBox(
+            width: double.infinity,
+            child: Column(
+              children: <Widget>[
+                const SizedBox(height: 16),
+                Padding(
+                  padding: const EdgeInsets.all(32.0),
+                  child: Column(
+                    children: <Widget>[
+                      Text(element.name,
+                          style: const TextStyle(
+                              fontSize: 24, fontWeight: FontWeight.bold)),
+                      Text(element.description,
+                          style: const TextStyle(fontSize: 15),
+                          textAlign: TextAlign.center),
+                      // TODO: show results
+                    ],
+                  ),
+                ),
+                Text(
+                  _form.currentQuestionIndex.toString(),
+                  style: Theme.of(context).textTheme.headlineMedium,
+                ),
+                Text(
+                  _form.currentQuestionFinished.toString(),
+                  style: Theme.of(context).textTheme.headlineMedium,
+                ),
+                if (_form.status == "STARTED")
                   Column(
                     children: [
-                      ListView.builder(
-                        shrinkWrap: true,
-                        physics: const NeverScrollableScrollPhysics(),
-                        itemCount: _form.questions.length,
-                        itemBuilder: (context, index) {
-                          final element = _form.questions[index];
-                          final double average = _results[index]["average"];
-                          final roundAverage = (average * 100).round() / 100;
-                          final values = _results[index]["values"];
-                          return Padding(
-                            padding: const EdgeInsets.all(32.0),
-                            child: Column(
-                              children: <Widget>[
-                                Text(element.name,
-                                    style: const TextStyle(
-                                        fontSize: 24,
-                                        fontWeight: FontWeight.bold)),
-                                Text(element.description,
-                                    style: const TextStyle(fontSize: 15),
-                                    textAlign: TextAlign.center),
-                                Text("$roundAverage",
-                                    style: const TextStyle(fontSize: 20),
-                                    textAlign: TextAlign.center),
-                              ],
-                            ),
-                          );
-                        },
+                      ElevatedButton(
+                        onPressed: next,
+                        child: const Text('Next'),
+                      ),
+                      const SizedBox(height: 8),
+                      ElevatedButton(
+                        onPressed: stopForm,
+                        child: const Text('Quiz beenden'),
                       ),
                     ],
                   ),
-                  Text(
-                    _form.currentQuestionIndex.toString(),
-                    style: Theme.of(context).textTheme.headlineMedium,
+                if (_form.status == "FINISHED")
+                  Column(
+                    children: [
+                      ElevatedButton(
+                        onPressed: startForm,
+                        child: const Text('Quiz fortsetzen'),
+                      ),
+                      const SizedBox(height: 8),
+                      ElevatedButton(
+                        onPressed: resetForm,
+                        child: Text('Quiz zurücksetzen',
+                            style: TextStyle(color: colors.error)),
+                      ),
+                    ],
                   ),
-                  Text(
-                    _form.currentQuestionFinished.toString(),
-                    style: Theme.of(context).textTheme.headlineMedium,
-                  ),
-                  if (_form.status == "STARTED")
-                    Column(
-                      children: [
-                        ElevatedButton(
-                          onPressed: next,
-                          child: const Text('Next'),
-                        ),
-                        const SizedBox(height: 8),
-                        ElevatedButton(
-                          onPressed: stopForm,
-                          child: const Text('Quiz beenden'),
-                        ),
-                      ],
-                    ),
-                  if (_form.status == "FINISHED")
-                    Column(
-                      children: [
-                        ElevatedButton(
-                          onPressed: startForm,
-                          child: const Text('Quiz fortsetzen'),
-                        ),
-                        const SizedBox(height: 8),
-                        ElevatedButton(
-                          onPressed: resetForm,
-                          child: Text('Quiz zurücksetzen',
-                              style: TextStyle(color: colors.error)),
-                        ),
-                      ],
-                    ),
-                  const SizedBox(height: 32),
-                ],
+                const SizedBox(height: 32),
+              ],
+            ),
+          ),
+          Positioned(
+            top: 0,
+            left: 0,
+            right: 0,
+            child: Container(
+              color: colors.surfaceVariant,
+              child: Text(
+                "${_form.connectCode.substring(0, 3)} ${_form.connectCode.substring(3, 6)}",
+                style: Theme.of(context).textTheme.headlineSmall,
+                textAlign: TextAlign.center,
               ),
             ),
-            Positioned(
-              top: 0,
-              left: 0,
-              right: 0,
-              child: Container(
-                color: colors.surfaceVariant,
-                child: Text(
-                  "${_form.connectCode.substring(0, 3)} ${_form.connectCode.substring(3, 6)}",
-                  style: Theme.of(context).textTheme.headlineSmall,
-                  textAlign: TextAlign.center,
-                ),
-              ),
-            )
-          ],
-        ));
+          )
+        ],
+      ),
+    );
   }
 }
 // 

@@ -94,9 +94,9 @@ class _AttendQuizPageState extends State<AttendQuizPage> {
       if (response.statusCode == 200) {
         var data = jsonDecode(response.body);
         var form = QuizForm.fromJson(data);
-        
+
         startWebsocket();
-        
+
         setState(() {
           _form = form;
           _loading = false;
@@ -116,8 +116,19 @@ class _AttendQuizPageState extends State<AttendQuizPage> {
     _socketChannel!.stream.listen((event) {
       var data = jsonDecode(event);
       if (data["action"] == "FORM_STATUS_CHANGED") {
+        var form = QuizForm.fromJson(data["form"]);
         setState(() {
           _form.status = data["formStatus"];
+          _form.currentQuestionIndex = form.currentQuestionIndex;
+          _form.currentQuestionFinished = form.currentQuestionFinished;
+        });
+      }
+      if (data["action"] == "CLOSED_QUESTION" ||
+          data["action"] == "OPENED_NEXT_QUESTION") {
+        var form = QuizForm.fromJson(data["form"]);
+        setState(() {
+          _form.currentQuestionIndex = form.currentQuestionIndex;
+          _form.currentQuestionFinished = form.currentQuestionFinished;
         });
       }
     }, onError: (error) {
@@ -174,6 +185,38 @@ class _AttendQuizPageState extends State<AttendQuizPage> {
       );
     }
 
+    if (_form.currentQuestionFinished) {
+      return Scaffold(
+        appBar: AppBar(
+          title: Text(_form.name,
+              style: const TextStyle(
+                  color: Colors.white, fontWeight: FontWeight.bold)),
+          backgroundColor: colors.primary,
+        ),
+        body: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              const Padding(
+                padding: EdgeInsets.only(left: 20.0, right: 20.0),
+                child: Text(
+                    "Bitte warten Sie bis die nächste Frage gestellt wird"),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(20.0),
+                child: LinearProgressIndicator(
+                  valueColor: AlwaysStoppedAnimation<Color>(colors.primary),
+                  backgroundColor: colors.secondary.withAlpha(32),
+                ),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+
+    final element = _form.questions[_form.currentQuestionIndex];
+
     return Scaffold(
       appBar: AppBar(
         title: Text(_form.name,
@@ -181,29 +224,22 @@ class _AttendQuizPageState extends State<AttendQuizPage> {
                 color: Colors.white, fontWeight: FontWeight.bold)),
         backgroundColor: colors.primary,
       ),
-      body: SingleChildScrollView(
+      body: SizedBox(
+        width: double.infinity,
         child: Column(
           children: [
-            ListView.builder(
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              itemCount: _form.questions.length,
-              itemBuilder: (context, index) {
-                var element = _form.questions[index];
-                return Padding(
-                  padding: const EdgeInsets.all(32.0),
-                  child: Column(
-                    children: <Widget>[
-                      Text(element.name,
-                          style: const TextStyle(
-                              fontSize: 24, fontWeight: FontWeight.bold)),
-                      Text(element.description,
-                          style: const TextStyle(fontSize: 15),
-                          textAlign: TextAlign.center),
-                    ],
-                  ),
-                );
-              },
+            Padding(
+              padding: const EdgeInsets.all(32.0),
+              child: Column(
+                children: <Widget>[
+                  Text(element.name,
+                      style: const TextStyle(
+                          fontSize: 24, fontWeight: FontWeight.bold)),
+                  Text(element.description,
+                      style: const TextStyle(fontSize: 15),
+                      textAlign: TextAlign.center),
+                ],
+              ),
             ),
           ],
         ),
