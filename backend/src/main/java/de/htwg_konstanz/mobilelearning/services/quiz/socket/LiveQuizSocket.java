@@ -74,9 +74,10 @@ public class LiveQuizSocket {
                 return;
             }
 
-            // check if the user is a participant of the course (is registered)
+            // check if the user is owner or a participant of the course (is registered)
             Boolean isParticipant = form.isParticipant(userId);
-            if (!isParticipant) {
+            Boolean isOwner = course.isOwner(userId);
+            if (!isParticipant && !isOwner) {
                 System.out.println("User is not a participant of the course. Please register first.");
                 return;
             }
@@ -87,7 +88,6 @@ public class LiveQuizSocket {
             System.out.println("User ID: " + userId);
 
             // check if the user is a participant or a owner (by checking if the user is owner of the course)
-            Boolean isOwner = course.isOwner(userId);
             SocketConnectionType type = isOwner ? SocketConnectionType.OWNER : SocketConnectionType.PARTICIPANT;
 
             // add the connection to the list
@@ -217,6 +217,7 @@ public class LiveQuizSocket {
         // if it is set to NOT_STARTED, remove all results
         if (formStatusEnum == FormStatus.NOT_STARTED) {
             form.clearResults();
+            form.clearParticipants();
             // send the event to all receivers
             LiveQuizSocketMessage outgoingMessage = new LiveQuizSocketMessage("RESULT_ADDED", form.status.toString(), null, null, null, form);
             this.broadcast(outgoingMessage, courseId, formId);
