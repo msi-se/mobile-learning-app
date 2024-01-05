@@ -61,7 +61,7 @@ class _QuizControlPageState extends State<QuizControlPage> {
         var form = QuizForm.fromJson(data);
 
         startWebsocket();
-        
+
         setState(() {
           _form = form;
           _results = getResults(data);
@@ -80,15 +80,27 @@ class _QuizControlPageState extends State<QuizControlPage> {
     );
 
     _socketChannel!.stream.listen((event) {
+      print(event);
       var data = jsonDecode(event);
       if (data["action"] == "FORM_STATUS_CHANGED") {
+        var form = QuizForm.fromJson(data["form"]);
         setState(() {
           _form.status = data["formStatus"];
+          _form.currentQuestionIndex = form.currentQuestionIndex;
+          _form.currentQuestionFinished = form.currentQuestionFinished;
         });
       }
       if (data["action"] == "RESULT_ADDED") {
         setState(() {
           _results = getResults(data["form"]);
+        });
+      }
+      if (data["action"] == "CLOSED_QUESTION" ||
+          data["action"] == "OPENED_NEXT_QUESTION") {
+        var form = QuizForm.fromJson(data["form"]);
+        setState(() {
+          _form.currentQuestionIndex = form.currentQuestionIndex;
+          _form.currentQuestionFinished = form.currentQuestionFinished;
         });
       }
     }, onError: (error) {
