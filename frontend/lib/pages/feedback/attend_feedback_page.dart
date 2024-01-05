@@ -1,9 +1,10 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:frontend/components/feedback/elements/single_choice_feedback.dart';
-import 'package:frontend/components/feedback/elements/slider_feedback.dart';
-import 'package:frontend/components/feedback/elements/star_feedback.dart';
+import 'package:frontend/components/elements/feedback/single_choice_feedback.dart';
+import 'package:frontend/components/elements/quiz/single_choice_quiz.dart';
+import 'package:frontend/components/elements/feedback/slider_feedback.dart';
+import 'package:frontend/components/elements/feedback/star_feedback.dart';
 import 'package:frontend/global.dart';
 import 'package:frontend/models/feedback/feedback_form.dart';
 import 'package:frontend/utils.dart';
@@ -217,6 +218,14 @@ class _AttendFeedbackPageState extends State<AttendFeedbackPage> {
                                 _feedbackValues[element.id] = newFeedback;
                               });
                             })
+                        // SingleChoiceQuiz(
+                        //   options: element.options,
+                        //   initialQuiz: _feedbackValues[element.id],
+                        //   onQuizChanged: (newFeedback) {
+                        //     setState(() {
+                        //       _feedbackValues[element.id] = newFeedback;
+                        //     });
+                        //   })
                       else
                         const Text('Unknown element type')
                     ],

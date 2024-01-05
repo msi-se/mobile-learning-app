@@ -4,13 +4,13 @@
 - Generell positive Einstellung zum Einsatz digitaler Tools.
 - Interaktive Tools als bereichernd empfunden
 - Abneigung gegenüber zu vielen separaten Apps, Präferenz für eine zentralisierte Anwendung.
-- Einstatz von digitalen Tools unterscheidet sich je nach Fakultät starkt (Fakultät Informatik benutzt viele Tools, Bauingeniere eher nur moodle --> Quizzes in moodle auch eher selten)
+- Einstatz von digitalen Tools unterscheidet sich je nach Fakultät starkt (Fakultät Informatik benutzt viele Tools, Bauingeniere eher nur moodle. Diese aber auch eher selten)
 
 ## Wie bewertest du den Einsatz von Moodle, Menti?
 
-- Moodle wird als praktisch für den Zugriff auf Vorlesungsunterlagen gesehen.
-Menti wird positiv bewertet
-- Liveaspekt von Menti positiv & motivierend
+- Moodle wird als praktisch für den Zugriff auf Vorlesungsunterlagen gesehen
+- Menti wird positiv bewertet
+- Live Aspekt von Menti positiv & motivierend
 
 
 ## Was findest du eine sinnvolle Feedback-Methode für regelmäßiges Feedback zu Vorlesungen? (Volltext, Slider, Sterne, ...)
@@ -22,7 +22,7 @@ Menti wird positiv bewertet
 ## Welche Funktionen würdest du dir von einer Quiz App wünschen, die in Vorlesungen benutzt wird?
 - Live-Auswertung der Antworten gewünscht.
 - Erläuterung & Erklärungen der richtigen Antwort
-- Kurze bedenkzeit bei Quiz bevor man Antwort auswaehlt
+- Kurze Bedenkzeit bei Quiz bevor man Antwort auswählt
 - Automatische Bewertung auch bei offenen Fragen
 - Inhalte die man von Prof sieht auch auf Handy & Laptop von Studi
 - Wunsch nach Anonymität bei Punktevergabe und Vermeidung von negativen Auswirkungen durch Ranglisten.
