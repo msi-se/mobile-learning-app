@@ -1,27 +1,24 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:frontend/components/elements/feedback/single_choice_feedback_result.dart';
-import 'package:frontend/components/elements/feedback/slider_feedback_result.dart';
-import 'package:frontend/components/elements/feedback/star_feedback_result.dart';
 import 'package:frontend/global.dart';
-import 'package:frontend/models/feedback/feedback_form.dart';
+import 'package:frontend/models/quiz/quiz_form.dart';
 import 'package:frontend/utils.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 import 'package:http/http.dart' as http;
 
-class FeedbackResultPage extends StatefulWidget {
+class QuizControlPage extends StatefulWidget {
   final String courseId;
   final String formId;
 
-  const FeedbackResultPage(
+  const QuizControlPage(
       {super.key, required this.courseId, required this.formId});
 
   @override
-  State<FeedbackResultPage> createState() => _FeedbackResultPageState();
+  State<QuizControlPage> createState() => _QuizControlPageState();
 }
 
-class _FeedbackResultPageState extends State<FeedbackResultPage> {
+class _QuizControlPageState extends State<QuizControlPage> {
   bool _loading = true;
 
   late String _courseId;
@@ -29,7 +26,7 @@ class _FeedbackResultPageState extends State<FeedbackResultPage> {
   late String _userId;
   late List<String> _roles;
 
-  late FeedbackForm _form;
+  late QuizForm _form;
   late String _status;
   WebSocketChannel? _socketChannel;
 
@@ -54,7 +51,7 @@ class _FeedbackResultPageState extends State<FeedbackResultPage> {
     try {
       final response = await http.get(
         Uri.parse(
-            "${getBackendUrl()}/course/$_courseId/feedback/form/$_formId?results=true"),
+            "${getBackendUrl()}/course/$_courseId/quiz/form/$_formId?results=true"),
         headers: {
           "Content-Type": "application/json",
           "AUTHORIZATION": "Bearer ${getSession()!.jwt}",
@@ -64,7 +61,7 @@ class _FeedbackResultPageState extends State<FeedbackResultPage> {
         var data = jsonDecode(response.body);
         startWebsocket();
         setState(() {
-          _form = FeedbackForm.fromJson(data);
+          _form = QuizForm.fromJson(data);
           _results = getResults(data);
           _status = data["status"];
           _loading = false;
@@ -78,7 +75,7 @@ class _FeedbackResultPageState extends State<FeedbackResultPage> {
   void startWebsocket() {
     _socketChannel = WebSocketChannel.connect(
       Uri.parse(
-          "${getBackendUrl(protocol: "ws")}/course/$_courseId/feedback/form/$_formId/subscribe/$_userId/${getSession()!.jwt}"),
+          "${getBackendUrl(protocol: "ws")}/course/$_courseId/quiz/form/$_formId/subscribe/$_userId/${getSession()!.jwt}"),
     );
 
     _socketChannel!.stream.listen((event) {
@@ -188,7 +185,7 @@ class _FeedbackResultPageState extends State<FeedbackResultPage> {
               const SizedBox(height: 16),
               ElevatedButton(
                 onPressed: startForm,
-                child: const Text('Feedback starten'),
+                child: const Text('Quiz starten'),
               ),
             ],
           ),
@@ -231,24 +228,6 @@ class _FeedbackResultPageState extends State<FeedbackResultPage> {
                                 Text(element.description,
                                     style: const TextStyle(fontSize: 15),
                                     textAlign: TextAlign.center),
-                                if (element.type == 'STARS')
-                                  StarFeedbackResult(average: average)
-                                else if (element.type == 'SLIDER')
-                                  SliderFeedbackResult(
-                                    results: values,
-                                    average: average,
-                                    min: 0,
-                                    max: 10,
-                                  )
-                                else if (element.type == 'SINGLE_CHOICE')
-                                  SingleChoiceFeedbackResult(
-                                    results: values,
-                                    options: element.options,
-                                  )
-                                else
-                                  const Text('Unknown element type'),
-                                if (element.type == 'STARS' ||
-                                    element.type == 'SLIDER')
                                   Text("$roundAverage",
                                       style: const TextStyle(fontSize: 20),
                                       textAlign: TextAlign.center),
@@ -262,19 +241,19 @@ class _FeedbackResultPageState extends State<FeedbackResultPage> {
                   if (_status == "STARTED")
                     ElevatedButton(
                       onPressed: stopForm,
-                      child: const Text('Feedback beenden'),
+                      child: const Text('Quiz beenden'),
                     ),
                   if (_status == "FINISHED")
                     Column(
                       children: [
                         ElevatedButton(
                           onPressed: startForm,
-                          child: const Text('Feedback fortsetzen'),
+                          child: const Text('Quiz fortsetzen'),
                         ),
                         const SizedBox(height: 8),
                         ElevatedButton(
                           onPressed: resetForm,
-                          child: Text('Feedback zurücksetzen',
+                          child: Text('Quiz zurücksetzen',
                               style: TextStyle(color: colors.error)),
                         ),
                       ],

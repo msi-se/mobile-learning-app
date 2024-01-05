@@ -6,6 +6,7 @@ import 'package:frontend/pages/feedback/feedback_result_page.dart';
 import 'package:frontend/pages/login_page.dart';
 import 'package:frontend/pages/main_page.dart';
 import 'package:frontend/pages/quiz/attend_quiz_page.dart';
+import 'package:frontend/pages/quiz/quiz_control_page.dart';
 import 'package:frontend/pages/quiz/quiz_preview_page.dart';
 import 'package:frontend/theme/themes.dart';
 
@@ -74,6 +75,17 @@ class MyApp extends StatelessWidget {
             return const MainPage();
           }
           return AttendQuizPage(code: code);
+        },
+        '/quiz-control': (context) {
+          var arguments = ModalRoute.of(context)!.settings.arguments
+              as Map<String, dynamic>?;
+          if (arguments == null) {
+            return const MainPage();
+          }
+          return QuizControlPage(
+            courseId: arguments["courseId"],
+            formId: arguments["formId"],
+          );
         },
       },
     );

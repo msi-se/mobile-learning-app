@@ -17,7 +17,7 @@ public class QuizParticipant {
         this.score = 0;
     }
 
-    public String getUseralias() {
+    public String getUserAlias() {
         return this.userAlias;
     }
 

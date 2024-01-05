@@ -99,7 +99,7 @@ class _QuizPreviewPageState extends State<QuizPreviewPage> {
                     Expanded(
                       child: FilledButton(
                         onPressed: () async {
-                          final _ = await Navigator.pushNamed(context, '/quiz-result',
+                          final _ = await Navigator.pushNamed(context, '/quiz-control',
                               arguments: {
                                 "courseId": widget.courseId,
                                 "formId": widget.formId,

@@ -9,6 +9,7 @@ import de.htwg_konstanz.mobilelearning.enums.QuizQuestionType;
 import de.htwg_konstanz.mobilelearning.enums.FeedbackQuestionType;
 import de.htwg_konstanz.mobilelearning.models.Course;
 import de.htwg_konstanz.mobilelearning.models.QuestionWrapper;
+import de.htwg_konstanz.mobilelearning.models.auth.User;
 import de.htwg_konstanz.mobilelearning.models.feedback.FeedbackForm;
 import de.htwg_konstanz.mobilelearning.models.feedback.FeedbackQuestion;
 import de.htwg_konstanz.mobilelearning.models.quiz.QuizForm;
@@ -36,7 +37,7 @@ public class MockingService {
     @Path("/mock")
     public Object addData() {
         courseRepository.deleteAll();
-        userRepository.deleteAll();
+        // userRepository.deleteAll();
 
         // generate some FeedbackQuestions
         FeedbackQuestion question1 = new FeedbackQuestion(
@@ -168,6 +169,12 @@ public class MockingService {
             FormStatus.NOT_STARTED
         );
         courseCloud.addFeedbackForm(feedbackForm4);
+
+        // set prof owner of dima course (if exists)
+        User prof = userRepository.findByUsername("Prof");
+        if (prof != null) {
+            courseDima.addOwner(prof.getId());
+        }
 
         // save the Course
         courseRepository.persist(courseDima);
