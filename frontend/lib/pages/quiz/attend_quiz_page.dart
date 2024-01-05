@@ -51,14 +51,36 @@ class _AttendQuizPageState extends State<AttendQuizPage> {
         var data = jsonDecode(response.body);
         _courseId = data["courseId"];
         _formId = data["formId"];
-        fetchForm();
-        return;
+        if (await participate()) {
+          fetchForm();
+          return;
+        }
       }
     } on http.ClientException catch (_) {
       // TODO: handle error
     }
     if (!mounted) return;
     Navigator.pop(context);
+  }
+
+  Future<bool> participate() async {
+    try {
+      final response = await http.post(
+        Uri.parse(
+            "${getBackendUrl()}/course/$_courseId/quiz/form/$_formId/participate"),
+        headers: {
+          "Content-Type": "application/json",
+          "AUTHORIZATION": "Bearer ${getSession()!.jwt}",
+        },
+        body: _alias,
+      );
+      if (response.statusCode == 200) {
+        return true;
+      }
+    } on http.ClientException catch (_) {
+      // TODO: handle error
+    }
+    return false;
   }
 
   Future fetchForm() async {
@@ -76,7 +98,7 @@ class _AttendQuizPageState extends State<AttendQuizPage> {
 
         _socketChannel = WebSocketChannel.connect(
           Uri.parse(
-              "${getBackendUrl(protocol: "ws")}/course/$_courseId/quiz/form/$_formId/subscribe/$_userId/$_alias/${getSession()!.jwt}"),
+              "${getBackendUrl(protocol: "ws")}/course/$_courseId/quiz/form/$_formId/subscribe/$_userId/${getSession()!.jwt}"),
         );
 
         _socketChannel!.stream.listen((event) {

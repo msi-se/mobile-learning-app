@@ -24,10 +24,10 @@ Session? getSession() {
   var userId = _preferences?.getString("userId");
   var username = _preferences?.getString("username");
   var roles = _preferences?.getStringList("roles");
-  if (userId == null || username == null) {
+  if (jwt == null || userId == null || username == null || roles == null) {
     return null;
   }
-  return Session(jwt:jwt!, userId: userId, username: username, roles: roles!);
+  return Session(jwt:jwt, userId: userId, username: username, roles: roles);
 }
 
 Future<void> setSession(Session session) async {

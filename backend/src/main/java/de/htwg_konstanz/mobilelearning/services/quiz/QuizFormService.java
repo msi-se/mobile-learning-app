@@ -9,12 +9,10 @@ import org.jboss.resteasy.reactive.RestPath;
 import de.htwg_konstanz.mobilelearning.enums.FormStatus;
 import de.htwg_konstanz.mobilelearning.models.Course;
 import de.htwg_konstanz.mobilelearning.models.QuestionWrapper;
-import de.htwg_konstanz.mobilelearning.models.auth.User;
 import de.htwg_konstanz.mobilelearning.models.auth.UserRole;
 import de.htwg_konstanz.mobilelearning.models.feedback.FeedbackForm;
 import de.htwg_konstanz.mobilelearning.models.quiz.QuizForm;
 import de.htwg_konstanz.mobilelearning.repositories.CourseRepository;
-import de.htwg_konstanz.mobilelearning.repositories.UserRepository;
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.GET;
@@ -26,13 +24,12 @@ import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.SecurityContext;
+import io.smallrye.jwt.auth.principal.JWTCallerPrincipal;
 
 @Path("/course/{courseId}/quiz/form")
 public class QuizFormService {
     
     @Inject CourseRepository courseRepository;
-
-    @Inject UserRepository userRepository;
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
@@ -71,10 +68,7 @@ public class QuizFormService {
     public String participate(@Context SecurityContext ctx, String alias, @RestPath String courseId, @RestPath String formId) {
 
         // get the user
-        String userName = ctx.getUserPrincipal().getName();
-        User user = userRepository.findByUsername(userName);
-        if (user == null) { throw new NotFoundException("User not found"); }
-        ObjectId userId = user.getId();
+        String userId = ((JWTCallerPrincipal) ctx.getUserPrincipal()).getSubject();
 
         // get the course and the quizForm
         ObjectId courseObjectId = new ObjectId(courseId);
@@ -84,7 +78,7 @@ public class QuizFormService {
         QuizForm quizForm = course.getQuizFormById(formObjectId);
         if (quizForm == null) { throw new NotFoundException("QuizForm not found"); }
 
-        quizForm.addParticipant(userId, alias);
+        quizForm.addParticipant(new ObjectId(userId), alias);
         courseRepository.update(course);
 
         return "OK";
