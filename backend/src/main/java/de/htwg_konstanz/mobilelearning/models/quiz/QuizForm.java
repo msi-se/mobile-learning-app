@@ -117,13 +117,13 @@ public class QuizForm extends Form {
 
         if (this.status == FormStatus.STARTED) {
             if (this.currentQuestionFinished) {
-                this.currentQuestionIndex++;
-
                 // check if it is the last question
-                if (this.currentQuestionIndex >= this.questions.size()) {
+                if (this.currentQuestionIndex >= this.questions.size() - 1) {
                     this.status = FormStatus.FINISHED;
                     return Arrays.asList("CLOSED_QUESTION", "FORM_STATUS_CHANGED");
                 }
+                
+                this.currentQuestionIndex++;
 
                 this.currentQuestionFinished = false;
                 return Arrays.asList("OPENED_NEXT_QUESTION");
