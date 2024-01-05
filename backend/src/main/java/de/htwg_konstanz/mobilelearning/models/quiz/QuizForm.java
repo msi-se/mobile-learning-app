@@ -84,6 +84,16 @@ public class QuizForm extends Form {
         if (this.participants == null) {
             this.participants = new java.util.ArrayList<QuizParticipant>();
         }
+
+        // if user is already participating, just update the alias
+        for (QuizParticipant participant : this.participants) {
+            if (participant.getUserId().equals(userId)) {
+                participant.userAlias = userAlias;
+                return;
+            }
+        }
+
+        // otherwise add a new participant
         this.participants.add(new QuizParticipant(userId, userAlias));
     }
 
