@@ -9,8 +9,8 @@ class FeedbackForm extends Form {
     required super.name,
     required super.description,
     required super.connectCode,
-    required super.status,
     required super.questions,
+    required super.status,
   });
 
   factory FeedbackForm.fromJson(Map<String, dynamic> json) {
@@ -20,12 +20,12 @@ class FeedbackForm extends Form {
       name: json['name'],
       description: json['description'],
       connectCode: (json['connectCode'] as int).toString(),
-      status: json['status'],
       questions: json['questions'] == null
           ? []
           : (json['questions'] as List<dynamic>)
               .map((e) => FeedbackQuestion.fromJson(e['questionContent']))
               .toList(),
+      status: json['status'],
     );
   }
 }

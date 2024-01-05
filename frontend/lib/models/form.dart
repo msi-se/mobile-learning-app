@@ -6,8 +6,8 @@ class Form {
   final String name;
   final String description;
   final String connectCode;
-  final String status;
   final List<Question> questions;
+  String status;
 
   Form({
     required this.id,
@@ -15,8 +15,8 @@ class Form {
     required this.name,
     required this.description,
     required this.connectCode,
-    required this.status,
     required this.questions,
+    required this.status,
   });
 
   factory Form.fromJson(Map<String, dynamic> json) {
@@ -26,12 +26,12 @@ class Form {
       name: json['name'],
       description: json['description'],
       connectCode: (json['connectCode'] as int).toString(),
-      status: json['status'],
       questions: json['questions'] == null
           ? []
           : (json['questions'] as List<dynamic>)
               .map((e) => Question.fromJson(e['questionContent']))
               .toList(),
+      status: json['status'],
     );
   }
 }

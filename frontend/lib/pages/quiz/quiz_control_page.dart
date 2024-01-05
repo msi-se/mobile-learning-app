@@ -27,7 +27,6 @@ class _QuizControlPageState extends State<QuizControlPage> {
   late List<String> _roles;
 
   late QuizForm _form;
-  late String _status;
   WebSocketChannel? _socketChannel;
 
   late List<Map<String, dynamic>> _results;
@@ -59,11 +58,13 @@ class _QuizControlPageState extends State<QuizControlPage> {
       );
       if (response.statusCode == 200) {
         var data = jsonDecode(response.body);
+        var form = QuizForm.fromJson(data);
+
         startWebsocket();
+        
         setState(() {
-          _form = QuizForm.fromJson(data);
+          _form = form;
           _results = getResults(data);
-          _status = data["status"];
           _loading = false;
         });
       }
@@ -82,7 +83,7 @@ class _QuizControlPageState extends State<QuizControlPage> {
       var data = jsonDecode(event);
       if (data["action"] == "FORM_STATUS_CHANGED") {
         setState(() {
-          _status = data["formStatus"];
+          _form.status = data["formStatus"];
         });
       }
       if (data["action"] == "RESULT_ADDED") {
@@ -92,7 +93,7 @@ class _QuizControlPageState extends State<QuizControlPage> {
       }
     }, onError: (error) {
       setState(() {
-        _status = "ERROR";
+        _form.status = "ERROR";
       });
     });
   }
@@ -124,6 +125,16 @@ class _QuizControlPageState extends State<QuizControlPage> {
       _socketChannel!.sink.add(jsonEncode({
         "action": "CHANGE_FORM_STATUS",
         "formStatus": "NOT_STARTED",
+        "roles": _roles,
+        "userId": _userId,
+      }));
+    }
+  }
+
+  void next() {
+    if (_socketChannel != null) {
+      _socketChannel!.sink.add(jsonEncode({
+        "action": "NEXT",
         "roles": _roles,
         "userId": _userId,
       }));
@@ -163,7 +174,7 @@ class _QuizControlPageState extends State<QuizControlPage> {
 
     final colors = Theme.of(context).colorScheme;
 
-    if (_status == "NOT_STARTED") {
+    if (_form.status == "NOT_STARTED") {
       var code = _form.connectCode;
       code = "${code.substring(0, 3)} ${code.substring(3, 6)}";
 
@@ -228,9 +239,9 @@ class _QuizControlPageState extends State<QuizControlPage> {
                                 Text(element.description,
                                     style: const TextStyle(fontSize: 15),
                                     textAlign: TextAlign.center),
-                                  Text("$roundAverage",
-                                      style: const TextStyle(fontSize: 20),
-                                      textAlign: TextAlign.center),
+                                Text("$roundAverage",
+                                    style: const TextStyle(fontSize: 20),
+                                    textAlign: TextAlign.center),
                               ],
                             ),
                           );
@@ -238,12 +249,29 @@ class _QuizControlPageState extends State<QuizControlPage> {
                       ),
                     ],
                   ),
-                  if (_status == "STARTED")
-                    ElevatedButton(
-                      onPressed: stopForm,
-                      child: const Text('Quiz beenden'),
+                  Text(
+                    _form.currentQuestionIndex.toString(),
+                    style: Theme.of(context).textTheme.headlineMedium,
+                  ),
+                  Text(
+                    _form.currentQuestionFinished.toString(),
+                    style: Theme.of(context).textTheme.headlineMedium,
+                  ),
+                  if (_form.status == "STARTED")
+                    Column(
+                      children: [
+                        ElevatedButton(
+                          onPressed: next,
+                          child: const Text('Next'),
+                        ),
+                        const SizedBox(height: 8),
+                        ElevatedButton(
+                          onPressed: stopForm,
+                          child: const Text('Quiz beenden'),
+                        ),
+                      ],
                     ),
-                  if (_status == "FINISHED")
+                  if (_form.status == "FINISHED")
                     Column(
                       children: [
                         ElevatedButton(

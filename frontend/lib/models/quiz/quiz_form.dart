@@ -3,8 +3,8 @@ import 'package:frontend/models/quiz/quiz_question.dart';
 
 class QuizForm extends Form {
 
-  int currentQuestionIndex = 0;
-  bool currentQuestionFinished = false;
+  int currentQuestionIndex;
+  bool currentQuestionFinished;
 
   QuizForm({
     required super.id,
@@ -12,8 +12,10 @@ class QuizForm extends Form {
     required super.name,
     required super.description,
     required super.connectCode,
-    required super.status,
     required super.questions,
+    required super.status,
+    required this.currentQuestionIndex,
+    required this.currentQuestionFinished,
   });
 
   factory QuizForm.fromJson(Map<String, dynamic> json) {
@@ -23,12 +25,14 @@ class QuizForm extends Form {
       name: json['name'],
       description: json['description'],
       connectCode: (json['connectCode'] as int).toString(),
-      status: json['status'],
       questions: json['questions'] == null
           ? []
           : (json['questions'] as List<dynamic>)
               .map((e) => QuizQuestion.fromJson(e['questionContent']))
               .toList(),
+      status: json['status'],
+      currentQuestionIndex: json['currentQuestionIndex'] ?? 0,
+      currentQuestionFinished: json['currentQuestionFinished'] ?? false,
     );
   }
 }

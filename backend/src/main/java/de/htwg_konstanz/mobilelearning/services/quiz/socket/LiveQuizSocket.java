@@ -218,6 +218,8 @@ public class LiveQuizSocket {
         if (formStatusEnum == FormStatus.NOT_STARTED) {
             form.clearResults();
             form.clearParticipants();
+            form.currentQuestionIndex = 0;
+            form.currentQuestionFinished = false;
             // send the event to all receivers
             LiveQuizSocketMessage outgoingMessage = new LiveQuizSocketMessage("RESULT_ADDED", form.status.toString(), null, null, null, form);
             this.broadcast(outgoingMessage, courseId, formId);

@@ -30,7 +30,6 @@ class _FeedbackResultPageState extends State<FeedbackResultPage> {
   late List<String> _roles;
 
   late FeedbackForm _form;
-  late String _status;
   WebSocketChannel? _socketChannel;
 
   late List<Map<String, dynamic>> _results;
@@ -62,11 +61,13 @@ class _FeedbackResultPageState extends State<FeedbackResultPage> {
       );
       if (response.statusCode == 200) {
         var data = jsonDecode(response.body);
+        var form = FeedbackForm.fromJson(data);
+
         startWebsocket();
+        
         setState(() {
-          _form = FeedbackForm.fromJson(data);
+          _form = form;
           _results = getResults(data);
-          _status = data["status"];
           _loading = false;
         });
       }
@@ -85,7 +86,7 @@ class _FeedbackResultPageState extends State<FeedbackResultPage> {
       var data = jsonDecode(event);
       if (data["action"] == "FORM_STATUS_CHANGED") {
         setState(() {
-          _status = data["formStatus"];
+          _form.status = data["formStatus"];
         });
       }
       if (data["action"] == "RESULT_ADDED") {
@@ -95,7 +96,7 @@ class _FeedbackResultPageState extends State<FeedbackResultPage> {
       }
     }, onError: (error) {
       setState(() {
-        _status = "ERROR";
+        _form.status = "ERROR";
       });
     });
   }
@@ -166,7 +167,7 @@ class _FeedbackResultPageState extends State<FeedbackResultPage> {
 
     final colors = Theme.of(context).colorScheme;
 
-    if (_status == "NOT_STARTED") {
+    if (_form.status == "NOT_STARTED") {
       var code = _form.connectCode;
       code = "${code.substring(0, 3)} ${code.substring(3, 6)}";
 
@@ -259,12 +260,12 @@ class _FeedbackResultPageState extends State<FeedbackResultPage> {
                       ),
                     ],
                   ),
-                  if (_status == "STARTED")
+                  if (_form.status == "STARTED")
                     ElevatedButton(
                       onPressed: stopForm,
                       child: const Text('Feedback beenden'),
                     ),
-                  if (_status == "FINISHED")
+                  if (_form.status == "FINISHED")
                     Column(
                       children: [
                         ElevatedButton(

@@ -28,7 +28,6 @@ class _AttendFeedbackPageState extends State<AttendFeedbackPage> {
   late String _userId;
 
   late FeedbackForm _form;
-  late String _status;
   WebSocketChannel? _socketChannel;
 
   final Map<String, dynamic> _feedbackValues = {};
@@ -77,26 +76,10 @@ class _AttendFeedbackPageState extends State<AttendFeedbackPage> {
       );
       if (response.statusCode == 200) {
         var data = jsonDecode(response.body);
-
-        _socketChannel = WebSocketChannel.connect(
-          Uri.parse(
-              "${getBackendUrl(protocol: "ws")}/course/$_courseId/feedback/form/$_formId/subscribe/$_userId/${getSession()!.jwt}"),
-        );
-
-        _socketChannel!.stream.listen((event) {
-          var data = jsonDecode(event);
-          if (data["action"] == "FORM_STATUS_CHANGED") {
-            setState(() {
-              _status = data["formStatus"];
-            });
-          }
-        }, onError: (error) {
-          setState(() {
-            _status = "ERROR";
-          });
-        });
-
         var form = FeedbackForm.fromJson(data);
+
+        startWebsocket();
+
         for (var element in form.questions) {
           if (element.type == "STARS") {
             _feedbackValues[element.id] = 3;
@@ -109,13 +92,32 @@ class _AttendFeedbackPageState extends State<AttendFeedbackPage> {
 
         setState(() {
           _form = form;
-          _status = data["status"];
           _loading = false;
         });
       }
     } on http.ClientException catch (_) {
       // TODO: handle error
     }
+  }
+
+  void startWebsocket() {
+    _socketChannel = WebSocketChannel.connect(
+      Uri.parse(
+          "${getBackendUrl(protocol: "ws")}/course/$_courseId/feedback/form/$_formId/subscribe/$_userId/${getSession()!.jwt}"),
+    );
+
+    _socketChannel!.stream.listen((event) {
+      var data = jsonDecode(event);
+      if (data["action"] == "FORM_STATUS_CHANGED") {
+        setState(() {
+          _form.status = data["formStatus"];
+        });
+      }
+    }, onError: (error) {
+      setState(() {
+        _form.status = "ERROR";
+      });
+    });
   }
 
   @override
@@ -136,7 +138,7 @@ class _AttendFeedbackPageState extends State<AttendFeedbackPage> {
 
     final colors = Theme.of(context).colorScheme;
 
-    if (_status != "STARTED") {
+    if (_form.status != "STARTED") {
       return Scaffold(
         appBar: AppBar(
           title: Text(_form.name,
@@ -218,14 +220,14 @@ class _AttendFeedbackPageState extends State<AttendFeedbackPage> {
                                 _feedbackValues[element.id] = newFeedback;
                               });
                             })
-                        // SingleChoiceQuiz(
-                        //   options: element.options,
-                        //   initialQuiz: _feedbackValues[element.id],
-                        //   onQuizChanged: (newFeedback) {
-                        //     setState(() {
-                        //       _feedbackValues[element.id] = newFeedback;
-                        //     });
-                        //   })
+                      // SingleChoiceQuiz(
+                      //   options: element.options,
+                      //   initialQuiz: _feedbackValues[element.id],
+                      //   onQuizChanged: (newFeedback) {
+                      //     setState(() {
+                      //       _feedbackValues[element.id] = newFeedback;
+                      //     });
+                      //   })
                       else
                         const Text('Unknown element type')
                     ],

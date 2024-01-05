@@ -25,7 +25,6 @@ class _AttendQuizPageState extends State<AttendQuizPage> {
   late String _alias;
 
   late QuizForm _form;
-  late String _status;
   WebSocketChannel? _socketChannel;
 
   @override
@@ -86,8 +85,7 @@ class _AttendQuizPageState extends State<AttendQuizPage> {
   Future fetchForm() async {
     try {
       final response = await http.get(
-        Uri.parse(
-            "${getBackendUrl()}/course/$_courseId/quiz/form/$_formId"),
+        Uri.parse("${getBackendUrl()}/course/$_courseId/quiz/form/$_formId"),
         headers: {
           "Content-Type": "application/json",
           "AUTHORIZATION": "Bearer ${getSession()!.jwt}",
@@ -95,36 +93,38 @@ class _AttendQuizPageState extends State<AttendQuizPage> {
       );
       if (response.statusCode == 200) {
         var data = jsonDecode(response.body);
-
-        _socketChannel = WebSocketChannel.connect(
-          Uri.parse(
-              "${getBackendUrl(protocol: "ws")}/course/$_courseId/quiz/form/$_formId/subscribe/$_userId/${getSession()!.jwt}"),
-        );
-
-        _socketChannel!.stream.listen((event) {
-          var data = jsonDecode(event);
-          if (data["action"] == "FORM_STATUS_CHANGED") {
-            setState(() {
-              _status = data["formStatus"];
-            });
-          }
-        }, onError: (error) {
-          setState(() {
-            _status = "ERROR";
-          });
-        });
-
         var form = QuizForm.fromJson(data);
-
+        
+        startWebsocket();
+        
         setState(() {
           _form = form;
-          _status = data["status"];
           _loading = false;
         });
       }
     } on http.ClientException catch (_) {
       // TODO: handle error
     }
+  }
+
+  void startWebsocket() {
+    _socketChannel = WebSocketChannel.connect(
+      Uri.parse(
+          "${getBackendUrl(protocol: "ws")}/course/$_courseId/quiz/form/$_formId/subscribe/$_userId/${getSession()!.jwt}"),
+    );
+
+    _socketChannel!.stream.listen((event) {
+      var data = jsonDecode(event);
+      if (data["action"] == "FORM_STATUS_CHANGED") {
+        setState(() {
+          _form.status = data["formStatus"];
+        });
+      }
+    }, onError: (error) {
+      setState(() {
+        _form.status = "ERROR";
+      });
+    });
   }
 
   @override
@@ -145,7 +145,7 @@ class _AttendQuizPageState extends State<AttendQuizPage> {
 
     final colors = Theme.of(context).colorScheme;
 
-    if (_status != "STARTED") {
+    if (_form.status != "STARTED") {
       return Scaffold(
         appBar: AppBar(
           title: Text(_form.name,
@@ -159,8 +159,7 @@ class _AttendQuizPageState extends State<AttendQuizPage> {
             children: <Widget>[
               const Padding(
                 padding: EdgeInsets.only(left: 20.0, right: 20.0),
-                child: Text(
-                    "Bitte warten Sie bis das Quiz gestartet wird"),
+                child: Text("Bitte warten Sie bis das Quiz gestartet wird"),
               ),
               Padding(
                 padding: const EdgeInsets.all(20.0),
