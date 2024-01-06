@@ -1,14 +1,12 @@
 import 'package:flutter/material.dart';
 
 class SingleChoiceQuiz extends StatefulWidget {
-  final int initialQuiz;
-  final ValueChanged<int> onQuizChanged;
+  final ValueChanged<int> onSelectionChanged;
   final List<String> options;
 
   const SingleChoiceQuiz({
     super.key,
-    this.initialQuiz = 0,
-    required this.onQuizChanged,
+    required this.onSelectionChanged,
     required this.options,
   });
 
@@ -17,37 +15,65 @@ class SingleChoiceQuiz extends StatefulWidget {
 }
 
 class _SingleChoiceQuizState extends State<SingleChoiceQuiz> {
-  late int _quiz;
+  int _selection = -1;
   late List<String> _options;
 
   @override
   void initState() {
     super.initState();
-    _quiz = widget.initialQuiz;
     _options = widget.options;
   }
 
   @override
   Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
+
     return ListView.builder(
       shrinkWrap: true,
-      physics: NeverScrollableScrollPhysics(),
+      physics: const NeverScrollableScrollPhysics(),
       itemCount: _options.length,
       itemBuilder: (BuildContext context, int index) {
         String letter = String.fromCharCode(65 + index);
+        bool selected = _selection == index;
         return Card(
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(10.0),
+            side: BorderSide(
+              color: selected ? colors.primary : Colors.grey,
+              width: selected ? 2.0 : 1.0,
+            ),
           ),
           elevation: 1.0,
           surfaceTintColor: Colors.white,
           child: ListTile(
-            title: Text('$letter: ${_options[index]}'),
+            title: Row(
+              children: [
+                Container(
+                  width: 30.0,
+                  height: 30.0,
+                  decoration: BoxDecoration(
+                    color: selected ? colors.primary : Colors.grey,
+                    shape: BoxShape.circle,
+                  ),
+                  child: Center(
+                    child: Text(
+                      letter,
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 10.0),
+                Text(_options[index]),
+              ],
+            ),
             onTap: () {
               setState(() {
-                _quiz = index;
+                _selection = index;
               });
-              widget.onQuizChanged(index);
+              widget.onSelectionChanged(index);
             },
           ),
         );

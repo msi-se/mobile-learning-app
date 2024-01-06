@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:frontend/components/elements/quiz/single_choice_quiz.dart';
 import 'package:frontend/global.dart';
 import 'package:frontend/models/quiz/quiz_form.dart';
 import 'package:frontend/utils.dart';
@@ -26,6 +27,8 @@ class _AttendQuizPageState extends State<AttendQuizPage> {
 
   late QuizForm _form;
   WebSocketChannel? _socketChannel;
+
+  int _value = -1;
 
   @override
   void initState() {
@@ -238,9 +241,40 @@ class _AttendQuizPageState extends State<AttendQuizPage> {
                   Text(element.description,
                       style: const TextStyle(fontSize: 15),
                       textAlign: TextAlign.center),
+                  Card(
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: element.type == 'SINGLE_CHOICE'
+                          ? SingleChoiceQuiz(
+                              options: element.options,
+                              onSelectionChanged: (newValue) {
+                                setState(() {
+                                  _value = newValue;
+                                });
+                              },
+                            )
+                          : null,
+                    ),
+                  ),
                 ],
               ),
             ),
+            ElevatedButton(
+              child: const Text('Senden'),
+              onPressed: () {
+                if (_value == -1) {
+                  return;
+                }
+                var message = {
+                  "action": "ADD_RESULT",
+                  "resultElementId": _form.currentQuestionIndex,
+                  "resultValue": _value,
+                  "role": "STUDENT"
+                };
+                _socketChannel?.sink.add(jsonEncode(message));
+              },
+            ),
+            const SizedBox(height: 32),
           ],
         ),
       ),

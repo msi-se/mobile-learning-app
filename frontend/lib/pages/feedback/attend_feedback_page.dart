@@ -205,21 +205,23 @@ class _AttendFeedbackPageState extends State<AttendFeedbackPage> {
                         )
                       else if (element.type == 'SLIDER')
                         SliderFeedback(
-                            initialFeedback: _feedbackValues[element.id],
-                            onFeedbackChanged: (newFeedback) {
-                              setState(() {
-                                _feedbackValues[element.id] = newFeedback;
-                              });
-                            })
+                          initialFeedback: _feedbackValues[element.id],
+                          onFeedbackChanged: (newFeedback) {
+                            setState(() {
+                              _feedbackValues[element.id] = newFeedback;
+                            });
+                          },
+                        )
                       else if (element.type == 'SINGLE_CHOICE')
                         SingleChoiceFeedback(
-                            options: element.options,
-                            initialFeedback: _feedbackValues[element.id],
-                            onFeedbackChanged: (newFeedback) {
-                              setState(() {
-                                _feedbackValues[element.id] = newFeedback;
-                              });
-                            })
+                          options: element.options,
+                          initialFeedback: _feedbackValues[element.id],
+                          onFeedbackChanged: (newFeedback) {
+                            setState(() {
+                              _feedbackValues[element.id] = newFeedback;
+                            });
+                          },
+                        )
                       // SingleChoiceQuiz(
                       //   options: element.options,
                       //   initialQuiz: _feedbackValues[element.id],
