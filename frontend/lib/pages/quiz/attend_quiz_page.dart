@@ -122,6 +122,7 @@ class _AttendQuizPageState extends State<AttendQuizPage> {
         var form = QuizForm.fromJson(data["form"]);
         setState(() {
           _form.status = data["formStatus"];
+          _value = -1;
           _form.currentQuestionIndex = form.currentQuestionIndex;
           _form.currentQuestionFinished = form.currentQuestionFinished;
         });
@@ -130,6 +131,7 @@ class _AttendQuizPageState extends State<AttendQuizPage> {
           data["action"] == "OPENED_NEXT_QUESTION") {
         var form = QuizForm.fromJson(data["form"]);
         setState(() {
+          _value = -1;
           _form.currentQuestionIndex = form.currentQuestionIndex;
           _form.currentQuestionFinished = form.currentQuestionFinished;
         });
