@@ -15,6 +15,7 @@ public abstract class Form {
     public List<QuestionWrapper> questions;
     public FormStatus status;
     public Integer connectCode;
+    public String key;
 
     public Form() {
     }
@@ -26,6 +27,8 @@ public abstract class Form {
         this.description = description;
         this.questions = questions != null ? questions : new ArrayList<QuestionWrapper>();
         this.status = status;
+
+        this.key = "";
 
         // generate 6-digit connect code (100000 - 999999)
         this.connectCode = (int) (Math.random() * 899999) + 100000;
@@ -80,6 +83,14 @@ public abstract class Form {
         for (QuestionWrapper element : this.questions) {
             element.clearResults();
         }
+    }
+
+    public void setKey(String key) {
+        this.key = key;
+    }
+
+    public String getKey() {
+        return this.key;
     }
 
 }

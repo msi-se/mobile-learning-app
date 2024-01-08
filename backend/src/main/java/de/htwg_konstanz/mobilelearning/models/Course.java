@@ -17,6 +17,7 @@ public class Course implements Serializable {
     public String name;
     public String description;
     public List<ObjectId> owners;
+    public String key;
 
     // feedback
     public List<FeedbackForm> feedbackForms;
@@ -39,6 +40,7 @@ public class Course implements Serializable {
         this.feedbackQuestions = new ArrayList<FeedbackQuestion>();
         this.quizForms = new ArrayList<QuizForm>();
         this.quizQuestions = new ArrayList<QuizQuestion>();
+        this.key = "";
     }
 
     // id
@@ -228,6 +230,26 @@ public class Course implements Serializable {
             }
         }
         return null;
+    }
+
+    public Form getFormByConnectCode(Integer connectCode) {
+        List<Form> forms = new ArrayList<Form>();
+        forms.addAll(this.feedbackForms);
+        forms.addAll(this.quizForms);
+        for (Form form : forms) {
+            if (form.getConnectCode().equals(connectCode)) {
+                return form;
+            }
+        }
+        return null;
+    }
+
+    public void setKey(String key) {
+        this.key = key;
+    }
+
+    public String getKey() {
+        return this.key;
     }
 
 }

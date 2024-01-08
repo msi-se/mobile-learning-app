@@ -41,7 +41,7 @@ public class ApiService {
     @POST
     @Path("/course")
     @Produces(MediaType.APPLICATION_JSON)
-    public Course createCourse(ApiCourse apiCourse, @Context SecurityContext ctx) {
+    public Course createCourse(List<ApiCourse> apiCourses, @Context SecurityContext ctx) {
 
         User user = userRepository.findByUsername(ctx.getUserPrincipal().getName());
         if (user == null) {
