@@ -29,16 +29,20 @@ public class ApiQuizForm {
     public String name;
     public String description;
     public List<ApiQuizQuestion> questions;
-    public String courseId;
+    public String key;
 
     public ApiQuizForm() {
     }
 
-    public ApiQuizForm(String name, String description, List<ApiQuizQuestion> questions, String courseId) {
+    public ApiQuizForm(String name, String description, List<ApiQuizQuestion> questions, String key) {
         this.name = name;
         this.description = description;
         this.questions = questions;
-        this.courseId = courseId;
+        this.key = key;
+    }
+
+    public String getKey() {
+        return this.key;
     }
 
 }

@@ -7,6 +7,7 @@ public class ApiCourse {
     public String description;
     public List<ApiFeedbackForm> feedbackForms;
     public List<ApiQuizForm> quizForms;
+    public String key;
     
     public ApiCourse() {
     }
@@ -21,7 +22,27 @@ public class ApiCourse {
     public ApiCourse(String name, String description, List<ApiFeedbackForm> feedbackForms, List<ApiQuizForm> quizForms) {
         this.name = name;
         this.description = description;
-        this.feedbackForms = feedbackForms;
-        this.quizForms = quizForms;
+        this.feedbackForms = feedbackForms == null ? List.of() : feedbackForms;
+        this.quizForms = quizForms == null ? List.of() : quizForms;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public List<ApiFeedbackForm> getFeedbackForms() {
+        return feedbackForms == null ? List.of() : feedbackForms;
+    }
+
+    public List<ApiQuizForm> getQuizForms() {
+        return quizForms == null ? List.of() : quizForms;
+    }
+
+    public String getKey() {
+        return key;
     }
 }

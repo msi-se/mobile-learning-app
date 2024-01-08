@@ -93,4 +93,16 @@ public abstract class Form {
         return this.key;
     }
 
+    public void setQuestions(List<QuestionWrapper> questions) {
+        this.questions = questions;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
 }

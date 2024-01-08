@@ -1,14 +1,17 @@
 package de.htwg_konstanz.mobilelearning.models.quiz;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 import org.bson.types.ObjectId;
 
 import de.htwg_konstanz.mobilelearning.enums.FormStatus;
+import de.htwg_konstanz.mobilelearning.enums.QuizQuestionType;
 import de.htwg_konstanz.mobilelearning.models.Course;
 import de.htwg_konstanz.mobilelearning.models.Form;
 import de.htwg_konstanz.mobilelearning.models.QuestionWrapper;
+import de.htwg_konstanz.mobilelearning.services.api.models.ApiQuizForm;
 
 public class QuizForm extends Form {
 
@@ -107,7 +110,7 @@ public class QuizForm extends Form {
     }
 
     public List<String> next() {
-        
+
         if (this.status == FormStatus.NOT_STARTED) {
             this.status = FormStatus.STARTED;
             this.currentQuestionIndex = 0;
@@ -122,13 +125,12 @@ public class QuizForm extends Form {
                     this.status = FormStatus.FINISHED;
                     return Arrays.asList("CLOSED_QUESTION", "FORM_STATUS_CHANGED");
                 }
-                
+
                 this.currentQuestionIndex++;
 
                 this.currentQuestionFinished = false;
                 return Arrays.asList("OPENED_NEXT_QUESTION");
-            }
-            else {
+            } else {
                 this.currentQuestionFinished = true;
                 return Arrays.asList("CLOSED_QUESTION");
             }
@@ -167,5 +169,140 @@ public class QuizForm extends Form {
             }
         }
         return false;
+    }
+
+    public static QuizForm fromApiQuizForm(ApiQuizForm apiQuizForm, Course course) throws IllegalArgumentException {
+
+        // validate input
+        if (apiQuizForm.name == null || apiQuizForm.name.isEmpty()) {
+            throw new IllegalArgumentException("Quiz form name must not be empty.");
+        }
+
+        if (apiQuizForm.description == null || apiQuizForm.description.isEmpty()) {
+            throw new IllegalArgumentException("Quiz form description must not be empty.");
+        }
+
+        if (apiQuizForm.questions == null || apiQuizForm.questions.isEmpty()) {
+            throw new IllegalArgumentException("Quiz form must have at least one question.");
+        }
+
+        if (apiQuizForm.key == null || apiQuizForm.key.isEmpty()) {
+            throw new IllegalArgumentException("Quiz form key must not be empty.");
+        }
+
+        // create quiz questions
+        List<QuestionWrapper> questionWrappers = QuizForm.questionWrappersFromApiQuizQuestions(apiQuizForm.questions,
+                course);
+
+        // add quiz form to course
+        QuizForm quizForm = new QuizForm(
+                course.getId(),
+                apiQuizForm.name,
+                apiQuizForm.description,
+                questionWrappers,
+                FormStatus.NOT_STARTED,
+                0,
+                false);
+        quizForm.setKey(apiQuizForm.key);
+        course.addQuizForm(quizForm);
+
+        return quizForm;
+
+    }
+
+    private static List<QuestionWrapper> questionWrappersFromApiQuizQuestions(
+            List<ApiQuizForm.ApiQuizQuestion> questions,
+            Course course) throws IllegalArgumentException {
+
+        List<ObjectId> quizQuestionIds = new ArrayList<>();
+        for (ApiQuizForm.ApiQuizQuestion apiQuizQuestion : questions) {
+            if (apiQuizQuestion.name == null || apiQuizQuestion.name.isEmpty()) {
+                throw new IllegalArgumentException("Quiz question name must not be empty.");
+            }
+
+            if (apiQuizQuestion.description == null || apiQuizQuestion.description.isEmpty()) {
+                throw new IllegalArgumentException("Quiz question description must not be empty.");
+            }
+
+            if (apiQuizQuestion.type == null || apiQuizQuestion.type.isEmpty()) {
+                throw new IllegalArgumentException("Quiz question type must not be empty.");
+            }
+
+            // check if type is valid (in enum)
+            try {
+                QuizQuestionType.valueOf(apiQuizQuestion.type);
+            } catch (Exception e) {
+                throw new IllegalArgumentException("Invalid quiz question type.");
+            }
+
+            // if it is a single choice question, there must be options
+            if ((apiQuizQuestion.type.equals(QuizQuestionType.SINGLE_CHOICE.toString())
+                    || apiQuizQuestion.type.equals(QuizQuestionType.MULTIPLE_CHOICE.toString()))
+                    && apiQuizQuestion.options.size() < 2) {
+                throw new IllegalArgumentException(
+                        "Single or Multiple choice quiz question must have at least two options.");
+            }
+
+            // check if the same question already exists (if so just add the id to the list
+            // and continue)
+            Boolean questionExists = false;
+            for (QuizQuestion quizQuestion : course.getQuizQuestions()) {
+                if (quizQuestion.getName().equals(apiQuizQuestion.name)
+                        && quizQuestion.getDescription().equals(apiQuizQuestion.description)) {
+                    quizQuestionIds.add(quizQuestion.getId());
+                    questionExists = true;
+                    break;
+                }
+            }
+            if (questionExists) {
+                continue;
+            }
+
+            // create quiz question
+            QuizQuestion quizQuestion = new QuizQuestion(
+                    apiQuizQuestion.name,
+                    apiQuizQuestion.description,
+                    QuizQuestionType.valueOf(apiQuizQuestion.type),
+                    apiQuizQuestion.options,
+                    apiQuizQuestion.hasCorrectAnswer,
+                    apiQuizQuestion.correctAnswer);
+
+            course.addQuizQuestion(quizQuestion);
+            quizQuestionIds.add(quizQuestion.getId());
+        }
+
+        // create question wrappers
+        List<QuestionWrapper> questionWrappers = new ArrayList<>();
+        for (ObjectId quizQuestionId : quizQuestionIds) {
+            questionWrappers.add(new QuestionWrapper(quizQuestionId, null));
+        }
+
+        return questionWrappers;
+
+    }
+
+    public void updateFromApiQuizForm(ApiQuizForm apiQuizForm, Course course) throws IllegalArgumentException {
+
+        // validate input
+        if (apiQuizForm.name == null || apiQuizForm.name.isEmpty()) {
+            throw new IllegalArgumentException("Quiz form name must not be empty.");
+        }
+
+        if (apiQuizForm.description == null || apiQuizForm.description.isEmpty()) {
+            throw new IllegalArgumentException("Quiz form description must not be empty.");
+        }
+
+        if (apiQuizForm.questions == null || apiQuizForm.questions.isEmpty()) {
+            throw new IllegalArgumentException("Quiz form must have at least one question.");
+        }
+
+        // update quiz questions
+        List<QuestionWrapper> questionWrappers = QuizForm.questionWrappersFromApiQuizQuestions(apiQuizForm.questions,
+                course);
+        this.setQuestions(questionWrappers);
+
+        // update quiz form
+        this.setName(apiQuizForm.name);
+        this.setDescription(apiQuizForm.description);
     }
 }

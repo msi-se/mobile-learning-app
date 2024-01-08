@@ -1,0 +1,66 @@
+[
+    {
+        "name": "AUME 23/24",
+        "description": "Agile Vorgehensmodelle und Mobile Kommunikation",
+        "key": "AUME23",
+        "feedbackForms": [
+            {
+                "name": "Erster Sprint",
+                "description": "Hier wollen wir Ihr Feedback zum ersten Sprint einholen",
+                "key": "FEEDBACKERSTERSPRINT",
+                "questions": [
+                    {
+                        "name": "Rolle",
+                        "description": "Wie gut hat Ihnen ihre Rolle gefallen?",
+                        "type": "SLIDER",
+                        "options": []
+                    },
+                    {
+                        "name": "Gruppendynamik",
+                        "description": "Haben Sie sich in der Gruppe wohl gefühlt?",
+                        "type": "SINGLE_CHOICE",
+                        "options": [
+                            "Ja",
+                            "Nein",
+                            "Nur in Präsenz"
+                        ]
+                    }
+                ]
+            }
+        ],
+        "quizForms": [
+            {
+                "name": "Rollenverständnis bei Scrum",
+                "description": "Ein Quiz zum Rollenverständnis bei Scrum",
+                "key": "QUIZSCRUMROLES",
+                "questions": [
+                    {
+                        "name": "Product Owner",
+                        "description": "Welche der folgenden Aufgaben ist nicht Teil der Rolle des Product Owners?",
+                        "type": "SINGLE_CHOICE",
+                        "options": [
+                            "Erstellung des Product Backlogs",
+                            "Priorisierung des Product Backlogs",
+                            "Pizza bestellen für jedes Daily"
+                        ],
+                        "hasCorrectAnswer": true,
+                        "correctAnswer": "Pizza bestellen für jedes Daily"
+                    },
+                    {
+                        "name": "Scrum Master",
+                        "description": "Muss der Scrum Master ein Experte in der Domäne des Produkts sein?",
+                        "type": "YES_NO",
+                        "options": [],
+                        "hasCorrectAnswer": true,
+                        "correctAnswer": "false"
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "name": "Dima 23/24",
+        "description": "Diskrete Mathematik",
+        "key": "DIMA23"
+    }
+]

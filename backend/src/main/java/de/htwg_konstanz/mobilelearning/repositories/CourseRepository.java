@@ -69,4 +69,8 @@ public class CourseRepository implements PanacheMongoRepository<Course> {
         return course.getQuizFormByConnectCode(connectionCode);
     }
 
+    public Course findByKey(String key) {
+        return find("key", key).firstResult();
+    }
+
 }

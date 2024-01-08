@@ -10,6 +10,9 @@ import de.htwg_konstanz.mobilelearning.models.feedback.FeedbackForm;
 import de.htwg_konstanz.mobilelearning.models.feedback.FeedbackQuestion;
 import de.htwg_konstanz.mobilelearning.models.quiz.QuizForm;
 import de.htwg_konstanz.mobilelearning.models.quiz.QuizQuestion;
+import de.htwg_konstanz.mobilelearning.services.api.models.ApiCourse;
+import de.htwg_konstanz.mobilelearning.services.api.models.ApiFeedbackForm;
+import de.htwg_konstanz.mobilelearning.services.api.models.ApiQuizForm;
 
 
 public class Course implements Serializable {
@@ -119,6 +122,15 @@ public class Course implements Serializable {
         return null;
     }
 
+    public FeedbackForm getFeedbackFormByKey(String key) {
+        for (FeedbackForm feedbackForm : this.feedbackForms) {
+            if (feedbackForm.getKey().equals(key)) {
+                return feedbackForm;
+            }
+        }
+        return null;
+    }
+
     public void addFeedbackForm(FeedbackForm feedbackForm) {
         this.feedbackForms.add(feedbackForm);
     }    
@@ -175,6 +187,15 @@ public class Course implements Serializable {
     public QuizForm getQuizFormByConnectCode(Integer connectCode) {
         for (QuizForm quizForm : this.quizForms) {
             if (quizForm.getConnectCode().equals(connectCode)) {
+                return quizForm;
+            }
+        }
+        return null;
+    }
+
+    public QuizForm getQuizFormByKey(String key) {
+        for (QuizForm quizForm : this.quizForms) {
+            if (quizForm.getKey().equals(key)) {
                 return quizForm;
             }
         }
@@ -250,6 +271,83 @@ public class Course implements Serializable {
 
     public String getKey() {
         return this.key;
+    }
+
+    public static Course fromApiCourse(ApiCourse apiCourse) throws IllegalArgumentException {
+        
+        // validate input
+        if (apiCourse == null) {
+            throw new IllegalArgumentException("Course must not be null");
+        }
+        if (apiCourse.getName() == null || apiCourse.getName().isEmpty()) {
+            throw new IllegalArgumentException("Course name must not be null");
+        }
+        if (apiCourse.getDescription() == null || apiCourse.getDescription().isEmpty()) {
+            throw new IllegalArgumentException("Course description must not be null");
+        }
+        if (apiCourse.getKey() == null || apiCourse.getKey().isEmpty()) {
+            throw new IllegalArgumentException("Course key must not be null");
+        }
+
+        // create course
+        Course course = new Course(apiCourse.getName(), apiCourse.getDescription());
+        course.setKey(apiCourse.getKey());
+
+        // create the feedback forms
+        for (ApiFeedbackForm apiFeedbackForm : apiCourse.getFeedbackForms()) {
+            FeedbackForm feedbackForm = FeedbackForm.fromApiFeedbackForm(apiFeedbackForm, course);
+            feedbackForm.setKey(apiFeedbackForm.getKey());
+            course.addFeedbackForm(feedbackForm);
+        }
+
+        // create the quiz forms
+        for (ApiQuizForm apiQuizForm : apiCourse.getQuizForms()) {
+            QuizForm quizForm = QuizForm.fromApiQuizForm(apiQuizForm, course);
+            quizForm.setKey(apiQuizForm.getKey());
+            course.addQuizForm(quizForm);
+        }
+
+        return course;
+    }
+
+    public void updateFromApiCourse(ApiCourse apiCourse) {
+
+        // validate input
+        if (apiCourse == null) {
+            throw new IllegalArgumentException("Course must not be null");
+        }
+        if (apiCourse.getName() == null || apiCourse.getName().isEmpty()) {
+            throw new IllegalArgumentException("Course name must not be null");
+        }
+        if (apiCourse.getDescription() == null || apiCourse.getDescription().isEmpty()) {
+            throw new IllegalArgumentException("Course description must not be null");
+        }
+
+        // update course
+        this.setName(apiCourse.getName());
+        this.setDescription(apiCourse.getDescription());
+
+        // update feedback forms
+        for (ApiFeedbackForm apiFeedbackForm : apiCourse.getFeedbackForms()) {
+            FeedbackForm feedbackForm = this.getFeedbackFormByKey(apiFeedbackForm.getKey());
+            if (feedbackForm == null) {
+                feedbackForm = FeedbackForm.fromApiFeedbackForm(apiFeedbackForm, this);
+                this.addFeedbackForm(feedbackForm);
+            } else {
+                feedbackForm.updateFromApiFeedbackForm(apiFeedbackForm, this);
+            }
+        }
+
+        // update quiz forms
+        for (ApiQuizForm apiQuizForm : apiCourse.getQuizForms()) {
+            QuizForm quizForm = this.getQuizFormByKey(apiQuizForm.getKey());
+            if (quizForm == null) {
+                quizForm = QuizForm.fromApiQuizForm(apiQuizForm, this);
+                this.addQuizForm(quizForm);
+            } else {
+                quizForm.updateFromApiQuizForm(apiQuizForm, this);
+            }
+        }
     }
 
 }

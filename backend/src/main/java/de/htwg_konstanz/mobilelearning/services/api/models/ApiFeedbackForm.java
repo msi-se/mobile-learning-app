@@ -13,7 +13,7 @@ public class ApiFeedbackForm {
         public ApiFeedbackQuestion() {
         }
 
-        public ApiFeedbackQuestion(String name, String description, String type, List<String> options) {
+        public ApiFeedbackQuestion(String name, String description, String type, List<String> options, String key) {
             this.name = name;
             this.description = description;
             this.type = type;
@@ -24,15 +24,23 @@ public class ApiFeedbackForm {
     public String name;
     public String description;
     public List<ApiFeedbackQuestion> questions;
-    public String courseId;
+    public String key;
     
     public ApiFeedbackForm() {
     }
 
-    public ApiFeedbackForm(String name, String description, List<ApiFeedbackQuestion> questions, String courseId) {
+    public ApiFeedbackForm(String name, String description, List<ApiFeedbackQuestion> questions, String key) {
         this.name = name;
         this.description = description;
         this.questions = questions;
-        this.courseId = courseId;
+        this.key = key;
+    }
+
+    public String getKey() {
+        return this.key;
+    }
+
+    public void setKey(String key) {
+        this.key = key;
     }
 }
