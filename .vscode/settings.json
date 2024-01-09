@@ -1,5 +1,157 @@
 {
     "java.project.sourcePaths": [
         "backend"
+    ],
+    "json.schemas": [
+        {
+            "fileMatch": [
+                "/api-demo/courses.json",
+            ],
+            "schema": {
+                "type": "array",
+                "items": {
+                    "type": "object",
+                    "properties": {
+                        "name": {
+                            "type": "string"
+                        },
+                        "description": {
+                            "type": "string"
+                        },
+                        "key": {
+                            "type": "string"
+                        },
+                        "feedbackForms": {
+                            "type": "array",
+                            "items": {
+                                "type": "object",
+                                "properties": {
+                                    "name": {
+                                        "type": "string"
+                                    },
+                                    "description": {
+                                        "type": "string"
+                                    },
+                                    "key": {
+                                        "type": "string"
+                                    },
+                                    "questions": {
+                                        "type": "array",
+                                        "items": {
+                                            "type": "object",
+                                            "properties": {
+                                                "name": {
+                                                    "type": "string"
+                                                },
+                                                "description": {
+                                                    "type": "string"
+                                                },
+                                                "type": {
+                                                    "type": "string",
+                                                    "enum": [
+                                                        "SLIDER",
+                                                        "STARS",
+                                                        "SINGLE_CHOICE",
+                                                        "FULLTEXT",
+                                                        "YES_NO"
+                                                    ]
+                                                },
+                                                "options": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "type": "string"
+                                                    }
+                                                }
+                                            },
+                                            "required": [
+                                                "name",
+                                                "description",
+                                                "type"
+                                            ]
+                                        }
+                                    }
+                                },
+                                "required": [
+                                    "name",
+                                    "description",
+                                    "key",
+                                    "questions"
+                                ]
+                            }
+                        },
+                        "quizForms": {
+                            "type": "array",
+                            "items": {
+                                "type": "object",
+                                "properties": {
+                                    "name": {
+                                        "type": "string"
+                                    },
+                                    "description": {
+                                        "type": "string"
+                                    },
+                                    "key": {
+                                        "type": "string"
+                                    },
+                                    "questions": {
+                                        "type": "array",
+                                        "items": {
+                                            "type": "object",
+                                            "properties": {
+                                                "name": {
+                                                    "type": "string"
+                                                },
+                                                "description": {
+                                                    "type": "string"
+                                                },
+                                                "type": {
+                                                    "type": "string",
+                                                    "enum": [
+                                                        "YES_NO",
+                                                        "SINGLE_CHOICE",
+                                                        "MULTIPLE_CHOICE",
+                                                        "WORD_CLOUD",
+                                                        "FULLTEXT"
+                                                    ]
+                                                },
+                                                "options": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "type": "string"
+                                                    }
+                                                },
+                                                "hasCorrectAnswer": {
+                                                    "type": "boolean"
+                                                },
+                                                "correctAnswer": {
+                                                    "type": "string"
+                                                }
+                                            },
+                                            "required": [
+                                                "name",
+                                                "description",
+                                                "type",
+                                                "hasCorrectAnswer"
+                                            ]
+                                        }
+                                    }
+                                },
+                                "required": [
+                                    "name",
+                                    "description",
+                                    "key",
+                                    "questions"
+                                ]
+                            }
+                        }
+                    },
+                    "required": [
+                        "name",
+                        "description",
+                        "key"
+                    ]
+                }
+            }
+        }
     ]
 }

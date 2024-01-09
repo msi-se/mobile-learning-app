@@ -12,8 +12,7 @@
                     {
                         "name": "Rolle",
                         "description": "Wie gut hat Ihnen ihre Rolle gefallen?",
-                        "type": "SLIDER",
-                        "options": []
+                        "type": "SLIDER"
                     },
                     {
                         "name": "Gruppendynamik",
@@ -50,7 +49,6 @@
                         "name": "Scrum Master",
                         "description": "Muss der Scrum Master ein Experte in der Domäne des Produkts sein?",
                         "type": "YES_NO",
-                        "options": [],
                         "hasCorrectAnswer": true,
                         "correctAnswer": "false"
                     }
