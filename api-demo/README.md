@@ -11,7 +11,7 @@ Forken Sie dieses Repository den Versionsverlauf Ihrer Kurse zu verwalten.
 
 ## Setup
 
-Das Ausführen des Skripts erfordert eine installierte Javasript Laufzeitumgebung z.B. **Node**
+Das Ausführen des Skripts erfordert eine installierte Javasript Laufzeitumgebung z.B. [Node](https://nodejs.org/en)
 
 1. `npm install` 
 
@@ -27,7 +27,7 @@ HTWG_PASSWORD=<HTWG_Passwort>
 
 `node sync-courses.js`
 
-## JSON Struktur in courses.json
+## courses.json Struktur
  
 - Kurs 1
   - Feedback-Formular 1
