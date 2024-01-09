@@ -204,7 +204,6 @@ public class QuizForm extends Form {
                 0,
                 false);
         quizForm.setKey(apiQuizForm.key);
-        course.addQuizForm(quizForm);
 
         return quizForm;
 
@@ -245,17 +244,22 @@ public class QuizForm extends Form {
 
             // check if the same question already exists (if so just add the id to the list
             // and continue)
-            Boolean questionExists = false;
+            QuizQuestion existingQuizQuestion = null; // TODO: course.getQuizQuestionByNameAndDescription(...);
             for (QuizQuestion quizQuestion : course.getQuizQuestions()) {
                 if (quizQuestion.getName().equals(apiQuizQuestion.name)
                         && quizQuestion.getDescription().equals(apiQuizQuestion.description)) {
                     quizQuestionIds.add(quizQuestion.getId());
-                    questionExists = true;
+                    existingQuizQuestion = quizQuestion;
                     break;
                 }
             }
-            if (questionExists) {
-                continue;
+            if (existingQuizQuestion != null) {
+                
+                // update the other question properties
+                existingQuizQuestion.setType(QuizQuestionType.valueOf(apiQuizQuestion.type));
+                existingQuizQuestion.setOptions(apiQuizQuestion.options);
+                existingQuizQuestion.setHasCorrectAnswer(apiQuizQuestion.hasCorrectAnswer);
+                existingQuizQuestion.setCorrectAnswer(apiQuizQuestion.correctAnswer);
             }
 
             // create quiz question

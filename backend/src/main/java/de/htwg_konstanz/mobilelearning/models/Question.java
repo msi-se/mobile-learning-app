@@ -42,5 +42,9 @@ public abstract class Question {
         return this.options;
     }
 
+    public void setOptions(List<String> options) {
+        this.options = options != null ? options : new ArrayList<String>();
+    }
+
     public abstract Question copy();
 }

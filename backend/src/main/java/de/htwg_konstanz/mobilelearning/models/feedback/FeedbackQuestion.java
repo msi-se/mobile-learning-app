@@ -22,4 +22,8 @@ public class FeedbackQuestion extends Question {
         copy.id = this.id;
         return copy;
     }
+
+    public void setType(FeedbackQuestionType type) {
+        this.type = type;
+    }
 }
