@@ -168,14 +168,9 @@ class _QuizControlPageState extends State<QuizControlPage> {
     List<dynamic> elements = form["questions"];
     return elements.map((element) {
       List<dynamic> results = element["results"];
-      List<int> resultValues =
-          results.map((result) => int.parse(result["values"][0])).toList();
-      double average = 0;
-      if (resultValues.isNotEmpty) {
-        average = resultValues.reduce((curr, next) => curr + next) /
-            resultValues.length;
-      }
-      return {"values": resultValues, "average": average};
+      List<dynamic> resultValues =
+          results.map((result) => result["values"][0]).toList();
+      return {"values": resultValues};
     }).toList();
   }
 
@@ -307,8 +302,18 @@ class _QuizControlPageState extends State<QuizControlPage> {
                             padding: const EdgeInsets.all(16),
                             child: element.type == 'SINGLE_CHOICE'
                                 ? SingleChoiceQuizResult(
-                                    results: values,
+                                    results: values
+                                        .map((e) => int.parse(e))
+                                        .toList().cast<int>(),
                                     options: element.options,
+                                    correctAnswer: element.correctAnswers[0],
+                                  )
+                                : element.type == 'YES_NO'
+                                ? SingleChoiceQuizResult(
+                                    results: values
+                                        .map((e) => e == "Ja" ? 0 : 1)
+                                        .toList().cast<int>(),
+                                    options: const ["Ja", "Nein"],
                                     correctAnswer: element.correctAnswers[0],
                                   )
                                 : Text(element.type),
@@ -316,14 +321,6 @@ class _QuizControlPageState extends State<QuizControlPage> {
                         )
                     ],
                   ),
-                ),
-                Text(
-                  _form.currentQuestionIndex.toString(),
-                  style: Theme.of(context).textTheme.headlineMedium,
-                ),
-                Text(
-                  _form.currentQuestionFinished.toString(),
-                  style: Theme.of(context).textTheme.headlineMedium,
                 ),
                 if (_form.status == "STARTED")
                   Column(

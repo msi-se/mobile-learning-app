@@ -46,29 +46,25 @@ class _SingleChoiceQuizState extends State<SingleChoiceQuiz> {
           elevation: 1.0,
           surfaceTintColor: Colors.white,
           child: ListTile(
-            title: Row(
-              children: [
-                Container(
-                  width: 30.0,
-                  height: 30.0,
-                  decoration: BoxDecoration(
-                    color: selected ? colors.primary : Colors.grey,
-                    shape: BoxShape.circle,
-                  ),
-                  child: Center(
-                    child: Text(
-                      letter,
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
+            leading: Container(
+              width: 30.0,
+              height: 30.0,
+              decoration: BoxDecoration(
+                color: selected ? colors.primary : Colors.grey,
+                shape: BoxShape.circle,
+              ),
+              child: Center(
+                child: Text(
+                  letter,
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 18,
                   ),
                 ),
-                const SizedBox(width: 10.0),
-                Text(_options[index]),
-              ],
+              ),
             ),
+            title: Text(_options[index]),
             onTap: () {
               setState(() {
                 _selection = index;

@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:frontend/components/elements/quiz/single_choice_quiz.dart';
+import 'package:frontend/components/elements/quiz/yes_no_quiz.dart';
 import 'package:frontend/global.dart';
 import 'package:frontend/models/quiz/quiz_form.dart';
 import 'package:frontend/utils.dart';
@@ -28,7 +29,7 @@ class _AttendQuizPageState extends State<AttendQuizPage> {
   late QuizForm _form;
   WebSocketChannel? _socketChannel;
 
-  int _value = -1;
+  dynamic _value;
   bool _voted = false;
 
   @override
@@ -123,7 +124,7 @@ class _AttendQuizPageState extends State<AttendQuizPage> {
         var form = QuizForm.fromJson(data["form"]);
         setState(() {
           _form.status = data["formStatus"];
-          _value = -1;
+          _value = null;
           _voted = false;
           _form.currentQuestionIndex = form.currentQuestionIndex;
           _form.currentQuestionFinished = form.currentQuestionFinished;
@@ -133,7 +134,7 @@ class _AttendQuizPageState extends State<AttendQuizPage> {
           data["action"] == "OPENED_NEXT_QUESTION") {
         var form = QuizForm.fromJson(data["form"]);
         setState(() {
-          _value = -1;
+          _value = null;
           _voted = false;
           _form.currentQuestionIndex = form.currentQuestionIndex;
           _form.currentQuestionFinished = form.currentQuestionFinished;
@@ -263,7 +264,15 @@ class _AttendQuizPageState extends State<AttendQuizPage> {
                                 });
                               },
                             )
-                          : Text(element.type),
+                          : element.type == 'YES_NO'
+                              ? YesNoQuiz(
+                                  onSelectionChanged: (newValue) {
+                                    setState(() {
+                                      _value = newValue;
+                                    });
+                                  },
+                                )
+                              : Text(element.type),
                     ),
                   ),
                 ],
@@ -272,7 +281,7 @@ class _AttendQuizPageState extends State<AttendQuizPage> {
             ElevatedButton(
               child: const Text('Senden'),
               onPressed: () {
-                if (_value == -1) {
+                if (_value == null) {
                   return;
                 }
                 var message = {
