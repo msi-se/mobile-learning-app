@@ -181,14 +181,19 @@ class _QuizControlPageState extends State<QuizControlPage> {
 
   List<dynamic> getScoreboard(Map<String, dynamic> form) {
     List<dynamic> elements = form["participants"];
-    int rank = 1;
+    int rank = 0;
+    int lastScore = -1;
     List<dynamic> sortedElements = List.from(elements);
     sortedElements.sort((a, b) => b["score"] - a["score"]);
     return sortedElements.map((element) {
+      if (lastScore != element["score"]) {
+        rank++;
+      }
+      lastScore = element["score"];
       return {
         "userAlias": element["userAlias"],
         "score": element["score"],
-        "rank": rank++,
+        "rank": rank,
       };
     }).toList();
   }
