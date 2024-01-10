@@ -19,7 +19,6 @@ import de.htwg_konstanz.mobilelearning.models.auth.User;
 import de.htwg_konstanz.mobilelearning.models.auth.UserRole;
 import de.htwg_konstanz.mobilelearning.models.quiz.QuizForm;
 import de.htwg_konstanz.mobilelearning.models.quiz.QuizQuestion;
-import de.htwg_konstanz.mobilelearning.models.quiz.QuizParticipant;
 import de.htwg_konstanz.mobilelearning.repositories.CourseRepository;
 import de.htwg_konstanz.mobilelearning.repositories.UserRepository;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -247,7 +246,7 @@ public class LiveQuizSocket {
         }
 
         // evaluate resultValue
-        if (quizSocketMessage.resultValue == null || quizSocketMessage.resultValue.equals("")) {
+        if (quizSocketMessage.resultValues == null || quizSocketMessage.resultValues.equals("")) {
             System.out.println("Result value is invalid");
             return false;
         }
@@ -273,7 +272,7 @@ public class LiveQuizSocket {
 
         // add the result
         String hashedUserId = Hasher.hash(userId);
-        Result result = new Result(hashedUserId, quizSocketMessage.resultValue);
+        Result result = new Result(hashedUserId, quizSocketMessage.resultValues);
         Boolean wasResultAdded = questionwrapper.addResult(result);
         if (!wasResultAdded) {
             System.out.println("Result was not added (user probably already submitted a result)");
@@ -286,8 +285,8 @@ public class LiveQuizSocket {
             System.out.println("Question not found");
             return false;
         }
-        if (question.getHasCorrectAnswer()) {
-            Integer gainedPoints = question.checkAnswer(quizSocketMessage.resultValue);
+        if (question.getHasCorrectAnswers()) {
+            Integer gainedPoints = question.checkAnswer(quizSocketMessage.resultValues);
             form.increaseScoreOfParticipant(new ObjectId(userId), gainedPoints);
         }
 
@@ -295,7 +294,7 @@ public class LiveQuizSocket {
         courseRepository.update(course);
 
         // send the updated form to all receivers (stringify the form)
-        LiveQuizSocketMessage outgoingMessage = new LiveQuizSocketMessage("RESULT_ADDED", null, quizSocketMessage.resultElementId, quizSocketMessage.resultValue, quizSocketMessage.roles, form);
+        LiveQuizSocketMessage outgoingMessage = new LiveQuizSocketMessage("RESULT_ADDED", null, quizSocketMessage.resultElementId, quizSocketMessage.resultValues, quizSocketMessage.roles, form);
         this.broadcast(outgoingMessage, courseId, formId);
         return true;
     };

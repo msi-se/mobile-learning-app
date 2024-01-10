@@ -224,7 +224,7 @@ public class LiveFeedbackSocket {
         }
 
         // evaluate resultValue
-        if (feedbackSocketMessage.resultValue == null || feedbackSocketMessage.resultValue.equals("")) {
+        if (feedbackSocketMessage.resultValues == null || feedbackSocketMessage.resultValues.size() < 1 || feedbackSocketMessage.resultValues.get(0).equals("")) {
             System.out.println("Result value is invalid");
             return false;
         }
@@ -250,7 +250,7 @@ public class LiveFeedbackSocket {
 
         // add the result
         String hashedUserId = Hasher.hash(userId);
-        Result result = new Result(hashedUserId, feedbackSocketMessage.resultValue);
+        Result result = new Result(hashedUserId, feedbackSocketMessage.resultValues);
         Boolean wasResultAdded = element.addResult(result);
         if (!wasResultAdded) {
             System.out.println("Result was not added (user probably already submitted a result)");
@@ -261,7 +261,7 @@ public class LiveFeedbackSocket {
         courseRepository.update(course);
 
         // send the updated form to all receivers (stringify the form)
-        LiveFeedbackSocketMessage outgoingMessage = new LiveFeedbackSocketMessage("RESULT_ADDED", null, feedbackSocketMessage.resultElementId, feedbackSocketMessage.resultValue, feedbackSocketMessage.roles, form);
+        LiveFeedbackSocketMessage outgoingMessage = new LiveFeedbackSocketMessage("RESULT_ADDED", null, feedbackSocketMessage.resultElementId, feedbackSocketMessage.resultValues, feedbackSocketMessage.roles, form);
         this.broadcast(outgoingMessage, courseId, formId);
         return true;
     };

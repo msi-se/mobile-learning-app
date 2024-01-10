@@ -270,7 +270,7 @@ class _AttendQuizPageState extends State<AttendQuizPage> {
                 var message = {
                   "action": "ADD_RESULT",
                   "resultElementId": _form.currentQuestionIndex,
-                  "resultValue": _value,
+                  "resultValues": [ _value ],
                   "role": "STUDENT"
                 };
                 _socketChannel?.sink.add(jsonEncode(message));

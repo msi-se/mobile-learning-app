@@ -258,8 +258,8 @@ public class QuizForm extends Form {
                 // update the other question properties
                 existingQuizQuestion.setType(QuizQuestionType.valueOf(apiQuizQuestion.type));
                 existingQuizQuestion.setOptions(apiQuizQuestion.options);
-                existingQuizQuestion.setHasCorrectAnswer(apiQuizQuestion.hasCorrectAnswer);
-                existingQuizQuestion.setCorrectAnswer(apiQuizQuestion.correctAnswer);
+                existingQuizQuestion.setHasCorrectAnswers(apiQuizQuestion.hasCorrectAnswers);
+                existingQuizQuestion.setCorrectAnswers(apiQuizQuestion.correctAnswers);
             }
 
             // create quiz question
@@ -268,8 +268,8 @@ public class QuizForm extends Form {
                     apiQuizQuestion.description,
                     QuizQuestionType.valueOf(apiQuizQuestion.type),
                     apiQuizQuestion.options,
-                    apiQuizQuestion.hasCorrectAnswer,
-                    apiQuizQuestion.correctAnswer);
+                    apiQuizQuestion.hasCorrectAnswers,
+                    apiQuizQuestion.correctAnswers);
 
             course.addQuizQuestion(quizQuestion);
             quizQuestionIds.add(quizQuestion.getId());

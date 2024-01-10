@@ -9,20 +9,20 @@ public class ApiQuizForm {
         public String description;
         public String type; // YES_NO, SINGLE_CHOICE, MULTIPLE_CHOICE, WORD_CLOUD, FULLTEXT
         public List<String> options;
-        public Boolean hasCorrectAnswer;
-        public String correctAnswer;
+        public Boolean hasCorrectAnswers;
+        public List<String> correctAnswers;
 
         public ApiQuizQuestion() {
         }
 
         public ApiQuizQuestion(String name, String description, String type, List<String> options,
-                Boolean hasCorrectAnswer, String correctAnswer) {
+                Boolean hasCorrectAnswers, List<String> correctAnswers) {
             this.name = name;
             this.description = description;
             this.type = type;
             this.options = options;
-            this.hasCorrectAnswer = hasCorrectAnswer;
-            this.correctAnswer = correctAnswer;
+            this.hasCorrectAnswers = hasCorrectAnswers;
+            this.correctAnswers = correctAnswers;
         }
     }
 

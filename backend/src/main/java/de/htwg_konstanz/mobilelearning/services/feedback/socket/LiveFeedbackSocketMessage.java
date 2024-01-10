@@ -18,7 +18,7 @@ public class LiveFeedbackSocketMessage {
     
     // incoming message
     public String resultElementId;
-    public String resultValue;
+    public List<String> resultValues;
 
     // outgoing message
     public FeedbackForm form;
@@ -29,22 +29,22 @@ public class LiveFeedbackSocketMessage {
         this.action = feedbackSocketMessage.action;
         this.formStatus = feedbackSocketMessage.formStatus;
         this.resultElementId = feedbackSocketMessage.resultElementId;
-        this.resultValue = feedbackSocketMessage.resultValue;
+        this.resultValues = feedbackSocketMessage.resultValues;
         this.roles = feedbackSocketMessage.roles;
         this.form = null;
 
         System.out.println("Action: " + this.action);
         System.out.println("Form status: " + this.formStatus);
         System.out.println("Result element ID: " + this.resultElementId);
-        System.out.println("Result value: " + this.resultValue);
+        System.out.println("Result value: " + this.resultValues);
         System.out.println("Roles: " + this.roles);
     }
 
-    public LiveFeedbackSocketMessage(String action, String formStatus, String resultElementId, String resultValue, List<String> roles, FeedbackForm form) {
+    public LiveFeedbackSocketMessage(String action, String formStatus, String resultElementId, List<String> resultValues, List<String> roles, FeedbackForm form) {
         this.action = action;
         this.formStatus = formStatus;
         this.resultElementId = resultElementId;
-        this.resultValue = resultValue;
+        this.resultValues = resultValues;
         this.roles = roles;
         this.form = form;
     }

@@ -18,7 +18,7 @@ public class LiveQuizSocketMessage {
     
     // incoming message
     public String resultElementId;
-    public String resultValue;
+    public List<String> resultValues;
 
     // outgoing message
     public QuizForm form;
@@ -29,22 +29,22 @@ public class LiveQuizSocketMessage {
         this.action = quizSocketMessage.action;
         this.formStatus = quizSocketMessage.formStatus;
         this.resultElementId = quizSocketMessage.resultElementId;
-        this.resultValue = quizSocketMessage.resultValue;
+        this.resultValues = quizSocketMessage.resultValues;
         this.roles = quizSocketMessage.roles;
         this.form = null;
 
         System.out.println("Action: " + this.action);
         System.out.println("Form status: " + this.formStatus);
         System.out.println("Result element ID: " + this.resultElementId);
-        System.out.println("Result value: " + this.resultValue);
+        System.out.println("Result value: " + this.resultValues);
         System.out.println("Roles: " + this.roles);
     }
 
-    public LiveQuizSocketMessage(String action, String formStatus, String resultElementId, String resultValue, List<String> roles, QuizForm form) {
+    public LiveQuizSocketMessage(String action, String formStatus, String resultElementId, List<String> resultValues, List<String> roles, QuizForm form) {
         this.action = action;
         this.formStatus = formStatus;
         this.resultElementId = resultElementId;
-        this.resultValue = resultValue;
+        this.resultValues = resultValues;
         this.roles = roles;
         this.form = form;
     }

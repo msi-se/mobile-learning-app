@@ -245,7 +245,7 @@ class _AttendFeedbackPageState extends State<AttendFeedbackPage> {
                   var message = {
                     "action": "ADD_RESULT",
                     "resultElementId": entry.key,
-                    "resultValue": entry.value,
+                    "resultValues": [ entry.value ],
                     "role": "STUDENT"
                   };
                   _socketChannel?.sink.add(jsonEncode(message));

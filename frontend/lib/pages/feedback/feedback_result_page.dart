@@ -64,7 +64,7 @@ class _FeedbackResultPageState extends State<FeedbackResultPage> {
         var form = FeedbackForm.fromJson(data);
 
         startWebsocket();
-        
+
         setState(() {
           _form = form;
           _results = getResults(data);
@@ -139,7 +139,7 @@ class _FeedbackResultPageState extends State<FeedbackResultPage> {
     return elements.map((element) {
       List<dynamic> results = element["results"];
       List<int> resultValues =
-          results.map((result) => int.parse(result["value"])).toList();
+          results.map((result) => int.parse(result["values"][0])).toList();
       double average = 0;
       if (resultValues.isNotEmpty) {
         average = resultValues.reduce((curr, next) => curr + next) /

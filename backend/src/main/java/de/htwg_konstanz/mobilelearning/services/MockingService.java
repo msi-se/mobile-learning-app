@@ -192,7 +192,7 @@ public class MockingService {
             QuizQuestionType.SINGLE_CHOICE,
             List.of("Mount Everest", "Mont Blanc", "Matterhorn", "Zugspitze"),
             true,
-            "Mount Everest" 
+            List.of("Mount Everest") 
         );
         QuizQuestion quizQuestion2 = new QuizQuestion(
             "Hauptstadt von Deutschland",
@@ -200,7 +200,7 @@ public class MockingService {
             QuizQuestionType.YES_NO,
             null,
             true,
-            "Nein"
+            List.of("Nein")
         );
 
         // add the questions to the Dima course
