@@ -29,6 +29,7 @@ class _AttendQuizPageState extends State<AttendQuizPage> {
   WebSocketChannel? _socketChannel;
 
   int _value = -1;
+  bool _voted = false;
 
   @override
   void initState() {
@@ -123,6 +124,7 @@ class _AttendQuizPageState extends State<AttendQuizPage> {
         setState(() {
           _form.status = data["formStatus"];
           _value = -1;
+          _voted = false;
           _form.currentQuestionIndex = form.currentQuestionIndex;
           _form.currentQuestionFinished = form.currentQuestionFinished;
         });
@@ -132,6 +134,7 @@ class _AttendQuizPageState extends State<AttendQuizPage> {
         var form = QuizForm.fromJson(data["form"]);
         setState(() {
           _value = -1;
+          _voted = false;
           _form.currentQuestionIndex = form.currentQuestionIndex;
           _form.currentQuestionFinished = form.currentQuestionFinished;
         });
@@ -161,7 +164,7 @@ class _AttendQuizPageState extends State<AttendQuizPage> {
 
     final colors = Theme.of(context).colorScheme;
 
-    if (_form.status != "STARTED") {
+    if (_form.status != "STARTED" || _voted) {
       return Scaffold(
         appBar: AppBar(
           title: Text(_form.name,
@@ -173,9 +176,12 @@ class _AttendQuizPageState extends State<AttendQuizPage> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
-              const Padding(
-                padding: EdgeInsets.only(left: 20.0, right: 20.0),
-                child: Text("Bitte warten Sie bis das Quiz gestartet wird"),
+              Padding(
+                padding: const EdgeInsets.only(left: 20.0, right: 20.0),
+                child: _form.status != "STARTED"
+                    ? const Text("Bitte warten Sie bis das Quiz gestartet wird")
+                    : const Text(
+                        "Bitte warten Sie bis die nächste Frage gestellt wird"),
               ),
               Padding(
                 padding: const EdgeInsets.all(20.0),
@@ -269,11 +275,14 @@ class _AttendQuizPageState extends State<AttendQuizPage> {
                 }
                 var message = {
                   "action": "ADD_RESULT",
-                  "resultElementId": _form.currentQuestionIndex,
-                  "resultValues": [ _value ],
+                  "resultElementId": element.id,
+                  "resultValues": [_value],
                   "role": "STUDENT"
                 };
                 _socketChannel?.sink.add(jsonEncode(message));
+                setState(() {
+                  _voted = true;
+                });
               },
             ),
             const SizedBox(height: 32),

@@ -89,7 +89,7 @@ public class LiveFeedbackSocket {
 
     @OnError
     public void onError(Session session, @PathParam("courseId") String courseId, @PathParam("formId") String formId, @PathParam("userId") String userId, Throwable throwable) {
-        System.out.println("Error: " + throwable.getMessage());
+        throwable.printStackTrace();
         connections.remove(session.getId());
     }
 

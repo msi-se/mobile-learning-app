@@ -15,12 +15,14 @@ import de.htwg_konstanz.mobilelearning.models.quiz.QuizForm;
 import de.htwg_konstanz.mobilelearning.repositories.CourseRepository;
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.inject.Inject;
+import jakarta.ws.rs.DefaultValue;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.NotFoundException;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.PUT;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.SecurityContext;
@@ -44,7 +46,7 @@ public class QuizFormService {
     @Produces(MediaType.APPLICATION_JSON)
     @Path("/{formId}")
     @RolesAllowed({ UserRole.PROF, UserRole.STUDENT })
-    public QuizForm getQuizForm(@RestPath String courseId, @RestPath String formId) {
+    public QuizForm getQuizForm(@RestPath String courseId, @RestPath String formId, @QueryParam("results") @DefaultValue("false") Boolean results) {
 
         ObjectId courseObjectId = new ObjectId(courseId);
         ObjectId formObjectId = new ObjectId(formId);
@@ -52,8 +54,12 @@ public class QuizFormService {
         // fill the questionContent with the linked question
         Course course = courseRepository.findById(courseObjectId);
         QuizForm quizForm = course.getQuizFormById(formObjectId);
+        if (results) {
+            QuizForm quizFormWithQuestionContents = quizForm.copyWithQuestionContents(course);
+            return quizFormWithQuestionContents;
+        }
+        
         QuizForm quizFormWithQuestionContents = quizForm.copyWithoutResultsButWithQuestionContents(course);
-
         return quizFormWithQuestionContents;
     }
 

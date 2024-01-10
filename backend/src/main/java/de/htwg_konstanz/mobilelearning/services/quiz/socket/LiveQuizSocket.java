@@ -104,7 +104,7 @@ public class LiveQuizSocket {
 
     @OnError
     public void onError(Session session, @PathParam("courseId") String courseId, @PathParam("formId") String formId, @PathParam("userId") String userId, Throwable throwable) {
-        System.out.println("Error: " + throwable.getMessage());
+        throwable.printStackTrace();
         connections.remove(session.getId());
     }
 
@@ -246,7 +246,7 @@ public class LiveQuizSocket {
         }
 
         // evaluate resultValue
-        if (quizSocketMessage.resultValues == null || quizSocketMessage.resultValues.equals("")) {
+        if (quizSocketMessage.resultValues == null || quizSocketMessage.resultValues.size() < 1 || quizSocketMessage.resultValues.get(0).equals("")) {
             System.out.println("Result value is invalid");
             return false;
         }
@@ -264,6 +264,7 @@ public class LiveQuizSocket {
         }
 
         // get the questionwrapper
+        System.out.println(quizSocketMessage.resultElementId);
         QuestionWrapper questionwrapper = form.getQuestionById(new ObjectId(quizSocketMessage.resultElementId));
         if (questionwrapper == null) {
             System.out.println("Element not found");
