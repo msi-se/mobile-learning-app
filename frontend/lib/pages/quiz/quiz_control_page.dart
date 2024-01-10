@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:frontend/components/elements/quiz/single_choice_quiz_result.dart';
 import 'package:frontend/global.dart';
 import 'package:frontend/models/quiz/quiz_form.dart';
+import 'package:frontend/models/quiz/quiz_question.dart';
 import 'package:frontend/utils.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 import 'package:http/http.dart' as http;
@@ -218,7 +219,8 @@ class _QuizControlPageState extends State<QuizControlPage> {
       );
     }
 
-    final element = _form.questions[_form.currentQuestionIndex];
+    final QuizQuestion element =
+        _form.questions[_form.currentQuestionIndex] as QuizQuestion;
     final values = _results[_form.currentQuestionIndex]["values"];
 
     return Scaffold(
@@ -234,9 +236,9 @@ class _QuizControlPageState extends State<QuizControlPage> {
             width: double.infinity,
             child: Column(
               children: <Widget>[
-                const SizedBox(height: 16),
+                const SizedBox(height: 32),
                 Padding(
-                  padding: const EdgeInsets.all(32.0),
+                  padding: const EdgeInsets.all(16),
                   child: Column(
                     children: <Widget>[
                       Text(element.name,
@@ -245,11 +247,18 @@ class _QuizControlPageState extends State<QuizControlPage> {
                       Text(element.description,
                           style: const TextStyle(fontSize: 15),
                           textAlign: TextAlign.center),
+                      const SizedBox(height: 16),
                       if (_form.currentQuestionFinished == true)
                         if (element.type == "SINGLE_CHOICE")
-                          SingleChoiceQuizResult(
-                            results: values,
-                            options: element.options,
+                          Card(
+                            child: Padding(
+                              padding: const EdgeInsets.only(left: 16.0, right: 16, bottom: 16),
+                              child: SingleChoiceQuizResult(
+                                results: values,
+                                options: element.options,
+                                correctAnswer: element.correctAnswers[0],
+                              ),
+                            ),
                           )
                     ],
                   ),

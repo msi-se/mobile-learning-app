@@ -1,18 +1,21 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 
 class SingleChoiceQuizResult extends StatefulWidget {
   final List<int> results;
   final List<String> options;
+  final String correctAnswer;
 
   const SingleChoiceQuizResult({
     super.key,
     required this.results,
     required this.options,
+    required this.correctAnswer,
   });
 
   @override
-  State<SingleChoiceQuizResult> createState() =>
-      _SingleChoiceQuizResultState();
+  State<SingleChoiceQuizResult> createState() => _SingleChoiceQuizResultState();
 }
 
 class OptionDerivation {
@@ -25,8 +28,7 @@ class OptionDerivation {
       this.option, this.count, this.percentage, this.normalizedPercentage);
 }
 
-class _SingleChoiceQuizResultState
-    extends State<SingleChoiceQuizResult> {
+class _SingleChoiceQuizResultState extends State<SingleChoiceQuizResult> {
   late List<OptionDerivation> _optionDerivations;
 
   @override
@@ -58,7 +60,7 @@ class _SingleChoiceQuizResultState
       maxPercentage = 1;
     }
     var normalizedPercentages =
-        percentages.map((e) => e / maxPercentage).toList();
+        percentages.map((e) => max(e / maxPercentage, 0.01)).toList();
     var optionDerivations = <OptionDerivation>[];
     for (var i = 0; i < widget.options.length; i++) {
       optionDerivations.add(OptionDerivation(widget.options[i], counts[i],
@@ -76,49 +78,54 @@ class _SingleChoiceQuizResultState
     // create a simple bar chart
     var bars = <Widget>[];
     for (var optionDerivation in _optionDerivations) {
+      bool correctAnswer = optionDerivation.option == widget.correctAnswer;
       bars.add(
-        SizedBox(
-          height: 20,
-          child: Row(
-            children: [
-              SizedBox(
-                width: 150,
-                child: Align(
-                  alignment: Alignment.centerRight,
+        Column(
+          children: [
+            const SizedBox(height: 10),
+            Align(
+              alignment: Alignment.center,
+              child: Text(
+                optionDerivation.option,
+                style: TextStyle(
+                  color: correctAnswer ? colors.primary : colors.onBackground,
+                  fontWeight:
+                      correctAnswer ? FontWeight.bold : FontWeight.normal,
+                  fontSize: 20,
+                ),
+              ),
+            ),
+            Row(
+              children: [
+                SizedBox(
+                  width: 20,
                   child: Text(
-                    optionDerivation.option,
+                    "${optionDerivation.count}",
                     style: TextStyle(
                       color: colors.onBackground,
+                      fontWeight:
+                          correctAnswer ? FontWeight.bold : FontWeight.normal,
                     ),
                   ),
                 ),
-              ),
-              Expanded(
-                child: Padding(
-                  padding: const EdgeInsets.all(4),
-                  child: SizedBox(
-                    height: 20,
-                    child: LinearProgressIndicator(
-                      value: optionDerivation.normalizedPercentage,
-                      backgroundColor: colors.background,
-                      valueColor: AlwaysStoppedAnimation<Color>(
-                        colors.primary,
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.all(2),
+                    child: SizedBox(
+                      height: 20,
+                      child: LinearProgressIndicator(
+                        value: optionDerivation.normalizedPercentage,
+                        backgroundColor: colors.secondary.withOpacity(0.1),
+                        valueColor: AlwaysStoppedAnimation<Color>(
+                          correctAnswer ? colors.primary : colors.tertiary,
+                        ),
                       ),
                     ),
                   ),
                 ),
-              ),
-              SizedBox(
-                width: 50,
-                child: Text(
-                  "${optionDerivation.count}",
-                  style: TextStyle(
-                    color: colors.onBackground,
-                  ),
-                ),
-              ),
-            ],
-          ),
+              ],
+            ),
+          ],
         ),
       );
     }
