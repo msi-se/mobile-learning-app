@@ -240,18 +240,20 @@ class _AttendQuizPageState extends State<AttendQuizPage> {
         child: Column(
           children: [
             Padding(
-              padding: const EdgeInsets.all(32.0),
+              padding: const EdgeInsets.all(16.0),
               child: Column(
                 children: <Widget>[
+                  const SizedBox(height: 16),
                   Text(element.name,
                       style: const TextStyle(
                           fontSize: 24, fontWeight: FontWeight.bold)),
                   Text(element.description,
                       style: const TextStyle(fontSize: 15),
                       textAlign: TextAlign.center),
+                  const SizedBox(height: 16),
                   Card(
                     child: Padding(
-                      padding: const EdgeInsets.all(8.0),
+                      padding: const EdgeInsets.all(16),
                       child: element.type == 'SINGLE_CHOICE'
                           ? SingleChoiceQuiz(
                               options: element.options,
@@ -261,7 +263,7 @@ class _AttendQuizPageState extends State<AttendQuizPage> {
                                 });
                               },
                             )
-                          : null,
+                          : Text(element.type),
                     ),
                   ),
                 ],

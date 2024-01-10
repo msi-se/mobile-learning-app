@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:frontend/components/elements/quiz/single_choice_quiz_result.dart';
+import 'package:frontend/components/general/quiz/QuizScoreboard.dart';
 import 'package:frontend/global.dart';
 import 'package:frontend/models/quiz/quiz_form.dart';
 import 'package:frontend/models/quiz/quiz_question.dart';
@@ -32,6 +33,7 @@ class _QuizControlPageState extends State<QuizControlPage> {
   WebSocketChannel? _socketChannel;
 
   late List<Map<String, dynamic>> _results;
+  late List<dynamic> _scoreboard;
 
   @override
   void initState() {
@@ -68,6 +70,9 @@ class _QuizControlPageState extends State<QuizControlPage> {
         setState(() {
           _form = form;
           _results = getResults(data);
+          if (_form.status == "FINISHED") {
+            _scoreboard = getScoreboard(data);
+          }
           _loading = false;
         });
       }
@@ -91,6 +96,9 @@ class _QuizControlPageState extends State<QuizControlPage> {
           _form.status = data["formStatus"];
           _form.currentQuestionIndex = form.currentQuestionIndex;
           _form.currentQuestionFinished = form.currentQuestionFinished;
+          if (_form.status == "FINISHED") {
+            _scoreboard = getScoreboard(data["form"]);
+          }
         });
       }
       if (data["action"] == "RESULT_ADDED") {
@@ -156,8 +164,8 @@ class _QuizControlPageState extends State<QuizControlPage> {
     }
   }
 
-  List<Map<String, dynamic>> getResults(Map<String, dynamic> json) {
-    List<dynamic> elements = json["questions"];
+  List<Map<String, dynamic>> getResults(Map<String, dynamic> form) {
+    List<dynamic> elements = form["questions"];
     return elements.map((element) {
       List<dynamic> results = element["results"];
       List<int> resultValues =
@@ -168,6 +176,20 @@ class _QuizControlPageState extends State<QuizControlPage> {
             resultValues.length;
       }
       return {"values": resultValues, "average": average};
+    }).toList();
+  }
+
+  List<dynamic> getScoreboard(Map<String, dynamic> form) {
+    List<dynamic> elements = form["participants"];
+    int rank = 1;
+    List<dynamic> sortedElements = List.from(elements);
+    sortedElements.sort((a, b) => b["score"] - a["score"]);
+    return sortedElements.map((element) {
+      return {
+        "userAlias": element["userAlias"],
+        "score": element["score"],
+        "rank": rank++,
+      };
     }).toList();
   }
 
@@ -189,17 +211,19 @@ class _QuizControlPageState extends State<QuizControlPage> {
 
     final colors = Theme.of(context).colorScheme;
 
+    final appBar = AppBar(
+      title: Text(_form.name,
+          style: const TextStyle(
+              color: Colors.white, fontWeight: FontWeight.bold)),
+      backgroundColor: colors.primary,
+    );
+
     if (_form.status == "NOT_STARTED") {
       var code = _form.connectCode;
       code = "${code.substring(0, 3)} ${code.substring(3, 6)}";
 
       return Scaffold(
-        appBar: AppBar(
-          title: Text(_form.name,
-              style: const TextStyle(
-                  color: Colors.white, fontWeight: FontWeight.bold)),
-          backgroundColor: colors.primary,
-        ),
+        appBar: appBar,
         body: Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -219,17 +243,41 @@ class _QuizControlPageState extends State<QuizControlPage> {
       );
     }
 
+    if (_form.status == "FINISHED") {
+      return Scaffold(
+        appBar: appBar,
+        body: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            children: <Widget>[
+              Text(
+                "Quiz beendet",
+                style: Theme.of(context).textTheme.headlineMedium,
+              ),
+              const SizedBox(height: 16),
+              Card(
+                child: Padding(
+                  padding: const EdgeInsets.all(8),
+                  child: QuizScoreboard(scoreboard: _scoreboard),
+                ),
+              ),
+              const SizedBox(height: 16),
+              ElevatedButton(
+                onPressed: resetForm,
+                child: const Text('Quiz zurücksetzen'),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+
     final QuizQuestion element =
         _form.questions[_form.currentQuestionIndex] as QuizQuestion;
     final values = _results[_form.currentQuestionIndex]["values"];
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text(_form.name,
-            style: const TextStyle(
-                color: Colors.white, fontWeight: FontWeight.bold)),
-        backgroundColor: colors.primary,
-      ),
+      appBar: appBar,
       body: Stack(
         children: [
           SizedBox(
@@ -249,17 +297,18 @@ class _QuizControlPageState extends State<QuizControlPage> {
                           textAlign: TextAlign.center),
                       const SizedBox(height: 16),
                       if (_form.currentQuestionFinished == true)
-                        if (element.type == "SINGLE_CHOICE")
-                          Card(
-                            child: Padding(
-                              padding: const EdgeInsets.only(left: 16.0, right: 16, bottom: 16),
-                              child: SingleChoiceQuizResult(
-                                results: values,
-                                options: element.options,
-                                correctAnswer: element.correctAnswers[0],
-                              ),
-                            ),
-                          )
+                        Card(
+                          child: Padding(
+                            padding: const EdgeInsets.all(16),
+                            child: element.type == 'SINGLE_CHOICE'
+                                ? SingleChoiceQuizResult(
+                                    results: values,
+                                    options: element.options,
+                                    correctAnswer: element.correctAnswers[0],
+                                  )
+                                : Text(element.type),
+                          ),
+                        )
                     ],
                   ),
                 ),
@@ -322,4 +371,3 @@ class _QuizControlPageState extends State<QuizControlPage> {
     );
   }
 }
-// 

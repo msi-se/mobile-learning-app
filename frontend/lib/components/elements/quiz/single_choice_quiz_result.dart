@@ -82,7 +82,7 @@ class _SingleChoiceQuizResultState extends State<SingleChoiceQuizResult> {
       bars.add(
         Column(
           children: [
-            const SizedBox(height: 10),
+            const SizedBox(height: 5),
             Align(
               alignment: Alignment.center,
               child: Text(
@@ -125,6 +125,7 @@ class _SingleChoiceQuizResultState extends State<SingleChoiceQuizResult> {
                 ),
               ],
             ),
+            const SizedBox(height: 5),
           ],
         ),
       );
