@@ -46,46 +46,44 @@ HTWG_PASSWORD=<HTWG_Passwort>
 
 ### Kurse sind JSON-Objekte bestehend aus: 
 
-- `name`: Name des Kurses.
-- `description`: Beschreibung des Kurses.
-- `key`: Eindeutiger Schlüssel für den Kurs.
+- `name` **(required)**: Name des Kurses.
+- `description` **(required)**: Beschreibung des Kurses.
+- `key` **(required)**: Eindeutiger Schlüssel für den Kurs. 
 - `feedbackForms`: Array aus Feedback-Forumular Objekten, die mit dem Kurs verbunden sind.
 - `quizForms`: Array aus Quiz-Formular Objekten, die mit dem Kurs verbunden sind.
 
 ### Feedback-Formulare sind JSON-Objekte bestehend aus:
 
-- `name`: Name des Feedback-Formulars.
-- `description`: Beschreibung des Feedback-Formulars.
-- `key`: Eindeutiger Schlüssel für das Feedback-Formular.
-- `questions`: Array aus Feedback-Frage Objekten, die im Feedback-Formular gestellt werden.
+- `name` **(required)**: Name des Feedback-Formulars.
+- `description` **(required)**: Beschreibung des Feedback-Formulars.
+- `key` **(required)**: Eindeutiger Schlüssel für das Feedback-Formular.
+- `questions` **(required)**: Array aus Feedback-Frage Objekten, die im Feedback-Formular gestellt werden.
 
 ### Feedback Fragen sind JSON-Objekte bestehend aus:
 
-- `name`: Name der Frage.
-- `description`: Beschreibung der Frage.
-- `type`: Typ der Frage.
+- `name` **(required)**: Name der Frage.
+- `description` **(required)**: Beschreibung der Frage.
+- `type` **(required)**: Typ der Frage.
 - `options`: Array aus Strings mit Antwortmöglichkeiten, die für `SINGLE_CHOICE` Fragen zur Verfügung stehen.
 
-Optionen für `type`: `SLIDER`, `SINGLE_CHOICE`
+Optionen für `type`: `SLIDER`, `SINGLE_CHOICE`, `FULLTEXT`, `YES_NO`
 
 ### Quiz-Formulare sind JSON-Objekte bestehend aus:
 
-- `name`: Name des Quiz-Formulars.
-- `description`: Beschreibung des Quiz-Formulars.
-- `key`: Eindeutiger Schlüssel für das Quiz-Formular.
-- `questions`: Array aus Quiz Frage Objekten, die im Quiz-Formular gestellt werden.
+- `name` **(required)**: Name des Quiz-Formulars.
+- `description` **(required)**: Beschreibung des Quiz-Formulars.
+- `key` **(required)**: Eindeutiger Schlüssel für das Quiz-Formular.
+- `questions` **(required)**: Array aus Quiz Frage Objekten, die im Quiz-Formular gestellt werden.
 
 ### Quiz Fragen sind JSON-Objekte bestehend aus:
 
-- `name`: Name der Frage.
-- `description`: Beschreibung der Frage.
-- `type`: Typ der Frage
+- `name` **(required)**: Name der Frage.
+- `description` **(required)**: Beschreibung der Frage.
+- `type` **(required)**: Typ der Frage
 - `options`: Array aus Strings mit Antwortmöglichkeiten, die für `SINGLE_CHOICE` Fragen zur Verfügung stehen. 
-- `correctAnswer`: richtige Antwort für die Frage.
+- `correctAnswer` **(required)**: richtige Antwort für die Frage.
 
-Optionen für `type`: `SINGLE_CHOICE`, `YES_NO`
-
-
+Optionen für `type`: `SINGLE_CHOICE`, `YES_NO`, `MULTIPLE_CHOICE`, `WORD_CLOUD`, `FULLTEXT`
 
 ## Funktionsweise
 
