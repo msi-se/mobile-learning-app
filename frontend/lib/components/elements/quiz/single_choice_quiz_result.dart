@@ -77,8 +77,8 @@ class _SingleChoiceQuizResultState extends State<SingleChoiceQuizResult> {
 
     // create a simple bar chart
     var bars = <Widget>[];
-    for (var optionDerivation in _optionDerivations) {
-      bool correctAnswer = optionDerivation.option == widget.correctAnswer;
+    for (final (index, optionDerivation) in _optionDerivations.indexed) {
+      bool correctAnswer = index.toString() == widget.correctAnswer;
       bars.add(
         Column(
           children: [

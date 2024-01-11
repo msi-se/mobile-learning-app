@@ -34,16 +34,16 @@ class _YesNoQuizState extends State<YesNoQuiz> {
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(10.0),
               side: BorderSide(
-                color: _selection == 0 ? colors.primary : Colors.grey,
-                width: _selection == 0 ? 2.0 : 1.0,
+                color: _selection == 1 ? colors.primary : Colors.grey,
+                width: _selection == 1 ? 2.0 : 1.0,
               ),
             ),
           ),
           onPressed: () {
             setState(() {
-              _selection = 0;
+              _selection = 1;
             });
-            widget.onSelectionChanged("Ja");
+            widget.onSelectionChanged("yes");
           },
           child: Row(
             children: [
@@ -51,7 +51,7 @@ class _YesNoQuizState extends State<YesNoQuiz> {
                 width: 30.0,
                 height: 30.0,
                 decoration: BoxDecoration(
-                  color: _selection == 0 ? Colors.green : Colors.grey,
+                  color: _selection == 1 ? Colors.green : Colors.grey,
                   shape: BoxShape.circle,
                 ),
                 child: const Center(
@@ -78,16 +78,16 @@ class _YesNoQuizState extends State<YesNoQuiz> {
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(10.0),
               side: BorderSide(
-                color: _selection == 1 ? colors.primary : Colors.grey,
-                width: _selection == 1 ? 2.0 : 1.0,
+                color: _selection == 0 ? colors.primary : Colors.grey,
+                width: _selection == 0 ? 2.0 : 1.0,
               ),
             ),
           ),
           onPressed: () {
             setState(() {
-              _selection = 1;
+              _selection = 0;
             });
-            widget.onSelectionChanged("Nein");
+            widget.onSelectionChanged("no");
           },
           child: Row(
             children: [
@@ -95,7 +95,7 @@ class _YesNoQuizState extends State<YesNoQuiz> {
                 width: 30.0,
                 height: 30.0,
                 decoration: BoxDecoration(
-                  color: _selection == 1 ? Colors.red : Colors.grey,
+                  color: _selection == 0 ? Colors.red : Colors.grey,
                   shape: BoxShape.circle,
                 ),
                 child: const Center(

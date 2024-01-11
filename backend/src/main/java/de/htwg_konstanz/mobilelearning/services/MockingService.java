@@ -200,7 +200,7 @@ public class MockingService {
             QuizQuestionType.SINGLE_CHOICE,
             List.of("Mount Everest", "Mont Blanc", "Matterhorn", "Zugspitze"),
             true,
-            List.of("Mount Everest"),
+            List.of("0"),
             "Q-Q-HIGHEST-MOUNTAIN"
         );
         QuizQuestion quizQuestion2 = new QuizQuestion(
@@ -209,7 +209,7 @@ public class MockingService {
             QuizQuestionType.YES_NO,
             null,
             true,
-            List.of("Nein"),
+            List.of("no"),
             "Q-Q-CAPITAL-GERMANY"
         );
 

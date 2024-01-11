@@ -304,19 +304,24 @@ class _QuizControlPageState extends State<QuizControlPage> {
                                 ? SingleChoiceQuizResult(
                                     results: values
                                         .map((e) => int.parse(e))
-                                        .toList().cast<int>(),
+                                        .toList()
+                                        .cast<int>(),
                                     options: element.options,
                                     correctAnswer: element.correctAnswers[0],
                                   )
                                 : element.type == 'YES_NO'
-                                ? SingleChoiceQuizResult(
-                                    results: values
-                                        .map((e) => e == "Ja" ? 0 : 1)
-                                        .toList().cast<int>(),
-                                    options: const ["Ja", "Nein"],
-                                    correctAnswer: element.correctAnswers[0],
-                                  )
-                                : Text(element.type),
+                                    ? SingleChoiceQuizResult(
+                                        results: values
+                                            .map((e) => e == "yes" ? 0 : 1)
+                                            .toList()
+                                            .cast<int>(),
+                                        options: const ["Ja", "Nein"],
+                                        correctAnswer:
+                                            element.correctAnswers[0] == "yes"
+                                                ? "0"
+                                                : "1",
+                                      )
+                                    : Text(element.type),
                           ),
                         )
                     ],
