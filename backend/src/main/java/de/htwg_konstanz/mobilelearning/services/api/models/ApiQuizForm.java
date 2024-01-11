@@ -26,6 +26,18 @@ public class ApiQuizForm {
             this.correctAnswers = correctAnswers;
             this.key = key;
         }
+
+        public String getKey() { return this.key; }
+        public String getName() { return this.name; }
+        public String getDescription() { return this.description; }
+        public String getType() { return this.type; }
+        public Boolean getHasCorrectAnswers() { return this.hasCorrectAnswers; }
+        public List<String> getOptions() {
+            return this.options != null ? this.options : List.of();
+        }
+        public List<String> getCorrectAnswers() {
+            return this.correctAnswers != null ? this.correctAnswers : List.of();
+        }
     }
 
     public String name;
@@ -45,6 +57,18 @@ public class ApiQuizForm {
 
     public String getKey() {
         return this.key;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public List<ApiQuizQuestion> getQuestions() {
+        return questions != null ? questions : List.of();
     }
 
 }

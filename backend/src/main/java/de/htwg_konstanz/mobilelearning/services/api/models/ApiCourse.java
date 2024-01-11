@@ -12,18 +12,20 @@ public class ApiCourse {
     public ApiCourse() {
     }
 
-    public ApiCourse(String name, String description) {
+    public ApiCourse(String name, String description, String key) {
         this.name = name;
         this.description = description;
         this.feedbackForms = List.of();
         this.quizForms = List.of();
+        this.key = key;
     }
 
-    public ApiCourse(String name, String description, List<ApiFeedbackForm> feedbackForms, List<ApiQuizForm> quizForms) {
+    public ApiCourse(String name, String description, List<ApiFeedbackForm> feedbackForms, List<ApiQuizForm> quizForms, String key) {
         this.name = name;
         this.description = description;
         this.feedbackForms = feedbackForms == null ? List.of() : feedbackForms;
         this.quizForms = quizForms == null ? List.of() : quizForms;
+        this.key = key;
     }
 
     public String getName() {

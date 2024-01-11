@@ -63,33 +63,33 @@ public class FeedbackForm extends Form {
             throws IllegalArgumentException {
 
         // validate input
-        if (apiFeedbackForm.name == null || apiFeedbackForm.name.isEmpty()) {
+        if (apiFeedbackForm.getName() == null || apiFeedbackForm.getName().isEmpty()) {
             throw new IllegalArgumentException("Feedback form name must not be empty.");
         }
 
-        if (apiFeedbackForm.description == null || apiFeedbackForm.description.isEmpty()) {
+        if (apiFeedbackForm.getDescription() == null || apiFeedbackForm.getDescription().isEmpty()) {
             throw new IllegalArgumentException("Feedback form description must not be empty.");
         }
 
-        if (apiFeedbackForm.questions == null || apiFeedbackForm.questions.isEmpty()) {
+        if (apiFeedbackForm.getQuestions() == null || apiFeedbackForm.getQuestions().isEmpty()) {
             throw new IllegalArgumentException("Feedback form must have at least one question.");
         }
 
-        if (apiFeedbackForm.key == null || apiFeedbackForm.key.isEmpty()) {
+        if (apiFeedbackForm.getKey() == null || apiFeedbackForm.getKey().isEmpty()) {
             throw new IllegalArgumentException("Feedback form key must not be empty.");
         }
 
         List<QuestionWrapper> questionWrappers = FeedbackForm
-                .questionWrappersFromApiFeedbackFormQuestions(apiFeedbackForm.questions, course);
+                .questionWrappersFromApiFeedbackFormQuestions(apiFeedbackForm.getQuestions(), course);
 
         // add feedback form to course
         FeedbackForm feedbackForm = new FeedbackForm(
                 course.getId(),
-                apiFeedbackForm.name,
-                apiFeedbackForm.description,
+                apiFeedbackForm.getName(),
+                apiFeedbackForm.getDescription(),
                 questionWrappers,
                 FormStatus.NOT_STARTED);
-        feedbackForm.setKey(apiFeedbackForm.key);
+        feedbackForm.setKey(apiFeedbackForm.getKey());
 
         return feedbackForm;
 
@@ -102,50 +102,50 @@ public class FeedbackForm extends Form {
         List<ObjectId> feedbackQuestionIds = new ArrayList<>();
         for (ApiFeedbackForm.ApiFeedbackQuestion apiFeedbackQuestion : questions) {
 
-            if (apiFeedbackQuestion.name == null || apiFeedbackQuestion.name.isEmpty()) {
+            if (apiFeedbackQuestion.getName() == null || apiFeedbackQuestion.getName().isEmpty()) {
                 throw new IllegalArgumentException("Feedback question name must not be empty.");
             }
 
-            if (apiFeedbackQuestion.description == null || apiFeedbackQuestion.description.isEmpty()) {
+            if (apiFeedbackQuestion.getDescription() == null || apiFeedbackQuestion.getDescription().isEmpty()) {
                 throw new IllegalArgumentException("Feedback question description must not be empty.");
             }
 
-            if (apiFeedbackQuestion.type == null || apiFeedbackQuestion.type.isEmpty()) {
+            if (apiFeedbackQuestion.getType() == null || apiFeedbackQuestion.getType().isEmpty()) {
                 throw new IllegalArgumentException("Feedback question type must not be empty.");
             }
 
             // check if type is valid (in enum)
             try {
-                FeedbackQuestionType.valueOf(apiFeedbackQuestion.type);
+                FeedbackQuestionType.valueOf(apiFeedbackQuestion.getType());
             } catch (Exception e) {
                 throw new IllegalArgumentException("Invalid feedback question type.");
             }
 
             // if it is a single choice question, there must be options
-            if (apiFeedbackQuestion.type.equals(FeedbackQuestionType.SINGLE_CHOICE.toString())
-                    && apiFeedbackQuestion.options.size() < 2) {
+            if (apiFeedbackQuestion.getType().equals(FeedbackQuestionType.SINGLE_CHOICE.toString())
+                    && apiFeedbackQuestion.getOptions().size() < 2) {
                 throw new IllegalArgumentException("Single choice feedback question must have at least two options.");
             }
 
             // check if the same question already exists (if so just add the id to the list
             // and continue)
-            FeedbackQuestion existingQuestion = course.getFeedbackQuestionByKey(apiFeedbackQuestion.key);
+            FeedbackQuestion existingQuestion = course.getFeedbackQuestionByKey(apiFeedbackQuestion.getKey());
             if (existingQuestion != null) {
-                existingQuestion.setName(apiFeedbackQuestion.name);
-                existingQuestion.setDescription(apiFeedbackQuestion.description);
-                existingQuestion.setType(FeedbackQuestionType.valueOf(apiFeedbackQuestion.type));
-                existingQuestion.setOptions(apiFeedbackQuestion.options);
+                existingQuestion.setName(apiFeedbackQuestion.getName());
+                existingQuestion.setDescription(apiFeedbackQuestion.getDescription());
+                existingQuestion.setType(FeedbackQuestionType.valueOf(apiFeedbackQuestion.getType()));
+                existingQuestion.setOptions(apiFeedbackQuestion.getOptions());
                 feedbackQuestionIds.add(existingQuestion.getId());
                 continue;
             }
 
             // create feedback question
             FeedbackQuestion feedbackQuestion = new FeedbackQuestion(
-                    apiFeedbackQuestion.name,
-                    apiFeedbackQuestion.description,
-                    FeedbackQuestionType.valueOf(apiFeedbackQuestion.type),
-                    apiFeedbackQuestion.options,
-                    apiFeedbackQuestion.key
+                    apiFeedbackQuestion.getName(),
+                    apiFeedbackQuestion.getDescription(),
+                    FeedbackQuestionType.valueOf(apiFeedbackQuestion.getType()),
+                    apiFeedbackQuestion.getOptions(),
+                    apiFeedbackQuestion.getKey()
                     );
 
             course.addFeedbackQuestion(feedbackQuestion);
@@ -165,26 +165,26 @@ public class FeedbackForm extends Form {
             throws IllegalArgumentException {
 
         // validate input
-        if (apiFeedbackForm.name == null || apiFeedbackForm.name.isEmpty()) {
+        if (apiFeedbackForm.getName() == null || apiFeedbackForm.getName().isEmpty()) {
             throw new IllegalArgumentException("Feedback form name must not be empty.");
         }
 
-        if (apiFeedbackForm.description == null || apiFeedbackForm.description.isEmpty()) {
+        if (apiFeedbackForm.getDescription() == null || apiFeedbackForm.getDescription().isEmpty()) {
             throw new IllegalArgumentException("Feedback form description must not be empty.");
         }
 
-        if (apiFeedbackForm.questions == null || apiFeedbackForm.questions.isEmpty()) {
+        if (apiFeedbackForm.getQuestions() == null || apiFeedbackForm.getQuestions().isEmpty()) {
             throw new IllegalArgumentException("Feedback form must have at least one question.");
         }
 
         // update feedback questions
         List<QuestionWrapper> questionWrappers = FeedbackForm
-                .questionWrappersFromApiFeedbackFormQuestions(apiFeedbackForm.questions, course);
+                .questionWrappersFromApiFeedbackFormQuestions(apiFeedbackForm.getQuestions(), course);
         this.setQuestions(questionWrappers);
 
         // update feedback form
-        this.setName(apiFeedbackForm.name);
-        this.setDescription(apiFeedbackForm.description);
+        this.setName(apiFeedbackForm.getName());
+        this.setDescription(apiFeedbackForm.getDescription());
 
     }
 }

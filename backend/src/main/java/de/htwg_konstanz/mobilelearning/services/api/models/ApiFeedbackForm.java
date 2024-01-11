@@ -21,6 +21,14 @@ public class ApiFeedbackForm {
             this.options = options;
             this.key = key;
         }
+
+        public String getKey() { return this.key; }
+        public String getName() { return this.name; }
+        public String getDescription() { return this.description; }
+        public String getType() { return this.type; }
+        public List<String> getOptions() {
+            return this.options != null ? this.options : List.of();
+        }
     }
 
     public String name;
@@ -42,7 +50,15 @@ public class ApiFeedbackForm {
         return this.key;
     }
 
-    public void setKey(String key) {
-        this.key = key;
+    public String getName() {
+        return name;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public List<ApiFeedbackQuestion> getQuestions() {
+        return questions == null ? List.of() : questions;
     }
 }

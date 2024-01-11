@@ -174,31 +174,31 @@ public class QuizForm extends Form {
     public static QuizForm fromApiQuizForm(ApiQuizForm apiQuizForm, Course course) throws IllegalArgumentException {
 
         // validate input
-        if (apiQuizForm.name == null || apiQuizForm.name.isEmpty()) {
+        if (apiQuizForm.getName() == null || apiQuizForm.getName().isEmpty()) {
             throw new IllegalArgumentException("Quiz form name must not be empty.");
         }
 
-        if (apiQuizForm.description == null || apiQuizForm.description.isEmpty()) {
+        if (apiQuizForm.getDescription() == null || apiQuizForm.getDescription().isEmpty()) {
             throw new IllegalArgumentException("Quiz form description must not be empty.");
         }
 
-        if (apiQuizForm.questions == null || apiQuizForm.questions.isEmpty()) {
+        if (apiQuizForm.getQuestions() == null || apiQuizForm.getQuestions().isEmpty()) {
             throw new IllegalArgumentException("Quiz form must have at least one question.");
         }
 
-        if (apiQuizForm.key == null || apiQuizForm.key.isEmpty()) {
+        if (apiQuizForm.getKey() == null || apiQuizForm.getKey().isEmpty()) {
             throw new IllegalArgumentException("Quiz form key must not be empty.");
         }
 
         // create quiz questions
-        List<QuestionWrapper> questionWrappers = QuizForm.questionWrappersFromApiQuizQuestions(apiQuizForm.questions,
+        List<QuestionWrapper> questionWrappers = QuizForm.questionWrappersFromApiQuizQuestions(apiQuizForm.getQuestions(),
                 course);
 
         // add quiz form to course
         QuizForm quizForm = new QuizForm(
                 course.getId(),
-                apiQuizForm.name,
-                apiQuizForm.description,
+                apiQuizForm.getName(),
+                apiQuizForm.getDescription(),
                 questionWrappers,
                 FormStatus.NOT_STARTED,
                 0,
@@ -215,56 +215,56 @@ public class QuizForm extends Form {
 
         List<ObjectId> quizQuestionIds = new ArrayList<>();
         for (ApiQuizForm.ApiQuizQuestion apiQuizQuestion : questions) {
-            if (apiQuizQuestion.name == null || apiQuizQuestion.name.isEmpty()) {
+            if (apiQuizQuestion.getName() == null || apiQuizQuestion.getName().isEmpty()) {
                 throw new IllegalArgumentException("Quiz question name must not be empty.");
             }
 
-            if (apiQuizQuestion.description == null || apiQuizQuestion.description.isEmpty()) {
+            if (apiQuizQuestion.getDescription() == null || apiQuizQuestion.getDescription().isEmpty()) {
                 throw new IllegalArgumentException("Quiz question description must not be empty.");
             }
 
-            if (apiQuizQuestion.type == null || apiQuizQuestion.type.isEmpty()) {
+            if (apiQuizQuestion.getType() == null || apiQuizQuestion.getType().isEmpty()) {
                 throw new IllegalArgumentException("Quiz question type must not be empty.");
             }
 
             // check if type is valid (in enum)
             try {
-                QuizQuestionType.valueOf(apiQuizQuestion.type);
+                QuizQuestionType.valueOf(apiQuizQuestion.getType());
             } catch (Exception e) {
                 throw new IllegalArgumentException("Invalid quiz question type.");
             }
 
             // if it is a single choice question, there must be options
-            if ((apiQuizQuestion.type.equals(QuizQuestionType.SINGLE_CHOICE.toString())
-                    || apiQuizQuestion.type.equals(QuizQuestionType.MULTIPLE_CHOICE.toString()))
-                    && apiQuizQuestion.options.size() < 2) {
+            if ((apiQuizQuestion.getType().equals(QuizQuestionType.SINGLE_CHOICE.toString())
+                    || apiQuizQuestion.getType().equals(QuizQuestionType.MULTIPLE_CHOICE.toString()))
+                    && apiQuizQuestion.getOptions().size() < 2) {
                 throw new IllegalArgumentException(
                         "Single or Multiple choice quiz question must have at least two options.");
             }
 
             // check if the same question already exists (if so just add the id to the list
             // and continue)
-            QuizQuestion existingQuizQuestion = course.getQuizQuestionByKey(apiQuizQuestion.key);
+            QuizQuestion existingQuizQuestion = course.getQuizQuestionByKey(apiQuizQuestion.getKey());
             if (existingQuizQuestion != null) {
-                existingQuizQuestion.setName(apiQuizQuestion.name);
-                existingQuizQuestion.setDescription(apiQuizQuestion.description);
-                existingQuizQuestion.setType(QuizQuestionType.valueOf(apiQuizQuestion.type));
-                existingQuizQuestion.setOptions(apiQuizQuestion.options);
-                existingQuizQuestion.setHasCorrectAnswers(apiQuizQuestion.hasCorrectAnswers);
-                existingQuizQuestion.setCorrectAnswers(apiQuizQuestion.correctAnswers);
+                existingQuizQuestion.setName(apiQuizQuestion.getName());
+                existingQuizQuestion.setDescription(apiQuizQuestion.getDescription());
+                existingQuizQuestion.setType(QuizQuestionType.valueOf(apiQuizQuestion.getType()));
+                existingQuizQuestion.setOptions(apiQuizQuestion.getOptions());
+                existingQuizQuestion.setHasCorrectAnswers(apiQuizQuestion.getHasCorrectAnswers());
+                existingQuizQuestion.setCorrectAnswers(apiQuizQuestion.getCorrectAnswers());
                 quizQuestionIds.add(existingQuizQuestion.getId());
                 continue;
             }
 
             // create quiz question
             QuizQuestion quizQuestion = new QuizQuestion(
-                    apiQuizQuestion.name,
-                    apiQuizQuestion.description,
-                    QuizQuestionType.valueOf(apiQuizQuestion.type),
-                    apiQuizQuestion.options,
-                    apiQuizQuestion.hasCorrectAnswers,
-                    apiQuizQuestion.correctAnswers,
-                    apiQuizQuestion.key
+                    apiQuizQuestion.getName(),
+                    apiQuizQuestion.getDescription(),
+                    QuizQuestionType.valueOf(apiQuizQuestion.getType()),
+                    apiQuizQuestion.getOptions(),
+                    apiQuizQuestion.getHasCorrectAnswers(),
+                    apiQuizQuestion.getCorrectAnswers(),
+                    apiQuizQuestion.getKey()
                     );
 
             course.addQuizQuestion(quizQuestion);
@@ -284,25 +284,25 @@ public class QuizForm extends Form {
     public void updateFromApiQuizForm(ApiQuizForm apiQuizForm, Course course) throws IllegalArgumentException {
 
         // validate input
-        if (apiQuizForm.name == null || apiQuizForm.name.isEmpty()) {
+        if (apiQuizForm.getName() == null || apiQuizForm.getName().isEmpty()) {
             throw new IllegalArgumentException("Quiz form name must not be empty.");
         }
 
-        if (apiQuizForm.description == null || apiQuizForm.description.isEmpty()) {
+        if (apiQuizForm.getDescription() == null || apiQuizForm.getDescription().isEmpty()) {
             throw new IllegalArgumentException("Quiz form description must not be empty.");
         }
 
-        if (apiQuizForm.questions == null || apiQuizForm.questions.isEmpty()) {
+        if (apiQuizForm.getQuestions() == null || apiQuizForm.getQuestions().isEmpty()) {
             throw new IllegalArgumentException("Quiz form must have at least one question.");
         }
 
         // update quiz questions
-        List<QuestionWrapper> questionWrappers = QuizForm.questionWrappersFromApiQuizQuestions(apiQuizForm.questions,
+        List<QuestionWrapper> questionWrappers = QuizForm.questionWrappersFromApiQuizQuestions(apiQuizForm.getQuestions(),
                 course);
         this.setQuestions(questionWrappers);
 
         // update quiz form
-        this.setName(apiQuizForm.name);
-        this.setDescription(apiQuizForm.description);
+        this.setName(apiQuizForm.getName());
+        this.setDescription(apiQuizForm.getDescription());
     }
 }
