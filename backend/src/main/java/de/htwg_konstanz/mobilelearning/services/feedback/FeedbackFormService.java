@@ -7,18 +7,19 @@ import org.jboss.resteasy.reactive.RestPath;
 
 import de.htwg_konstanz.mobilelearning.enums.FormStatus;
 import de.htwg_konstanz.mobilelearning.models.Course;
-import de.htwg_konstanz.mobilelearning.models.QuestionWrapper;
 import de.htwg_konstanz.mobilelearning.models.auth.UserRole;
 import de.htwg_konstanz.mobilelearning.models.feedback.FeedbackForm;
 import de.htwg_konstanz.mobilelearning.repositories.CourseRepository;
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.inject.Inject;
+import jakarta.ws.rs.DefaultValue;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.NotFoundException;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.PUT;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.MediaType;
 
 @Path("/course/{courseId}/feedback/form")
@@ -40,7 +41,7 @@ public class FeedbackFormService {
     @Produces(MediaType.APPLICATION_JSON)
     @Path("/{formId}")
     @RolesAllowed({ UserRole.PROF, UserRole.STUDENT })
-    public FeedbackForm getFeedbackForm(@RestPath String courseId, @RestPath String formId) {
+    public FeedbackForm getFeedbackForm(@RestPath String courseId, @RestPath String formId, @QueryParam("results") @DefaultValue("false") Boolean results) {
 
         ObjectId courseObjectId = new ObjectId(courseId);
         ObjectId formObjectId = new ObjectId(formId);
@@ -48,9 +49,14 @@ public class FeedbackFormService {
         // fill the questionContent with the linked question
         Course course = courseRepository.findById(courseObjectId);
         FeedbackForm feedbackForm = course.getFeedbackFormById(formObjectId);
-        feedbackForm.fillQuestionContents(course);
 
-        return feedbackForm;
+        if (results) {
+            FeedbackForm feedbackFormWithQuestionContents = feedbackForm.copyWithQuestionContents(course);
+            return feedbackFormWithQuestionContents;
+        }
+
+        FeedbackForm feedbackFormWithQuestionContents = feedbackForm.copyWithoutResultsButWithQuestionContents(course);
+        return feedbackFormWithQuestionContents;
     }
 
     @PUT

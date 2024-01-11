@@ -17,7 +17,7 @@ import jakarta.ws.rs.core.MediaType;
 
 @Path("/live")
 public class LiveService {
-    
+
     @Inject
     private CourseRepository courseRepository;
 
@@ -32,7 +32,7 @@ public class LiveService {
         List<Course> courses = courseRepository.listAll();
         courses.forEach(course -> {
             course.feedbackForms.forEach(form -> {
-                
+
                 if (form.status == FormStatus.STARTED) {
                     forms.add(form);
                 }
@@ -40,7 +40,12 @@ public class LiveService {
                 forms.add(form.copyWithoutResults());
             });
             course.quizForms.forEach(form -> {
-                // TODO: add quiz forms
+
+                if (form.status == FormStatus.STARTED) {
+                    forms.add(form);
+                }
+
+                forms.add(form.copyWithoutResults());
             });
         });
 

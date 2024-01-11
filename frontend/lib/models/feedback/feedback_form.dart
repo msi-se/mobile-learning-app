@@ -1,22 +1,16 @@
 import 'package:frontend/models/feedback/feedback_question.dart';
+import 'package:frontend/models/form.dart';
 
-class FeedbackForm {
-  final String id;
-  final String courseId;
-  final String name;
-  final String description;
-  final String connectCode;
-  final String status;
-  final List<FeedbackQuestion> questions;
+class FeedbackForm extends Form {
 
   FeedbackForm({
-    required this.id,
-    required this.courseId,
-    required this.name,
-    required this.description,
-    required this.connectCode,
-    required this.status,
-    required this.questions,
+    required super.id,
+    required super.courseId,
+    required super.name,
+    required super.description,
+    required super.connectCode,
+    required super.questions,
+    required super.status,
   });
 
   factory FeedbackForm.fromJson(Map<String, dynamic> json) {
@@ -26,12 +20,12 @@ class FeedbackForm {
       name: json['name'],
       description: json['description'],
       connectCode: (json['connectCode'] as int).toString(),
-      status: json['status'],
       questions: json['questions'] == null
           ? []
           : (json['questions'] as List<dynamic>)
               .map((e) => FeedbackQuestion.fromJson(e['questionContent']))
               .toList(),
+      status: json['status'],
     );
   }
 }

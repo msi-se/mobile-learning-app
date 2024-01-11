@@ -1,27 +1,29 @@
 package de.htwg_konstanz.mobilelearning.models;
 
+import java.util.List;
+
 import org.bson.types.ObjectId;
 
 public class Result {
     public ObjectId id;
     public ObjectId userId;
-    public String value;
+    public List<String> values;
     public String hashedUserId;
 
     public Result() {
     }
 
-    public Result(ObjectId userId, String value) {
+    public Result(ObjectId userId, List<String> values) {
         this.id = new ObjectId();
         this.userId = userId;
-        this.value = value;
+        this.values = values;
         this.hashedUserId = null;
     }
 
-    public Result(String hashedUserId, String value) {
+    public Result(String hashedUserId, List<String> values) {
         this.id = new ObjectId();
         this.hashedUserId = hashedUserId;
-        this.value = value;
+        this.values = values;
         this.userId = null;
     }
 
@@ -33,11 +35,11 @@ public class Result {
         return this.userId;
     }
 
-    public String getValue() {
-        return this.value;
+    public List<String> getValues() {
+        return this.values;
     }
 
-    public void setValue(String value) {
-        this.value = value;
+    public void setValues(List<String> values) {
+        this.values = values;
     }
 }

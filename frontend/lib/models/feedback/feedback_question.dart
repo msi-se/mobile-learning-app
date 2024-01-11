@@ -1,6 +1,7 @@
 import 'package:frontend/models/question.dart';
 
 class FeedbackQuestion extends Question {
+  
   FeedbackQuestion(
       {required super.id,
       required super.name,

@@ -1,9 +1,9 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:frontend/components/feedback/elements/single_choice_feedback_result.dart';
-import 'package:frontend/components/feedback/elements/slider_feedback_result.dart';
-import 'package:frontend/components/feedback/elements/star_feedback_result.dart';
+import 'package:frontend/components/elements/feedback/single_choice_feedback_result.dart';
+import 'package:frontend/components/elements/feedback/slider_feedback_result.dart';
+import 'package:frontend/components/elements/feedback/star_feedback_result.dart';
 import 'package:frontend/global.dart';
 import 'package:frontend/models/feedback/feedback_form.dart';
 import 'package:frontend/utils.dart';
@@ -27,10 +27,9 @@ class _FeedbackResultPageState extends State<FeedbackResultPage> {
   late String _courseId;
   late String _formId;
   late String _userId;
-  late List<String> _role;
+  late List<String> _roles;
 
   late FeedbackForm _form;
-  late String _status;
   WebSocketChannel? _socketChannel;
 
   late List<Map<String, dynamic>> _results;
@@ -40,7 +39,7 @@ class _FeedbackResultPageState extends State<FeedbackResultPage> {
     super.initState();
 
     _userId = getSession()!.userId;
-    _role = getSession()!.roles;
+    _roles = getSession()!.roles;
     init();
   }
 
@@ -54,7 +53,7 @@ class _FeedbackResultPageState extends State<FeedbackResultPage> {
     try {
       final response = await http.get(
         Uri.parse(
-            "${getBackendUrl()}/course/$_courseId/feedback/form/$_formId"),
+            "${getBackendUrl()}/course/$_courseId/feedback/form/$_formId?results=true"),
         headers: {
           "Content-Type": "application/json",
           "AUTHORIZATION": "Bearer ${getSession()!.jwt}",
@@ -62,11 +61,13 @@ class _FeedbackResultPageState extends State<FeedbackResultPage> {
       );
       if (response.statusCode == 200) {
         var data = jsonDecode(response.body);
+        var form = FeedbackForm.fromJson(data);
+
         startWebsocket();
+
         setState(() {
-          _form = FeedbackForm.fromJson(data);
-          _results = getTestResults(data);
-          _status = data["status"];
+          _form = form;
+          _results = getResults(data);
           _loading = false;
         });
       }
@@ -85,17 +86,17 @@ class _FeedbackResultPageState extends State<FeedbackResultPage> {
       var data = jsonDecode(event);
       if (data["action"] == "FORM_STATUS_CHANGED") {
         setState(() {
-          _status = data["formStatus"];
+          _form.status = data["formStatus"];
         });
       }
       if (data["action"] == "RESULT_ADDED") {
         setState(() {
-          _results = getTestResults(data["form"]);
+          _results = getResults(data["form"]);
         });
       }
     }, onError: (error) {
       setState(() {
-        _status = "ERROR";
+        _form.status = "ERROR";
       });
     });
   }
@@ -105,7 +106,7 @@ class _FeedbackResultPageState extends State<FeedbackResultPage> {
       _socketChannel!.sink.add(jsonEncode({
         "action": "CHANGE_FORM_STATUS",
         "formStatus": "STARTED",
-        "roles": _role,
+        "roles": _roles,
         "userId": _userId,
       }));
     }
@@ -116,7 +117,7 @@ class _FeedbackResultPageState extends State<FeedbackResultPage> {
       _socketChannel!.sink.add(jsonEncode({
         "action": "CHANGE_FORM_STATUS",
         "formStatus": "FINISHED",
-        "roles": _role,
+        "roles": _roles,
         "userId": _userId,
       }));
     }
@@ -127,18 +128,18 @@ class _FeedbackResultPageState extends State<FeedbackResultPage> {
       _socketChannel!.sink.add(jsonEncode({
         "action": "CHANGE_FORM_STATUS",
         "formStatus": "NOT_STARTED",
-        "roles": _role,
+        "roles": _roles,
         "userId": _userId,
       }));
     }
   }
 
-  List<Map<String, dynamic>> getTestResults(Map<String, dynamic> json) {
+  List<Map<String, dynamic>> getResults(Map<String, dynamic> json) {
     List<dynamic> elements = json["questions"];
     return elements.map((element) {
       List<dynamic> results = element["results"];
       List<int> resultValues =
-          results.map((result) => int.parse(result["value"])).toList();
+          results.map((result) => int.parse(result["values"][0])).toList();
       double average = 0;
       if (resultValues.isNotEmpty) {
         average = resultValues.reduce((curr, next) => curr + next) /
@@ -166,7 +167,7 @@ class _FeedbackResultPageState extends State<FeedbackResultPage> {
 
     final colors = Theme.of(context).colorScheme;
 
-    if (_status == "NOT_STARTED") {
+    if (_form.status == "NOT_STARTED") {
       var code = _form.connectCode;
       code = "${code.substring(0, 3)} ${code.substring(3, 6)}";
 
@@ -259,12 +260,12 @@ class _FeedbackResultPageState extends State<FeedbackResultPage> {
                       ),
                     ],
                   ),
-                  if (_status == "STARTED")
+                  if (_form.status == "STARTED")
                     ElevatedButton(
                       onPressed: stopForm,
                       child: const Text('Feedback beenden'),
                     ),
-                  if (_status == "FINISHED")
+                  if (_form.status == "FINISHED")
                     Column(
                       children: [
                         ElevatedButton(
@@ -300,4 +301,3 @@ class _FeedbackResultPageState extends State<FeedbackResultPage> {
         ));
   }
 }
-// 

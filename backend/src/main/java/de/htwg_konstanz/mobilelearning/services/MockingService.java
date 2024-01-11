@@ -5,11 +5,15 @@ import java.util.List;
 import org.bson.types.ObjectId;
 
 import de.htwg_konstanz.mobilelearning.enums.FormStatus;
-import de.htwg_konstanz.mobilelearning.enums.QuestionType;
+import de.htwg_konstanz.mobilelearning.enums.QuizQuestionType;
+import de.htwg_konstanz.mobilelearning.enums.FeedbackQuestionType;
 import de.htwg_konstanz.mobilelearning.models.Course;
 import de.htwg_konstanz.mobilelearning.models.QuestionWrapper;
+import de.htwg_konstanz.mobilelearning.models.auth.User;
 import de.htwg_konstanz.mobilelearning.models.feedback.FeedbackForm;
 import de.htwg_konstanz.mobilelearning.models.feedback.FeedbackQuestion;
+import de.htwg_konstanz.mobilelearning.models.quiz.QuizForm;
+import de.htwg_konstanz.mobilelearning.models.quiz.QuizQuestion;
 import de.htwg_konstanz.mobilelearning.repositories.CourseRepository;
 import de.htwg_konstanz.mobilelearning.repositories.UserRepository;
 
@@ -33,64 +37,72 @@ public class MockingService {
     @Path("/mock")
     public Object addData() {
         courseRepository.deleteAll();
-        userRepository.deleteAll();
+        // userRepository.deleteAll();
 
         // generate some FeedbackQuestions
         FeedbackQuestion question1 = new FeedbackQuestion(
             "Verständlichkeit",
             "Wie verständlich war das Thema Kombinatorik?",
-            QuestionType.STARS,
-            null
+            FeedbackQuestionType.STARS,
+            null,
+            "F-Q-COMBINATORICS"
         );
         FeedbackQuestion question2 = new FeedbackQuestion(
             "Kurzweiligkeit",
             "Wie kurzweilig war die Vorlesung? (links = langweilig, rechts = kurzweilig)",
-            QuestionType.SLIDER,
-            null
+            FeedbackQuestionType.SLIDER,
+            null,
+            "F-Q-ENTERTAINMENT"
         );
         FeedbackQuestion question3 = new FeedbackQuestion(
             "Praxisbezug",
             "Wie bewerten Sie den Praxisbezug der Vorlesung? (links = wenig Praxisbezug, rechts = viel Praxisbezug)",
-            QuestionType.SLIDER,
-            null
+            FeedbackQuestionType.SLIDER,
+            null,
+            "F-Q-PRACTICALITY"
         );
         FeedbackQuestion question4 = new FeedbackQuestion(
             "Sprachbarriere",
             "Die Vorlesung wurde auf Englisch gehalten. Wie fanden Sie die Verständlichkeit?",
-            QuestionType.SLIDER,
-            null
+            FeedbackQuestionType.SLIDER,
+            null,
+            "F-Q-ENGLISH"
         );
         FeedbackQuestion question5 = new FeedbackQuestion(
             "Prüfungsvorbereitung",
             "Wenn jetzt direkt die Prüfung wäre, wie gut fühlen Sie sich vorbereitet?",
-            QuestionType.STARS,
-            null
+            FeedbackQuestionType.STARS,
+            null,
+            "F-Q-EXAM"
         );
         FeedbackQuestion question6 = new FeedbackQuestion(
             "Technische Mittel",
             "Wie bewerten Sie die technischen Mittel, die in der Vorlesung verwendet wurden?",
-            QuestionType.STARS,
-            null
+            FeedbackQuestionType.STARS,
+            null,
+            "F-Q-TECHNOLOGY"
         );
         FeedbackQuestion question7 = new FeedbackQuestion(
             "Schwierigstes Thema",
             "Welches Thema war für Sie am schwierigsten?",
-            QuestionType.SINGLE_CHOICE,
-            List.of("Kombinatorik", "Graphen", "Relationen", "Formale Sprachen", "Endliche Automaten", "Turingmaschinen", "Berechenbarkeit")
+            FeedbackQuestionType.SINGLE_CHOICE,
+            List.of("Kombinatorik", "Graphen", "Relationen", "Formale Sprachen", "Endliche Automaten", "Turingmaschinen", "Berechenbarkeit"),
+            "F-Q-HARDEST-TOPIC"
         );
         FeedbackQuestion question8 = new FeedbackQuestion(
             "Schwierigstes Thema",
             "Welches Thema war für Sie am schwierigsten?",
-            QuestionType.SINGLE_CHOICE,
-            List.of("Multitenancy", "Microservices", "Cloud Foundry", "Docker", "Kubernetes", "Cloud Native", "Cloud Native Buildpacks")
+            FeedbackQuestionType.SINGLE_CHOICE,
+            List.of("Multitenancy", "Microservices", "Cloud Foundry", "Docker", "Kubernetes", "Cloud Native", "Cloud Native Buildpacks"),
+            "F-Q-HARDEST-TOPIC-2"
         );
 
-        // generate a FeedbackChannel
+        // generate a Course
         Course courseDima = new Course("Diskrete Mathematik", "Feedback-Kanal für DiMa");
         Course courseAUME = new Course("AUME", "Feedback-Kanal für Agile Vorgehensmodelle und Mobile Kommunikation");
         Course courseCloud = new Course("Cloud Application Development", "Feedback-Kanal für Cloud Application Development");
 
-        // add the FeedbackQuestions to the FeedbackChannel
+        // add the FeedbackQuestions to the Course
         courseDima.addFeedbackQuestion(question1);
         courseDima.addFeedbackQuestion(question2);
         courseDima.addFeedbackQuestion(question3);
@@ -166,10 +178,64 @@ public class MockingService {
         );
         courseCloud.addFeedbackForm(feedbackForm4);
 
-        // save the FeedbackChannel
+        // set prof owner of dima course (if exists)
+        User prof = userRepository.findByUsername("Prof");
+        if (prof != null) {
+            courseDima.addOwner(prof.getId());
+        }
+
+        // save the Course
         courseRepository.persist(courseDima);
         courseRepository.persist(courseAUME);
         courseRepository.persist(courseCloud);
+
+
+
+        // ############################## QUIZ ####################################
+
+        // generate a few questions
+        QuizQuestion quizQuestion1 = new QuizQuestion(
+            "Höchster Berg der Welt",
+            "Welcher Berg ist der höchste der Welt?",
+            QuizQuestionType.SINGLE_CHOICE,
+            List.of("Mount Everest", "Mont Blanc", "Matterhorn", "Zugspitze"),
+            true,
+            List.of("0"),
+            "Q-Q-HIGHEST-MOUNTAIN"
+        );
+        QuizQuestion quizQuestion2 = new QuizQuestion(
+            "Hauptstadt von Deutschland",
+            "Ist Konstanz die Hauptstadt von Deutschland?",
+            QuizQuestionType.YES_NO,
+            null,
+            true,
+            List.of("no"),
+            "Q-Q-CAPITAL-GERMANY"
+        );
+
+        // add the questions to the Dima course
+        courseDima.addQuizQuestion(quizQuestion1);
+        courseDima.addQuizQuestion(quizQuestion2);
+
+        // create quiz form
+        QuizForm quizForm1 = new QuizForm(
+            courseDimaId,
+            "Quiz 1",
+            "Dies ist das erste Quiz",
+            List.of(
+                new QuestionWrapper(quizQuestion1.getId(), null), 
+                new QuestionWrapper(quizQuestion2.getId(), null)
+            ),
+            FormStatus.NOT_STARTED,
+            0,
+            false
+        );
+
+        // add the quiz form to the Dima course
+        courseDima.addQuizForm(quizForm1);
+
+        // save the Course
+        courseRepository.update(courseDima);
 
         // return all Courses but read it from the database
         return courseRepository.listAll();
@@ -179,9 +245,9 @@ public class MockingService {
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    @Path("/deleteallchannels")
-    public String deleteAllFeedbackChannels() {
+    @Path("/deleteallcourses")
+    public String deleteAllCourses() {
         courseRepository.deleteAll();
-        return "All FeedbackChannels deleted";
+        return "All Courses deleted";
     }
 }

@@ -31,27 +31,26 @@ public class SocketConnection {
     }
 
     public ObjectId getId() {
-        return id;
+        return this.id;
     }
 
     public Session getSession() {
-        return session;
+        return this.session;
     }
 
     public ObjectId getCourseId() {
-        return courseId;
+        return this.courseId;
     }
 
     public ObjectId getFormId() {
-        return formId;
+        return this.formId;
     }
 
     public ObjectId getUserId() {
-        return userId;
+        return this.userId;
     }
 
     public SocketConnectionType getType() {
-        return type;
+        return this.type;
     }
-
 }

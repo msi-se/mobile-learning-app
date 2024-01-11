@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/components/layout/sliver_layout.dart';
-import 'package:frontend/models/feedback/feedback_course.dart';
+import 'package:frontend/models/course.dart';
 import 'package:frontend/theme/assets.dart';
 
 class ChooseForm extends StatefulWidget {
-  final FeedbackCourse course;
-  final Function(String id) choose;
+  final Course course;
+  final Function(String id, String type) choose;
 
   const ChooseForm({super.key, required this.course, required this.choose});
 
@@ -24,7 +24,9 @@ class _ChooseFormState extends State<ChooseForm> {
   @override
   Widget build(BuildContext context) {
     final colors = Theme.of(context).colorScheme;
-    var forms = feedbackOrQuiz == "Feedback" ? widget.course.feedbackForms : [];
+    var forms = feedbackOrQuiz == "Feedback"
+        ? widget.course.feedbackForms
+        : widget.course.quizForms;
 
     return SliverLayout(
       collapsable: true,
@@ -33,7 +35,8 @@ class _ChooseFormState extends State<ChooseForm> {
         return Align(
           alignment: Alignment.centerLeft,
           child: Padding(
-            padding: EdgeInsets.only(right: percentage < 0.2 ? 0 : 120),
+            padding:
+                EdgeInsets.only(left: 16, right: percentage < 0.2 ? 0 : 120),
             child: Text(
               widget.course.name,
               style: TextStyle(
@@ -153,7 +156,7 @@ class _ChooseFormState extends State<ChooseForm> {
                     // trailing: const Icon(Icons.arrow_forward_ios),
                     // TODO: display status of form
                     onTap: () {
-                      widget.choose(forms[index].id);
+                      widget.choose(forms[index].id, feedbackOrQuiz);
                     },
                   ),
                 );

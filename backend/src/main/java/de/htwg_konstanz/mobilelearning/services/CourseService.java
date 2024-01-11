@@ -42,10 +42,13 @@ public class CourseService {
         List<Course> courses = courseRepository.listAll();
         courses.forEach(course -> {
             course.feedbackForms.forEach(form -> {
-                form.questions = null;
+                form.questions = List.of();
+                form.clearResults();
             });
             course.quizForms.forEach(form -> {
-                form.questions = null;
+                form.questions = List.of();
+                form.clearResults();
+                form.clearParticipants();
             });
         });
         return courses;

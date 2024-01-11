@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:frontend/components/layout/sliver_layout.dart';
-import 'package:frontend/models/feedback/feedback_course.dart';
+import 'package:frontend/models/course.dart';
 import 'package:frontend/theme/assets.dart';
 
 class ChooseCourse extends StatefulWidget {
-  final List<FeedbackCourse> courses;
+  final List<Course> courses;
   final Function(String id) choose;
 
   const ChooseCourse({super.key, required this.courses, required this.choose});
@@ -26,7 +26,7 @@ class _ChooseCourseState extends State<ChooseCourse> {
       title: (percentage) {
         return Padding(
           padding: EdgeInsets.only(
-              left: 18.0 * percentage, bottom: 12 + 6.0 * percentage),
+              left: 16 + 18.0 * percentage, bottom: 12 + 6.0 * percentage),
           child: Text(
             "Kurse",
             style: TextStyle(
