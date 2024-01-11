@@ -157,6 +157,15 @@ public class Course implements Serializable {
         return null;
     }
 
+    public FeedbackQuestion getFeedbackQuestionByKey(String key) {
+        for (FeedbackQuestion feedbackQuestion : this.feedbackQuestions) {
+            if (feedbackQuestion.getKey().equals(key)) {
+                return feedbackQuestion;
+            }
+        }
+        return null;
+    }
+
     public void setFeedbackQuestions(List<FeedbackQuestion> feedbackQuestions) {
         this.feedbackQuestions = feedbackQuestions;
     }
@@ -222,6 +231,15 @@ public class Course implements Serializable {
     public QuizQuestion getQuizQuestionById(ObjectId quizQuestionId) {
         for (QuizQuestion quizQuestion : this.quizQuestions) {
             if (quizQuestion.getId().equals(quizQuestionId)) {
+                return quizQuestion;
+            }
+        }
+        return null;
+    }
+
+    public QuizQuestion getQuizQuestionByKey(String key) {
+        for (QuizQuestion quizQuestion : this.quizQuestions) {
+            if (quizQuestion.getKey().equals(key)) {
                 return quizQuestion;
             }
         }

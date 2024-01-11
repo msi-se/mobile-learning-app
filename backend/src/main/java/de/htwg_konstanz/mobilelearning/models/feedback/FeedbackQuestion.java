@@ -12,13 +12,13 @@ public class FeedbackQuestion extends Question {
     public FeedbackQuestion() {
     }
 
-    public FeedbackQuestion(String name, String description, FeedbackQuestionType type, List<String> options) {
-        super(name, description, options);
+    public FeedbackQuestion(String name, String description, FeedbackQuestionType type, List<String> options, String key) {
+        super(name, description, options, key);
         this.type = type;
     }
 
     public FeedbackQuestion copy() {
-        FeedbackQuestion copy = new FeedbackQuestion(this.name, this.description, this.type, this.options);
+        FeedbackQuestion copy = new FeedbackQuestion(this.name, this.description, this.type, this.options, this.key);
         copy.id = this.id;
         return copy;
     }

@@ -1,16 +1,11 @@
 package de.htwg_konstanz.mobilelearning.services.quiz;
 
 import java.util.List;
-import java.util.ArrayList;
-
 import org.bson.types.ObjectId;
 import org.jboss.resteasy.reactive.RestPath;
 
-import de.htwg_konstanz.mobilelearning.enums.FormStatus;
 import de.htwg_konstanz.mobilelearning.models.Course;
-import de.htwg_konstanz.mobilelearning.models.QuestionWrapper;
 import de.htwg_konstanz.mobilelearning.models.auth.UserRole;
-import de.htwg_konstanz.mobilelearning.models.feedback.FeedbackForm;
 import de.htwg_konstanz.mobilelearning.models.quiz.QuizForm;
 import de.htwg_konstanz.mobilelearning.repositories.CourseRepository;
 import jakarta.annotation.security.RolesAllowed;
@@ -19,7 +14,6 @@ import jakarta.ws.rs.DefaultValue;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.NotFoundException;
 import jakarta.ws.rs.POST;
-import jakarta.ws.rs.PUT;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.QueryParam;

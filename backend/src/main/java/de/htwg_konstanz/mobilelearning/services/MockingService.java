@@ -44,49 +44,57 @@ public class MockingService {
             "Verständlichkeit",
             "Wie verständlich war das Thema Kombinatorik?",
             FeedbackQuestionType.STARS,
-            null
+            null,
+            "F-Q-COMBINATORICS"
         );
         FeedbackQuestion question2 = new FeedbackQuestion(
             "Kurzweiligkeit",
             "Wie kurzweilig war die Vorlesung? (links = langweilig, rechts = kurzweilig)",
             FeedbackQuestionType.SLIDER,
-            null
+            null,
+            "F-Q-ENTERTAINMENT"
         );
         FeedbackQuestion question3 = new FeedbackQuestion(
             "Praxisbezug",
             "Wie bewerten Sie den Praxisbezug der Vorlesung? (links = wenig Praxisbezug, rechts = viel Praxisbezug)",
             FeedbackQuestionType.SLIDER,
-            null
+            null,
+            "F-Q-PRACTICALITY"
         );
         FeedbackQuestion question4 = new FeedbackQuestion(
             "Sprachbarriere",
             "Die Vorlesung wurde auf Englisch gehalten. Wie fanden Sie die Verständlichkeit?",
             FeedbackQuestionType.SLIDER,
-            null
+            null,
+            "F-Q-ENGLISH"
         );
         FeedbackQuestion question5 = new FeedbackQuestion(
             "Prüfungsvorbereitung",
             "Wenn jetzt direkt die Prüfung wäre, wie gut fühlen Sie sich vorbereitet?",
             FeedbackQuestionType.STARS,
-            null
+            null,
+            "F-Q-EXAM"
         );
         FeedbackQuestion question6 = new FeedbackQuestion(
             "Technische Mittel",
             "Wie bewerten Sie die technischen Mittel, die in der Vorlesung verwendet wurden?",
             FeedbackQuestionType.STARS,
-            null
+            null,
+            "F-Q-TECHNOLOGY"
         );
         FeedbackQuestion question7 = new FeedbackQuestion(
             "Schwierigstes Thema",
             "Welches Thema war für Sie am schwierigsten?",
             FeedbackQuestionType.SINGLE_CHOICE,
-            List.of("Kombinatorik", "Graphen", "Relationen", "Formale Sprachen", "Endliche Automaten", "Turingmaschinen", "Berechenbarkeit")
+            List.of("Kombinatorik", "Graphen", "Relationen", "Formale Sprachen", "Endliche Automaten", "Turingmaschinen", "Berechenbarkeit"),
+            "F-Q-HARDEST-TOPIC"
         );
         FeedbackQuestion question8 = new FeedbackQuestion(
             "Schwierigstes Thema",
             "Welches Thema war für Sie am schwierigsten?",
             FeedbackQuestionType.SINGLE_CHOICE,
-            List.of("Multitenancy", "Microservices", "Cloud Foundry", "Docker", "Kubernetes", "Cloud Native", "Cloud Native Buildpacks")
+            List.of("Multitenancy", "Microservices", "Cloud Foundry", "Docker", "Kubernetes", "Cloud Native", "Cloud Native Buildpacks"),
+            "F-Q-HARDEST-TOPIC-2"
         );
 
         // generate a Course
@@ -192,7 +200,8 @@ public class MockingService {
             QuizQuestionType.SINGLE_CHOICE,
             List.of("Mount Everest", "Mont Blanc", "Matterhorn", "Zugspitze"),
             true,
-            List.of("Mount Everest") 
+            List.of("Mount Everest"),
+            "Q-Q-HIGHEST-MOUNTAIN"
         );
         QuizQuestion quizQuestion2 = new QuizQuestion(
             "Hauptstadt von Deutschland",
@@ -200,7 +209,8 @@ public class MockingService {
             QuizQuestionType.YES_NO,
             null,
             true,
-            List.of("Nein")
+            List.of("Nein"),
+            "Q-Q-CAPITAL-GERMANY"
         );
 
         // add the questions to the Dima course

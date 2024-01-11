@@ -129,20 +129,13 @@ public class FeedbackForm extends Form {
 
             // check if the same question already exists (if so just add the id to the list
             // and continue)
-            FeedbackQuestion existingQuestion = null; // TODO: course.getFeedbackQuestionByNameAndDescription(...);
-            for (FeedbackQuestion feedbackQuestion : course.getFeedbackQuestions()) {
-                if (feedbackQuestion.getName().equals(apiFeedbackQuestion.name)
-                        && feedbackQuestion.getDescription().equals(apiFeedbackQuestion.description)) {
-                    feedbackQuestionIds.add(feedbackQuestion.getId());
-                    existingQuestion = feedbackQuestion;
-                    break;
-                }
-            }
+            FeedbackQuestion existingQuestion = course.getFeedbackQuestionByKey(apiFeedbackQuestion.key);
             if (existingQuestion != null) {
-
-                // update the other question properties
+                existingQuestion.setName(apiFeedbackQuestion.name);
+                existingQuestion.setDescription(apiFeedbackQuestion.description);
                 existingQuestion.setType(FeedbackQuestionType.valueOf(apiFeedbackQuestion.type));
                 existingQuestion.setOptions(apiFeedbackQuestion.options);
+                feedbackQuestionIds.add(existingQuestion.getId());
                 continue;
             }
 
@@ -151,7 +144,9 @@ public class FeedbackForm extends Form {
                     apiFeedbackQuestion.name,
                     apiFeedbackQuestion.description,
                     FeedbackQuestionType.valueOf(apiFeedbackQuestion.type),
-                    apiFeedbackQuestion.options);
+                    apiFeedbackQuestion.options,
+                    apiFeedbackQuestion.key
+                    );
 
             course.addFeedbackQuestion(feedbackQuestion);
             feedbackQuestionIds.add(feedbackQuestion.getId());

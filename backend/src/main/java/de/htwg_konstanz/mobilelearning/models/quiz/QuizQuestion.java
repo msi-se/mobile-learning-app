@@ -14,15 +14,15 @@ public class QuizQuestion extends Question {
     public QuizQuestion() {
     }
 
-    public QuizQuestion(String name, String description, QuizQuestionType type, List<String> options, Boolean hasCorrectAnswers, List<String> correctAnswers) {
-        super(name, description, options);
+    public QuizQuestion(String name, String description, QuizQuestionType type, List<String> options, Boolean hasCorrectAnswers, List<String> correctAnswers, String key) {
+        super(name, description, options, key);
         this.type = type;
         this.hasCorrectAnswers = hasCorrectAnswers;
         this.correctAnswers = correctAnswers;
     }
 
     public QuizQuestion copy() {
-        return new QuizQuestion(this.name, this.description, this.type, this.options, this.hasCorrectAnswers, this.correctAnswers);
+        return new QuizQuestion(this.name, this.description, this.type, this.options, this.hasCorrectAnswers, this.correctAnswers, this.key);
     }
 
     public Boolean getHasCorrectAnswers() {

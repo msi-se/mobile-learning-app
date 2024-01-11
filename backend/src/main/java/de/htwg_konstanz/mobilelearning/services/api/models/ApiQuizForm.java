@@ -11,18 +11,20 @@ public class ApiQuizForm {
         public List<String> options;
         public Boolean hasCorrectAnswers;
         public List<String> correctAnswers;
+        public String key;
 
         public ApiQuizQuestion() {
         }
 
         public ApiQuizQuestion(String name, String description, String type, List<String> options,
-                Boolean hasCorrectAnswers, List<String> correctAnswers) {
+                Boolean hasCorrectAnswers, List<String> correctAnswers, String key) {
             this.name = name;
             this.description = description;
             this.type = type;
             this.options = options;
             this.hasCorrectAnswers = hasCorrectAnswers;
             this.correctAnswers = correctAnswers;
+            this.key = key;
         }
     }
 

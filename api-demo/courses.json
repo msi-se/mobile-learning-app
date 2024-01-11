@@ -1,20 +1,22 @@
 [
     {
+        "key": "AUME23",
         "name": "AUME 23/24",
         "description": "Agile Vorgehensmodelle und Mobile Kommunikation",
-        "key": "AUME23",
         "feedbackForms": [
             {
                 "name": "Erster Sprint",
                 "description": "Hier wollen wir Ihr Feedback zum ersten Sprint einholen",
-                "key": "FEEDBACKERSTERSPRINT",
+                "key": "F-ERSTERSPRINT",
                 "questions": [
                     {
+                        "key": "F-Q-ROLLE",
                         "name": "Rolle",
                         "description": "Wie gut hat Ihnen ihre Rolle gefallen?",
                         "type": "SLIDER"
                     },
                     {
+                        "key": "F-Q-GRUPPE",
                         "name": "Gruppendynamik",
                         "description": "Haben Sie sich in der Gruppe wohl gefühlt?",
                         "type": "SINGLE_CHOICE",
@@ -29,11 +31,12 @@
         ],
         "quizForms": [
             {
+                "key": "Q-ROLES",
                 "name": "Rollenverständnis bei Scrum",
                 "description": "Ein Quiz zum Rollenverständnis bei Scrum",
-                "key": "QUIZSCRUMROLES",
                 "questions": [
                     {
+                        "key": "Q-Q-PDRODUCTOWNER",
                         "name": "Product Owner",
                         "description": "Welche der folgenden Aufgaben ist nicht Teil der Rolle des Product Owners?",
                         "type": "SINGLE_CHOICE",
@@ -46,6 +49,7 @@
                         "correctAnswer": "Pizza bestellen für jedes Daily"
                     },
                     {
+                        "key": "Q-Q-SCRUMMASTER",
                         "name": "Scrum Master",
                         "description": "Muss der Scrum Master ein Experte in der Domäne des Produkts sein?",
                         "type": "YES_NO",
@@ -57,8 +61,8 @@
         ]
     },
     {
+        "key": "DIMA23",
         "name": "Dima 23/24",
-        "description": "Diskrete Mathematik",
-        "key": "DIMA23"
+        "description": "Diskrete Mathematik"
     }
 ]

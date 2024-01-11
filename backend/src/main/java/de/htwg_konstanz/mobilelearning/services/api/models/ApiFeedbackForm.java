@@ -9,6 +9,7 @@ public class ApiFeedbackForm {
         public String description;
         public String type; // SLIDER, STARS, FULLTEXT, YES_NO, SINGLE_CHOICE
         public List<String> options;
+        public String key;
 
         public ApiFeedbackQuestion() {
         }
@@ -18,6 +19,7 @@ public class ApiFeedbackForm {
             this.description = description;
             this.type = type;
             this.options = options;
+            this.key = key;
         }
     }
 

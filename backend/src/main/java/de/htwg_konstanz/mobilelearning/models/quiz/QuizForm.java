@@ -244,22 +244,16 @@ public class QuizForm extends Form {
 
             // check if the same question already exists (if so just add the id to the list
             // and continue)
-            QuizQuestion existingQuizQuestion = null; // TODO: course.getQuizQuestionByNameAndDescription(...);
-            for (QuizQuestion quizQuestion : course.getQuizQuestions()) {
-                if (quizQuestion.getName().equals(apiQuizQuestion.name)
-                        && quizQuestion.getDescription().equals(apiQuizQuestion.description)) {
-                    quizQuestionIds.add(quizQuestion.getId());
-                    existingQuizQuestion = quizQuestion;
-                    break;
-                }
-            }
+            QuizQuestion existingQuizQuestion = course.getQuizQuestionByKey(apiQuizQuestion.key);
             if (existingQuizQuestion != null) {
-                
-                // update the other question properties
+                existingQuizQuestion.setName(apiQuizQuestion.name);
+                existingQuizQuestion.setDescription(apiQuizQuestion.description);
                 existingQuizQuestion.setType(QuizQuestionType.valueOf(apiQuizQuestion.type));
                 existingQuizQuestion.setOptions(apiQuizQuestion.options);
                 existingQuizQuestion.setHasCorrectAnswers(apiQuizQuestion.hasCorrectAnswers);
                 existingQuizQuestion.setCorrectAnswers(apiQuizQuestion.correctAnswers);
+                quizQuestionIds.add(existingQuizQuestion.getId());
+                continue;
             }
 
             // create quiz question
@@ -269,7 +263,9 @@ public class QuizForm extends Form {
                     QuizQuestionType.valueOf(apiQuizQuestion.type),
                     apiQuizQuestion.options,
                     apiQuizQuestion.hasCorrectAnswers,
-                    apiQuizQuestion.correctAnswers);
+                    apiQuizQuestion.correctAnswers,
+                    apiQuizQuestion.key
+                    );
 
             course.addQuizQuestion(quizQuestion);
             quizQuestionIds.add(quizQuestion.getId());

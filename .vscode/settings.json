@@ -40,6 +40,9 @@
                                         "items": {
                                             "type": "object",
                                             "properties": {
+                                                "key": {
+                                                    "type": "string"
+                                                },
                                                 "name": {
                                                     "type": "string"
                                                 },
@@ -64,6 +67,7 @@
                                                 }
                                             },
                                             "required": [
+                                                "key",
                                                 "name",
                                                 "description",
                                                 "type"
@@ -72,9 +76,9 @@
                                     }
                                 },
                                 "required": [
+                                    "key",
                                     "name",
                                     "description",
-                                    "key",
                                     "questions"
                                 ]
                             }
@@ -98,6 +102,9 @@
                                         "items": {
                                             "type": "object",
                                             "properties": {
+                                                "key": {
+                                                    "type": "string"
+                                                },
                                                 "name": {
                                                     "type": "string"
                                                 },
@@ -128,6 +135,7 @@
                                                 }
                                             },
                                             "required": [
+                                                "key",
                                                 "name",
                                                 "description",
                                                 "type",
@@ -137,18 +145,18 @@
                                     }
                                 },
                                 "required": [
+                                    "key",
                                     "name",
                                     "description",
-                                    "key",
                                     "questions"
                                 ]
                             }
                         }
                     },
                     "required": [
+                        "key",
                         "name",
-                        "description",
-                        "key"
+                        "description"
                     ]
                 }
             }

@@ -11,15 +11,17 @@ public abstract class Question {
     public String name;
     public String description;
     public List<String> options;
+    public String key;
 
     public Question() {
     }
 
-    public Question(String name, String description, List<String> options) {
+    public Question(String name, String description, List<String> options, String key) {
         this.id = new ObjectId();
         this.name = name;
         this.description = description;
         this.options = options != null ? options : new ArrayList<String>();
+        this.key = key;
     }
 
     public ObjectId getId() {
@@ -34,8 +36,16 @@ public abstract class Question {
         return this.name;
     }
 
+    public void setName(String title) {
+        this.name = title;
+    }
+
     public String getDescription() {
         return this.description;
+    }
+
+    public void setDescription(String text) {
+        this.description = text;
     }
 
     public List<String> getOptions() {
@@ -46,5 +56,14 @@ public abstract class Question {
         this.options = options != null ? options : new ArrayList<String>();
     }
 
+    public String getKey() {
+        return this.key;
+    }
+
+    public void setKey(String key) {
+        this.key = key;
+    }
+
     public abstract Question copy();
+
 }
