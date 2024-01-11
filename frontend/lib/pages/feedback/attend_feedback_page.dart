@@ -31,6 +31,7 @@ class _AttendFeedbackPageState extends State<AttendFeedbackPage> {
   WebSocketChannel? _socketChannel;
 
   final Map<String, dynamic> _feedbackValues = {};
+  bool _voted = false;
 
   @override
   void initState() {
@@ -111,6 +112,7 @@ class _AttendFeedbackPageState extends State<AttendFeedbackPage> {
       if (data["action"] == "FORM_STATUS_CHANGED") {
         setState(() {
           _form.status = data["formStatus"];
+          _voted = false;
         });
       }
     }, onError: (error) {
@@ -138,14 +140,16 @@ class _AttendFeedbackPageState extends State<AttendFeedbackPage> {
 
     final colors = Theme.of(context).colorScheme;
 
+    final appbar = AppBar(
+      title: Text(_form.name,
+          style: const TextStyle(
+              color: Colors.white, fontWeight: FontWeight.bold)),
+      backgroundColor: colors.primary,
+    );
+
     if (_form.status != "STARTED") {
       return Scaffold(
-        appBar: AppBar(
-          title: Text(_form.name,
-              style: const TextStyle(
-                  color: Colors.white, fontWeight: FontWeight.bold)),
-          backgroundColor: colors.primary,
-        ),
+        appBar: appbar,
         body: Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -168,13 +172,25 @@ class _AttendFeedbackPageState extends State<AttendFeedbackPage> {
       );
     }
 
+    if (_voted) {
+      return Scaffold(
+        appBar: appbar,
+        body: const Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              Padding(
+                padding: EdgeInsets.only(left: 20.0, right: 20.0),
+                child: Text("Vielen Dank für Ihr Feedback"),
+              )
+            ],
+          ),
+        ),
+      );
+    }
+
     return Scaffold(
-      appBar: AppBar(
-        title: Text(_form.name,
-            style: const TextStyle(
-                color: Colors.white, fontWeight: FontWeight.bold)),
-        backgroundColor: colors.primary,
-      ),
+      appBar: appbar,
       body: SingleChildScrollView(
         child: Column(
           children: [
@@ -222,14 +238,6 @@ class _AttendFeedbackPageState extends State<AttendFeedbackPage> {
                             });
                           },
                         )
-                      // SingleChoiceQuiz(
-                      //   options: element.options,
-                      //   initialQuiz: _feedbackValues[element.id],
-                      //   onQuizChanged: (newFeedback) {
-                      //     setState(() {
-                      //       _feedbackValues[element.id] = newFeedback;
-                      //     });
-                      //   })
                       else
                         const Text('Unknown element type')
                     ],
@@ -245,11 +253,14 @@ class _AttendFeedbackPageState extends State<AttendFeedbackPage> {
                   var message = {
                     "action": "ADD_RESULT",
                     "resultElementId": entry.key,
-                    "resultValues": [ entry.value ],
+                    "resultValues": [entry.value],
                     "role": "STUDENT"
                   };
                   _socketChannel?.sink.add(jsonEncode(message));
                 }
+                setState(() {
+                  _voted = true;
+                });
               },
             ),
             const SizedBox(height: 32),

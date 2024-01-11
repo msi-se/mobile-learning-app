@@ -167,17 +167,19 @@ class _FeedbackResultPageState extends State<FeedbackResultPage> {
 
     final colors = Theme.of(context).colorScheme;
 
+    final appbar = AppBar(
+      title: Text(_form.name,
+          style: const TextStyle(
+              color: Colors.white, fontWeight: FontWeight.bold)),
+      backgroundColor: colors.primary,
+    );
+
     if (_form.status == "NOT_STARTED") {
       var code = _form.connectCode;
       code = "${code.substring(0, 3)} ${code.substring(3, 6)}";
 
       return Scaffold(
-        appBar: AppBar(
-          title: Text(_form.name,
-              style: const TextStyle(
-                  color: Colors.white, fontWeight: FontWeight.bold)),
-          backgroundColor: colors.primary,
-        ),
+        appBar: appbar,
         body: Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -198,12 +200,7 @@ class _FeedbackResultPageState extends State<FeedbackResultPage> {
     }
 
     return Scaffold(
-        appBar: AppBar(
-          title: Text(_form.name,
-              style: const TextStyle(
-                  color: Colors.white, fontWeight: FontWeight.bold)),
-          backgroundColor: colors.primary,
-        ),
+        appBar: appbar,
         body: Stack(
           children: [
             SingleChildScrollView(

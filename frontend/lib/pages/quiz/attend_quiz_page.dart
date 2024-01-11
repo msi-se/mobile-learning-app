@@ -165,14 +165,16 @@ class _AttendQuizPageState extends State<AttendQuizPage> {
 
     final colors = Theme.of(context).colorScheme;
 
+    final appbar = AppBar(
+      title: Text(_form.name,
+          style: const TextStyle(
+              color: Colors.white, fontWeight: FontWeight.bold)),
+      backgroundColor: colors.primary,
+    );
+
     if (_form.status != "STARTED" || _voted) {
       return Scaffold(
-        appBar: AppBar(
-          title: Text(_form.name,
-              style: const TextStyle(
-                  color: Colors.white, fontWeight: FontWeight.bold)),
-          backgroundColor: colors.primary,
-        ),
+        appBar: appbar,
         body: Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -199,12 +201,7 @@ class _AttendQuizPageState extends State<AttendQuizPage> {
 
     if (_form.currentQuestionFinished) {
       return Scaffold(
-        appBar: AppBar(
-          title: Text(_form.name,
-              style: const TextStyle(
-                  color: Colors.white, fontWeight: FontWeight.bold)),
-          backgroundColor: colors.primary,
-        ),
+        appBar: appbar,
         body: Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -230,12 +227,7 @@ class _AttendQuizPageState extends State<AttendQuizPage> {
     final element = _form.questions[_form.currentQuestionIndex];
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text(_form.name,
-            style: const TextStyle(
-                color: Colors.white, fontWeight: FontWeight.bold)),
-        backgroundColor: colors.primary,
-      ),
+      appBar: appbar,
       body: SizedBox(
         width: double.infinity,
         child: Column(
