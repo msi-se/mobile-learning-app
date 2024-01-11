@@ -1,12 +1,14 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:frontend/components/elements/feedback/single_choice_feedback.dart';
 import 'package:frontend/components/elements/quiz/single_choice_quiz.dart';
 import 'package:frontend/components/elements/feedback/slider_feedback.dart';
 import 'package:frontend/components/elements/feedback/star_feedback.dart';
 import 'package:frontend/global.dart';
 import 'package:frontend/models/feedback/feedback_form.dart';
+import 'package:frontend/theme/assets.dart';
 import 'package:frontend/utils.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 import 'package:http/http.dart' as http;
@@ -143,8 +145,11 @@ class _AttendFeedbackPageState extends State<AttendFeedbackPage> {
     final appbar = AppBar(
       title: Text(_form.name,
           style: const TextStyle(
-              color: Colors.white, fontWeight: FontWeight.bold)),
+            color: Colors.white,
+            fontWeight: FontWeight.bold,
+          )),
       backgroundColor: colors.primary,
+      actions: [Image.asset(incognitoCirclePng, width: 40, height: 40)],
     );
 
     if (_form.status != "STARTED") {
