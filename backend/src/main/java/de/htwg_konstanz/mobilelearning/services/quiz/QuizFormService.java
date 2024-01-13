@@ -19,8 +19,12 @@ import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.SecurityContext;
 import io.smallrye.jwt.auth.principal.JWTCallerPrincipal;
+
+import org.jboss.resteasy.reactive.RestResponse;
+import org.jboss.resteasy.reactive.RestResponse.ResponseBuilder;
 
 @Path("/course/{courseId}/quiz/form")
 public class QuizFormService {
@@ -65,7 +69,7 @@ public class QuizFormService {
     @Produces(MediaType.APPLICATION_JSON)
     @RolesAllowed({ UserRole.STUDENT, UserRole.PROF })
     @Path("/{formId}/participate")
-    public String participate(@Context SecurityContext ctx, String alias, @RestPath String courseId, @RestPath String formId) {
+    public RestResponse<String> participate(@Context SecurityContext ctx, String alias, @RestPath String courseId, @RestPath String formId) {
 
         // get the user
         String userId = ((JWTCallerPrincipal) ctx.getUserPrincipal()).getSubject();
@@ -78,10 +82,14 @@ public class QuizFormService {
         QuizForm quizForm = course.getQuizFormById(formObjectId);
         if (quizForm == null) { throw new NotFoundException("QuizForm not found"); }
 
-        quizForm.addParticipant(new ObjectId(userId), alias);
+        // add the participant and check if the alias is already taken
+        Boolean successfullyAdded = quizForm.addParticipant(new ObjectId(userId), alias);
+        if (!successfullyAdded) {
+            return RestResponse.status(Response.Status.CONFLICT, "Alias already taken");
+        }
         courseRepository.update(course);
 
-        return "OK";
+        return RestResponse.ok("Successfully added");
     }
 
 }
