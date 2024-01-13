@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:frontend/components/elements/quiz/single_choice_quiz.dart';
 import 'package:frontend/components/elements/quiz/yes_no_quiz.dart';
+import 'package:frontend/components/elements/quiz/choose_alias.dart';
 import 'package:frontend/global.dart';
 import 'package:frontend/models/quiz/quiz_form.dart';
 import 'package:frontend/utils.dart';
@@ -19,12 +20,14 @@ class AttendQuizPage extends StatefulWidget {
 }
 
 class _AttendQuizPageState extends State<AttendQuizPage> {
+  bool _aliasChosen = false;
   bool _loading = true;
 
   late String _courseId;
   late String _formId;
   late String _userId;
   late String _alias;
+  String _aliasError = ''; 
 
   late QuizForm _form;
   WebSocketChannel? _socketChannel;
@@ -55,34 +58,35 @@ class _AttendQuizPageState extends State<AttendQuizPage> {
         var data = jsonDecode(response.body);
         _courseId = data["courseId"];
         _formId = data["formId"];
-        if (await participate()) {
-          fetchForm();
-          return;
-        }
       }
     } on http.ClientException catch (_) {
       // TODO: handle error
     }
     if (!mounted) return;
-    Navigator.pop(context);
+    //Navigator.pop(context);
   }
 
   Future<bool> participate() async {
     try {
       final response = await http.post(
-        Uri.parse(
-            "${getBackendUrl()}/course/$_courseId/quiz/form/$_formId/participate"),
+        Uri.parse("${getBackendUrl()}/course/$_courseId/quiz/form/$_formId/participate"),
         headers: {
           "Content-Type": "application/json",
           "AUTHORIZATION": "Bearer ${getSession()!.jwt}",
         },
-        body: _alias,
+        body: jsonEncode({"alias": _alias}),
       );
       if (response.statusCode == 200) {
         return true;
+      } else if (response.statusCode == 409) {
+        setState(() {
+          _aliasError = "Dieser Nickname ist bereits vergeben. Bitte wählen Sie einen anderen.";
+          _aliasChosen = false;
+        });
+        return false;
       }
-    } on http.ClientException catch (_) {
-      // TODO: handle error
+    } on http.ClientException catch (e) {
+      print('Network error occurred: $e');
     }
     return false;
   }
@@ -155,6 +159,39 @@ class _AttendQuizPageState extends State<AttendQuizPage> {
 
   @override
   Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
+
+    if (!_aliasChosen) {
+      return Scaffold(
+        appBar: AppBar(
+          title: const Text("Wähle deinen Nickname",
+              style: TextStyle(
+                  color: Colors.white, fontWeight: FontWeight.bold)),
+          backgroundColor: colors.primary,
+        ),
+        body: ChooseAlias(
+          onAliasSubmitted: (chosenAlias) async {
+            setState(() {
+              _alias = chosenAlias;
+            });
+            bool success = await participate();
+            if (success) {
+              _aliasChosen = true;
+              fetchForm();
+            } else {
+              _aliasChosen = false;
+              ScaffoldMessenger.of(context)
+                .showSnackBar(SnackBar(content: Text(_aliasError), backgroundColor: Colors.redAccent));
+              setState(() {
+                _loading = false;
+              });
+            }
+          },
+        ),
+      );
+    }
+
+
     if (_loading) {
       return const Scaffold(
         body: Center(
@@ -162,8 +199,6 @@ class _AttendQuizPageState extends State<AttendQuizPage> {
         ),
       );
     }
-
-    final colors = Theme.of(context).colorScheme;
 
     final appbar = AppBar(
       title: Text(_form.name,
@@ -295,4 +330,3 @@ class _AttendQuizPageState extends State<AttendQuizPage> {
     );
   }
 }
-// 
