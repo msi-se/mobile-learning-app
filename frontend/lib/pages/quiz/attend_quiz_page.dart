@@ -58,6 +58,7 @@ class _AttendQuizPageState extends State<AttendQuizPage> {
         var data = jsonDecode(response.body);
         _courseId = data["courseId"];
         _formId = data["formId"];
+        await fetchForm();
       }
     } on http.ClientException catch (_) {
       // TODO: handle error
@@ -77,6 +78,9 @@ class _AttendQuizPageState extends State<AttendQuizPage> {
         body: jsonEncode({"alias": _alias}),
       );
       if (response.statusCode == 200) {
+        setState(() {
+          _aliasChosen = true;
+        });
         return true;
       } else if (response.statusCode == 409) {
         setState(() {
@@ -159,38 +163,6 @@ class _AttendQuizPageState extends State<AttendQuizPage> {
 
   @override
   Widget build(BuildContext context) {
-    final colors = Theme.of(context).colorScheme;
-
-    if (!_aliasChosen) {
-      return Scaffold(
-        appBar: AppBar(
-          title: const Text("Wähle deinen Nickname",
-              style: TextStyle(
-                  color: Colors.white, fontWeight: FontWeight.bold)),
-          backgroundColor: colors.primary,
-        ),
-        body: ChooseAlias(
-          onAliasSubmitted: (chosenAlias) async {
-            setState(() {
-              _alias = chosenAlias;
-            });
-            bool success = await participate();
-            if (success) {
-              _aliasChosen = true;
-              fetchForm();
-            } else {
-              _aliasChosen = false;
-              ScaffoldMessenger.of(context)
-                .showSnackBar(SnackBar(content: Text(_aliasError), backgroundColor: Colors.redAccent));
-              setState(() {
-                _loading = false;
-              });
-            }
-          },
-        ),
-      );
-    }
-
 
     if (_loading) {
       return const Scaffold(
@@ -200,12 +172,32 @@ class _AttendQuizPageState extends State<AttendQuizPage> {
       );
     }
 
+    final colors = Theme.of(context).colorScheme;
+
     final appbar = AppBar(
       title: Text(_form.name,
           style: const TextStyle(
               color: Colors.white, fontWeight: FontWeight.bold)),
       backgroundColor: colors.primary,
     );
+
+    if (!_aliasChosen) {
+      return Scaffold(
+        appBar: appbar,
+        body: ChooseAlias(
+          onAliasSubmitted: (chosenAlias) async {
+            setState(() {
+              _alias = chosenAlias;
+            });
+            bool success = await participate();
+            if (!success) {
+              ScaffoldMessenger.of(context)
+                .showSnackBar(SnackBar(content: Text(_aliasError), backgroundColor: Colors.redAccent));
+            }
+          },
+        ),
+      );
+    }
 
     if (_form.status != "STARTED" || _voted) {
       return Scaffold(
