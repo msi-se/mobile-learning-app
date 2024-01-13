@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:frontend/components/code_input.dart';
 import 'package:frontend/theme/assets.dart';
-import 'package:mobile_scanner/mobile_scanner.dart';
 
 class LiveTab extends StatefulWidget {
   const LiveTab({super.key});
@@ -23,30 +22,6 @@ class _LiveTabState extends State<LiveTab> {
     var code = _joinCodeController.text.replaceAll(' ', '');
     Navigator.pushNamed(context, '/attend-feedback', arguments: code);
     // Navigator.pushNamed(context, '/feedback-result', arguments: code);
-  }
-
-  void openScanner() {
-    Navigator.push(context, MaterialPageRoute(builder: (context) {
-      return Scaffold(
-        appBar: AppBar(title: const Text('Scanne QR-Code zum Beitreten')),
-        body: MobileScanner(
-          onDetect: (capture) {
-            final List<Barcode> barcodes = capture.barcodes;
-            for (final barcode in barcodes) {
-              if (barcode.rawValue != null) {
-                var qrCodeValue = barcode.rawValue?.replaceAll(' ', '');
-                Navigator.pop(context, qrCodeValue);
-              }
-            }
-          },
-        ),
-      );
-    })).then((qrCodeValue) {
-      if (qrCodeValue != null) {
-        Navigator.pushNamed(context, '/attend-feedback',
-            arguments: qrCodeValue);
-      }
-    });
   }
 
   @override
@@ -158,9 +133,7 @@ class _LiveTabState extends State<LiveTab> {
                     Padding(
                       padding: const EdgeInsets.only(bottom: 24),
                       child: ElevatedButton(
-                        onPressed: () {
-                          openScanner();
-                        },
+                        onPressed: () {},
                         style: ElevatedButton.styleFrom(
                           padding: EdgeInsets.zero,
                           shape: const CircleBorder(),
