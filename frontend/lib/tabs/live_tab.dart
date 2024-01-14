@@ -22,8 +22,10 @@ class _LiveTabState extends State<LiveTab> {
     super.initState();
   }
 
-  void joinCourse() async {
-    var code = _joinCodeController.text.replaceAll(' ', '');
+  void joinCourse(code) async {
+    if (code.toString() == "") {
+      code = _joinCodeController.text.replaceAll(' ', '');
+    }
     // TODO: do nicer
     try {
       final response = await http.get(
@@ -58,7 +60,7 @@ class _LiveTabState extends State<LiveTab> {
   }
 
   void openScanner() {
-    Navigator.push(context, MaterialPageRoute(builder: (context) {
+        Navigator.push(context, MaterialPageRoute(builder: (context) {
       return Scaffold(
         appBar: AppBar(title: const Text('Scanne QR-Code zum Beitreten')),
         body: MobileScanner(
@@ -75,8 +77,7 @@ class _LiveTabState extends State<LiveTab> {
       );
     })).then((qrCodeValue) {
       if (qrCodeValue != null) {
-        Navigator.pushNamed(context, '/attend-feedback',
-            arguments: qrCodeValue);
+        joinCourse(qrCodeValue);
       }
     });
   }
@@ -153,7 +154,7 @@ class _LiveTabState extends State<LiveTab> {
                         );
                       },
                       onSubmit: () {
-                        joinCourse();
+                        joinCourse("");
                       },
                     ),
                     const Padding(
