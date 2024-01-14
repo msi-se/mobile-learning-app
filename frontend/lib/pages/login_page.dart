@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:frontend/components/button.dart';
 import 'package:frontend/components/textfield.dart';
 import 'package:frontend/global.dart';
+import 'package:frontend/theme/assets.dart';
 import 'package:frontend/utils.dart';
 import 'package:http/http.dart' as http;
 import 'package:jwt_decoder/jwt_decoder.dart';
@@ -91,103 +92,111 @@ class _LoginPageState extends State<LoginPage> {
       ),
       body: SafeArea(
         child: SingleChildScrollView(
-          child: Column(
-            children: [
-              Container(
-                color: colors.outlineVariant,
-                child: Column(
-                  children: [
-                    Container(
-                      margin: const EdgeInsets.all(20.0),
-                      child: Image.asset(
-                        'assets/logo/HTWG_extended.png',
-                        height: 100.0,
+          child: Container(
+            color: colors.outlineVariant,
+            child: Column(
+              children: [
+                Container(
+                  color: colors.outlineVariant,
+                  child: Column(
+                    children: [
+                      Container(
+                        margin: const EdgeInsets.all(20.0),
+                        child: Image.asset(
+                          htwgExtendedLogo,
+                          height: 100.0,
+                        ),
                       ),
-                    ),
-                    // Login Text
-                    Container(
-                      margin: const EdgeInsets.all(18.0),
-                      child: const Row(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: [
-                          Text('Log In',
-                              style: TextStyle(
-                                  fontSize: 40,
-                                  color: Colors.black,
-                                  fontWeight: FontWeight.bold),
-                              textAlign: TextAlign.left),
-                        ],
+                      // Login Text
+                      Container(
+                        margin: const EdgeInsets.all(18.0),
+                        child: const Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            Text('Log In',
+                                style: TextStyle(
+                                    fontSize: 40,
+                                    color: Colors.black,
+                                    fontWeight: FontWeight.bold),
+                                textAlign: TextAlign.left),
+                          ],
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
-              ),
-              Container(
-                color: colors.surface,
-                child: Column(
-                  children: [
-                    // Username TextField
-                    Container(
-                      padding: const EdgeInsets.only(top: 10),
-                      margin: const EdgeInsets.symmetric(horizontal: 20),
-                      child: const Row(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: [
-                          Text('Benutzername',
-                              style: TextStyle(
-                                fontSize: 15,
-                                color: Colors.grey,
-                              ),
-                              textAlign: TextAlign.left),
-                        ],
+                // Bottom Half of the Login Screen
+                Container(
+                  decoration: BoxDecoration(
+                      color: colors.surface,
+                      borderRadius: const BorderRadius.only(
+                          topLeft: Radius.circular(20),
+                          topRight: Radius.circular(20))),
+                  child: Column(
+                    children: [
+                      // Username TextField
+                      Container(
+                        padding: const EdgeInsets.only(top: 10),
+                        margin: const EdgeInsets.symmetric(horizontal: 20),
+                        child: const Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            Text('Benutzername',
+                                style: TextStyle(
+                                  fontSize: 15,
+                                  color: Colors.grey,
+                                ),
+                                textAlign: TextAlign.left),
+                          ],
+                        ),
                       ),
-                    ),
-                    MyTextField(
-                        controller: usernameController,
-                        hintText: '',
-                        obscureText: false),
+                      MyTextField(
+                          controller: usernameController,
+                          hintText: '',
+                          obscureText: false),
 
-                    // Password TextField
-                    Container(
-                      padding: const EdgeInsets.only(top: 10),
-                      margin: const EdgeInsets.symmetric(horizontal: 20),
-                      child: const Row(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: [
-                          Text('Passwort',
-                              style: TextStyle(
-                                fontSize: 15,
-                                color: Colors.grey,
-                              ),
-                              textAlign: TextAlign.left),
-                        ],
+                      // Password TextField
+                      Container(
+                        padding: const EdgeInsets.only(top: 10),
+                        margin: const EdgeInsets.symmetric(horizontal: 20),
+                        child: const Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            Text('Passwort',
+                                style: TextStyle(
+                                  fontSize: 15,
+                                  color: Colors.grey,
+                                ),
+                                textAlign: TextAlign.left),
+                          ],
+                        ),
                       ),
-                    ),
-                    MyTextField(
-                        controller: passwordController,
-                        hintText: '',
-                        obscureText: true),
-                    const SizedBox(height: 10),
+                      MyTextField(
+                          controller: passwordController,
+                          hintText: '',
+                          obscureText: true),
+                      const SizedBox(height: 10),
 
-                    // Submit Button
-                    if (_isLoading)
-                      const CircularProgressIndicator()
-                    else
-                      SubmitButton(
-                        onTap: () async {
-                          setState(() {
-                            _isLoading = true;
-                          });
-                          await signUserIn(context);
-                          setState(() {
-                            _isLoading = false;
-                          });
-                        },
-                      ),
-                  ],
+                      // Submit Button
+                      if (_isLoading)
+                        const CircularProgressIndicator()
+                      else
+                        SubmitButton(
+                          onTap: () async {
+                            setState(() {
+                              _isLoading = true;
+                            });
+                            await signUserIn(context);
+                            setState(() {
+                              _isLoading = false;
+                            });
+                          },
+                        ),
+                    ],
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),
