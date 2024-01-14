@@ -23,9 +23,9 @@ class _LiveTabState extends State<LiveTab> {
   }
 
   void joinCourse(code) async {
-    if (code.toString() == "") {
-      code = _joinCodeController.text.replaceAll(' ', '');
-    }
+
+      code = code.replaceAll(' ', '');
+
     // TODO: do nicer
     try {
       final response = await http.get(
@@ -68,7 +68,7 @@ class _LiveTabState extends State<LiveTab> {
             final List<Barcode> barcodes = capture.barcodes;
             for (final barcode in barcodes) {
               if (barcode.rawValue != null) {
-                var qrCodeValue = barcode.rawValue?.replaceAll(' ', '');
+                var qrCodeValue = barcode.rawValue;
                 Navigator.pop(context, qrCodeValue);
               }
             }
@@ -154,7 +154,7 @@ class _LiveTabState extends State<LiveTab> {
                         );
                       },
                       onSubmit: () {
-                        joinCourse("");
+                        joinCourse(_joinCodeController.text);
                       },
                     ),
                     const Padding(
