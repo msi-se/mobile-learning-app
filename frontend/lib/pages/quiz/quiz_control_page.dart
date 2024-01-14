@@ -287,44 +287,47 @@ class _QuizControlPageState extends State<QuizControlPage> {
                 const SizedBox(height: 32),
                 Padding(
                   padding: const EdgeInsets.all(16),
-                  child: Column(
-                    children: <Widget>[
-                      Text(element.name,
-                          style: const TextStyle(
-                              fontSize: 24, fontWeight: FontWeight.bold)),
-                      Text(element.description,
-                          style: const TextStyle(fontSize: 15),
-                          textAlign: TextAlign.center),
-                      const SizedBox(height: 16),
-                      if (_form.currentQuestionFinished == true)
-                        Card(
-                          child: Padding(
-                            padding: const EdgeInsets.all(16),
-                            child: element.type == 'SINGLE_CHOICE'
-                                ? SingleChoiceQuizResult(
-                                    results: values
-                                        .map((e) => int.parse(e))
-                                        .toList()
-                                        .cast<int>(),
-                                    options: element.options,
-                                    correctAnswer: element.correctAnswers[0],
-                                  )
-                                : element.type == 'YES_NO'
-                                    ? SingleChoiceQuizResult(
-                                        results: values
-                                            .map((e) => e == "yes" ? 0 : 1)
-                                            .toList()
-                                            .cast<int>(),
-                                        options: const ["Ja", "Nein"],
-                                        correctAnswer:
-                                            element.correctAnswers[0] == "yes"
-                                                ? "0"
-                                                : "1",
-                                      )
-                                    : Text(element.type),
-                          ),
-                        )
-                    ],
+                  child: Container(
+                    constraints: const BoxConstraints(maxWidth: 800),
+                    child: Column(
+                      children: <Widget>[
+                        Text(element.name,
+                            style: const TextStyle(
+                                fontSize: 24, fontWeight: FontWeight.bold)),
+                        Text(element.description,
+                            style: const TextStyle(fontSize: 15),
+                            textAlign: TextAlign.center),
+                        const SizedBox(height: 16),
+                        if (_form.currentQuestionFinished == true)
+                          Card(
+                            child: Padding(
+                              padding: const EdgeInsets.all(16),
+                              child: element.type == 'SINGLE_CHOICE'
+                                  ? SingleChoiceQuizResult(
+                                      results: values
+                                          .map((e) => int.parse(e))
+                                          .toList()
+                                          .cast<int>(),
+                                      options: element.options,
+                                      correctAnswer: element.correctAnswers[0],
+                                    )
+                                  : element.type == 'YES_NO'
+                                      ? SingleChoiceQuizResult(
+                                          results: values
+                                              .map((e) => e == "yes" ? 0 : 1)
+                                              .toList()
+                                              .cast<int>(),
+                                          options: const ["Ja", "Nein"],
+                                          correctAnswer:
+                                              element.correctAnswers[0] == "yes"
+                                                  ? "0"
+                                                  : "1",
+                                        )
+                                      : Text(element.type),
+                            ),
+                          )
+                      ],
+                    ),
                   ),
                 ),
                 if (_form.status == "STARTED")
