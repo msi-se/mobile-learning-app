@@ -210,12 +210,14 @@ class _FeedbackResultPageState extends State<FeedbackResultPage> {
         body: Stack(
           children: [
             SingleChildScrollView(
-              child: Column(
-                children: <Widget>[
-                  const SizedBox(height: 16),
-                  Column(
-                    children: [
-                      ListView.builder(
+              child: SizedBox(
+                width: double.infinity,
+                child: Column(
+                  children: <Widget>[
+                    const SizedBox(height: 16),
+                    Container(
+                      constraints: const BoxConstraints(maxWidth: 800),
+                      child: ListView.builder(
                         shrinkWrap: true,
                         physics: const NeverScrollableScrollPhysics(),
                         itemCount: _form.questions.length,
@@ -230,8 +232,7 @@ class _FeedbackResultPageState extends State<FeedbackResultPage> {
                               children: <Widget>[
                                 Text(element.name,
                                     style: const TextStyle(
-                                        fontSize: 24,
-                                        fontWeight: FontWeight.bold)),
+                                        fontSize: 24, fontWeight: FontWeight.bold)),
                                 Text(element.description,
                                     style: const TextStyle(fontSize: 15),
                                     textAlign: TextAlign.center),
@@ -261,30 +262,30 @@ class _FeedbackResultPageState extends State<FeedbackResultPage> {
                           );
                         },
                       ),
-                    ],
-                  ),
-                  if (_form.status == "STARTED")
-                    ElevatedButton(
-                      onPressed: stopForm,
-                      child: const Text('Feedback beenden'),
                     ),
-                  if (_form.status == "FINISHED")
-                    Column(
-                      children: [
-                        ElevatedButton(
-                          onPressed: startForm,
-                          child: const Text('Feedback fortsetzen'),
-                        ),
-                        const SizedBox(height: 8),
-                        ElevatedButton(
-                          onPressed: resetForm,
-                          child: Text('Feedback zurücksetzen',
-                              style: TextStyle(color: colors.error)),
-                        ),
-                      ],
-                    ),
-                  const SizedBox(height: 32),
-                ],
+                    if (_form.status == "STARTED")
+                      ElevatedButton(
+                        onPressed: stopForm,
+                        child: const Text('Feedback beenden'),
+                      ),
+                    if (_form.status == "FINISHED")
+                      Column(
+                        children: [
+                          ElevatedButton(
+                            onPressed: startForm,
+                            child: const Text('Feedback fortsetzen'),
+                          ),
+                          const SizedBox(height: 8),
+                          ElevatedButton(
+                            onPressed: resetForm,
+                            child: Text('Feedback zurücksetzen',
+                                style: TextStyle(color: colors.error)),
+                          ),
+                        ],
+                      ),
+                    const SizedBox(height: 32),
+                  ],
+                ),
               ),
             ),
             Positioned(
