@@ -83,21 +83,32 @@ public class QuizForm extends Form {
         return copy;
     }
 
-    public void addParticipant(ObjectId userId, String userAlias) {
+    public Boolean addParticipant(ObjectId userId, String userAlias) {
         if (this.participants == null) {
             this.participants = new java.util.ArrayList<QuizParticipant>();
+        }
+
+        // if alias is empty or already taken, return false
+        if (userAlias == null || userAlias.isEmpty()) {
+            return false;
+        }
+        for (QuizParticipant participant : this.participants) {
+            if (participant.userAlias.equals(userAlias)) {
+                return false;
+            }
         }
 
         // if user is already participating, just update the alias
         for (QuizParticipant participant : this.participants) {
             if (participant.getUserId().equals(userId)) {
                 participant.userAlias = userAlias;
-                return;
+                return true;
             }
         }
 
         // otherwise add a new participant
         this.participants.add(new QuizParticipant(userId, userAlias));
+        return true;
     }
 
     public Integer increaseScoreOfParticipant(ObjectId userId, Integer by) {
