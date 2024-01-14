@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:frontend/components/code_input.dart';
+import 'package:frontend/global.dart';
 import 'package:frontend/theme/assets.dart';
+import 'package:frontend/utils.dart';
+import 'package:http/http.dart' as http;
 
 class LiveTab extends StatefulWidget {
   const LiveTab({super.key});
@@ -18,10 +21,39 @@ class _LiveTabState extends State<LiveTab> {
     super.initState();
   }
 
-  void joinCourse() {
+  void joinCourse() async {
     var code = _joinCodeController.text.replaceAll(' ', '');
-    Navigator.pushNamed(context, '/attend-feedback', arguments: code);
-    // Navigator.pushNamed(context, '/feedback-result', arguments: code);
+    // TODO: do nicer
+    try {
+      final response = await http.get(
+        Uri.parse("${getBackendUrl()}/connectto/feedback/$code"),
+        headers: {
+          "Content-Type": "application/json",
+          "AUTHORIZATION": "Bearer ${getSession()!.jwt}",
+        },
+      );
+      if (response.statusCode == 200 && mounted) {
+        Navigator.pushNamed(context, '/attend-feedback', arguments: code);
+        return;
+      }
+    } on http.ClientException catch (_) {
+      // TODO: handle error
+    }
+    try {
+      final response = await http.get(
+        Uri.parse("${getBackendUrl()}/connectto/quiz/$code"),
+        headers: {
+          "Content-Type": "application/json",
+          "AUTHORIZATION": "Bearer ${getSession()!.jwt}",
+        },
+      );
+      if (response.statusCode == 200 && mounted) {
+        Navigator.pushNamed(context, '/attend-quiz', arguments: code);
+        return;
+      }
+    } on http.ClientException catch (_) {
+      // TODO: handle error
+    }
   }
 
   @override

@@ -44,6 +44,10 @@ const String trophy = 'assets/images/trophy.svg';
 const String upload = 'assets/images/upload.svg';
 const String username = 'assets/images/username.svg';
 const String writing = 'assets/images/writing.svg';
+const String calendar = 'assets/images/calendar.svg';
+const String events = 'assets/images/events.svg';
+const String mensa = "assets/images/mensa.svg";
+const String analytics = "assets/images/analytics.svg";
 
 //Title assets
 const String helloDark = 'assets/titles/hello-dark.svg';
