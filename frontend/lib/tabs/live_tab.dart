@@ -23,9 +23,7 @@ class _LiveTabState extends State<LiveTab> {
   }
 
   void joinCourse(code) async {
-
       code = code.replaceAll(' ', '');
-
     // TODO: do nicer
     try {
       final response = await http.get(
