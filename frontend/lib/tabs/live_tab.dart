@@ -5,6 +5,7 @@ import 'package:frontend/global.dart';
 import 'package:frontend/theme/assets.dart';
 import 'package:frontend/utils.dart';
 import 'package:http/http.dart' as http;
+import 'package:mobile_scanner/mobile_scanner.dart';
 
 class LiveTab extends StatefulWidget {
   const LiveTab({super.key});
@@ -54,6 +55,30 @@ class _LiveTabState extends State<LiveTab> {
     } on http.ClientException catch (_) {
       // TODO: handle error
     }
+  }
+
+  void openScanner() {
+    Navigator.push(context, MaterialPageRoute(builder: (context) {
+      return Scaffold(
+        appBar: AppBar(title: const Text('Scanne QR-Code zum Beitreten')),
+        body: MobileScanner(
+          onDetect: (capture) {
+            final List<Barcode> barcodes = capture.barcodes;
+            for (final barcode in barcodes) {
+              if (barcode.rawValue != null) {
+                var qrCodeValue = barcode.rawValue?.replaceAll(' ', '');
+                Navigator.pop(context, qrCodeValue);
+              }
+            }
+          },
+        ),
+      );
+    })).then((qrCodeValue) {
+      if (qrCodeValue != null) {
+        Navigator.pushNamed(context, '/attend-feedback',
+            arguments: qrCodeValue);
+      }
+    });
   }
 
   @override
@@ -164,7 +189,9 @@ class _LiveTabState extends State<LiveTab> {
                     Padding(
                       padding: const EdgeInsets.only(bottom: 24),
                       child: ElevatedButton(
-                        onPressed: () {},
+                        onPressed: () {
+                          openScanner();
+                        },
                         style: ElevatedButton.styleFrom(
                           padding: EdgeInsets.zero,
                           shape: const CircleBorder(),
