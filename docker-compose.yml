@@ -44,6 +44,7 @@ services:
     container_name: mobile-learning-nginx
     environment:
       - MOBILE_LEARNING_BACKEND_URL=http://localhost:8080
+      - MOBILE_LEARNING_FRONTEND_URL=http://localhost:5000
     ports:
       - 80:80
     depends_on:
