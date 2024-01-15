@@ -1,0 +1,45 @@
+version: "3.1"
+services:
+  
+  # mongo db
+  mobile-learning-mongo:
+    image: mongo
+    container_name: mobile-learning-mongo
+    environment:
+      - MONGO_INITDB=mobilelearning
+    ports:
+      - 27019:27017
+
+  # java quarkus backend
+  mobile-learning-backend:
+    build:
+      context: ./backend
+      dockerfile: src/main/docker/Dockerfile.jvm
+    container_name: mobile-learning-backend
+    restart: always
+    ports:
+      - 8080:8080
+    depends_on:
+      - mobile-learning-mongo
+    environment:
+      - MONGODB_HOST=mobile-learning-mongo
+      - MONGODB_PORT=27019
+      - MONGODB_DATABASE=mobilelearning
+    volumes:
+      - ./backend/src/main/resources/privateKey.pem:/deployments/privateKey.pem
+      - ./backend/src/main/resources/publicKey.pem:/deployments/publicKey.pem
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
+  # flutter frontend (todo)
+
+  # nginx reverse proxy
+  mobile-learning-nginx:
+    build: ./nginx
+    container_name: mobile-learning-nginx
+    environment:
+      - MOBILE_LEARNING_BACKEND_URL=http://mobile-learning-backend:8080
+    ports:
+      - 80:80
+    depends_on:
+      - mobile-learning-backend
