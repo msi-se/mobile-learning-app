@@ -9,12 +9,15 @@ services:
       - MONGO_INITDB=mobilelearning
     ports:
       - 27017:27017
+    expose:
+      - 27017
 
   # java quarkus backend
   mobile-learning-backend:
     build:
       context: ./backend
       dockerfile: src/main/docker/Dockerfile.jvm
+      # dockerfile: Dockerfile
     container_name: mobile-learning-backend
     restart: always
     ports:
@@ -31,6 +34,7 @@ services:
       - ./backend/src/main/resources/application.properties:/deployments/application.properties
     # extra_hosts:
     #   - "host.docker.internal:host-gateway"
+    network_mode: "host"
 
   # flutter frontend (todo)
 
@@ -39,8 +43,9 @@ services:
     build: ./nginx
     container_name: mobile-learning-nginx
     environment:
-      - MOBILE_LEARNING_BACKEND_URL=http://mobile-learning-backend:8080
+      - MOBILE_LEARNING_BACKEND_URL=http://localhost:8080
     ports:
       - 80:80
     depends_on:
       - mobile-learning-backend
+    network_mode: "host"
