@@ -10,7 +10,7 @@ class ChooseAlias extends StatefulWidget {
   const ChooseAlias({Key? key, required this.onAliasSubmitted}) : super(key: key);
 
   @override
-  _ChooseAliasState createState() => _ChooseAliasState();
+  State<ChooseAlias> createState() => _ChooseAliasState();
 }
 
 class _ChooseAliasState extends State<ChooseAlias> {

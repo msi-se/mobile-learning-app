@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:frontend/components/elements/quiz/single_choice_quiz.dart';
 import 'package:frontend/components/elements/quiz/yes_no_quiz.dart';
-import 'package:frontend/components/elements/quiz/choose_alias.dart';
+import 'package:frontend/components/general/quiz/choose_alias.dart';
 import 'package:frontend/global.dart';
 import 'package:frontend/models/quiz/quiz_form.dart';
 import 'package:frontend/utils.dart';
@@ -75,7 +75,7 @@ class _AttendQuizPageState extends State<AttendQuizPage> {
           "Content-Type": "application/json",
           "AUTHORIZATION": "Bearer ${getSession()!.jwt}",
         },
-        body: jsonEncode({"alias": _alias}),
+        body: _alias,
       );
       if (response.statusCode == 200) {
         setState(() {
