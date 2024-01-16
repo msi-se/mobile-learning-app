@@ -261,10 +261,15 @@ class _QuizControlPageState extends State<QuizControlPage> {
                 style: Theme.of(context).textTheme.headlineMedium,
               ),
               const SizedBox(height: 16),
-              Card(
-                child: Padding(
-                  padding: const EdgeInsets.all(8),
-                  child: QuizScoreboard(scoreboard: _scoreboard),
+              Center(
+                child: Container(
+                  constraints: const BoxConstraints(maxWidth: 800),
+                  child: Card(
+                    child: Padding(
+                      padding: const EdgeInsets.all(8),
+                      child: QuizScoreboard(scoreboard: _scoreboard),
+                    ),
+                  ),
                 ),
               ),
               const SizedBox(height: 16),
