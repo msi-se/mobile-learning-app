@@ -1,5 +1,8 @@
 package de.htwg_konstanz.mobilelearning.services.auth;
 
+import java.util.Arrays;
+import java.util.List;
+
 import org.jboss.resteasy.reactive.RestHeader;
 
 import de.htwg_konstanz.mobilelearning.models.Course;
@@ -48,7 +51,8 @@ public class UserService {
         User userFromLdap = null;
 
         // TEMP: bypass ldap (student, prof, admin as username)
-        if (username.equals("Student") || username.equals("Prof") || username.equals("Admin")) {
+        List<String> demoUsernames = Arrays.asList("Student", "Prof", "Admin", "Brande", "Tobi", "Marvin", "Leon", "Fabi", "Schimkat", "Landwehr" );
+        if (demoUsernames.contains(username)) {
 
             // check if user exists in db
             User existingUser = userRepository.findByUsername(username);
@@ -64,7 +68,7 @@ public class UserService {
 
             User newUser = new User(
                 username + "@htwg-konstanz.de",
-                "Test" + username,
+                "Testuser: " + username,
                 username,
                 password
             );
@@ -75,6 +79,8 @@ public class UserService {
                 newUser.addRole(UserRole.PROF);
             } else if (username.equals("Admin")) {
                 newUser.addRole(UserRole.ADMIN);
+            } else {
+                newUser.addRole(UserRole.STUDENT);
             }
 
             userRepository.persist(newUser);
