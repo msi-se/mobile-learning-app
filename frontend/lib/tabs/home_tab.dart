@@ -10,13 +10,13 @@ Widget _buildColumn(String title, String value) {
         title,
         style: const TextStyle(
           fontSize: 15,
-          color: Colors.white,
+          color: Colors.black,
         ),
         textAlign: TextAlign.center,
       ),
       Text(
         value,
-        style: const TextStyle(fontSize: 30, color: Colors.grey),
+        style: const TextStyle(fontSize: 30, color: Colors.white),
         textAlign: TextAlign.center,
       ),
     ],
@@ -62,31 +62,31 @@ class _HomeTabState extends State<HomeTab> {
               GridView.count(
                 crossAxisCount: 2,
                 crossAxisSpacing: 10,
+                shrinkWrap: true,
                 children: [
                   MyCard(
                       title: 'Events',
-                      cardColor: Colors.grey,
+                      cardColor: colors.surfaceVariant,
                       imageName: events),
                   MyCard(
                       title: 'Mensa',
-                      cardColor: Colors.yellow,
+                      cardColor: colors.surfaceVariant,
                       imageName: mensa),
                   MyCard(
                     title: 'LSF',
-                    cardColor: Colors.orange,
+                    cardColor: colors.surfaceVariant,
                     imageName: calendar,
                   ),
                   MyCard(
                     title: 'Noten',
-                    cardColor: Colors.green,
+                    cardColor: colors.surfaceVariant,
                     imageName: analytics,
                   ),
                 ],
-                shrinkWrap: true,
               ),
               Container(
                 decoration: BoxDecoration(
-                    color: colors.inverseSurface,
+                    color: colors.outlineVariant,
                     borderRadius: const BorderRadius.only(
                         topLeft: Radius.circular(20),
                         topRight: Radius.circular(20))),
