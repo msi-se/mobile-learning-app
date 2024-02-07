@@ -76,4 +76,16 @@ public class SecureEndpoint {
     private boolean hasJwt() {
         return jwt.getClaimNames() != null;
     }
+
+    // endpoint without using the SecurityContext
+    @GET
+    @Path("test-jwt")
+    @Produces(MediaType.TEXT_PLAIN)
+    public String testJwt() {
+        // get a few claims
+        String name = jwt.getName();
+        String email = jwt.getClaim("email");
+        String thisIsATest = jwt.getClaim("thisIsATest");
+        return name + email + thisIsATest;
+    }
 }
