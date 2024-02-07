@@ -1,21 +1,40 @@
 package de.htwg_konstanz.mobilelearning.services;
 
-import java.util.List;
+import java.net.URI;
+import java.nio.charset.StandardCharsets;
+import java.util.*;
+import java.util.concurrent.LinkedBlockingDeque;
 
+import org.jose4j.jwt.JwtClaims;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import de.htwg_konstanz.mobilelearning.MockMongoTestProfile;
 import de.htwg_konstanz.mobilelearning.models.Course;
 import de.htwg_konstanz.mobilelearning.models.auth.UserRole;
+import de.htwg_konstanz.mobilelearning.services.api.ApiService;
+import de.htwg_konstanz.mobilelearning.services.api.models.ApiCourse;
+import de.htwg_konstanz.mobilelearning.services.api.models.ApiFeedbackForm;
+import de.htwg_konstanz.mobilelearning.services.api.models.ApiFeedbackForm.ApiFeedbackQuestion;
+import de.htwg_konstanz.mobilelearning.services.api.models.ApiQuizForm.ApiQuizQuestion;
+import de.htwg_konstanz.mobilelearning.services.auth.UserService;
+import de.htwg_konstanz.mobilelearning.services.feedback.socket.LiveFeedbackSocket;
+import de.htwg_konstanz.mobilelearning.services.api.models.ApiQuizForm;
 import de.htwg_konstanz.mobilelearning.test.SecureEndpoint;
 import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.junit.TestProfile;
 import io.quarkus.test.security.TestSecurity;
 import io.quarkus.test.security.jwt.Claim;
 import io.quarkus.test.security.jwt.JwtSecurity;
-
+import io.smallrye.jwt.auth.principal.DefaultJWTCallerPrincipal;
 import jakarta.inject.Inject;
+import jakarta.websocket.ClientEndpointConfig;
+import jakarta.websocket.ContainerProvider;
+import jakarta.websocket.EndpointConfig;
+import jakarta.websocket.MessageHandler;
+import jakarta.websocket.Session;
+import jakarta.ws.rs.client.Client;
+import jakarta.ws.rs.core.Response;
 
 @QuarkusTest
 @TestProfile(MockMongoTestProfile.class)
@@ -24,12 +43,21 @@ public class CourseServiceTest {
     @Inject
     private CourseService courseService;
 
+    @Inject
+    private ApiService apiService;
+
+    @Inject
+    private UserService userService;
+
     // just for jwt testing
     @Inject
     private SecureEndpoint secureEndpoint;
 
+    private String profJwt = "";
+    private String profId = "";
+
     @Test
-    @TestSecurity(user = "testUser", roles = { UserRole.PROF, UserRole.STUDENT })
+    @TestSecurity(user = "TestUser", roles = { UserRole.PROF, UserRole.STUDENT })
     @JwtSecurity(claims = {})
     public void testGetAllCourses() {
 
@@ -50,6 +78,104 @@ public class CourseServiceTest {
     public void testJWT() {
         String response = secureEndpoint.testJwt();
         Assertions.assertEquals(response, "TestUseruser@gmail.comtrue");
+    }
+
+    @Test
+    @TestSecurity(user = "Prof", roles = { UserRole.PROF, UserRole.STUDENT })
+    @JwtSecurity(claims = { @Claim(key = "email", value = "prof@htwg-konstanz.de") })
+    public void createProfUser() {
+        try {
+            Response response = userService.login("Basic UHJvZjo=");
+            Assertions.assertNotNull(response);
+            Assertions.assertEquals(response.getStatus(), 200);
+            String jwt = response.getEntity().toString();
+            Assertions.assertNotNull(jwt);
+            Assertions.assertTrue(jwt.length() > 0);
+            Assertions.assertTrue(jwt.contains("ey"));
+            this.profJwt = jwt; // save jwt for later use
+
+            String jwtJson = new String(Base64.getUrlDecoder().decode(jwt.split("\\.")[1]), StandardCharsets.UTF_8);
+            DefaultJWTCallerPrincipal defaultJWTCallerPrincipal = new DefaultJWTCallerPrincipal(JwtClaims.parse(jwtJson));
+            Assertions.assertNotNull(defaultJWTCallerPrincipal);
+            Assertions.assertEquals(defaultJWTCallerPrincipal.getClaim("full_name"), "Prof");
+            this.profId = defaultJWTCallerPrincipal.getClaim("sub"); // save id for later use
+        } catch (Exception e) {
+            Assertions.fail(e);
+        }
+    }
+
+
+    @Test
+    @TestSecurity(user = "Prof", roles = { UserRole.PROF })
+    @JwtSecurity(claims = { @Claim(key = "email", value = "prof@htwg-konstanz.de") })
+    public void createACourse() {
+        
+        // create a course via the json api
+        ApiCourse apiCourse1 = new ApiCourse(
+            "AUME 23/24",
+            "Agile Vorgehensmodelle und Mobile Kommunikation",
+            List.of(
+                new ApiFeedbackForm(
+                    "Erster Sprint",
+                    "Hier wollen wir Ihr Feedback zum ersten Sprint einholen",
+                    List.of(
+                        new ApiFeedbackQuestion(
+                            "Rolle",
+                            "Wie gut hat Ihnen ihre Pizza gefallen?",
+                            "SLIDER",
+                            List.of(),
+                            "F-Q-ROLLE"
+                            )
+                        ),
+                    "F-ERSTERSPRINT"
+                )
+            ),
+            List.of(
+                new ApiQuizForm(
+                    "Rollenverständnis bei Scrum",
+                    "Ein Quiz zum Rollenverständnis und Teamaufbau bei Scrum",
+                    List.of(
+                        new ApiQuizQuestion(
+                            "Product Owner",
+                            "Welche der folgenden Aufgaben ist nicht Teil der Rolle des Product Owners?",
+                            "SINGLE_CHOICE",
+                            List.of(
+                                "Erstellung des Product Backlogs",
+                                "Priorisierung des Product Backlogs",
+                                "Pizza bestellen für jedes Daily"
+                                ),
+                                true,
+                                List.of("2"),
+                            "Q-Q-PDRODUCTOWNER"
+                        )
+                    ),
+                    "Q-ROLES"
+                )
+            ),
+            "AUME23"
+        );
+        apiService.updateCourses(List.of(apiCourse1));
+
+        // get all courses
+        List<Course> courses = courseService.getCourses();
+        Assertions.assertEquals(courses.size(), 1);
+        Assertions.assertEquals(courses.get(0).getName(), "AUME 23/24");
+        Assertions.assertEquals(courses.get(0).getDescription(), "Agile Vorgehensmodelle und Mobile Kommunikation");
+        Assertions.assertEquals(courses.get(0).getFeedbackForms().size(), 1);
+        Assertions.assertEquals(courses.get(0).getQuizForms().size(), 1);
+        Assertions.assertEquals(courses.get(0).getFeedbackForms().get(0).getName(), "Erster Sprint");
+        Assertions.assertEquals(courses.get(0).getQuizForms().get(0).getName(), "Rollenverständnis bei Scrum");
+    }
+
+    @Test
+    @TestSecurity(user = "Prof", roles = { UserRole.PROF })
+    @JwtSecurity(claims = { @Claim(key = "sub", value = "profId") })
+    public void startFeedbackForm() {
+        // get all courses
+        List<Course> courses = courseService.getCourses();
+        Assertions.assertEquals(courses.size(), 1);
+        Course course = courses.get(0);
+        Assertions.assertEquals(course.getFeedbackForms().size(), 1);
     }
 
 }

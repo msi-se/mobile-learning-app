@@ -105,4 +105,9 @@ public class CourseService {
     public void deleteAllCourses() {
         courseRepository.deleteAll();
     }
+
+    // for testing
+    public CourseRepository getCourseRepository() {
+        return courseRepository;
+    }
 }
