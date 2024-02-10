@@ -174,6 +174,8 @@ public class CourseServiceTest {
     public void startFeedbackForm() {
 
         this.createProfUser();
+        courseService.deleteAllCourses();
+        this.createACourse();
 
         // get all courses
         List<Course> courses = courseService.getCourses();
@@ -181,22 +183,23 @@ public class CourseServiceTest {
         Course course = courses.get(0);
         Assertions.assertEquals(course.getFeedbackForms().size(), 1);
 
-        // get cours and feedback form id
+        // get course and feedback form id
         String courseId = course.getId().toString();
         String formId = course.getFeedbackForms().get(0).getId().toString();
 
         // create a websocket client
         // (@ServerEndpoint("/course/{courseId}/feedback/form/{formId}/subscribe/{userId}/{jwt}")
         try {
+            LiveFeedbackSocketClient client = new LiveFeedbackSocketClient();
             Session session = ContainerProvider.getWebSocketContainer().connectToServer(
-                LiveFeedbackSocketClient.class,
+                client,
                 URI.create("ws://localhost:8081/course/" + courseId + "/feedback/form/" + formId + "/subscribe/" + this.profId + "/" + profJwt)
             );
-            session.getAsyncRemote().sendText("""
+            client.sendMessage("""
                 {
                     "action": "CHANGE_FORM_STATUS",
                     "formStatus": "STARTED",
-                    "roles": ["Prof"]
+                    "roles": []
                 }
             """);
             Thread.sleep(1000);

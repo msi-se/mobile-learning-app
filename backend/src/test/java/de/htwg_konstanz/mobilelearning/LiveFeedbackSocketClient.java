@@ -16,7 +16,7 @@ public class LiveFeedbackSocketClient {
     private List<String> messageQueue;
     private Session session;
 
-    LiveFeedbackSocketClient() {
+    public LiveFeedbackSocketClient() {
         this.messageQueue = new ArrayList<String>();
     }
 
