@@ -13,11 +13,12 @@
 
 <script>
 
-const channelId = "657623aec157be6e8437e7cb";
-const formId = "657623aec157be6e8437e7cc";
-const studentUserId = "657623d7c157be6e8437e7cf";
+const courseId = "65c3bc52ab8a5a311e8a6eee";
+const formId = "65c3bc52ab8a5a311e8a6ef1";
+const profId = "65c37141a6810908414e8c07";
+const jwt = "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJmdWxsX25hbWUiOiJQcm9mIiwic3ViIjoiNjVjMzcxNDFhNjgxMDkwODQxNGU4YzA3IiwiZW1haWwiOiJQcm9mQGh0d2cta29uc3RhbnouZGUiLCJwcmVmZXJyZWRfdXNlcm5hbWUiOiJQcm9mIiwiZ3JvdXBzIjpbIlByb2YiXSwiZXhwIjoxNzA3Njk0Njg1LCJpYXQiOjE3MDc1MjE4ODUsImp0aSI6IjYxNTM3MDkzLTg4OTYtNDA0MC1hYWM3LWRlNWNmMzFkYWY5NiJ9.EvpgUZIefFm06vG8zxDlZ8YpoQW0n8VtQJBuvl8jD3rOL2uE1XWwMMG2_kQrSZFy7aj2JwkEOPgMqey3vyf_rEkWmRhpEM8f9n9QlJf7A1yrFU3wevE3ARrGQOla81SBLTZUJDFPjpRTVHkFOn0Ia79-DzLEVNSO63e_FG9zIPebeJVzPpI974EH_OplO17rXSsXe0o82r7P6uH1lhU59Pcz93cFSckeRhpj0-Rcp27fu_MjUgP45t0sKxvYYgBcjYbNIOYZnPtgtUeA6x0fgpNTosBAFg2K4tkD3SryXsutf9Iv9MysVK9c3gTGz41aBs8xdVQj9hl-Sp-vpuc3eQ"
 
-let webSocket = new WebSocket(`ws://localhost:8080/feedback/channel/${channelId}/form/${formId}/subscribe/${studentUserId}`);
+let webSocket = new WebSocket(`ws://localhost:8081/course/${courseId}/feedback/form/${formId}/subscribe/${profId}/${jwt}`);
 
 webSocket.onopen = function (event) {
     console.log("Connection established.");

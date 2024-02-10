@@ -9,6 +9,7 @@ import org.jose4j.jwt.JwtClaims;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
+import de.htwg_konstanz.mobilelearning.LiveFeedbackSocketClient;
 import de.htwg_konstanz.mobilelearning.MockMongoTestProfile;
 import de.htwg_konstanz.mobilelearning.models.Course;
 import de.htwg_konstanz.mobilelearning.models.auth.UserRole;
@@ -21,6 +22,7 @@ import de.htwg_konstanz.mobilelearning.services.auth.UserService;
 import de.htwg_konstanz.mobilelearning.services.feedback.socket.LiveFeedbackSocket;
 import de.htwg_konstanz.mobilelearning.services.api.models.ApiQuizForm;
 import de.htwg_konstanz.mobilelearning.test.SecureEndpoint;
+import io.quarkus.test.common.http.TestHTTPResource;
 import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.junit.TestProfile;
 import io.quarkus.test.security.TestSecurity;
@@ -28,12 +30,13 @@ import io.quarkus.test.security.jwt.Claim;
 import io.quarkus.test.security.jwt.JwtSecurity;
 import io.smallrye.jwt.auth.principal.DefaultJWTCallerPrincipal;
 import jakarta.inject.Inject;
-import jakarta.websocket.ClientEndpointConfig;
+import jakarta.websocket.ClientEndpoint;
 import jakarta.websocket.ContainerProvider;
 import jakarta.websocket.EndpointConfig;
-import jakarta.websocket.MessageHandler;
+import jakarta.websocket.OnClose;
+import jakarta.websocket.OnMessage;
+import jakarta.websocket.OnOpen;
 import jakarta.websocket.Session;
-import jakarta.ws.rs.client.Client;
 import jakarta.ws.rs.core.Response;
 
 @QuarkusTest
@@ -49,12 +52,18 @@ public class CourseServiceTest {
     @Inject
     private UserService userService;
 
-    // just for jwt testing
+    @Inject
+    private LiveFeedbackSocket liveFeedbackSocket;
+
     @Inject
     private SecureEndpoint secureEndpoint;
 
     private String profJwt = "";
     private String profId = "";
+    private static final LinkedBlockingDeque<String> MESSAGES = new LinkedBlockingDeque<>();
+
+    @TestHTTPResource("/chat/stu")
+    URI uri;
 
     @Test
     @TestSecurity(user = "TestUser", roles = { UserRole.PROF, UserRole.STUDENT })
@@ -72,8 +81,8 @@ public class CourseServiceTest {
     @Test
     @TestSecurity(user = "TestUser", roles = { UserRole.PROF, UserRole.STUDENT })
     @JwtSecurity(claims = {
-        @Claim(key = "email", value = "user@gmail.com"),
-        @Claim(key = "thisIsATest", value = "true"),
+            @Claim(key = "email", value = "user@gmail.com"),
+            @Claim(key = "thisIsATest", value = "true"),
     })
     public void testJWT() {
         String response = secureEndpoint.testJwt();
@@ -95,65 +104,57 @@ public class CourseServiceTest {
             this.profJwt = jwt; // save jwt for later use
 
             String jwtJson = new String(Base64.getUrlDecoder().decode(jwt.split("\\.")[1]), StandardCharsets.UTF_8);
-            DefaultJWTCallerPrincipal defaultJWTCallerPrincipal = new DefaultJWTCallerPrincipal(JwtClaims.parse(jwtJson));
+            DefaultJWTCallerPrincipal defaultJWTCallerPrincipal = new DefaultJWTCallerPrincipal(
+                    JwtClaims.parse(jwtJson));
             Assertions.assertNotNull(defaultJWTCallerPrincipal);
             Assertions.assertEquals(defaultJWTCallerPrincipal.getClaim("full_name"), "Prof");
-            this.profId = defaultJWTCallerPrincipal.getClaim("sub"); // save id for later use
+            Assertions.assertTrue(defaultJWTCallerPrincipal.getClaim("sub").toString().length() > 0);
+            this.profId = defaultJWTCallerPrincipal.getClaim("sub").toString(); // save id for later use
+            Assertions.assertTrue(defaultJWTCallerPrincipal.getClaim("email").toString().length() > 0);
         } catch (Exception e) {
             Assertions.fail(e);
         }
     }
 
-
     @Test
     @TestSecurity(user = "Prof", roles = { UserRole.PROF })
     @JwtSecurity(claims = { @Claim(key = "email", value = "prof@htwg-konstanz.de") })
     public void createACourse() {
-        
+
         // create a course via the json api
         ApiCourse apiCourse1 = new ApiCourse(
-            "AUME 23/24",
-            "Agile Vorgehensmodelle und Mobile Kommunikation",
-            List.of(
-                new ApiFeedbackForm(
-                    "Erster Sprint",
-                    "Hier wollen wir Ihr Feedback zum ersten Sprint einholen",
-                    List.of(
-                        new ApiFeedbackQuestion(
-                            "Rolle",
-                            "Wie gut hat Ihnen ihre Pizza gefallen?",
-                            "SLIDER",
-                            List.of(),
-                            "F-Q-ROLLE"
-                            )
-                        ),
-                    "F-ERSTERSPRINT"
-                )
-            ),
-            List.of(
-                new ApiQuizForm(
-                    "Rollenverständnis bei Scrum",
-                    "Ein Quiz zum Rollenverständnis und Teamaufbau bei Scrum",
-                    List.of(
-                        new ApiQuizQuestion(
-                            "Product Owner",
-                            "Welche der folgenden Aufgaben ist nicht Teil der Rolle des Product Owners?",
-                            "SINGLE_CHOICE",
-                            List.of(
-                                "Erstellung des Product Backlogs",
-                                "Priorisierung des Product Backlogs",
-                                "Pizza bestellen für jedes Daily"
-                                ),
-                                true,
-                                List.of("2"),
-                            "Q-Q-PDRODUCTOWNER"
-                        )
-                    ),
-                    "Q-ROLES"
-                )
-            ),
-            "AUME23"
-        );
+                "AUME 23/24",
+                "Agile Vorgehensmodelle und Mobile Kommunikation",
+                List.of(
+                        new ApiFeedbackForm(
+                                "Erster Sprint",
+                                "Hier wollen wir Ihr Feedback zum ersten Sprint einholen",
+                                List.of(
+                                        new ApiFeedbackQuestion(
+                                                "Rolle",
+                                                "Wie gut hat Ihnen ihre Pizza gefallen?",
+                                                "SLIDER",
+                                                List.of(),
+                                                "F-Q-ROLLE")),
+                                "F-ERSTERSPRINT")),
+                List.of(
+                        new ApiQuizForm(
+                                "Rollenverständnis bei Scrum",
+                                "Ein Quiz zum Rollenverständnis und Teamaufbau bei Scrum",
+                                List.of(
+                                        new ApiQuizQuestion(
+                                                "Product Owner",
+                                                "Welche der folgenden Aufgaben ist nicht Teil der Rolle des Product Owners?",
+                                                "SINGLE_CHOICE",
+                                                List.of(
+                                                        "Erstellung des Product Backlogs",
+                                                        "Priorisierung des Product Backlogs",
+                                                        "Pizza bestellen für jedes Daily"),
+                                                true,
+                                                List.of("2"),
+                                                "Q-Q-PDRODUCTOWNER")),
+                                "Q-ROLES")),
+                "AUME23");
         apiService.updateCourses(List.of(apiCourse1));
 
         // get all courses
@@ -171,11 +172,42 @@ public class CourseServiceTest {
     @TestSecurity(user = "Prof", roles = { UserRole.PROF })
     @JwtSecurity(claims = { @Claim(key = "sub", value = "profId") })
     public void startFeedbackForm() {
+
+        this.createProfUser();
+
         // get all courses
         List<Course> courses = courseService.getCourses();
         Assertions.assertEquals(courses.size(), 1);
         Course course = courses.get(0);
         Assertions.assertEquals(course.getFeedbackForms().size(), 1);
+
+        // get cours and feedback form id
+        String courseId = course.getId().toString();
+        String formId = course.getFeedbackForms().get(0).getId().toString();
+
+        // create a websocket client
+        // (@ServerEndpoint("/course/{courseId}/feedback/form/{formId}/subscribe/{userId}/{jwt}")
+        try {
+            Session session = ContainerProvider.getWebSocketContainer().connectToServer(
+                LiveFeedbackSocketClient.class,
+                URI.create("ws://localhost:8081/course/" + courseId + "/feedback/form/" + formId + "/subscribe/" + this.profId + "/" + profJwt)
+            );
+            session.getAsyncRemote().sendText("""
+                {
+                    "action": "CHANGE_FORM_STATUS",
+                    "formStatus": "STARTED",
+                    "roles": ["Prof"]
+                }
+            """);
+            Thread.sleep(1000);
+            session.close();
+
+            // check if the form status has changed
+            Assertions.assertTrue(courseService.getCourse(courseId).getFeedbackForms().get(0).getStatus().toString().equals("STARTED"));
+        } catch (Exception e) {
+            System.out.println(e);
+            Assertions.fail(e.getMessage());
+        }
     }
 
 }
