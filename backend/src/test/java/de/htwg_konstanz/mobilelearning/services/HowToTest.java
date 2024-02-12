@@ -101,6 +101,33 @@ public class HowToTest {
     }
 
     @Test
+    @TestSecurity(user = "Student", roles = {UserRole.STUDENT })
+    @JwtSecurity(claims = { @Claim(key = "email", value = "student@htwg-konstanz.de") })
+    public void createStudentUser() {
+        try {
+            Response response = userService.login("Basic U3R1ZGVudDo=");
+            Assertions.assertNotNull(response);
+            Assertions.assertEquals(response.getStatus(), 200);
+            String jwt = response.getEntity().toString();
+            Assertions.assertNotNull(jwt);
+            Assertions.assertTrue(jwt.length() > 0);
+            Assertions.assertTrue(jwt.contains("ey"));
+            this.profJwt = jwt; // save jwt for later use
+
+            String jwtJson = new String(Base64.getUrlDecoder().decode(jwt.split("\\.")[1]), StandardCharsets.UTF_8);
+            DefaultJWTCallerPrincipal defaultJWTCallerPrincipal = new DefaultJWTCallerPrincipal(
+                    JwtClaims.parse(jwtJson));
+            Assertions.assertNotNull(defaultJWTCallerPrincipal);
+            Assertions.assertEquals(defaultJWTCallerPrincipal.getClaim("full_name"), "Student");
+            Assertions.assertTrue(defaultJWTCallerPrincipal.getClaim("sub").toString().length() > 0);
+            this.profId = defaultJWTCallerPrincipal.getClaim("sub").toString(); // save id for later use
+            Assertions.assertTrue(defaultJWTCallerPrincipal.getClaim("email").toString().length() > 0);
+        } catch (Exception e) {
+            Assertions.fail(e);
+        }
+    }
+
+    @Test
     @TestSecurity(user = "Prof", roles = { UserRole.PROF })
     @JwtSecurity(claims = { @Claim(key = "email", value = "prof@htwg-konstanz.de") })
     public void createACourse() {
