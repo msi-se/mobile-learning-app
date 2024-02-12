@@ -3,8 +3,6 @@ package de.htwg_konstanz.mobilelearning.services;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
-import java.util.concurrent.LinkedBlockingDeque;
-
 import org.jose4j.jwt.JwtClaims;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -19,10 +17,8 @@ import de.htwg_konstanz.mobilelearning.services.api.models.ApiFeedbackForm;
 import de.htwg_konstanz.mobilelearning.services.api.models.ApiFeedbackForm.ApiFeedbackQuestion;
 import de.htwg_konstanz.mobilelearning.services.api.models.ApiQuizForm.ApiQuizQuestion;
 import de.htwg_konstanz.mobilelearning.services.auth.UserService;
-import de.htwg_konstanz.mobilelearning.services.feedback.socket.LiveFeedbackSocket;
 import de.htwg_konstanz.mobilelearning.services.api.models.ApiQuizForm;
 import de.htwg_konstanz.mobilelearning.test.SecureEndpoint;
-import io.quarkus.test.common.http.TestHTTPResource;
 import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.junit.TestProfile;
 import io.quarkus.test.security.TestSecurity;
@@ -30,18 +26,13 @@ import io.quarkus.test.security.jwt.Claim;
 import io.quarkus.test.security.jwt.JwtSecurity;
 import io.smallrye.jwt.auth.principal.DefaultJWTCallerPrincipal;
 import jakarta.inject.Inject;
-import jakarta.websocket.ClientEndpoint;
 import jakarta.websocket.ContainerProvider;
-import jakarta.websocket.EndpointConfig;
-import jakarta.websocket.OnClose;
-import jakarta.websocket.OnMessage;
-import jakarta.websocket.OnOpen;
 import jakarta.websocket.Session;
 import jakarta.ws.rs.core.Response;
 
 @QuarkusTest
 @TestProfile(MockMongoTestProfile.class)
-public class CourseServiceTest {
+public class HowToTest {
 
     @Inject
     private CourseService courseService;
@@ -53,17 +44,10 @@ public class CourseServiceTest {
     private UserService userService;
 
     @Inject
-    private LiveFeedbackSocket liveFeedbackSocket;
-
-    @Inject
     private SecureEndpoint secureEndpoint;
 
     private String profJwt = "";
     private String profId = "";
-    private static final LinkedBlockingDeque<String> MESSAGES = new LinkedBlockingDeque<>();
-
-    @TestHTTPResource("/chat/stu")
-    URI uri;
 
     @Test
     @TestSecurity(user = "TestUser", roles = { UserRole.PROF, UserRole.STUDENT })
