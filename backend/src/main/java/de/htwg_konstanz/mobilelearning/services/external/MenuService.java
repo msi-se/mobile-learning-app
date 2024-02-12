@@ -3,11 +3,15 @@ package de.htwg_konstanz.mobilelearning.services.external;
 import java.io.InputStream;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
+import java.util.Date;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 
-import de.htwg_konstanz.mobilelearning.helper.Speiseplan;
+import de.htwg_konstanz.mobilelearning.models.external.menu.MenuState;
+import de.htwg_konstanz.mobilelearning.models.external.menu.Menu;
+import de.htwg_konstanz.mobilelearning.repositories.MenuStateRepository;
+import jakarta.inject.Inject;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
@@ -16,20 +20,30 @@ import jakarta.ws.rs.core.MediaType;
 @Path("/external/menu")
 public class MenuService {
 
+    @Inject
+    private MenuStateRepository menuStateRepository;
+
     public MenuService() {
     }
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public String getMenu() {
+    @Path("")
+    public MenuState getMenu() {
 
-        this.updateMenu();
+        // get latest menu state from database
+        MenuState menuState = menuStateRepository.getLatestMenuState();
 
-        return "";
+        // if it is older than 10 minutes, update it
+        if (menuState == null || new Date().getTime() - menuState.timestamp.getTime() > 10 * 60 * 1000) {
+            menuState = updateMenu();
+        }
+
+        return menuState;
 
     }
 
-    private void updateMenu() {
+    private MenuState updateMenu() {
         try {
 
             // fetch menu from mensa xml service
@@ -41,13 +55,19 @@ public class MenuService {
             // parse xml
             XmlMapper xmlMapper = new XmlMapper();
             xmlMapper.enable(DeserializationFeature.ACCEPT_EMPTY_STRING_AS_NULL_OBJECT);
-            Speiseplan menueFromXML = xmlMapper.readValue(xmlString, Speiseplan.class);
+            Menu menueFromXML = xmlMapper.readValue(xmlString, Menu.class);
 
-            System.out.println(menueFromXML.toString());
+            // save menu to database
+            MenuState menuState = new MenuState(new Date(), menueFromXML);
+            menuStateRepository.persist(menuState);
+
+            return menuState;
 
         } catch (Exception e) {
             e.printStackTrace();
         }
+
+        return null;
 
     }
 }
