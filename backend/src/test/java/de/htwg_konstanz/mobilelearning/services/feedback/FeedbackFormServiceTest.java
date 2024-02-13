@@ -14,7 +14,6 @@ import de.htwg_konstanz.mobilelearning.LiveFeedbackSocketClient;
 import de.htwg_konstanz.mobilelearning.MockMongoTestProfile;
 import de.htwg_konstanz.mobilelearning.enums.FormStatus;
 import de.htwg_konstanz.mobilelearning.models.Course;
-import de.htwg_konstanz.mobilelearning.models.QuestionWrapper;
 import de.htwg_konstanz.mobilelearning.models.auth.UserRole;
 import de.htwg_konstanz.mobilelearning.models.feedback.FeedbackForm;
 import de.htwg_konstanz.mobilelearning.services.CourseService;
@@ -25,14 +24,12 @@ import de.htwg_konstanz.mobilelearning.services.api.models.ApiFeedbackForm.ApiFe
 import de.htwg_konstanz.mobilelearning.services.api.models.ApiQuizForm;
 import de.htwg_konstanz.mobilelearning.services.api.models.ApiQuizForm.ApiQuizQuestion;
 import de.htwg_konstanz.mobilelearning.services.auth.UserService;
-import de.htwg_konstanz.mobilelearning.test.SecureEndpoint;
 import io.quarkus.security.ForbiddenException;
 import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.junit.TestProfile;
 import io.quarkus.test.security.TestSecurity;
 import io.quarkus.test.security.jwt.Claim;
 import io.quarkus.test.security.jwt.JwtSecurity;
-import io.smallrye.common.constraint.Assert;
 import io.smallrye.jwt.auth.principal.DefaultJWTCallerPrincipal;
 import jakarta.inject.Inject;
 import jakarta.websocket.ContainerProvider;
@@ -73,9 +70,9 @@ public class FeedbackFormServiceTest {
         feedbackFormService.createFeedbackForm(courses.getFirst().id.toString(), feedbackForm);
 
         List<FeedbackForm> feedbackForms = feedbackFormService.getFeedbackForms(courses.get(0).id.toString());
-        Assertions.assertEquals(feedbackForms.size(), 2);
-        Assertions.assertEquals(feedbackForms.get(1).name, "name");
-        Assertions.assertEquals(feedbackForms.get(1).description, "description");
+        Assertions.assertEquals(2, feedbackForms.size());
+        Assertions.assertEquals("name", feedbackForms.get(1).name);
+        Assertions.assertEquals("description", feedbackForms.get(1).description);
     }
 
     @Test
@@ -89,7 +86,7 @@ public class FeedbackFormServiceTest {
             feedbackFormService.createFeedbackForm(courses.getFirst().id.toString(), feedbackForm);
         });
 
-        Assertions.assertEquals(exception.getClass().getName(), "io.quarkus.security.ForbiddenException");
+        Assertions.assertEquals("io.quarkus.security.ForbiddenException", exception.getClass().getName());
     }
 
     @Test
@@ -97,15 +94,19 @@ public class FeedbackFormServiceTest {
     @JwtSecurity(claims = { @Claim(key = "email", value = "prof@htwg-konstanz.de") })
     public void getFeedbackForm() {
         List<Course> courses = createCourse();
+        String courseId = courses.getFirst().getId().toString();
+        String formId = courses.getFirst().getFeedbackForms().get(0).getId().toString();
+        String questionId = courses.getFirst().feedbackForms.get(0).questions.get(0).getId().toString();
+        this.createProfUser();
+        addResult(courseId, formId, questionId);
         List<FeedbackForm> feedbackForms = feedbackFormService.getFeedbackForms(courses.get(0).id.toString());
         
         FeedbackForm feedbackFormFromService = feedbackFormService.getFeedbackForm(courses.get(0).id.toString(), feedbackForms.get(0).id.toString(), false);
-        Assertions.assertEquals(feedbackFormFromService.name, "Erster Sprint");
-        Assertions.assertEquals(feedbackFormFromService.description, "Hier wollen wir Ihr Feedback zum ersten Sprint einholen");
-        Assertions.assertEquals(feedbackFormFromService.questions.size(), 1);
-        Assertions.assertEquals(feedbackFormFromService.questions.get(0).results.size(), 0);
+        Assertions.assertEquals("Erster Sprint", feedbackFormFromService.name);
+        Assertions.assertEquals("Hier wollen wir Ihr Feedback zum ersten Sprint einholen", feedbackFormFromService.description);
+        Assertions.assertEquals(1, feedbackFormFromService.questions.size());
+        Assertions.assertEquals(0, feedbackFormFromService.questions.get(0).results.size());
     }
-
     
     @Test
     @TestSecurity(user = "Prof", roles = { UserRole.PROF})
@@ -120,10 +121,47 @@ public class FeedbackFormServiceTest {
         List<FeedbackForm> feedbackForms = feedbackFormService.getFeedbackForms(courses.get(0).id.toString());
         
         FeedbackForm feedbackFormFromService = feedbackFormService.getFeedbackForm(courses.get(0).id.toString(), feedbackForms.get(0).id.toString(), true);
-        Assertions.assertEquals(feedbackFormFromService.name, "Erster Sprint");
-        Assertions.assertEquals(feedbackFormFromService.description, "Hier wollen wir Ihr Feedback zum ersten Sprint einholen");
-        Assertions.assertEquals(feedbackFormFromService.questions.size(), 1);
-        Assertions.assertEquals(feedbackFormFromService.questions.get(0).results.size(), 1);
+        Assertions.assertEquals("Erster Sprint", feedbackFormFromService.name);
+        Assertions.assertEquals("Hier wollen wir Ihr Feedback zum ersten Sprint einholen", feedbackFormFromService.description);
+        Assertions.assertEquals(1, feedbackFormFromService.questions.size());
+        Assertions.assertEquals(1, feedbackFormFromService.questions.get(0).results.size());
+    }
+
+    @Test
+    @TestSecurity(user = "Prof", roles = { UserRole.PROF})
+    @JwtSecurity(claims = { @Claim(key = "email", value = "prof@htwg-konstanz.de") })
+    public void clearResults() {
+        List<Course> courses = createCourse();
+        String courseId = courses.getFirst().getId().toString();
+        String formId = courses.getFirst().getFeedbackForms().get(0).getId().toString();
+        String questionId = courses.getFirst().feedbackForms.get(0).questions.get(0).getId().toString();
+        this.createProfUser();
+        addResult(courseId, formId, questionId);
+        FeedbackForm feedbackForm = feedbackFormService.getFeedbackForm(courses.get(0).id.toString(), formId, true);
+        Assertions.assertEquals(1, feedbackForm.questions.get(0).results.size());
+
+        feedbackFormService.clearFeedbackFormResults(courses.get(0).id.toString(), feedbackForm.id.toString());
+        FeedbackForm feedbackFormCleared = feedbackFormService.getFeedbackForm(courses.get(0).id.toString(), formId, true);
+        
+        Assertions.assertEquals(0, feedbackFormCleared.questions.get(0).results.size());
+    }
+
+    @Test
+    @TestSecurity(user = "Prof", roles = { UserRole.PROF})
+    @JwtSecurity(claims = { @Claim(key = "email", value = "prof@htwg-konstanz.de") })
+    public void updateFeedbackForm() {
+        List<Course> courses = createCourse();
+        String courseId = courses.getFirst().getId().toString();
+        String formId = courses.getFirst().getFeedbackForms().get(0).getId().toString();
+        this.createProfUser();
+        
+        FeedbackForm feedbackFormUpdate = new FeedbackForm(courses.get(0).id, "nameUpdate", "descriptionUpdate", List.of(), FormStatus.NOT_STARTED);
+        feedbackFormService.updateFeedbackForm(courseId, formId, feedbackFormUpdate);
+        
+        List<FeedbackForm> updatedFeedbackForms = feedbackFormService.getFeedbackForms(courses.get(0).id.toString());
+        Assertions.assertEquals("nameUpdate", updatedFeedbackForms.get(0).name);
+        Assertions.assertEquals("descriptionUpdate", updatedFeedbackForms.get(0).description);
+        Assertions.assertEquals(0, updatedFeedbackForms.get(0).questions.size());
     }
 
     private void addResult(String courseId, String formId, String questionId) {
