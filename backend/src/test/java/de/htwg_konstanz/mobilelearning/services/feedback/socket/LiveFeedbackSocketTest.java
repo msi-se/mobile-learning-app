@@ -1,4 +1,4 @@
-package de.htwg_konstanz.mobilelearning.services.feedback;
+package de.htwg_konstanz.mobilelearning.services.feedback.socket;
 
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
@@ -12,7 +12,6 @@ import org.junit.jupiter.api.Test;
 
 import de.htwg_konstanz.mobilelearning.LiveFeedbackSocketClient;
 import de.htwg_konstanz.mobilelearning.MockMongoTestProfile;
-import de.htwg_konstanz.mobilelearning.enums.FormStatus;
 import de.htwg_konstanz.mobilelearning.models.Course;
 import de.htwg_konstanz.mobilelearning.models.auth.UserRole;
 import de.htwg_konstanz.mobilelearning.models.feedback.FeedbackForm;
@@ -24,7 +23,8 @@ import de.htwg_konstanz.mobilelearning.services.api.models.ApiFeedbackForm.ApiFe
 import de.htwg_konstanz.mobilelearning.services.api.models.ApiQuizForm;
 import de.htwg_konstanz.mobilelearning.services.api.models.ApiQuizForm.ApiQuizQuestion;
 import de.htwg_konstanz.mobilelearning.services.auth.UserService;
-import io.quarkus.security.ForbiddenException;
+import de.htwg_konstanz.mobilelearning.services.feedback.FeedbackFormService;
+import de.htwg_konstanz.mobilelearning.test.SecureEndpoint;
 import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.junit.TestProfile;
 import io.quarkus.test.security.TestSecurity;
@@ -38,7 +38,7 @@ import jakarta.ws.rs.core.Response;
 
 @QuarkusTest
 @TestProfile(MockMongoTestProfile.class)
-public class FeedbackFormServiceTest {
+public class LiveFeedbackSocketTest {
 
     @Inject
     private CourseService courseService;
@@ -50,10 +50,15 @@ public class FeedbackFormServiceTest {
     private UserService userService;
 
     @Inject
+    private SecureEndpoint secureEndpoint;
+
+    @Inject
     private FeedbackFormService feedbackFormService;
 
     private String profJwt = "";
     private String profId = "";
+    private String profJwt2 = "";
+    private String profId2 = "";
     private String studentJwt = "";
     private String studentId = "";
 
@@ -63,62 +68,60 @@ public class FeedbackFormServiceTest {
     }
 
     @Test
-    @TestSecurity(user = "Prof", roles = { UserRole.PROF})
-    @JwtSecurity(claims = { @Claim(key = "email", value = "prof@htwg-konstanz.de") })
-    public void createFeedbackForm() {
-        List<Course> courses = createCourse();
-        FeedbackForm feedbackForm = new FeedbackForm(courses.get(0).id, "name", "description", List.of(), FormStatus.NOT_STARTED);
+    @TestSecurity(user = "Prof", roles = { UserRole.PROF })
+    @JwtSecurity(claims = { @Claim(key = "sub", value = "profId") })
+    public void startFeedbackForm() {
 
-        feedbackFormService.createFeedbackForm(courses.getFirst().id.toString(), feedbackForm);
+        this.createProfUser();
+        courseService.deleteAllCourses();
+        this.createACourse();
 
-        List<FeedbackForm> feedbackForms = feedbackFormService.getFeedbackForms(courses.get(0).id.toString());
-        Assertions.assertEquals(2, feedbackForms.size());
-        Assertions.assertEquals("name", feedbackForms.get(1).name);
-        Assertions.assertEquals("description", feedbackForms.get(1).description);
+        // get all courses
+        List<Course> courses = courseService.getCourses();
+        Assertions.assertEquals(courses.size(), 1);
+        Course course = courses.get(0);
+        Assertions.assertEquals(course.getFeedbackForms().size(), 1);
+
+        // get course and feedback form id
+        String courseId = course.getId().toString();
+        String formId = course.getFeedbackForms().get(0).getId().toString();
+
+        // create a websocket client
+        // (@ServerEndpoint("/course/{courseId}/feedback/form/{formId}/subscribe/{userId}/{jwt}")
+        try {
+            LiveFeedbackSocketClient client = new LiveFeedbackSocketClient();
+            Session session = ContainerProvider.getWebSocketContainer().connectToServer(
+                client,
+                URI.create("ws://localhost:8081/course/" + courseId + "/feedback/form/" + formId + "/subscribe/" + this.profId + "/" + profJwt)
+            );
+            client.sendMessage("""
+                {
+                    "action": "CHANGE_FORM_STATUS",
+                    "formStatus": "STARTED",
+                    "roles": []
+                }
+            """);
+            Thread.sleep(1000);
+            session.close();
+
+            // check if the form status has changed
+            Assertions.assertTrue(courseService.getCourse(courseId).getFeedbackForms().get(0).getStatus().toString().equals("STARTED"));
+        } catch (Exception e) {
+            System.out.println(e);
+            Assertions.fail(e.getMessage());
+        }
     }
 
     @Test
-    @TestSecurity(user = "Student", roles = { UserRole.STUDENT})
-    @JwtSecurity(claims = { @Claim(key = "email", value = "student@htwg-konstanz.de") })
-    public void createFeedbackFormForbidden() {
-        List<Course> courses = createCourse();
-        FeedbackForm feedbackForm = new FeedbackForm(courses.get(0).id, "name", "description", List.of(), FormStatus.NOT_STARTED);
-
-        Exception exception = Assertions.assertThrows(ForbiddenException.class, () -> {
-            feedbackFormService.createFeedbackForm(courses.getFirst().id.toString(), feedbackForm);
-        });
-
-        Assertions.assertEquals("io.quarkus.security.ForbiddenException", exception.getClass().getName());
-    }
-
-    @Test
     @TestSecurity(user = "Prof", roles = { UserRole.PROF})
     @JwtSecurity(claims = { @Claim(key = "email", value = "prof@htwg-konstanz.de") })
-    public void getFeedbackForm() {
+    public void feedbackAcceptedOnce() {
         List<Course> courses = createCourse();
         String courseId = courses.getFirst().getId().toString();
         String formId = courses.getFirst().getFeedbackForms().get(0).getId().toString();
         String questionId = courses.getFirst().feedbackForms.get(0).questions.get(0).getId().toString();
         this.createProfUser();
         addResult(courseId, formId, questionId);
-        List<FeedbackForm> feedbackForms = feedbackFormService.getFeedbackForms(courses.get(0).id.toString());
-        
-        FeedbackForm feedbackFormFromService = feedbackFormService.getFeedbackForm(courses.get(0).id.toString(), feedbackForms.get(0).id.toString(), false);
-        Assertions.assertEquals("Erster Sprint", feedbackFormFromService.name);
-        Assertions.assertEquals("Hier wollen wir Ihr Feedback zum ersten Sprint einholen", feedbackFormFromService.description);
-        Assertions.assertEquals(1, feedbackFormFromService.questions.size());
-        Assertions.assertEquals(0, feedbackFormFromService.questions.get(0).results.size());
-    }
-    
-    @Test
-    @TestSecurity(user = "Prof", roles = { UserRole.PROF})
-    @JwtSecurity(claims = { @Claim(key = "email", value = "prof@htwg-konstanz.de") })
-    public void getFeedbackFormWithResult() {
-        List<Course> courses = createCourse();
-        String courseId = courses.getFirst().getId().toString();
-        String formId = courses.getFirst().getFeedbackForms().get(0).getId().toString();
-        String questionId = courses.getFirst().feedbackForms.get(0).questions.get(0).getId().toString();
-        this.createProfUser();
         addResult(courseId, formId, questionId);
         List<FeedbackForm> feedbackForms = feedbackFormService.getFeedbackForms(courses.get(0).id.toString());
         
@@ -132,109 +135,80 @@ public class FeedbackFormServiceTest {
     @Test
     @TestSecurity(user = "Prof", roles = { UserRole.PROF})
     @JwtSecurity(claims = { @Claim(key = "email", value = "prof@htwg-konstanz.de") })
-    public void clearResults() {
+    public void userNotOwner() {
         List<Course> courses = createCourse();
-        String courseId = courses.getFirst().getId().toString();
-        String formId = courses.getFirst().getFeedbackForms().get(0).getId().toString();
-        String questionId = courses.getFirst().feedbackForms.get(0).questions.get(0).getId().toString();
         this.createProfUser();
-        addResult(courseId, formId, questionId);
-        FeedbackForm feedbackForm = feedbackFormService.getFeedbackForm(courses.get(0).id.toString(), formId, true);
-        Assertions.assertEquals(1, feedbackForm.questions.get(0).results.size());
+        this.createProf2User();
 
-        feedbackFormService.clearFeedbackFormResults(courses.get(0).id.toString(), feedbackForm.id.toString());
-        FeedbackForm feedbackFormCleared = feedbackFormService.getFeedbackForm(courses.get(0).id.toString(), formId, true);
+         // get course and feedback form id
+         String courseId = courses.get(0).getId().toString();
+         String formId = courses.get(0).getFeedbackForms().get(0).getId().toString();
+ 
+         // create a websocket client
+         // (@ServerEndpoint("/course/{courseId}/feedback/form/{formId}/subscribe/{userId}/{jwt}")
+         try {
+             LiveFeedbackSocketClient client = new LiveFeedbackSocketClient();
+             Session session = ContainerProvider.getWebSocketContainer().connectToServer(
+                 client,
+                 URI.create("ws://localhost:8081/course/" + courseId + "/feedback/form/" + formId + "/subscribe/" + this.profId2 + "/" + profJwt2)
+             );
+             client.sendMessage("""
+                 {
+                     "action": "CHANGE_FORM_STATUS",
+                     "formStatus": "STARTED",
+                     "roles": []
+                 }
+             """);
+             Thread.sleep(1000);
+             session.close();
+ 
+             // check if the form status has changed
+             Assertions.assertTrue(courseService.getCourse(courseId).getFeedbackForms().get(0).getStatus().toString().equals("NOT_STARTED"));
+         } catch (Exception e) {
+             System.out.println(e);
+             Assertions.fail(e.getMessage());
+         }
         
-        Assertions.assertEquals(0, feedbackFormCleared.questions.get(0).results.size());
-    }
-
-    @Test
-    @TestSecurity(user = "Student", roles = { UserRole.STUDENT})
-    @JwtSecurity(claims = { @Claim(key = "email", value = "student@htwg-konstanz.de") })
-    public void clearResultsForbidden() {
-        List<Course> courses = createCourse();
-        String formId = courses.getFirst().getFeedbackForms().get(0).getId().toString();
-        this.createStudentUser();
-        FeedbackForm feedbackForm = feedbackFormService.getFeedbackForm(courses.get(0).id.toString(), formId, true);
-
-        Exception exception = Assertions.assertThrows(ForbiddenException.class, () -> {
-            feedbackFormService.clearFeedbackFormResults(courses.get(0).id.toString(), feedbackForm.id.toString());
-        });
-
-        Assertions.assertEquals("io.quarkus.security.ForbiddenException", exception.getClass().getName());
     }
 
     @Test
     @TestSecurity(user = "Prof", roles = { UserRole.PROF})
     @JwtSecurity(claims = { @Claim(key = "email", value = "prof@htwg-konstanz.de") })
-    public void updateFeedbackForm() {
+    public void startFeedbackStudent() {
         List<Course> courses = createCourse();
-        String courseId = courses.getFirst().getId().toString();
-        String formId = courses.getFirst().getFeedbackForms().get(0).getId().toString();
         this.createProfUser();
-        
-        FeedbackForm feedbackFormUpdate = new FeedbackForm(courses.get(0).id, "nameUpdate", "descriptionUpdate", List.of(), FormStatus.NOT_STARTED);
-        feedbackFormService.updateFeedbackForm(courseId, formId, feedbackFormUpdate);
-        
-        List<FeedbackForm> updatedFeedbackForms = feedbackFormService.getFeedbackForms(courses.get(0).id.toString());
-        Assertions.assertEquals("nameUpdate", updatedFeedbackForms.get(0).name);
-        Assertions.assertEquals("descriptionUpdate", updatedFeedbackForms.get(0).description);
-        Assertions.assertEquals(0, updatedFeedbackForms.get(0).questions.size());
-    }
-
-    
-    @Test
-    @TestSecurity(user = "Student", roles = { UserRole.STUDENT})
-    @JwtSecurity(claims = { @Claim(key = "email", value = "student@htwg-konstanz.de") })
-    public void updateFeedbackFormForbidden() {
-        List<Course> courses = createCourse();
-        String courseId = courses.getFirst().getId().toString();
-        String formId = courses.getFirst().getFeedbackForms().get(0).getId().toString();
+        this.createProf2User();
         this.createStudentUser();
+
+         // get course and feedback form id
+         String courseId = courses.get(0).getId().toString();
+         String formId = courses.get(0).getFeedbackForms().get(0).getId().toString();
+ 
+         // create a websocket client
+         // (@ServerEndpoint("/course/{courseId}/feedback/form/{formId}/subscribe/{userId}/{jwt}")
+         try {
+             LiveFeedbackSocketClient client = new LiveFeedbackSocketClient();
+             Session session = ContainerProvider.getWebSocketContainer().connectToServer(
+                 client,
+                 URI.create("ws://localhost:8081/course/" + courseId + "/feedback/form/" + formId + "/subscribe/" + this.studentId + "/" + studentJwt)
+             );
+             client.sendMessage("""
+                 {
+                     "action": "CHANGE_FORM_STATUS",
+                     "formStatus": "STARTED",
+                     "roles": []
+                 }
+             """);
+             Thread.sleep(1000);
+             session.close();
+ 
+             // check if the form status has changed
+             Assertions.assertTrue(courseService.getCourse(courseId).getFeedbackForms().get(0).getStatus().toString().equals("NOT_STARTED"));
+         } catch (Exception e) {
+             System.out.println(e);
+             Assertions.fail(e.getMessage());
+         }
         
-        FeedbackForm feedbackFormUpdate = new FeedbackForm(courses.get(0).id, "nameUpdate", "descriptionUpdate", List.of(), FormStatus.NOT_STARTED);
-      
-        Exception exception = Assertions.assertThrows(ForbiddenException.class, () -> {
-            feedbackFormService.updateFeedbackForm(courseId, formId, feedbackFormUpdate);
-        });
-
-        Assertions.assertEquals("io.quarkus.security.ForbiddenException", exception.getClass().getName());
-    }
-
-    private void addResult(String courseId, String formId, String questionId) {
-        // create a websocket client
-        // (@ServerEndpoint("/course/{courseId}/feedback/form/{formId}/subscribe/{userId}/{jwt}")
-        try {
-            LiveFeedbackSocketClient client = new LiveFeedbackSocketClient();
-            Session session = ContainerProvider.getWebSocketContainer().connectToServer(
-                client,
-                URI.create("ws://localhost:8081/course/" + courseId + "/feedback/form/" + formId + "/subscribe/" + this.profId + "/" + this.profJwt)
-            );
-            client.sendMessage("""
-                {
-                    "action": "CHANGE_FORM_STATUS",
-                    "formStatus": "STARTED",
-                    "roles": []
-                }
-            """);
-            client.sendMessage(String.format("""
-                {
-                    "action": "ADD_RESULT",
-                    "resultElementId": %s,
-                    "resultValues": [5],
-                    "role": "STUDENT"
-                }
-            """, questionId));
-            Thread.sleep(1000);
-            session.close();
-
-            // check if the form status has changed
-            
-            Assertions.assertTrue(courseService.getCourse(courseId).getFeedbackForms().get(0).getStatus().toString().equals("STARTED"));
-        } catch (Exception e) {
-            System.out.println(e);
-            Assertions.fail(e.getMessage());
-        }
     }
 
     private List<Course> createCourse() {
@@ -275,6 +249,61 @@ public class FeedbackFormServiceTest {
         return apiService.updateCourses(List.of(apiCourse));
     } 
 
+    private void addResult(String courseId, String formId, String questionId) {
+        // create a websocket client
+        // (@ServerEndpoint("/course/{courseId}/feedback/form/{formId}/subscribe/{userId}/{jwt}")
+        try {
+            LiveFeedbackSocketClient client = new LiveFeedbackSocketClient();
+            Session session = ContainerProvider.getWebSocketContainer().connectToServer(
+                client,
+                URI.create("ws://localhost:8081/course/" + courseId + "/feedback/form/" + formId + "/subscribe/" + this.profId + "/" + this.profJwt)
+            );
+            client.sendMessage("""
+                {
+                    "action": "CHANGE_FORM_STATUS",
+                    "formStatus": "STARTED",
+                    "roles": []
+                }
+            """);
+            client.sendMessage(String.format("""
+                {
+                    "action": "ADD_RESULT",
+                    "resultElementId": %s,
+                    "resultValues": [5],
+                    "role": "STUDENT"
+                }
+            """, questionId));
+            Thread.sleep(1000);
+            session.close();
+
+            // check if the form status has changed
+            
+            Assertions.assertTrue(courseService.getCourse(courseId).getFeedbackForms().get(0).getStatus().toString().equals("STARTED"));
+        } catch (Exception e) {
+            System.out.println(e);
+            Assertions.fail(e.getMessage());
+        }
+    }
+
+    @Test
+    @TestSecurity(user = "Prof", roles = { UserRole.PROF })
+    @JwtSecurity(claims = { @Claim(key = "email", value = "prof@htwg-konstanz.de") })
+    public void createACourse() {
+
+        // create a course via the json api
+        createCourse();
+
+        // get all courses
+        List<Course> courses = courseService.getCourses();
+        Assertions.assertEquals(courses.size(), 1);
+        Assertions.assertEquals(courses.get(0).getName(), "AUME 23/24");
+        Assertions.assertEquals(courses.get(0).getDescription(), "Agile Vorgehensmodelle und Mobile Kommunikation");
+        Assertions.assertEquals(courses.get(0).getFeedbackForms().size(), 1);
+        Assertions.assertEquals(courses.get(0).getQuizForms().size(), 1);
+        Assertions.assertEquals(courses.get(0).getFeedbackForms().get(0).getName(), "Erster Sprint");
+        Assertions.assertEquals(courses.get(0).getQuizForms().get(0).getName(), "Rollenverständnis bei Scrum");
+    }
+
     @Test
     @TestSecurity(user = "Prof", roles = { UserRole.PROF, UserRole.STUDENT })
     @JwtSecurity(claims = { @Claim(key = "email", value = "prof@htwg-konstanz.de") })
@@ -296,6 +325,33 @@ public class FeedbackFormServiceTest {
             Assertions.assertEquals(defaultJWTCallerPrincipal.getClaim("full_name"), "Prof");
             Assertions.assertTrue(defaultJWTCallerPrincipal.getClaim("sub").toString().length() > 0);
             this.profId = defaultJWTCallerPrincipal.getClaim("sub").toString(); // save id for later use
+            Assertions.assertTrue(defaultJWTCallerPrincipal.getClaim("email").toString().length() > 0);
+        } catch (Exception e) {
+            Assertions.fail(e);
+        }
+    }
+
+    @Test
+    @TestSecurity(user = "Prof2", roles = { UserRole.PROF, UserRole.STUDENT })
+    @JwtSecurity(claims = { @Claim(key = "email", value = "prof2@htwg-konstanz.de") })
+    public void createProf2User() {
+        try {
+            Response response = userService.login("Basic UHJvZjI=");
+            Assertions.assertNotNull(response);
+            Assertions.assertEquals(response.getStatus(), 200);
+            String jwt = response.getEntity().toString();
+            Assertions.assertNotNull(jwt);
+            Assertions.assertTrue(jwt.length() > 0);
+            Assertions.assertTrue(jwt.contains("ey"));
+            this.profJwt2 = jwt; // save jwt for later use
+
+            String jwtJson = new String(Base64.getUrlDecoder().decode(jwt.split("\\.")[1]), StandardCharsets.UTF_8);
+            DefaultJWTCallerPrincipal defaultJWTCallerPrincipal = new DefaultJWTCallerPrincipal(
+                    JwtClaims.parse(jwtJson));
+            Assertions.assertNotNull(defaultJWTCallerPrincipal);
+            Assertions.assertEquals(defaultJWTCallerPrincipal.getClaim("full_name"), "Prof2");
+            Assertions.assertTrue(defaultJWTCallerPrincipal.getClaim("sub").toString().length() > 0);
+            this.profId2 = defaultJWTCallerPrincipal.getClaim("sub").toString(); // save id for later use
             Assertions.assertTrue(defaultJWTCallerPrincipal.getClaim("email").toString().length() > 0);
         } catch (Exception e) {
             Assertions.fail(e);
@@ -328,4 +384,5 @@ public class FeedbackFormServiceTest {
             Assertions.fail(e);
         }
     }
+    
 }
