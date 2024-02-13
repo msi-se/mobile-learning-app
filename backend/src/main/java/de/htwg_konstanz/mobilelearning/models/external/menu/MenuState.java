@@ -19,7 +19,7 @@ public class MenuState {
         return timestamp;
     }
 
-    public Menu getSpeiseplan() {
+    public Menu getMenu() {
         return menu;
     }
 }
