@@ -101,4 +101,13 @@ public class CourseService {
         courseRepository.persist(course);
         return course;
     }
+
+    public void deleteAllCourses() {
+        courseRepository.deleteAll();
+    }
+
+    // for testing
+    public CourseRepository getCourseRepository() {
+        return courseRepository;
+    }
 }

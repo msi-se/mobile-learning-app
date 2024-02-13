@@ -144,4 +144,9 @@ public class UserService {
         }
         return Response.ok(json).build();
     }
+
+    // for testing
+    public UserRepository getUserRepository() {
+        return userRepository;
+    }
 }

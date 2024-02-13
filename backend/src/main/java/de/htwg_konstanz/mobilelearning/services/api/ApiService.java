@@ -2,6 +2,8 @@ package de.htwg_konstanz.mobilelearning.services.api;
 
 import java.util.List;
 
+import org.eclipse.microprofile.jwt.JsonWebToken;
+
 import de.htwg_konstanz.mobilelearning.models.Course;
 import de.htwg_konstanz.mobilelearning.models.auth.User;
 import de.htwg_konstanz.mobilelearning.repositories.CourseRepository;
@@ -23,11 +25,14 @@ public class ApiService {
     @Inject
     private UserRepository userRepository;
 
+    @Inject
+    JsonWebToken jwt;
+
     @PATCH
     @Path("/courses/")
-    public List<Course> updateCourses(List<ApiCourse> courses, @Context SecurityContext ctx) {
+    public List<Course> updateCourses(List<ApiCourse> courses) {
 
-        User user = userRepository.findByUsername(ctx.getUserPrincipal().getName());
+        User user = userRepository.findByUsername(jwt.getName());
         if (user == null) {
             throw new NotFoundException("User not found.");
         }
