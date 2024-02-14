@@ -137,6 +137,7 @@ public class FeedbackFormServiceTest {
         Assertions.assertEquals("Hier wollen wir Ihr Feedback zum ersten Sprint einholen", feedbackFormFromService.description);
         Assertions.assertEquals(1, feedbackFormFromService.questions.size());
         Assertions.assertEquals(1, feedbackFormFromService.questions.get(0).results.size());
+        Assertions.assertEquals("5", feedbackFormFromService.questions.get(0).results.get(0).values.get(0));
     }
 
     @Test
