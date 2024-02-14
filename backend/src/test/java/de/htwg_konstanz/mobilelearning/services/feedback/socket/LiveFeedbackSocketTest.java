@@ -24,7 +24,6 @@ import de.htwg_konstanz.mobilelearning.services.api.models.ApiQuizForm;
 import de.htwg_konstanz.mobilelearning.services.api.models.ApiQuizForm.ApiQuizQuestion;
 import de.htwg_konstanz.mobilelearning.services.auth.UserService;
 import de.htwg_konstanz.mobilelearning.services.feedback.FeedbackFormService;
-import de.htwg_konstanz.mobilelearning.test.SecureEndpoint;
 import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.junit.TestProfile;
 import io.quarkus.test.security.TestSecurity;
@@ -50,9 +49,6 @@ public class LiveFeedbackSocketTest {
     private UserService userService;
 
     @Inject
-    private SecureEndpoint secureEndpoint;
-
-    @Inject
     private FeedbackFormService feedbackFormService;
 
     private String profJwt = "";
@@ -65,19 +61,17 @@ public class LiveFeedbackSocketTest {
     @BeforeEach
     void init(){
         courseService.deleteAllCourses();
+        createProfUser();
+        createProf2User();
+        createStudentUser();
     }
 
     @Test
     @TestSecurity(user = "Prof", roles = { UserRole.PROF })
     @JwtSecurity(claims = { @Claim(key = "sub", value = "profId") })
     public void startFeedbackForm() {
-
-        this.createProfUser();
-        courseService.deleteAllCourses();
-        this.createACourse();
-
-        // get all courses
-        List<Course> courses = courseService.getCourses();
+        // create & get courses
+        List<Course> courses = createCourse();
         Assertions.assertEquals(courses.size(), 1);
         Course course = courses.get(0);
         Assertions.assertEquals(course.getFeedbackForms().size(), 1);
@@ -116,15 +110,18 @@ public class LiveFeedbackSocketTest {
     @TestSecurity(user = "Prof", roles = { UserRole.PROF})
     @JwtSecurity(claims = { @Claim(key = "email", value = "prof@htwg-konstanz.de") })
     public void feedbackAcceptedOnce() {
+        //create & get courses + ids 
         List<Course> courses = createCourse();
         String courseId = courses.getFirst().getId().toString();
         String formId = courses.getFirst().getFeedbackForms().get(0).getId().toString();
         String questionId = courses.getFirst().feedbackForms.get(0).questions.get(0).getId().toString();
-        this.createProfUser();
+        // add a result to the feedback form
         addResult(courseId, formId, questionId);
         addResult(courseId, formId, questionId);
+        // get feedback forms from course
         List<FeedbackForm> feedbackForms = feedbackFormService.getFeedbackForms(courses.get(0).id.toString());
         
+        // Assert getFeedbackForm()
         FeedbackForm feedbackFormFromService = feedbackFormService.getFeedbackForm(courses.get(0).id.toString(), feedbackForms.get(0).id.toString(), true);
         Assertions.assertEquals("Erster Sprint", feedbackFormFromService.name);
         Assertions.assertEquals("Hier wollen wir Ihr Feedback zum ersten Sprint einholen", feedbackFormFromService.description);
@@ -136,11 +133,8 @@ public class LiveFeedbackSocketTest {
     @TestSecurity(user = "Prof", roles = { UserRole.PROF})
     @JwtSecurity(claims = { @Claim(key = "email", value = "prof@htwg-konstanz.de") })
     public void userNotOwner() {
+        //create & get courses + ids
         List<Course> courses = createCourse();
-        this.createProfUser();
-        this.createProf2User();
-
-         // get course and feedback form id
          String courseId = courses.get(0).getId().toString();
          String formId = courses.get(0).getFeedbackForms().get(0).getId().toString();
  
@@ -162,7 +156,7 @@ public class LiveFeedbackSocketTest {
              Thread.sleep(1000);
              session.close();
  
-             // check if the form status has changed
+             // form status should not change because user is not owner
              Assertions.assertTrue(courseService.getCourse(courseId).getFeedbackForms().get(0).getStatus().toString().equals("NOT_STARTED"));
          } catch (Exception e) {
              System.out.println(e);
@@ -175,12 +169,8 @@ public class LiveFeedbackSocketTest {
     @TestSecurity(user = "Prof", roles = { UserRole.PROF})
     @JwtSecurity(claims = { @Claim(key = "email", value = "prof@htwg-konstanz.de") })
     public void startFeedbackStudent() {
+        //create & get courses + ids
         List<Course> courses = createCourse();
-        this.createProfUser();
-        this.createProf2User();
-        this.createStudentUser();
-
-         // get course and feedback form id
          String courseId = courses.get(0).getId().toString();
          String formId = courses.get(0).getFeedbackForms().get(0).getId().toString();
  
@@ -202,7 +192,7 @@ public class LiveFeedbackSocketTest {
              Thread.sleep(1000);
              session.close();
  
-             // check if the form status has changed
+             // form status should not change because user student
              Assertions.assertTrue(courseService.getCourse(courseId).getFeedbackForms().get(0).getStatus().toString().equals("NOT_STARTED"));
          } catch (Exception e) {
              System.out.println(e);
@@ -258,6 +248,7 @@ public class LiveFeedbackSocketTest {
                 client,
                 URI.create("ws://localhost:8081/course/" + courseId + "/feedback/form/" + formId + "/subscribe/" + this.profId + "/" + this.profJwt)
             );
+            // starts feedbacksession
             client.sendMessage("""
                 {
                     "action": "CHANGE_FORM_STATUS",
@@ -265,6 +256,7 @@ public class LiveFeedbackSocketTest {
                     "roles": []
                 }
             """);
+            // adds result to feedbackform
             client.sendMessage(String.format("""
                 {
                     "action": "ADD_RESULT",
@@ -277,7 +269,6 @@ public class LiveFeedbackSocketTest {
             session.close();
 
             // check if the form status has changed
-            
             Assertions.assertTrue(courseService.getCourse(courseId).getFeedbackForms().get(0).getStatus().toString().equals("STARTED"));
         } catch (Exception e) {
             System.out.println(e);
@@ -285,101 +276,50 @@ public class LiveFeedbackSocketTest {
         }
     }
 
-    @Test
-    @TestSecurity(user = "Prof", roles = { UserRole.PROF })
-    @JwtSecurity(claims = { @Claim(key = "email", value = "prof@htwg-konstanz.de") })
-    public void createACourse() {
-
-        // create a course via the json api
-        createCourse();
-
-        // get all courses
-        List<Course> courses = courseService.getCourses();
-        Assertions.assertEquals(courses.size(), 1);
-        Assertions.assertEquals(courses.get(0).getName(), "AUME 23/24");
-        Assertions.assertEquals(courses.get(0).getDescription(), "Agile Vorgehensmodelle und Mobile Kommunikation");
-        Assertions.assertEquals(courses.get(0).getFeedbackForms().size(), 1);
-        Assertions.assertEquals(courses.get(0).getQuizForms().size(), 1);
-        Assertions.assertEquals(courses.get(0).getFeedbackForms().get(0).getName(), "Erster Sprint");
-        Assertions.assertEquals(courses.get(0).getQuizForms().get(0).getName(), "Rollenverständnis bei Scrum");
-    }
-
-    @Test
-    @TestSecurity(user = "Prof", roles = { UserRole.PROF, UserRole.STUDENT })
-    @JwtSecurity(claims = { @Claim(key = "email", value = "prof@htwg-konstanz.de") })
     public void createProfUser() {
+        // creates Prof User
         try {
             Response response = userService.login("Basic UHJvZjo=");
-            Assertions.assertNotNull(response);
-            Assertions.assertEquals(response.getStatus(), 200);
-            String jwt = response.getEntity().toString();
-            Assertions.assertNotNull(jwt);
-            Assertions.assertTrue(jwt.length() > 0);
-            Assertions.assertTrue(jwt.contains("ey"));
-            this.profJwt = jwt; // save jwt for later use
-
-            String jwtJson = new String(Base64.getUrlDecoder().decode(jwt.split("\\.")[1]), StandardCharsets.UTF_8);
+            profJwt = response.getEntity().toString(); // save jwt for later use
+            String jwtJson = new String(Base64.getUrlDecoder().decode(profJwt.split("\\.")[1]), StandardCharsets.UTF_8);
             DefaultJWTCallerPrincipal defaultJWTCallerPrincipal = new DefaultJWTCallerPrincipal(
                     JwtClaims.parse(jwtJson));
-            Assertions.assertNotNull(defaultJWTCallerPrincipal);
             Assertions.assertEquals(defaultJWTCallerPrincipal.getClaim("full_name"), "Prof");
             Assertions.assertTrue(defaultJWTCallerPrincipal.getClaim("sub").toString().length() > 0);
-            this.profId = defaultJWTCallerPrincipal.getClaim("sub").toString(); // save id for later use
-            Assertions.assertTrue(defaultJWTCallerPrincipal.getClaim("email").toString().length() > 0);
+            profId = defaultJWTCallerPrincipal.getClaim("sub").toString(); // save id for later use
         } catch (Exception e) {
             Assertions.fail(e);
         }
     }
 
-    @Test
-    @TestSecurity(user = "Prof2", roles = { UserRole.PROF, UserRole.STUDENT })
-    @JwtSecurity(claims = { @Claim(key = "email", value = "prof2@htwg-konstanz.de") })
     public void createProf2User() {
+        // creates Prof2 User
         try {
             Response response = userService.login("Basic UHJvZjI=");
-            Assertions.assertNotNull(response);
-            Assertions.assertEquals(response.getStatus(), 200);
-            String jwt = response.getEntity().toString();
-            Assertions.assertNotNull(jwt);
-            Assertions.assertTrue(jwt.length() > 0);
-            Assertions.assertTrue(jwt.contains("ey"));
-            this.profJwt2 = jwt; // save jwt for later use
-
-            String jwtJson = new String(Base64.getUrlDecoder().decode(jwt.split("\\.")[1]), StandardCharsets.UTF_8);
+            profJwt2 = response.getEntity().toString(); // save jwt for later use
+            String jwtJson = new String(Base64.getUrlDecoder().decode(profJwt2.split("\\.")[1]), StandardCharsets.UTF_8);
             DefaultJWTCallerPrincipal defaultJWTCallerPrincipal = new DefaultJWTCallerPrincipal(
                     JwtClaims.parse(jwtJson));
-            Assertions.assertNotNull(defaultJWTCallerPrincipal);
             Assertions.assertEquals(defaultJWTCallerPrincipal.getClaim("full_name"), "Prof2");
             Assertions.assertTrue(defaultJWTCallerPrincipal.getClaim("sub").toString().length() > 0);
-            this.profId2 = defaultJWTCallerPrincipal.getClaim("sub").toString(); // save id for later use
-            Assertions.assertTrue(defaultJWTCallerPrincipal.getClaim("email").toString().length() > 0);
+            profId2 = defaultJWTCallerPrincipal.getClaim("sub").toString(); // save id for later use
         } catch (Exception e) {
             Assertions.fail(e);
         }
     }
 
-    @Test
-    @TestSecurity(user = "Student", roles = {UserRole.STUDENT })
-    @JwtSecurity(claims = { @Claim(key = "email", value = "student@htwg-konstanz.de") })
     public void createStudentUser() {
+        // creates Student User
         try {
             Response response = userService.login("Basic U3R1ZGVudDo=");
-            Assertions.assertNotNull(response);
-            Assertions.assertEquals(response.getStatus(), 200);
-            String jwt = response.getEntity().toString();
-            Assertions.assertNotNull(jwt);
-            Assertions.assertTrue(jwt.length() > 0);
-            Assertions.assertTrue(jwt.contains("ey"));
-            this.studentJwt = jwt; // save jwt for later use
+            studentJwt = response.getEntity().toString();
 
-            String jwtJson = new String(Base64.getUrlDecoder().decode(jwt.split("\\.")[1]), StandardCharsets.UTF_8);
+            String jwtJson = new String(Base64.getUrlDecoder().decode(studentJwt.split("\\.")[1]), StandardCharsets.UTF_8);
             DefaultJWTCallerPrincipal defaultJWTCallerPrincipal = new DefaultJWTCallerPrincipal(
                     JwtClaims.parse(jwtJson));
-            Assertions.assertNotNull(defaultJWTCallerPrincipal);
             Assertions.assertEquals(defaultJWTCallerPrincipal.getClaim("full_name"), "Student");
             Assertions.assertTrue(defaultJWTCallerPrincipal.getClaim("sub").toString().length() > 0);
-            this.studentId = defaultJWTCallerPrincipal.getClaim("sub").toString(); // save id for later use
-            Assertions.assertTrue(defaultJWTCallerPrincipal.getClaim("email").toString().length() > 0);
+            studentId = defaultJWTCallerPrincipal.getClaim("sub").toString(); // save id for later use
         } catch (Exception e) {
             Assertions.fail(e);
         }

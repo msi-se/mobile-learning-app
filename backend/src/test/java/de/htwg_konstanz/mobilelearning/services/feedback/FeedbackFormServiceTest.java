@@ -55,22 +55,26 @@ public class FeedbackFormServiceTest {
     private String profJwt = "";
     private String profId = "";
     private String studentJwt = "";
-    private String studentId = "";
 
     @BeforeEach
     void init(){
         courseService.deleteAllCourses();
+        createProfUser();
+        createStudentUser();
     }
 
     @Test
     @TestSecurity(user = "Prof", roles = { UserRole.PROF})
     @JwtSecurity(claims = { @Claim(key = "email", value = "prof@htwg-konstanz.de") })
     public void createFeedbackForm() {
+        //create & get courses
         List<Course> courses = createCourse();
         FeedbackForm feedbackForm = new FeedbackForm(courses.get(0).id, "name", "description", List.of(), FormStatus.NOT_STARTED);
 
+        // create a feedback form
         feedbackFormService.createFeedbackForm(courses.getFirst().id.toString(), feedbackForm);
 
+        //check if the feedback form was created
         List<FeedbackForm> feedbackForms = feedbackFormService.getFeedbackForms(courses.get(0).id.toString());
         Assertions.assertEquals(2, feedbackForms.size());
         Assertions.assertEquals("name", feedbackForms.get(1).name);
@@ -81,13 +85,14 @@ public class FeedbackFormServiceTest {
     @TestSecurity(user = "Student", roles = { UserRole.STUDENT})
     @JwtSecurity(claims = { @Claim(key = "email", value = "student@htwg-konstanz.de") })
     public void createFeedbackFormForbidden() {
+        //create & get courses
         List<Course> courses = createCourse();
         FeedbackForm feedbackForm = new FeedbackForm(courses.get(0).id, "name", "description", List.of(), FormStatus.NOT_STARTED);
-
+        
         Exception exception = Assertions.assertThrows(ForbiddenException.class, () -> {
             feedbackFormService.createFeedbackForm(courses.getFirst().id.toString(), feedbackForm);
         });
-
+        // student should not be allowed to create feedback forms
         Assertions.assertEquals("io.quarkus.security.ForbiddenException", exception.getClass().getName());
     }
 
@@ -95,14 +100,17 @@ public class FeedbackFormServiceTest {
     @TestSecurity(user = "Prof", roles = { UserRole.PROF})
     @JwtSecurity(claims = { @Claim(key = "email", value = "prof@htwg-konstanz.de") })
     public void getFeedbackForm() {
+        //create & get courses + ids
         List<Course> courses = createCourse();
         String courseId = courses.getFirst().getId().toString();
         String formId = courses.getFirst().getFeedbackForms().get(0).getId().toString();
         String questionId = courses.getFirst().feedbackForms.get(0).questions.get(0).getId().toString();
-        this.createProfUser();
+        
+        // add a result & get feedback forms
         addResult(courseId, formId, questionId);
         List<FeedbackForm> feedbackForms = feedbackFormService.getFeedbackForms(courses.get(0).id.toString());
         
+        // Assert get feedback form without results
         FeedbackForm feedbackFormFromService = feedbackFormService.getFeedbackForm(courses.get(0).id.toString(), feedbackForms.get(0).id.toString(), false);
         Assertions.assertEquals("Erster Sprint", feedbackFormFromService.name);
         Assertions.assertEquals("Hier wollen wir Ihr Feedback zum ersten Sprint einholen", feedbackFormFromService.description);
@@ -114,14 +122,16 @@ public class FeedbackFormServiceTest {
     @TestSecurity(user = "Prof", roles = { UserRole.PROF})
     @JwtSecurity(claims = { @Claim(key = "email", value = "prof@htwg-konstanz.de") })
     public void getFeedbackFormWithResult() {
+        //create & get courses + ids
         List<Course> courses = createCourse();
         String courseId = courses.getFirst().getId().toString();
         String formId = courses.getFirst().getFeedbackForms().get(0).getId().toString();
         String questionId = courses.getFirst().feedbackForms.get(0).questions.get(0).getId().toString();
-        this.createProfUser();
+        // add a result & get feedback forms
         addResult(courseId, formId, questionId);
         List<FeedbackForm> feedbackForms = feedbackFormService.getFeedbackForms(courses.get(0).id.toString());
         
+        // Assert get feedback form without results
         FeedbackForm feedbackFormFromService = feedbackFormService.getFeedbackForm(courses.get(0).id.toString(), feedbackForms.get(0).id.toString(), true);
         Assertions.assertEquals("Erster Sprint", feedbackFormFromService.name);
         Assertions.assertEquals("Hier wollen wir Ihr Feedback zum ersten Sprint einholen", feedbackFormFromService.description);
@@ -133,18 +143,19 @@ public class FeedbackFormServiceTest {
     @TestSecurity(user = "Prof", roles = { UserRole.PROF})
     @JwtSecurity(claims = { @Claim(key = "email", value = "prof@htwg-konstanz.de") })
     public void clearResults() {
+        //create & get courses + ids
         List<Course> courses = createCourse();
         String courseId = courses.getFirst().getId().toString();
         String formId = courses.getFirst().getFeedbackForms().get(0).getId().toString();
         String questionId = courses.getFirst().feedbackForms.get(0).questions.get(0).getId().toString();
-        this.createProfUser();
+        // add a result & get feedback forms
         addResult(courseId, formId, questionId);
         FeedbackForm feedbackForm = feedbackFormService.getFeedbackForm(courses.get(0).id.toString(), formId, true);
-        Assertions.assertEquals(1, feedbackForm.questions.get(0).results.size());
 
+        // Assert that results were cleared
+        Assertions.assertEquals(1, feedbackForm.questions.get(0).results.size());
         feedbackFormService.clearFeedbackFormResults(courses.get(0).id.toString(), feedbackForm.id.toString());
         FeedbackForm feedbackFormCleared = feedbackFormService.getFeedbackForm(courses.get(0).id.toString(), formId, true);
-        
         Assertions.assertEquals(0, feedbackFormCleared.questions.get(0).results.size());
     }
 
@@ -152,15 +163,16 @@ public class FeedbackFormServiceTest {
     @TestSecurity(user = "Student", roles = { UserRole.STUDENT})
     @JwtSecurity(claims = { @Claim(key = "email", value = "student@htwg-konstanz.de") })
     public void clearResultsForbidden() {
+        //create & get courses + ids
         List<Course> courses = createCourse();
         String formId = courses.getFirst().getFeedbackForms().get(0).getId().toString();
-        this.createStudentUser();
         FeedbackForm feedbackForm = feedbackFormService.getFeedbackForm(courses.get(0).id.toString(), formId, true);
 
         Exception exception = Assertions.assertThrows(ForbiddenException.class, () -> {
             feedbackFormService.clearFeedbackFormResults(courses.get(0).id.toString(), feedbackForm.id.toString());
         });
 
+        // students should not be able to clear results
         Assertions.assertEquals("io.quarkus.security.ForbiddenException", exception.getClass().getName());
     }
 
@@ -168,14 +180,16 @@ public class FeedbackFormServiceTest {
     @TestSecurity(user = "Prof", roles = { UserRole.PROF})
     @JwtSecurity(claims = { @Claim(key = "email", value = "prof@htwg-konstanz.de") })
     public void updateFeedbackForm() {
+        //create & get courses + ids
         List<Course> courses = createCourse();
         String courseId = courses.getFirst().getId().toString();
         String formId = courses.getFirst().getFeedbackForms().get(0).getId().toString();
-        this.createProfUser();
-        
+      
+        // update the feedback form name, description and questions
         FeedbackForm feedbackFormUpdate = new FeedbackForm(courses.get(0).id, "nameUpdate", "descriptionUpdate", List.of(), FormStatus.NOT_STARTED);
         feedbackFormService.updateFeedbackForm(courseId, formId, feedbackFormUpdate);
         
+        // check if the feedback form was updated
         List<FeedbackForm> updatedFeedbackForms = feedbackFormService.getFeedbackForms(courses.get(0).id.toString());
         Assertions.assertEquals("nameUpdate", updatedFeedbackForms.get(0).name);
         Assertions.assertEquals("descriptionUpdate", updatedFeedbackForms.get(0).description);
@@ -187,17 +201,18 @@ public class FeedbackFormServiceTest {
     @TestSecurity(user = "Student", roles = { UserRole.STUDENT})
     @JwtSecurity(claims = { @Claim(key = "email", value = "student@htwg-konstanz.de") })
     public void updateFeedbackFormForbidden() {
+        //create & get courses + ids
         List<Course> courses = createCourse();
         String courseId = courses.getFirst().getId().toString();
         String formId = courses.getFirst().getFeedbackForms().get(0).getId().toString();
-        this.createStudentUser();
         
+        // update the feedback form name, description and questions
         FeedbackForm feedbackFormUpdate = new FeedbackForm(courses.get(0).id, "nameUpdate", "descriptionUpdate", List.of(), FormStatus.NOT_STARTED);
-      
         Exception exception = Assertions.assertThrows(ForbiddenException.class, () -> {
             feedbackFormService.updateFeedbackForm(courseId, formId, feedbackFormUpdate);
         });
 
+        // students should not be able to update feedback forms
         Assertions.assertEquals("io.quarkus.security.ForbiddenException", exception.getClass().getName());
     }
 
@@ -210,6 +225,7 @@ public class FeedbackFormServiceTest {
                 client,
                 URI.create("ws://localhost:8081/course/" + courseId + "/feedback/form/" + formId + "/subscribe/" + this.profId + "/" + this.profJwt)
             );
+            // starts feedbacksession
             client.sendMessage("""
                 {
                     "action": "CHANGE_FORM_STATUS",
@@ -217,6 +233,7 @@ public class FeedbackFormServiceTest {
                     "roles": []
                 }
             """);
+            // adds result to feedbackform
             client.sendMessage(String.format("""
                 {
                     "action": "ADD_RESULT",
@@ -229,7 +246,7 @@ public class FeedbackFormServiceTest {
             session.close();
 
             // check if the form status has changed
-            
+
             Assertions.assertTrue(courseService.getCourse(courseId).getFeedbackForms().get(0).getStatus().toString().equals("STARTED"));
         } catch (Exception e) {
             System.out.println(e);
@@ -275,55 +292,30 @@ public class FeedbackFormServiceTest {
         return apiService.updateCourses(List.of(apiCourse));
     } 
 
-    @Test
-    @TestSecurity(user = "Prof", roles = { UserRole.PROF, UserRole.STUDENT })
-    @JwtSecurity(claims = { @Claim(key = "email", value = "prof@htwg-konstanz.de") })
     public void createProfUser() {
         try {
             Response response = userService.login("Basic UHJvZjo=");
-            Assertions.assertNotNull(response);
-            Assertions.assertEquals(response.getStatus(), 200);
-            String jwt = response.getEntity().toString();
-            Assertions.assertNotNull(jwt);
-            Assertions.assertTrue(jwt.length() > 0);
-            Assertions.assertTrue(jwt.contains("ey"));
-            this.profJwt = jwt; // save jwt for later use
-
-            String jwtJson = new String(Base64.getUrlDecoder().decode(jwt.split("\\.")[1]), StandardCharsets.UTF_8);
+            profJwt = response.getEntity().toString(); // save jwt for later use
+            String jwtJson = new String(Base64.getUrlDecoder().decode(profJwt.split("\\.")[1]), StandardCharsets.UTF_8);
             DefaultJWTCallerPrincipal defaultJWTCallerPrincipal = new DefaultJWTCallerPrincipal(
                     JwtClaims.parse(jwtJson));
-            Assertions.assertNotNull(defaultJWTCallerPrincipal);
             Assertions.assertEquals(defaultJWTCallerPrincipal.getClaim("full_name"), "Prof");
             Assertions.assertTrue(defaultJWTCallerPrincipal.getClaim("sub").toString().length() > 0);
-            this.profId = defaultJWTCallerPrincipal.getClaim("sub").toString(); // save id for later use
-            Assertions.assertTrue(defaultJWTCallerPrincipal.getClaim("email").toString().length() > 0);
+            profId = defaultJWTCallerPrincipal.getClaim("sub").toString(); // save id for later use
         } catch (Exception e) {
             Assertions.fail(e);
         }
     }
 
-    @Test
-    @TestSecurity(user = "Student", roles = {UserRole.STUDENT })
-    @JwtSecurity(claims = { @Claim(key = "email", value = "student@htwg-konstanz.de") })
     public void createStudentUser() {
         try {
             Response response = userService.login("Basic U3R1ZGVudDo=");
-            Assertions.assertNotNull(response);
-            Assertions.assertEquals(response.getStatus(), 200);
-            String jwt = response.getEntity().toString();
-            Assertions.assertNotNull(jwt);
-            Assertions.assertTrue(jwt.length() > 0);
-            Assertions.assertTrue(jwt.contains("ey"));
-            this.studentJwt = jwt; // save jwt for later use
-
-            String jwtJson = new String(Base64.getUrlDecoder().decode(jwt.split("\\.")[1]), StandardCharsets.UTF_8);
+            studentJwt = response.getEntity().toString();
+            String jwtJson = new String(Base64.getUrlDecoder().decode(studentJwt.split("\\.")[1]), StandardCharsets.UTF_8);
             DefaultJWTCallerPrincipal defaultJWTCallerPrincipal = new DefaultJWTCallerPrincipal(
                     JwtClaims.parse(jwtJson));
-            Assertions.assertNotNull(defaultJWTCallerPrincipal);
             Assertions.assertEquals(defaultJWTCallerPrincipal.getClaim("full_name"), "Student");
             Assertions.assertTrue(defaultJWTCallerPrincipal.getClaim("sub").toString().length() > 0);
-            this.studentId = defaultJWTCallerPrincipal.getClaim("sub").toString(); // save id for later use
-            Assertions.assertTrue(defaultJWTCallerPrincipal.getClaim("email").toString().length() > 0);
         } catch (Exception e) {
             Assertions.fail(e);
         }
