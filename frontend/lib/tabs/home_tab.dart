@@ -62,6 +62,11 @@ class _HomeTabState extends State<HomeTab> {
               constraints: const BoxConstraints(maxWidth: 600),
               child: Column(
                 children: [
+                  ElevatedButton(
+                      onPressed: () {
+                        throw Exception('An error has occured!');
+                      },
+                      child: Text('Throw Error')),
                   GridView.count(
                     crossAxisCount: 2,
                     crossAxisSpacing: 10,
@@ -90,7 +95,8 @@ class _HomeTabState extends State<HomeTab> {
                   Container(
                     decoration: BoxDecoration(
                         color: colors.outlineVariant,
-                        borderRadius: const BorderRadius.all(Radius.circular(20))),
+                        borderRadius:
+                            const BorderRadius.all(Radius.circular(20))),
                     width: screenWidth,
                     height: 200,
                     child: Column(

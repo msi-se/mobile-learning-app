@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:frontend/components/button.dart';
+import 'package:frontend/components/error/network-specific-error.dart';
 import 'package:frontend/components/textfield.dart';
 import 'package:frontend/global.dart';
 import 'package:frontend/theme/assets.dart';
@@ -34,50 +35,81 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   Future signUserIn(BuildContext context) async {
+// try {
+//       var username = usernameController.text;
+//       var password = passwordController.text;
+//       final response = await http.post(
+//         Uri.parse("${getBackendUrl()}/user/login"),
+//         headers: {
+//           "Content-Type": "application/json",
+//           "AUTHORIZATION":
+//               "Basic ${base64Encode(utf8.encode('$username:$password'))}"
+//         },
+//       );
+
+//       if (response.statusCode == 200) {
+//         var jwt = JwtDecoder.decode(response.body);
+//         var userId = jwt["sub"];
+//         var username = jwt["preferred_username"];
+//         var roles = jwt["groups"].cast<String>();
+//         await setSession(Session(
+//             jwt: response.body,
+//             userId: userId,
+//             username: username,
+//             roles: roles));
+//         if (!mounted) return;
+//         Navigator.pushReplacementNamed(context, '/main');
+//       } else {
+//         if (!mounted) return;
+//         showDialog(
+//           context: context,
+//           builder: (BuildContext context) {
+//             return AlertDialog(
+//               title: const Text('Falsche Anmeldeinformationen'),
+//               actions: <Widget>[
+//                 TextButton(
+//                   child: const Text('Schließen'),
+//                   onPressed: () {
+//                     Navigator.of(context).pop();
+//                   },
+//                 ),
+//               ],
+//             );
+//           },
+//         );
+//       }
+//     } on http.ClientException catch (_) {
+//       // TODO: handle error
+//       return NetworkErrorWidget();
+//     }
+
+    //Simulierte Exception:
     try {
-      var username = usernameController.text;
-      var password = passwordController.text;
+      var username = "test_user";
+      var password = "test_password";
+
       final response = await http.post(
-        Uri.parse("${getBackendUrl()}/user/login"),
+        Uri.parse("http://invalid_server_address"),
         headers: {
           "Content-Type": "application/json",
           "AUTHORIZATION":
               "Basic ${base64Encode(utf8.encode('$username:$password'))}"
         },
       );
+
       if (response.statusCode == 200) {
-        var jwt = JwtDecoder.decode(response.body);
-        var userId = jwt["sub"];
-        var username = jwt["preferred_username"];
-        var roles = jwt["groups"].cast<String>();
-        await setSession(Session(
-            jwt: response.body,
-            userId: userId,
-            username: username,
-            roles: roles));
-        if (!mounted) return;
-        Navigator.pushReplacementNamed(context, '/main');
-      } else {
-        if (!mounted) return;
-        showDialog(
-          context: context,
-          builder: (BuildContext context) {
-            return AlertDialog(
-              title: const Text('Falsche Anmeldeinformationen'),
-              actions: <Widget>[
-                TextButton(
-                  child: const Text('Schließen'),
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                  },
-                ),
-              ],
-            );
-          },
-        );
-      }
+      } else {}
     } on http.ClientException catch (_) {
-      // TODO: handle error
+      if (mounted) {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+              builder: (context) =>
+                  const NetworkErrorWidget(originalRoute: '/login')),
+        );
+      } else {
+        // TODO
+      }
     }
   }
 
