@@ -1,8 +1,11 @@
 package de.htwg_konstanz.mobilelearning.services.quiz;
 
 import java.util.List;
+
 import org.bson.types.ObjectId;
+import org.eclipse.microprofile.jwt.JsonWebToken;
 import org.jboss.resteasy.reactive.RestPath;
+import org.jboss.resteasy.reactive.RestResponse;
 
 import de.htwg_konstanz.mobilelearning.models.Course;
 import de.htwg_konstanz.mobilelearning.models.auth.UserRole;
@@ -17,19 +20,16 @@ import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.QueryParam;
-import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
-import jakarta.ws.rs.core.SecurityContext;
-import io.smallrye.jwt.auth.principal.JWTCallerPrincipal;
-
-import org.jboss.resteasy.reactive.RestResponse;
-import org.jboss.resteasy.reactive.RestResponse.ResponseBuilder;
 
 @Path("/course/{courseId}/quiz/form")
 public class QuizFormService {
     
     @Inject CourseRepository courseRepository;
+
+    @Inject
+    JsonWebToken jwt;
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
@@ -69,10 +69,10 @@ public class QuizFormService {
     @Produces(MediaType.APPLICATION_JSON)
     @RolesAllowed({ UserRole.STUDENT, UserRole.PROF })
     @Path("/{formId}/participate")
-    public RestResponse<String> participate(@Context SecurityContext ctx, String alias, @RestPath String courseId, @RestPath String formId) {
+    public RestResponse<String> participate(String alias, @RestPath String courseId, @RestPath String formId) {
 
         // get the user
-        String userId = ((JWTCallerPrincipal) ctx.getUserPrincipal()).getSubject();
+        String userId = jwt.getSubject();
 
         // get the course and the quizForm
         ObjectId courseObjectId = new ObjectId(courseId);
