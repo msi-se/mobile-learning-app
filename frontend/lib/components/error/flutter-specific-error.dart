@@ -23,7 +23,7 @@ class CustomErrorWidget extends StatelessWidget {
           Directionality(
             textDirection: TextDirection.ltr,
             child: Text(
-              'An error occured. We are sorry!',
+              'Ein unerwarteter Fehler ist aufgetreten. Bitte entschuldige!',
               style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold),
             ),
           ),
@@ -31,7 +31,7 @@ class CustomErrorWidget extends StatelessWidget {
           Directionality(
             textDirection: TextDirection.ltr,
             child: Text(
-              'Try restarting your application',
+              'Versuche, die App neu zu starten',
               style: TextStyle(
                   fontSize: 18.0, color: Color.fromARGB(255, 158, 158, 158)),
             ),

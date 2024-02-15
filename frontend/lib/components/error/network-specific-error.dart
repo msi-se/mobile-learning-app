@@ -24,7 +24,7 @@ class NetworkErrorWidget extends StatelessWidget {
           const Directionality(
             textDirection: TextDirection.ltr,
             child: Text(
-              'There was a network connection issue',
+              'Es gab einen Netzwerk-Fehler',
               style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold),
             ),
           ),
@@ -32,7 +32,15 @@ class NetworkErrorWidget extends StatelessWidget {
           const Directionality(
             textDirection: TextDirection.ltr,
             child: Text(
-              'Ensure that you are connected to the internet',
+              'Versichere dich, dass eine Internetverbindung besteht.',
+              style: TextStyle(
+                  fontSize: 18.0, color: Color.fromARGB(255, 158, 158, 158)),
+            ),
+          ),
+          const Directionality(
+            textDirection: TextDirection.ltr,
+            child: Text(
+              'Falls der Fehler weiterhin besteht, kontaktiere die App-Betreiber',
               style: TextStyle(
                   fontSize: 18.0, color: Color.fromARGB(255, 158, 158, 158)),
             ),
@@ -43,7 +51,7 @@ class NetworkErrorWidget extends StatelessWidget {
               Navigator.pop(context);
               Navigator.pushNamed(context, originalRoute);
             },
-            child: const Text('Retry'),
+            child: const Text('Erneut versuchen'),
           ),
 
           // Directionality(
