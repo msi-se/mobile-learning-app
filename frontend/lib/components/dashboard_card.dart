@@ -16,45 +16,49 @@ class MyCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    //double screenWidth = MediaQuery.of(context).size.width;
     return InkWell(
       onTap: () {
         // Add functionality for on click here (redirect to other pages)
         // redirectPath
       },
-      child: Container(
-          margin: const EdgeInsets.all(10),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(20),
-            color: cardColor,
-            boxShadow: const [
-              BoxShadow(
-                color: Colors.grey,
-                spreadRadius: 1,
-                blurRadius: 3,
-              )
-            ],
-          ),
-          child: Column(
-            children: [
-              const SizedBox(height: 10),
-              Text(
-                title,
-                style: const TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 15),
+        child: Container(
+            margin: const EdgeInsets.all(10),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(25),
+              color: cardColor,
+              boxShadow: const [
+                BoxShadow(
+                  color: Colors.grey,
+                  spreadRadius: 1,
+                  blurRadius: 3,
+                )
+              ],
+            ),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  title,
+                  style: const TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black,
+                  ),
+                  textAlign: TextAlign.center,
                 ),
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(height: 20),
-              SvgPicture.asset(
-                imageName,
-                height: 80,
-                width: 80,
-              ),
-            ],
-          )),
+                const SizedBox(height: 5),
+                Align(
+                    alignment: Alignment.center,
+                    child: SvgPicture.asset(
+                      imageName,
+                      height: 80,
+                      width: 80,
+                    ))
+              ],
+            )),
+      ),
     );
   }
 }
