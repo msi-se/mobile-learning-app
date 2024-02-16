@@ -9,6 +9,7 @@ import org.jose4j.jwt.JwtClaims;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInfo;
 
 import de.htwg_konstanz.mobilelearning.LiveFeedbackSocketClient;
 import de.htwg_konstanz.mobilelearning.MockMongoTestProfile;
@@ -57,7 +58,9 @@ public class FeedbackFormServiceTest {
     private String studentJwt = "";
 
     @BeforeEach
-    void init(){
+    void init(TestInfo testInfo){
+        System.out.println("------------------------------");
+        System.out.println("Test: " + testInfo.getDisplayName());
         courseService.deleteAllCourses();
         createProfUser();
         createStudentUser();

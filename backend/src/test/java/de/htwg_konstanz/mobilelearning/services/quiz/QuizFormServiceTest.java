@@ -1,5 +1,8 @@
 package de.htwg_konstanz.mobilelearning.services.quiz;
 
+import static io.restassured.RestAssured.given;
+import static org.hamcrest.CoreMatchers.is;
+
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
@@ -9,6 +12,7 @@ import org.jose4j.jwt.JwtClaims;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInfo;
 
 import de.htwg_konstanz.mobilelearning.LiveFeedbackSocketClient;
 import de.htwg_konstanz.mobilelearning.MockMongoTestProfile;
@@ -35,10 +39,6 @@ import jakarta.websocket.ContainerProvider;
 import jakarta.websocket.Session;
 import jakarta.ws.rs.core.Response;
 
-import static io.restassured.RestAssured.given;
-import static io.restassured.RestAssured.when;
-import static org.hamcrest.CoreMatchers.is;
-
 @QuarkusTest
 @TestProfile(MockMongoTestProfile.class)
 @TestHTTPEndpoint(QuizFormService.class)
@@ -61,7 +61,9 @@ public class QuizFormServiceTest {
     private String studentJwt = "";
 
     @BeforeEach
-    void init(){
+    void init(TestInfo testInfo){
+        System.out.println("------------------------------");
+        System.out.println("Test: " + testInfo.getDisplayName());
         courseService.deleteAllCourses();
         createProfUser();
         createStudentUser();
@@ -123,6 +125,7 @@ public class QuizFormServiceTest {
         createProfUser();
         createStudentUser();
 
+        // Check successful RestResponse
         given()
             .header("Authorization", "Bearer " + studentJwt)
             .pathParam("courseId", courseId)
@@ -134,6 +137,7 @@ public class QuizFormServiceTest {
                 .statusCode(200)
                 .body(is("Successfully added"));
 
+        // 409 if alias already taken
         given()
             .header("Authorization", "Bearer " + studentJwt)
             .pathParam("courseId", courseId)

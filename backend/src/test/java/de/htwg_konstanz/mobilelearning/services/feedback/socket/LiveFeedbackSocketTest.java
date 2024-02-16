@@ -9,6 +9,7 @@ import org.jose4j.jwt.JwtClaims;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInfo;
 
 import de.htwg_konstanz.mobilelearning.LiveFeedbackSocketClient;
 import de.htwg_konstanz.mobilelearning.MockMongoTestProfile;
@@ -59,7 +60,9 @@ public class LiveFeedbackSocketTest {
     private String studentId = "";
 
     @BeforeEach
-    void init(){
+    void init(TestInfo testInfo){
+        System.out.println("------------------------------");
+        System.out.println("Test: " + testInfo.getDisplayName());
         courseService.deleteAllCourses();
         createProfUser();
         createProf2User();
@@ -180,13 +183,13 @@ public class LiveFeedbackSocketTest {
              LiveFeedbackSocketClient client = new LiveFeedbackSocketClient();
              Session session = ContainerProvider.getWebSocketContainer().connectToServer(
                  client,
-                 URI.create("ws://localhost:8081/course/" + courseId + "/feedback/form/" + formId + "/subscribe/" + this.studentId + "/" + studentJwt)
+                 URI.create("ws://localhost:8081/course/" + courseId + "/feedback/form/" + formId + "/subscribe/" + this.profId + "/" + profJwt)
              );
              client.sendMessage("""
                  {
                      "action": "CHANGE_FORM_STATUS",
                      "formStatus": "STARTED",
-                     "roles": []
+                     "roles": [Student]
                  }
              """);
              Thread.sleep(1000);
@@ -294,6 +297,8 @@ public class LiveFeedbackSocketTest {
          }
         
     }
+
+    //todo stop feedback form with student
 
     private List<Course> createCourse() {
         // create a course via the json api
