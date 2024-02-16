@@ -132,11 +132,11 @@ public class LiveFeedbackSocketTest {
     @Test
     @TestSecurity(user = "Prof", roles = { UserRole.PROF})
     @JwtSecurity(claims = { @Claim(key = "email", value = "prof@htwg-konstanz.de") })
-    public void userNotOwner() {
+    public void startFeedbackuserNotOwner() {
         //create & get courses + ids
         List<Course> courses = createCourse();
-         String courseId = courses.get(0).getId().toString();
-         String formId = courses.get(0).getFeedbackForms().get(0).getId().toString();
+        String courseId = courses.get(0).getId().toString();
+        String formId = courses.get(0).getFeedbackForms().get(0).getId().toString();
  
          // create a websocket client
          // (@ServerEndpoint("/course/{courseId}/feedback/form/{formId}/subscribe/{userId}/{jwt}")
@@ -171,8 +171,8 @@ public class LiveFeedbackSocketTest {
     public void startFeedbackStudent() {
         //create & get courses + ids
         List<Course> courses = createCourse();
-         String courseId = courses.get(0).getId().toString();
-         String formId = courses.get(0).getFeedbackForms().get(0).getId().toString();
+        String courseId = courses.get(0).getId().toString();
+        String formId = courses.get(0).getFeedbackForms().get(0).getId().toString();
  
          // create a websocket client
          // (@ServerEndpoint("/course/{courseId}/feedback/form/{formId}/subscribe/{userId}/{jwt}")
@@ -194,6 +194,100 @@ public class LiveFeedbackSocketTest {
  
              // form status should not change because user student
              Assertions.assertTrue(courseService.getCourse(courseId).getFeedbackForms().get(0).getStatus().toString().equals("NOT_STARTED"));
+         } catch (Exception e) {
+             System.out.println(e);
+             Assertions.fail(e.getMessage());
+         }
+        
+    }
+
+    @Test
+    @TestSecurity(user = "Prof", roles = { UserRole.PROF})
+    @JwtSecurity(claims = { @Claim(key = "email", value = "prof@htwg-konstanz.de") })
+    public void stopFeedback() {
+        //create & get courses + ids
+        List<Course> courses = createCourse();
+        String courseId = courses.get(0).getId().toString();
+        String formId = courses.get(0).getFeedbackForms().get(0).getId().toString();
+ 
+         // create a websocket client
+         // (@ServerEndpoint("/course/{courseId}/feedback/form/{formId}/subscribe/{userId}/{jwt}")
+         try {
+             LiveFeedbackSocketClient client = new LiveFeedbackSocketClient();
+             Session session = ContainerProvider.getWebSocketContainer().connectToServer(
+                 client,
+                 URI.create("ws://localhost:8081/course/" + courseId + "/feedback/form/" + formId + "/subscribe/" + profId + "/" + profJwt)
+             );
+             client.sendMessage("""
+                 {
+                     "action": "CHANGE_FORM_STATUS",
+                     "formStatus": "STARTED",
+                     "roles": []
+                 }
+             """);
+             Thread.sleep(100);
+             client.sendMessage("""
+                {
+                    "action": "CHANGE_FORM_STATUS",
+                    "formStatus": "FINISHED",
+                    "roles": []
+                }
+            """);
+            Thread.sleep(1000);
+            session.close();
+ 
+             // form status should not change because user student
+             Assertions.assertTrue(courseService.getCourse(courseId).getFeedbackForms().get(0).getStatus().toString().equals("FINISHED"));
+         } catch (Exception e) {
+             System.out.println(e);
+             Assertions.fail(e.getMessage());
+         }
+        
+    }
+
+    @Test
+    @TestSecurity(user = "Prof", roles = { UserRole.PROF})
+    @JwtSecurity(claims = { @Claim(key = "email", value = "prof@htwg-konstanz.de") })
+    public void stopFeedbackNotOwner() {
+        //create & get courses + ids
+        List<Course> courses = createCourse();
+        String courseId = courses.get(0).getId().toString();
+        String formId = courses.get(0).getFeedbackForms().get(0).getId().toString();
+ 
+         // create a websocket client
+         // (@ServerEndpoint("/course/{courseId}/feedback/form/{formId}/subscribe/{userId}/{jwt}")
+         try {
+             LiveFeedbackSocketClient client = new LiveFeedbackSocketClient();
+             LiveFeedbackSocketClient client2 = new LiveFeedbackSocketClient();
+             Session session = ContainerProvider.getWebSocketContainer().connectToServer(
+                 client,
+                 URI.create("ws://localhost:8081/course/" + courseId + "/feedback/form/" + formId + "/subscribe/" + profId + "/" + profJwt)
+             );
+             Session session2 = ContainerProvider.getWebSocketContainer().connectToServer(
+                 client2,
+                 URI.create("ws://localhost:8081/course/" + courseId + "/feedback/form/" + formId + "/subscribe/" + profId2 + "/" + profJwt2)
+             );
+             client.sendMessage("""
+                 {
+                     "action": "CHANGE_FORM_STATUS",
+                     "formStatus": "STARTED",
+                     "roles": []
+                 }
+             """);
+             Thread.sleep(100);
+             client2.sendMessage("""
+                {
+                    "action": "CHANGE_FORM_STATUS",
+                    "formStatus": "FINISHED",
+                    "roles": []
+                }
+            """);
+            Thread.sleep(1000);
+            session.close();
+            session2.close();
+ 
+             // form status should not change because user student
+             Assertions.assertTrue(courseService.getCourse(courseId).getFeedbackForms().get(0).getStatus().toString().equals("STARTED"));
          } catch (Exception e) {
              System.out.println(e);
              Assertions.fail(e.getMessage());
