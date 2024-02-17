@@ -243,6 +243,69 @@ public class LiveFeedbackSocketTest {
              Assertions.fail(e.getMessage());
          }
         
+    }    
+    
+    @Test
+    @TestSecurity(user = "Prof", roles = { UserRole.PROF})
+    @JwtSecurity(claims = { @Claim(key = "email", value = "prof@htwg-konstanz.de") })
+    public void clearFeedback() {
+        //create & get courses + ids
+        List<Course> courses = createCourse();
+        String courseId = courses.get(0).getId().toString();
+        String formId = courses.get(0).getFeedbackForms().get(0).getId().toString();
+        String questionId = courses.getFirst().feedbackForms.get(0).questions.get(0).getId().toString();
+ 
+         // create a websocket client
+         // (@ServerEndpoint("/course/{courseId}/feedback/form/{formId}/subscribe/{userId}/{jwt}")
+         try {
+             LiveFeedbackSocketClient client = new LiveFeedbackSocketClient();
+             Session session = ContainerProvider.getWebSocketContainer().connectToServer(
+                 client,
+                 URI.create("ws://localhost:8081/course/" + courseId + "/feedback/form/" + formId + "/subscribe/" + profId + "/" + profJwt)
+             );
+             client.sendMessage("""
+                 {
+                     "action": "CHANGE_FORM_STATUS",
+                     "formStatus": "STARTED",
+                     "roles": [Prof]
+                 }
+             """);
+            // adds result to feedbackform
+            client.sendMessage(String.format("""
+                {
+                    "action": "ADD_RESULT",
+                    "resultElementId": %s,
+                    "resultValues": [5],
+                    "role": "STUDENT"
+                }
+            """, questionId));
+             Thread.sleep(100);
+             client.sendMessage("""
+                {
+                    "action": "CHANGE_FORM_STATUS",
+                    "formStatus": "FINISHED",
+                    "roles": [Prof]
+                }
+            """);     
+            Assertions.assertEquals(1, feedbackFormService.getFeedbackForms(courseId).get(0).getQuestions().get(0).results.size());       
+            client.sendMessage("""
+                {
+                    "action": "CHANGE_FORM_STATUS",
+                    "formStatus": "NOT_STARTED",
+                    "roles": [Prof]
+                }
+            """);
+            Thread.sleep(1000);
+            session.close();
+ 
+             // form status should not change because user student
+            Assertions.assertTrue(courseService.getCourse(courseId).getFeedbackForms().get(0).getStatus().toString().equals("NOT_STARTED"));
+            Assertions.assertEquals(0, feedbackFormService.getFeedbackForms(courseId).get(0).getQuestions().get(0).results.size()); 
+        } catch (Exception e) {
+             System.out.println(e);
+             Assertions.fail(e.getMessage());
+         }
+        
     }
 
     @Test
@@ -286,9 +349,9 @@ public class LiveFeedbackSocketTest {
             session.close();
             session2.close();
  
-             // form status should not change because user student
-             Assertions.assertTrue(courseService.getCourse(courseId).getFeedbackForms().get(0).getStatus().toString().equals("STARTED"));
-         } catch (Exception e) {
+            // form status should not change because user student
+            Assertions.assertTrue(courseService.getCourse(courseId).getFeedbackForms().get(0).getStatus().toString().equals("STARTED"));
+            } catch (Exception e) {
              System.out.println(e);
              Assertions.fail(e.getMessage());
          }
