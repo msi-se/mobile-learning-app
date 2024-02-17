@@ -210,7 +210,7 @@ public class HowToTest {
                 {
                     "action": "CHANGE_FORM_STATUS",
                     "formStatus": "STARTED",
-                    "roles": []
+                    "roles": [Prof]
                 }
             """);
             Thread.sleep(1000);

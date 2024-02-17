@@ -232,7 +232,7 @@ public class FeedbackFormServiceTest {
                 {
                     "action": "CHANGE_FORM_STATUS",
                     "formStatus": "STARTED",
-                    "roles": []
+                    "roles": [Prof]
                 }
             """);
             // adds result to feedbackform

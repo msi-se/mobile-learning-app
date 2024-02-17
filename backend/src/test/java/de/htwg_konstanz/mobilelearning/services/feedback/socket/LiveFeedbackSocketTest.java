@@ -92,7 +92,7 @@ public class LiveFeedbackSocketTest {
                 {
                     "action": "CHANGE_FORM_STATUS",
                     "formStatus": "STARTED",
-                    "roles": []
+                    "roles": [Prof]
                 }
             """);
             Thread.sleep(1000);
@@ -150,7 +150,7 @@ public class LiveFeedbackSocketTest {
                  {
                      "action": "CHANGE_FORM_STATUS",
                      "formStatus": "STARTED",
-                     "roles": []
+                     "roles": [Prof]
                  }
              """);
              Thread.sleep(1000);
@@ -222,7 +222,7 @@ public class LiveFeedbackSocketTest {
                  {
                      "action": "CHANGE_FORM_STATUS",
                      "formStatus": "STARTED",
-                     "roles": []
+                     "roles": [Prof]
                  }
              """);
              Thread.sleep(100);
@@ -230,7 +230,7 @@ public class LiveFeedbackSocketTest {
                 {
                     "action": "CHANGE_FORM_STATUS",
                     "formStatus": "FINISHED",
-                    "roles": []
+                    "roles": [Prof]
                 }
             """);
             Thread.sleep(1000);
@@ -271,7 +271,7 @@ public class LiveFeedbackSocketTest {
                  {
                      "action": "CHANGE_FORM_STATUS",
                      "formStatus": "STARTED",
-                     "roles": []
+                     "roles": [Prof]
                  }
              """);
              Thread.sleep(100);
@@ -279,7 +279,7 @@ public class LiveFeedbackSocketTest {
                 {
                     "action": "CHANGE_FORM_STATUS",
                     "formStatus": "FINISHED",
-                    "roles": []
+                    "roles": [Prof]
                 }
             """);
             Thread.sleep(1000);
@@ -294,8 +294,6 @@ public class LiveFeedbackSocketTest {
          }
         
     }
-
-    //todo stop feedback form with student
 
     private List<Course> createCourse() {
         // create a course via the json api
@@ -349,7 +347,7 @@ public class LiveFeedbackSocketTest {
                 {
                     "action": "CHANGE_FORM_STATUS",
                     "formStatus": "STARTED",
-                    "roles": []
+                    "roles": [Prof]
                 }
             """);
             // adds result to feedbackform
