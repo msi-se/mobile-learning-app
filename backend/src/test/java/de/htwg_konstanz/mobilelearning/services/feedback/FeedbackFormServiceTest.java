@@ -55,7 +55,6 @@ public class FeedbackFormServiceTest {
 
     private String profJwt = "";
     private String profId = "";
-    private String studentJwt = "";
 
     @BeforeEach
     void init(TestInfo testInfo){
@@ -63,7 +62,6 @@ public class FeedbackFormServiceTest {
         System.out.println("Test: " + testInfo.getDisplayName());
         courseService.deleteAllCourses();
         createProfUser();
-        createStudentUser();
     }
 
     @Test
@@ -306,20 +304,6 @@ public class FeedbackFormServiceTest {
             Assertions.assertEquals(defaultJWTCallerPrincipal.getClaim("full_name"), "Prof");
             Assertions.assertTrue(defaultJWTCallerPrincipal.getClaim("sub").toString().length() > 0);
             profId = defaultJWTCallerPrincipal.getClaim("sub").toString(); // save id for later use
-        } catch (Exception e) {
-            Assertions.fail(e);
-        }
-    }
-
-    public void createStudentUser() {
-        try {
-            Response response = userService.login("Basic U3R1ZGVudDo=");
-            studentJwt = response.getEntity().toString();
-            String jwtJson = new String(Base64.getUrlDecoder().decode(studentJwt.split("\\.")[1]), StandardCharsets.UTF_8);
-            DefaultJWTCallerPrincipal defaultJWTCallerPrincipal = new DefaultJWTCallerPrincipal(
-                    JwtClaims.parse(jwtJson));
-            Assertions.assertEquals(defaultJWTCallerPrincipal.getClaim("full_name"), "Student");
-            Assertions.assertTrue(defaultJWTCallerPrincipal.getClaim("sub").toString().length() > 0);
         } catch (Exception e) {
             Assertions.fail(e);
         }
