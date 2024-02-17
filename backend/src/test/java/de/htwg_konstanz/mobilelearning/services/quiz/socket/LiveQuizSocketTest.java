@@ -547,6 +547,114 @@ public class LiveQuizSocketTest {
         }
     }
 
+    @Test
+    @TestSecurity(user = "Prof", roles = { UserRole.PROF })
+    @JwtSecurity(claims = { @Claim(key = "sub", value = "profId") })
+    public void nextQuestionNotOnwer() {
+        // create & get courses
+        List<Course> courses = createCourse();
+        Assertions.assertEquals(courses.size(), 1);
+        Course course = courses.get(0);
+        Assertions.assertEquals(course.getQuizForms().size(), 1);
+
+        // get course and feedback form id
+        String courseId = course.getId().toString();
+        String formId = course.getQuizForms().get(0).getId().toString();
+
+        // create a websocket client
+        // (@ServerEndpoint("/course/{courseId}/quiz/form/{formId}/subscribe/{userId}/{jwt}")
+        try {
+            LiveFeedbackSocketClient client = new LiveFeedbackSocketClient();
+            LiveFeedbackSocketClient client2 = new LiveFeedbackSocketClient();
+            Session session = ContainerProvider.getWebSocketContainer().connectToServer(
+                client,
+                URI.create("ws://localhost:8081/course/" + courseId + "/quiz/form/" + formId + "/subscribe/" + this.profId + "/" + profJwt)
+            );            
+            Session session2 = ContainerProvider.getWebSocketContainer().connectToServer(
+                client2,
+                URI.create("ws://localhost:8081/course/" + courseId + "/quiz/form/" + formId + "/subscribe/" + this.profId2 + "/" + profJwt2)
+            );
+            client.sendMessage("""
+                {
+                    "action": "CHANGE_FORM_STATUS",
+                    "formStatus": "STARTED",
+                    "roles": [Prof]
+                }
+            """);
+            Thread.sleep(500);
+            client2.sendMessage("""
+                {
+                    "action": "NEXT",
+                    "roles": [Prof]
+                }
+            """); 
+            Thread.sleep(500);
+            Assertions.assertEquals(0 , client2.getMessageQueue().size());
+            session.close();    
+            session2.close();    
+
+            // check that the form status has not changed
+            Assertions.assertTrue(courseService.getCourse(courseId).getQuizForms().get(0).getStatus().toString().equals("STARTED"));
+        } catch (Exception e) {
+            System.out.println(e);
+            Assertions.fail(e.getMessage());
+        }
+    }
+
+    @Test
+    @TestSecurity(user = "Prof", roles = { UserRole.PROF })
+    @JwtSecurity(claims = { @Claim(key = "sub", value = "profId") })
+    public void nextQuestionStudent() {
+        // create & get courses
+        List<Course> courses = createCourse();
+        Assertions.assertEquals(courses.size(), 1);
+        Course course = courses.get(0);
+        Assertions.assertEquals(course.getQuizForms().size(), 1);
+
+        // get course and feedback form id
+        String courseId = course.getId().toString();
+        String formId = course.getQuizForms().get(0).getId().toString();
+
+        // create a websocket client
+        // (@ServerEndpoint("/course/{courseId}/quiz/form/{formId}/subscribe/{userId}/{jwt}")
+        try {
+            LiveFeedbackSocketClient client = new LiveFeedbackSocketClient();
+            LiveFeedbackSocketClient client2 = new LiveFeedbackSocketClient();
+            Session session = ContainerProvider.getWebSocketContainer().connectToServer(
+                client,
+                URI.create("ws://localhost:8081/course/" + courseId + "/quiz/form/" + formId + "/subscribe/" + this.profId + "/" + profJwt)
+            );            
+            Session session2 = ContainerProvider.getWebSocketContainer().connectToServer(
+                client2,
+                URI.create("ws://localhost:8081/course/" + courseId + "/quiz/form/" + formId + "/subscribe/" + this.profId2 + "/" + profJwt2)
+            );
+            client.sendMessage("""
+                {
+                    "action": "CHANGE_FORM_STATUS",
+                    "formStatus": "STARTED",
+                    "roles": [Prof]
+                }
+            """);
+            Thread.sleep(500);
+            client2.sendMessage("""
+                {
+                    "action": "NEXT",
+                    "roles": [Student]
+                }
+            """); 
+            Thread.sleep(500);
+            Assertions.assertEquals(0 , client2.getMessageQueue().size());
+            session.close();    
+            session2.close();    
+
+            // check that the form status has not changed
+            Assertions.assertTrue(courseService.getCourse(courseId).getQuizForms().get(0).getStatus().toString().equals("STARTED"));
+        } catch (Exception e) {
+            System.out.println(e);
+            Assertions.fail(e.getMessage());
+        }
+    }
+
     private void addResult(String courseId, String formId, String questionId, String role) {
         // create a websocket client
         // (@ServerEndpoint("/course/{courseId}/quiz/form/{formId}/subscribe/{userId}/{jwt}")
