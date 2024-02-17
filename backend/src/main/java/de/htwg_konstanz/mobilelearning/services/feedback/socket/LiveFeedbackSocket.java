@@ -155,6 +155,12 @@ public class LiveFeedbackSocket {
 
     private Boolean changeFormStatus(LiveFeedbackSocketMessage feedbackSocketMessage, String courseId, String formId, String userId) {
 
+        // check if the user has the role Prof
+        if(!feedbackSocketMessage.roles.contains(UserRole.PROF)){
+            System.out.println("You need the role Prof to change the form status");
+            return false;
+        }
+
         // check if the user is an owner of the course
         Course course = courseRepository.findById(new ObjectId(courseId));
         if (course == null) {
