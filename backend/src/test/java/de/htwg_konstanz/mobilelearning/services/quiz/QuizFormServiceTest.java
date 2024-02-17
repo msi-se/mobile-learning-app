@@ -58,7 +58,6 @@ public class QuizFormServiceTest {
 
     private String profJwt = "";
     private String profId = "";
-    private String studentJwt = "";
 
     @BeforeEach
     void init(TestInfo testInfo){
@@ -123,7 +122,7 @@ public class QuizFormServiceTest {
         String courseId = courses.getFirst().getId().toString();
         String formId = courses.getFirst().getQuizForms().get(0).getId().toString();
         createProfUser();
-        createStudentUser();
+        String studentJwt = createStudentUser();
 
         // Check successful RestResponse
         given()
@@ -240,7 +239,8 @@ public class QuizFormServiceTest {
         }
     }
 
-    public void createStudentUser() {
+    public String createStudentUser() {
+        String studentJwt = null;
         try {
             Response response = userService.login("Basic U3R1ZGVudDo=");
             studentJwt = response.getEntity().toString();
@@ -252,6 +252,7 @@ public class QuizFormServiceTest {
         } catch (Exception e) {
             Assertions.fail(e);
         }
+        return studentJwt;
     }
     
 }

@@ -100,7 +100,7 @@ public class FeedbackFormServiceTest {
     @Test
     @TestSecurity(user = "Prof", roles = { UserRole.PROF})
     @JwtSecurity(claims = { @Claim(key = "email", value = "prof@htwg-konstanz.de") })
-    public void getFeedbackForm() {
+    public void getFeedbackFormWithoutResult() {
         //create & get courses + ids
         List<Course> courses = createCourse();
         String courseId = courses.getFirst().getId().toString();
@@ -159,6 +159,26 @@ public class FeedbackFormServiceTest {
         feedbackFormService.clearFeedbackFormResults(courses.get(0).id.toString(), feedbackForm.id.toString());
         FeedbackForm feedbackFormCleared = feedbackFormService.getFeedbackForm(courses.get(0).id.toString(), formId, true);
         Assertions.assertEquals(0, feedbackFormCleared.questions.get(0).results.size());
+    }    
+    
+    @Test
+    @TestSecurity(user = "Prof", roles = { UserRole.PROF})
+    @JwtSecurity(claims = { @Claim(key = "sub", value = "111111111111111111111111") })
+    public void clearResultsNotOwner() {
+        //create & get courses + ids
+        List<Course> courses = createCourse();
+        String courseId = courses.getFirst().getId().toString();
+        String formId = courses.getFirst().getFeedbackForms().get(0).getId().toString();
+        String questionId = courses.getFirst().feedbackForms.get(0).questions.get(0).getId().toString();
+        // add a result & get feedback forms
+        addResult(courseId, formId, questionId);
+        FeedbackForm feedbackForm = feedbackFormService.getFeedbackForm(courses.get(0).id.toString(), formId, true);
+
+        // Todo Assert that results were not cleared (not owner)
+        Assertions.assertEquals(1, feedbackForm.questions.get(0).results.size());
+        feedbackFormService.clearFeedbackFormResults(courses.get(0).id.toString(), feedbackForm.id.toString());
+        FeedbackForm feedbackFormCleared = feedbackFormService.getFeedbackForm(courses.get(0).id.toString(), formId, true);
+        Assertions.assertEquals(0, feedbackFormCleared.questions.get(0).results.size());
     }
 
     @Test
@@ -198,6 +218,25 @@ public class FeedbackFormServiceTest {
         Assertions.assertEquals(0, updatedFeedbackForms.get(0).questions.size());
     }
 
+    @Test
+    @TestSecurity(user = "Prof", roles = { UserRole.PROF})
+    @JwtSecurity(claims = { @Claim(key = "sub", value = "111111111111111111111111") })
+    public void updateFeedbackFormNotOwner() {
+        //create & get courses + ids
+        List<Course> courses = createCourse();
+        String courseId = courses.getFirst().getId().toString();
+        String formId = courses.getFirst().getFeedbackForms().get(0).getId().toString();
+
+        // update the feedback form name, description and questions
+        FeedbackForm feedbackFormUpdate = new FeedbackForm(courses.get(0).id, "nameUpdate", "descriptionUpdate", List.of(), FormStatus.NOT_STARTED);
+        feedbackFormService.updateFeedbackForm(courseId, formId, feedbackFormUpdate);
+        
+        // Todo Assert that results were not cleared (not owner)
+        List<FeedbackForm> updatedFeedbackForms = feedbackFormService.getFeedbackForms(courses.get(0).id.toString());
+        Assertions.assertEquals("nameUpdate", updatedFeedbackForms.get(0).name);
+        Assertions.assertEquals("descriptionUpdate", updatedFeedbackForms.get(0).description);
+        Assertions.assertEquals(0, updatedFeedbackForms.get(0).questions.size());
+    }
     
     @Test
     @TestSecurity(user = "Student", roles = { UserRole.STUDENT})
@@ -256,6 +295,9 @@ public class FeedbackFormServiceTest {
         }
     }
 
+    @Test
+    @TestSecurity(user = "Prof", roles = { UserRole.PROF})
+    @JwtSecurity(claims = { @Claim(key = "email", value = "prof@htwg-konstanz.de") })
     private List<Course> createCourse() {
         // create a course via the json api
         ApiCourse apiCourse = new ApiCourse(
