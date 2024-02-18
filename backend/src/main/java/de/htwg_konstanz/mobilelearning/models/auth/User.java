@@ -156,5 +156,9 @@ public class User {
         return this.courses.contains(new ObjectId(courseId));
     }
 
+    public void clearCourses() {
+        this.courses.clear();
+    }
+
 
 }

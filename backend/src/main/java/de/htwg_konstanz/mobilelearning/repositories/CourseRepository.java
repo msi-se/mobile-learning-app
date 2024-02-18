@@ -2,10 +2,13 @@ package de.htwg_konstanz.mobilelearning.repositories;
 
 
 
+import java.util.List;
+
 import org.bson.types.ObjectId;
 
 import de.htwg_konstanz.mobilelearning.models.Course;
 import de.htwg_konstanz.mobilelearning.models.Form;
+import de.htwg_konstanz.mobilelearning.models.auth.User;
 import de.htwg_konstanz.mobilelearning.models.feedback.FeedbackForm;
 import de.htwg_konstanz.mobilelearning.models.quiz.QuizForm;
 import io.quarkus.mongodb.panache.PanacheMongoRepository;
@@ -24,6 +27,10 @@ public class CourseRepository implements PanacheMongoRepository<Course> {
 
     public Course findByQuizFormConnectCode(Integer connectCode) {
         return find("quizForms.connectCode", connectCode).firstResult();
+    }
+
+    public Course findByMoodleCourseId(String moodleCourseId) {
+        return find("moodleCourseId", moodleCourseId).firstResult();
     }
 
     public Course findByFormConnectCode(Integer connectCode) {
@@ -71,6 +78,14 @@ public class CourseRepository implements PanacheMongoRepository<Course> {
 
     public Course findByKey(String key) {
         return find("key", key).firstResult();
+    }
+
+    public List<Course> listAllForStudent(User user) {
+        return find("students", user.getId()).list();
+    }
+
+    public List<Course> listAllForOwner(User user) {
+        return find("owners", user.getId()).list();
     }
 
 }
