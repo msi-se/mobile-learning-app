@@ -1,5 +1,6 @@
 package de.htwg_konstanz.mobilelearning.services;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.bson.types.ObjectId;
@@ -133,33 +134,37 @@ public class CourseService {
 
         // update the courses linked to the user
         List<ObjectId> previousCourses = user.getCourses();
-    
+        
         // case 1: the user was added to a new course (-> add the course to the user and the student to the course)
-        moodleCourses.forEach(moodleCourse -> {
+        for (MoodleCourse moodleCourse : moodleCourses) {
             Course course = courseRepository.findByMoodleCourseId(moodleCourse.getId());
             if (course == null) {
-                return;
+                continue;
             }
-            if (!user.hasCourse(course.getId())) {
+            if (!user.hasCourse(course.getId()) || !course.isStudent(user.getId())) {
                 user.addCourse(course.getId());
                 course.addStudent(user.getId());
                 courseRepository.update(course);
             }
-        });
+        };
 
         // case 2: the user has a course that is not in the moodle courses (-> remove the course from the user and the student from the course)
         List<String> moodleCourseIds = moodleCourses.stream().map(moodleCourse -> moodleCourse.getId()).toList();
-        previousCourses.forEach(courseId -> {
+        List<Course> coursesToRemove = new ArrayList<Course>();
+        for (ObjectId courseId : previousCourses) {
             Course course = courseRepository.findById(courseId);
             if (course == null) {
-                return;
+                continue;
             }
             if (!moodleCourseIds.contains(course.getMoodleCourseId())) {
-                user.removeCourse(courseId);
-                course.removeStudent(user.getId());
-                courseRepository.update(course);
+                coursesToRemove.add(course);
             }
-        });
+        };
+        for (Course course : coursesToRemove) {
+            course.removeStudent(user.getId());
+            courseRepository.update(course);
+            user.removeCourse(course.getId());
+        }
 
         // update the user
         userRepository.update(user);

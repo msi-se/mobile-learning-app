@@ -141,11 +141,17 @@ public class User {
     }
 
     public void addCourse(ObjectId course) {
-        this.courses.add(course);
+        if (!this.courses.contains(course)) {
+            this.courses.add(course);
+        }
     }
 
     public void removeCourse(ObjectId course) {
-        this.courses.remove(course);
+        try {
+            this.courses.remove(course);
+        } catch (Exception e) {
+            System.out.println("not in list");
+        }
     }
 
     public boolean hasCourse(ObjectId course) {

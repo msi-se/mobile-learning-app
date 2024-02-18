@@ -99,11 +99,17 @@ public class Course implements Serializable {
     }
 
     public void addStudent(ObjectId student) {
-        this.students.add(student);
+        if (!this.students.contains(student)) {
+            this.students.add(student);
+        }
     }
 
     public void removeStudent(ObjectId student) {
-        this.students.remove(student);
+        try {
+            this.students.remove(student);
+        } catch (Exception e) {
+            System.out.println("not in list");
+        }
     }
 
     public void setStudents(List<ObjectId> students) {
