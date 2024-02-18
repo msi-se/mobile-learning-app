@@ -22,6 +22,7 @@ import jakarta.ws.rs.POST;
 import jakarta.ws.rs.PUT;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.MediaType;
 
 @Path("/course")
@@ -50,14 +51,14 @@ public class CourseService {
     @Path("")
     @Produces(MediaType.APPLICATION_JSON)
     @RolesAllowed({ UserRole.PROF, UserRole.STUDENT })
-    public List<Course> getCourses() {
-
+    public List<Course> getCourses(@QueryParam("password") String password) {
+        
         // update the courses linked to the user
         User user = userRepository.findByUsername(jwt.getName());
         if (user == null) {
             throw new NotFoundException("User not found.");
         }
-        updateCourseLinkedToUser(user);
+        updateCourseLinkedToUser(user, password);
 
         List<Course> courses = courseRepository.listAllForStudent(user);
         courses.forEach(course -> {
@@ -126,7 +127,7 @@ public class CourseService {
         courseRepository.deleteAll();
     }
 
-    public void updateCourseLinkedToUser(User user) {
+    public void updateCourseLinkedToUser(User user, String password) {
 
         // TEMP: mock the special users (Prof, Student, Admin)
         if (user.getUsername().equals("Prof") || user.getUsername().equals("Student") || user.getUsername().equals("Admin")) {
@@ -134,7 +135,7 @@ public class CourseService {
         }
 
         // use the moodle interface to get the courses linked to the user
-        MoodleInterface moodle = new MoodleInterface(user.getUsername(), user.getPassword());
+        MoodleInterface moodle = new MoodleInterface(user.getUsername(), password);
         List<MoodleCourse> moodleCourses = moodle.getCourses();
 
         // update the courses linked to the user

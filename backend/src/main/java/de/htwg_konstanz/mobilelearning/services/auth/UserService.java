@@ -128,14 +128,13 @@ public class UserService {
                 userFromLdap.getEmail(),
                 userFromLdap.getName(),
                 userFromLdap.getUsername(),
-                password
+                ""
             );
             newUser.setRoles(userFromLdap.getRoles());
             userRepository.persist(newUser);
             user = newUser;
         } else {
             user = existingUser;
-            user.setPassword(password);
             userRepository.update(user);
         }
 
