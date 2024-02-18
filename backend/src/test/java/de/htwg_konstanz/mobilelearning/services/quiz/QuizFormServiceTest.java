@@ -114,7 +114,7 @@ public class QuizFormServiceTest {
     }
 
     @Test
-    @TestSecurity(user = "Prof", roles = { UserRole.PROF})
+    @TestSecurity(user = "Student", roles = { UserRole.STUDENT})
     @JwtSecurity(claims = { @Claim(key = "sub", value = "111111111111111111111111") })
     public void participateUniqueAlias() {
         //create & get courses + ids
