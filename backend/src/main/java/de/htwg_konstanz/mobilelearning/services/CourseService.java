@@ -128,6 +128,11 @@ public class CourseService {
 
     public void updateCourseLinkedToUser(User user) {
 
+        // TEMP: mock the special users (Prof, Student, Admin)
+        if (user.getUsername().equals("Prof") || user.getUsername().equals("Student") || user.getUsername().equals("Admin")) {
+            return;
+        }
+
         // use the moodle interface to get the courses linked to the user
         MoodleInterface moodle = new MoodleInterface(user.getUsername(), user.getPassword());
         List<MoodleCourse> moodleCourses = moodle.getCourses();
