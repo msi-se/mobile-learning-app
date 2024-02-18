@@ -83,6 +83,10 @@ public class CourseRepository implements PanacheMongoRepository<Course> {
     public List<Course> listAllForStudent(User user) {
         return find("students", user.getId()).list();
     }
+    
+    public List<Course> listAllForStudent(ObjectId userId) {
+        return find("students", userId).list();
+    }
 
     public List<Course> listAllForOwner(User user) {
         return find("owners", user.getId()).list();
