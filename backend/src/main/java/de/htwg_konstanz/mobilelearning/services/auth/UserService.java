@@ -51,7 +51,7 @@ public class UserService {
         User userFromLdap = null;
 
         // TEMP: bypass ldap (student, prof, admin as username)
-        List<String> demoUsernames = Arrays.asList("Student", "Prof", "Admin", "Brande", "Tobi", "Marvin", "Leon", "Fabi", "Schimkat", "Landwehr" );
+        List<String> demoUsernames = Arrays.asList("Student", "Prof", "Prof2", "Admin", "Brande", "Tobi", "Marvin", "Leon", "Fabi", "Schimkat", "Landwehr" );
         if (demoUsernames.contains(username)) {
 
             // check if user exists in db
