@@ -69,20 +69,26 @@ class _HomeTabState extends State<HomeTab> {
                           MyCard(
                               title: 'Events',
                               cardColor: colors.surfaceVariant,
-                              imageName: events),
+                              imageName: events,
+                              route: '/main'
+                              ),
                           MyCard(
                               title: 'Mensa',
                               cardColor: colors.surfaceVariant,
-                              imageName: mensa),
+                              imageName: mensa,
+                              route: '/menu',
+                              ),
                           MyCard(
                             title: 'LSF',
                             cardColor: colors.surfaceVariant,
                             imageName: calendar,
+                            route: '/main',
                           ),
                           MyCard(
                             title: 'Noten',
                             cardColor: colors.surfaceVariant,
                             imageName: analytics,
+                            route: '/main',
                           ),
                         ]),
                   ),
@@ -135,20 +141,24 @@ class _HomeTabState extends State<HomeTab> {
                           MyCard(
                               title: 'Events',
                               cardColor: colors.surfaceVariant,
-                              imageName: events),
+                              imageName: events,
+                              route: '/main'),
                           MyCard(
                               title: 'Mensa',
                               cardColor: colors.surfaceVariant,
-                              imageName: mensa),
+                              imageName: mensa,
+                              route: '/menu'),
                           MyCard(
                             title: 'LSF',
                             cardColor: colors.surfaceVariant,
                             imageName: calendar,
+                            route: '/main'
                           ),
                           MyCard(
                             title: 'Noten',
                             cardColor: colors.surfaceVariant,
                             imageName: analytics,
+                            route: '/main'
                           ),
                         ]),
                   ),
