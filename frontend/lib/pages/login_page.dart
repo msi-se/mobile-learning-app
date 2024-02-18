@@ -3,7 +3,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:frontend/components/button.dart';
-import 'package:frontend/components/error/network-specific-error.dart';
+import 'package:frontend/components/error/network_specific_error.dart';
 import 'package:frontend/components/textfield.dart';
 import 'package:frontend/global.dart';
 import 'package:frontend/theme/assets.dart';

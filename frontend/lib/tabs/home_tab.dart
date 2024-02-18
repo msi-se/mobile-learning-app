@@ -59,31 +59,7 @@ class _HomeTabState extends State<HomeTab> {
               // mobile version
               final isSmallPhone = constraints.maxHeight < 570;
               return Column(
-                children: [               
-                  GridView.count(
-                    crossAxisCount: 2,
-                    crossAxisSpacing: 10,
-                    shrinkWrap: true,
-                    children: [
-                      MyCard(
-                          title: 'Events',
-                          cardColor: colors.surfaceVariant,
-                          imageName: events),
-                      MyCard(
-                          title: 'Mensa',
-                          cardColor: colors.surfaceVariant,
-                          imageName: mensa),
-                      MyCard(
-                        title: 'LSF',
-                        cardColor: colors.surfaceVariant,
-                        imageName: calendar,
-                      ),
-                      MyCard(
-                        title: 'Noten',
-                        cardColor: colors.surfaceVariant,
-                        imageName: analytics,
-                      ),
-                    ],
+                children: [
                   Expanded(
                     flex: isSmallPhone ? 6 : 3,
                     child: GridView.count(

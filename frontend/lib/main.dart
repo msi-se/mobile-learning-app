@@ -9,26 +9,10 @@ import 'package:frontend/pages/quiz/attend_quiz_page.dart';
 import 'package:frontend/pages/quiz/quiz_control_page.dart';
 import 'package:frontend/pages/quiz/quiz_preview_page.dart';
 import 'package:frontend/theme/themes.dart';
-import 'package:frontend/components/error/flutter-specific-error.dart';
+import 'package:frontend/components/error/flutter_specific_error.dart';
 
 void main() {
-  FlutterError.onError = (FlutterErrorDetails details) {
-    FlutterError.dumpErrorToConsole(details);
-    runApp(ErrorWidgetClass(details));
-  };
-
   runApp(const MyApp());
-}
-
-class ErrorWidgetClass extends StatelessWidget {
-  final FlutterErrorDetails errorDetails;
-  ErrorWidgetClass(this.errorDetails);
-  @override
-  Widget build(BuildContext context) {
-    return CustomErrorWidget(
-      errorMessage: errorDetails.exceptionAsString(),
-    );
-  }
 }
 
 class MyApp extends StatelessWidget {
