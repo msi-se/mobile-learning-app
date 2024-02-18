@@ -71,7 +71,7 @@ public class LiveFeedbackSocket {
             System.out.println("User ID: " + userId);
 
             // check if user is student of the course
-            if (!course.isStudent(userId)) {
+            if (!course.isStudent(userId) && !course.isOwner(userId)) {
                 System.out.println("User is not a student of the course");
                 return;
             }
