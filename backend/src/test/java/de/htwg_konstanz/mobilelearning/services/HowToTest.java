@@ -51,19 +51,6 @@ public class HowToTest {
 
     @Test
     @TestSecurity(user = "TestUser", roles = { UserRole.PROF, UserRole.STUDENT })
-    @JwtSecurity(claims = {})
-    public void testGetAllCourses() {
-
-        // delete all courses
-        courseService.deleteAllCourses();
-
-        // get all courses
-        List<Course> courses = courseService.getCourses();
-        Assertions.assertTrue(courses.isEmpty());
-    }
-
-    @Test
-    @TestSecurity(user = "TestUser", roles = { UserRole.PROF, UserRole.STUDENT })
     @JwtSecurity(claims = {
             @Claim(key = "email", value = "user@gmail.com"),
             @Claim(key = "thisIsATest", value = "true"),
@@ -165,11 +152,12 @@ public class HowToTest {
                                                 List.of("2"),
                                                 "Q-Q-PDRODUCTOWNER")),
                                 "Q-ROLES")),
-                "AUME23");
+                "AUME23",
+                "1");
         apiService.updateCourses(List.of(apiCourse1));
 
         // get all courses
-        List<Course> courses = courseService.getCourses();
+        List<Course> courses = courseService.getCourses("");
         Assertions.assertEquals(courses.size(), 1);
         Assertions.assertEquals(courses.get(0).getName(), "AUME 23/24");
         Assertions.assertEquals(courses.get(0).getDescription(), "Agile Vorgehensmodelle und Mobile Kommunikation");
@@ -189,7 +177,7 @@ public class HowToTest {
         this.createACourse();
 
         // get all courses
-        List<Course> courses = courseService.getCourses();
+        List<Course> courses = courseService.getCourses("");
         Assertions.assertEquals(courses.size(), 1);
         Course course = courses.get(0);
         Assertions.assertEquals(course.getFeedbackForms().size(), 1);

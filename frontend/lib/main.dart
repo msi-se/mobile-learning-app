@@ -5,6 +5,7 @@ import 'package:frontend/pages/feedback/feedback_preview_page.dart';
 import 'package:frontend/pages/feedback/feedback_result_page.dart';
 import 'package:frontend/pages/login_page.dart';
 import 'package:frontend/pages/main_page.dart';
+import 'package:frontend/pages/menu_page.dart';
 import 'package:frontend/pages/quiz/attend_quiz_page.dart';
 import 'package:frontend/pages/quiz/quiz_control_page.dart';
 import 'package:frontend/pages/quiz/quiz_preview_page.dart';
@@ -29,6 +30,7 @@ class MyApp extends StatelessWidget {
       routes: <String, WidgetBuilder>{
         '/login': (_) => const LoginPage(),
         '/main': (_) => const MainPage(),
+        '/menu': (_) => const MenuPage(),
         '/feedback-info': (context) {
           var arguments = ModalRoute.of(context)!.settings.arguments
               as Map<String, dynamic>?;

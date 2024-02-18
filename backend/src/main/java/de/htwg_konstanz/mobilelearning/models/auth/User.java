@@ -12,6 +12,7 @@ public class User {
     public String username;
     public String password;
     public List<String> roles;
+    public List<ObjectId> courses;
 
     public User() {
     }
@@ -23,6 +24,7 @@ public class User {
         this.username = username;
         this.password = password;
         this.roles = new ArrayList<String>();
+        this.courses = new ArrayList<ObjectId>();
 
         // check if email, name and username have ": " in it and if so, only take the part after it
         if (this.email.contains(": ")) {
@@ -80,15 +82,15 @@ public class User {
 	}
 
     public Boolean checkIsProf() {
-        return this.roles.contains(UserRole.PROF);
+        return this.roles != null ? this.roles.contains(UserRole.PROF) : false;
     }
 
     public Boolean checkIsStudent() {
-        return this.roles.contains(UserRole.STUDENT);
+        return this.roles != null ? this.roles.contains(UserRole.STUDENT) : false;
     }
 
     public Boolean checkIsAdmin() {
-        return this.roles.contains(UserRole.ADMIN);
+        return this.roles != null ? this.roles.contains(UserRole.ADMIN) : false;
     }
 
     public void setPassword(String password) {
@@ -128,5 +130,47 @@ public class User {
     public void setId(ObjectId id) {
         this.id = id;
     }
+
+    // courses
+    public List<ObjectId> getCourses() {
+        if (this.courses == null) this.courses = new ArrayList<ObjectId>();
+        return this.courses;
+    }
+
+    public void setCourses(List<ObjectId> courses) {
+        this.courses = courses;
+    }
+
+    public void addCourse(ObjectId course) {
+        if (this.courses == null) this.courses = new ArrayList<ObjectId>();
+        if (!this.courses.contains(course)) {
+            this.courses.add(course);
+        }
+    }
+
+    public void removeCourse(ObjectId course) {
+        if (this.courses == null) this.courses = new ArrayList<ObjectId>();
+        try {
+            this.courses.remove(course);
+        } catch (Exception e) {
+            System.out.println("not in list");
+        }
+    }
+
+    public boolean hasCourse(ObjectId course) {
+        if (this.courses == null) this.courses = new ArrayList<ObjectId>();
+        return this.courses.contains(course);
+    }
+
+    public boolean hasCourse(String courseId) {
+        if (this.courses == null) this.courses = new ArrayList<ObjectId>();
+        return this.courses.contains(new ObjectId(courseId));
+    }
+
+    public void clearCourses() {
+        if (this.courses == null) this.courses = new ArrayList<ObjectId>();
+        this.courses.clear();
+    }
+
 
 }

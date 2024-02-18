@@ -57,6 +57,7 @@ class _LoginPageState extends State<LoginPage> {
             jwt: response.body,
             userId: userId,
             username: username,
+            password: password,
             roles: roles));
         if (!mounted) return;
         Navigator.pushReplacementNamed(context, '/main');

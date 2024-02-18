@@ -128,13 +128,14 @@ public class UserService {
                 userFromLdap.getEmail(),
                 userFromLdap.getName(),
                 userFromLdap.getUsername(),
-                userFromLdap.getPassword()
+                ""
             );
             newUser.setRoles(userFromLdap.getRoles());
             userRepository.persist(newUser);
             user = newUser;
         } else {
             user = existingUser;
+            userRepository.update(user);
         }
 
         // return jwt token
@@ -148,5 +149,10 @@ public class UserService {
     // for testing
     public UserRepository getUserRepository() {
         return userRepository;
+    }
+
+    // for testing
+    public void deleteAllUsers() {
+        userRepository.deleteAll();
     }
 }

@@ -1,11 +1,11 @@
-package de.htwg_konstanz.mobilelearning.helper;
+package de.htwg_konstanz.mobilelearning.helper.moodle;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-class MoodleCourse {
-    public Integer id;
+public class MoodleCourse {
+    public String id;
     public String fullname;
     public String shortname;
     public String summary;
@@ -16,7 +16,7 @@ class MoodleCourse {
     public Integer enddate;
 
     public MoodleCourse(
-        @JsonProperty("id") Integer id,
+        @JsonProperty("id") String id,
         @JsonProperty("fullname") String fullname,
         @JsonProperty("shortname") String shortname,
         @JsonProperty("summary") String summary,
@@ -35,6 +35,22 @@ class MoodleCourse {
         this.hidden = hidden;
         this.startdate = startdate;
         this.enddate = enddate;
+    }
+
+    public MoodleCourse(String id) {
+        this.id = id;
+        this.fullname = "";
+        this.shortname = "";
+        this.summary = "";
+        this.lastaccess = 0;
+        this.isfavourite = false;
+        this.hidden = false;
+        this.startdate = 0;
+        this.enddate = 0;
+    }
+
+    public String getId() {
+        return id;
     }
 
     @Override
