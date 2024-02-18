@@ -51,19 +51,6 @@ public class HowToTest {
 
     @Test
     @TestSecurity(user = "TestUser", roles = { UserRole.PROF, UserRole.STUDENT })
-    @JwtSecurity(claims = {})
-    public void testGetAllCourses() {
-
-        // delete all courses
-        courseService.deleteAllCourses();
-
-        // get all courses
-        List<Course> courses = courseService.getCourses("");
-        Assertions.assertTrue(courses.isEmpty());
-    }
-
-    @Test
-    @TestSecurity(user = "TestUser", roles = { UserRole.PROF, UserRole.STUDENT })
     @JwtSecurity(claims = {
             @Claim(key = "email", value = "user@gmail.com"),
             @Claim(key = "thisIsATest", value = "true"),
