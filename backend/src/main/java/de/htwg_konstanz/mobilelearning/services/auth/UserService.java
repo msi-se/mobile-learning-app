@@ -128,13 +128,14 @@ public class UserService {
                 userFromLdap.getEmail(),
                 userFromLdap.getName(),
                 userFromLdap.getUsername(),
-                userFromLdap.getPassword()
+                ""
             );
             newUser.setRoles(userFromLdap.getRoles());
             userRepository.persist(newUser);
             user = newUser;
         } else {
             user = existingUser;
+            userRepository.update(user);
         }
 
         // return jwt token

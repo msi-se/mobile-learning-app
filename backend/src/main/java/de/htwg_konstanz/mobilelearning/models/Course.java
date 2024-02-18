@@ -20,7 +20,9 @@ public class Course implements Serializable {
     public String name;
     public String description;
     public List<ObjectId> owners;
+    public List<ObjectId> students;
     public String key;
+    public String moodleCourseId;
 
     // feedback
     public List<FeedbackForm> feedbackForms;
@@ -39,11 +41,13 @@ public class Course implements Serializable {
         this.name = name;
         this.description = description;
         this.owners = new ArrayList<ObjectId>();
+        this.students = new ArrayList<ObjectId>();
         this.feedbackForms = new ArrayList<FeedbackForm>();
         this.feedbackQuestions = new ArrayList<FeedbackQuestion>();
         this.quizForms = new ArrayList<QuizForm>();
         this.quizQuestions = new ArrayList<QuizQuestion>();
         this.key = "";
+        this.moodleCourseId = "";
     }
 
     // id
@@ -87,6 +91,41 @@ public class Course implements Serializable {
 
     public boolean isOwner(User user) {
         return this.owners.contains(user.getId());
+    }
+
+    // students
+    public List<ObjectId> getStudents() {
+        return this.students;
+    }
+
+    public void addStudent(ObjectId student) {
+        if (!this.students.contains(student)) {
+            this.students.add(student);
+        }
+    }
+
+    public void removeStudent(ObjectId student) {
+        try {
+            this.students.remove(student);
+        } catch (Exception e) {
+            System.out.println("not in list");
+        }
+    }
+
+    public void setStudents(List<ObjectId> students) {
+        this.students = students;
+    }
+
+    public boolean isStudent(String userId) {
+        return this.students.contains(new ObjectId(userId));
+    }
+
+    public boolean isStudent(ObjectId userId) {
+        return this.students.contains(userId);
+    }
+
+    public boolean isStudent(User user) {
+        return this.students.contains(user.getId());
     }
 
     // description
@@ -291,6 +330,14 @@ public class Course implements Serializable {
         return this.key;
     }
 
+    public void setMoodleCourseId(String moodleCourseId) {
+        this.moodleCourseId = moodleCourseId;
+    }
+
+    public String getMoodleCourseId() {
+        return this.moodleCourseId;
+    }
+
     public static Course fromApiCourse(ApiCourse apiCourse) throws IllegalArgumentException {
         
         // validate input
@@ -310,6 +357,7 @@ public class Course implements Serializable {
         // create course
         Course course = new Course(apiCourse.getName(), apiCourse.getDescription());
         course.setKey(apiCourse.getKey());
+        course.setMoodleCourseId(apiCourse.getMoodleCourseId());
 
         // create the feedback forms
         for (ApiFeedbackForm apiFeedbackForm : apiCourse.getFeedbackForms()) {
@@ -344,6 +392,7 @@ public class Course implements Serializable {
         // update course
         this.setName(apiCourse.getName());
         this.setDescription(apiCourse.getDescription());
+        this.setMoodleCourseId(apiCourse.getMoodleCourseId());
 
         // update feedback forms
         for (ApiFeedbackForm apiFeedbackForm : apiCourse.getFeedbackForms()) {
@@ -367,5 +416,7 @@ public class Course implements Serializable {
             }
         }
     }
+
+
 
 }

@@ -1,4 +1,4 @@
-package de.htwg_konstanz.mobilelearning.helper;
+package de.htwg_konstanz.mobilelearning.helper.moodle;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
