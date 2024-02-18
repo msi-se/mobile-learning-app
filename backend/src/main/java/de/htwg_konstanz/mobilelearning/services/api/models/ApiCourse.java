@@ -8,6 +8,7 @@ public class ApiCourse {
     public List<ApiFeedbackForm> feedbackForms;
     public List<ApiQuizForm> quizForms;
     public String key;
+    public String moodleCourseId;
     
     public ApiCourse() {
     }
@@ -46,5 +47,9 @@ public class ApiCourse {
 
     public String getKey() {
         return key;
+    }
+
+    public String getMoodleCourseId() {
+        return moodleCourseId;
     }
 }

@@ -66,7 +66,7 @@ public class ApiService {
             }
         }
 
-        return courseRepository.findAll().list();
+        return courseRepository.listAllForOwner(user);
     }
 
 }
