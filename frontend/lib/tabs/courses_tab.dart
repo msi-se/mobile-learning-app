@@ -34,7 +34,8 @@ class _CoursesTabState extends State<CoursesTab> {
   Future fetchCourses() async {
     try {
       final response = await http.get(
-        Uri.parse("${getBackendUrl()}/course"),
+        Uri.parse(
+            "${getBackendUrl()}/course?password=${getSession()!.password}"),
         headers: {
           "Content-Type": "application/json",
           "AUTHORIZATION": "Bearer ${getSession()!.jwt}",
