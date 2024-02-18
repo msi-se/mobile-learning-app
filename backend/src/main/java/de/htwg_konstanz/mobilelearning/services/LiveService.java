@@ -40,7 +40,7 @@ public class LiveService {
         }
 
         List<Form> forms = new ArrayList<Form>();
-        List<Course> courses = courseRepository.listAllForStudent(new ObjectId(userId));
+        List<Course> courses = courseRepository.listAllForOwnerAndStudent(new ObjectId(userId));
         courses.forEach(course -> {
             course.feedbackForms.forEach(form -> {
 

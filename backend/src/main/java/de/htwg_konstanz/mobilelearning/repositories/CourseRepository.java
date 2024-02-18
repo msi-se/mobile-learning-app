@@ -2,7 +2,9 @@ package de.htwg_konstanz.mobilelearning.repositories;
 
 
 
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.bson.types.ObjectId;
 
@@ -90,6 +92,34 @@ public class CourseRepository implements PanacheMongoRepository<Course> {
 
     public List<Course> listAllForOwner(User user) {
         return find("owners", user.getId()).list();
+    }
+
+    public List<Course> listAllForOwner(ObjectId userId) {
+        return find("owners", userId).list();
+    }
+
+    public List<Course> listAllForOwnerAndStudent(User user) {
+        List<Course> coursesForOwner = listAllForOwner(user);
+        List<Course> coursesForStudent = listAllForStudent(user);
+        
+        for (Course course : coursesForStudent) {
+            if (!coursesForOwner.contains(course)) {
+                coursesForOwner.add(course);
+            }
+        }
+
+        return coursesForOwner;
+    }
+
+    public List<Course> listAllForOwnerAndStudent(ObjectId userId) {
+        List<Course> coursesForOwner = listAllForOwner(userId);
+        List<Course> coursesForStudent = listAllForStudent(userId);
+        for (Course course : coursesForStudent) {
+            if (!coursesForOwner.contains(course)) {
+                coursesForOwner.add(course);
+            }
+        }
+        return coursesForOwner;
     }
 
 }

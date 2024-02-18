@@ -417,6 +417,20 @@ public class Course implements Serializable {
         }
     }
 
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (obj == this) {
+            return true;
+        }
+        if (obj.getClass() != this.getClass()) {
+            return false;
+        }
+        Course course = (Course) obj;
+        return course.getId().equals(this.getId());
+    }
 
 
 }

@@ -60,7 +60,7 @@ public class CourseService {
         }
         updateCourseLinkedToUser(user, password);
 
-        List<Course> courses = courseRepository.listAllForStudent(user);
+        List<Course> courses = courseRepository.listAllForOwnerAndStudent(user);
         courses.forEach(course -> {
             course.feedbackForms.forEach(form -> {
                 form.questions = List.of();

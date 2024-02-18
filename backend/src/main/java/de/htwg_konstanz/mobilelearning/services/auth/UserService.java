@@ -150,4 +150,9 @@ public class UserService {
     public UserRepository getUserRepository() {
         return userRepository;
     }
+
+    // for testing
+    public void deleteAllUsers() {
+        userRepository.deleteAll();
+    }
 }
