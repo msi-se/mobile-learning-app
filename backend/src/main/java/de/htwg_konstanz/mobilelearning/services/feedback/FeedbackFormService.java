@@ -76,16 +76,16 @@ public class FeedbackFormService {
         if (feedbackForm.description != null) {
             feedbackFormToUpdate.description = feedbackForm.description;
         }
-        else if (feedbackForm.name != null) {
+        if (feedbackForm.name != null) {
             feedbackFormToUpdate.name = feedbackForm.name;
         }
-        else if (feedbackForm.questions != null) {
+        if (feedbackForm.questions != null) {
             feedbackFormToUpdate.questions = feedbackForm.questions;
         }
-        else if (feedbackForm.connectCode != null) {
+        if (feedbackForm.connectCode != null) {
             feedbackFormToUpdate.connectCode = feedbackForm.connectCode;
         }
-        else if (feedbackForm.status != null) {
+        if (feedbackForm.status != null) {
             feedbackFormToUpdate.status = feedbackForm.status;
         }
 

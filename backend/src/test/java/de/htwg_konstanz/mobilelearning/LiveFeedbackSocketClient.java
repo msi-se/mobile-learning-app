@@ -39,4 +39,8 @@ public class LiveFeedbackSocketClient {
     public void sendMessage(String message) {
         session.getAsyncRemote().sendText(message);
     }
+
+    public List<String> getMessageQueue() {
+        return messageQueue;
+    }
 }
