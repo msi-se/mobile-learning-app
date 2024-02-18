@@ -6,20 +6,21 @@ class MyCard extends StatelessWidget {
   final Color cardColor;
   final String title;
   final String imageName;
+  final String route;
 
   const MyCard({
     Key? key,
     required this.title,
     required this.cardColor,
     required this.imageName,
+    required this.route,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return InkWell(
       onTap: () {
-        // Add functionality for on click here (redirect to other pages)
-        // redirectPath
+        Navigator.pushNamed(context, route);
       },
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 15),
