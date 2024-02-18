@@ -21,12 +21,13 @@ public class ApiCourse {
         this.key = key;
     }
 
-    public ApiCourse(String name, String description, List<ApiFeedbackForm> feedbackForms, List<ApiQuizForm> quizForms, String key) {
+    public ApiCourse(String name, String description, List<ApiFeedbackForm> feedbackForms, List<ApiQuizForm> quizForms, String key, String moodleCourseId) {
         this.name = name;
         this.description = description;
         this.feedbackForms = feedbackForms == null ? List.of() : feedbackForms;
         this.quizForms = quizForms == null ? List.of() : quizForms;
         this.key = key;
+        this.moodleCourseId = moodleCourseId;
     }
 
     public String getName() {

@@ -37,6 +37,18 @@ public class MoodleCourse {
         this.enddate = enddate;
     }
 
+    public MoodleCourse(String id) {
+        this.id = id;
+        this.fullname = "";
+        this.shortname = "";
+        this.summary = "";
+        this.lastaccess = 0;
+        this.isfavourite = false;
+        this.hidden = false;
+        this.startdate = 0;
+        this.enddate = 0;
+    }
+
     public String getId() {
         return id;
     }

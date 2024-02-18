@@ -58,7 +58,7 @@ public class HowToTest {
         courseService.deleteAllCourses();
 
         // get all courses
-        List<Course> courses = courseService.getCourses();
+        List<Course> courses = courseService.getCourses("");
         Assertions.assertTrue(courses.isEmpty());
     }
 
@@ -165,11 +165,12 @@ public class HowToTest {
                                                 List.of("2"),
                                                 "Q-Q-PDRODUCTOWNER")),
                                 "Q-ROLES")),
-                "AUME23");
+                "AUME23",
+                "1");
         apiService.updateCourses(List.of(apiCourse1));
 
         // get all courses
-        List<Course> courses = courseService.getCourses();
+        List<Course> courses = courseService.getCourses("");
         Assertions.assertEquals(courses.size(), 1);
         Assertions.assertEquals(courses.get(0).getName(), "AUME 23/24");
         Assertions.assertEquals(courses.get(0).getDescription(), "Agile Vorgehensmodelle und Mobile Kommunikation");
@@ -189,7 +190,7 @@ public class HowToTest {
         this.createACourse();
 
         // get all courses
-        List<Course> courses = courseService.getCourses();
+        List<Course> courses = courseService.getCourses("");
         Assertions.assertEquals(courses.size(), 1);
         Course course = courses.get(0);
         Assertions.assertEquals(course.getFeedbackForms().size(), 1);
