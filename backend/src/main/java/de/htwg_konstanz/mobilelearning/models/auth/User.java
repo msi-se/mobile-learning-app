@@ -12,6 +12,7 @@ public class User {
     public String username;
     public String password;
     public List<String> roles;
+    public List<ObjectId> courses;
 
     public User() {
     }
@@ -23,6 +24,7 @@ public class User {
         this.username = username;
         this.password = password;
         this.roles = new ArrayList<String>();
+        this.courses = new ArrayList<ObjectId>();
 
         // check if email, name and username have ": " in it and if so, only take the part after it
         if (this.email.contains(": ")) {
@@ -128,5 +130,31 @@ public class User {
     public void setId(ObjectId id) {
         this.id = id;
     }
+
+    // courses
+    public List<ObjectId> getCourses() {
+        return this.courses;
+    }
+
+    public void setCourses(List<ObjectId> courses) {
+        this.courses = courses;
+    }
+
+    public void addCourse(ObjectId course) {
+        this.courses.add(course);
+    }
+
+    public void removeCourse(ObjectId course) {
+        this.courses.remove(course);
+    }
+
+    public boolean hasCourse(ObjectId course) {
+        return this.courses.contains(course);
+    }
+
+    public boolean hasCourse(String courseId) {
+        return this.courses.contains(new ObjectId(courseId));
+    }
+
 
 }

@@ -20,6 +20,7 @@ public class Course implements Serializable {
     public String name;
     public String description;
     public List<ObjectId> owners;
+    public List<ObjectId> students;
     public String key;
 
     // feedback
@@ -39,6 +40,7 @@ public class Course implements Serializable {
         this.name = name;
         this.description = description;
         this.owners = new ArrayList<ObjectId>();
+        this.students = new ArrayList<ObjectId>();
         this.feedbackForms = new ArrayList<FeedbackForm>();
         this.feedbackQuestions = new ArrayList<FeedbackQuestion>();
         this.quizForms = new ArrayList<QuizForm>();
@@ -87,6 +89,35 @@ public class Course implements Serializable {
 
     public boolean isOwner(User user) {
         return this.owners.contains(user.getId());
+    }
+
+    // students
+    public List<ObjectId> getStudents() {
+        return this.students;
+    }
+
+    public void addStudent(ObjectId student) {
+        this.students.add(student);
+    }
+
+    public void removeStudent(ObjectId student) {
+        this.students.remove(student);
+    }
+
+    public void setStudents(List<ObjectId> students) {
+        this.students = students;
+    }
+
+    public boolean isStudent(String userId) {
+        return this.students.contains(new ObjectId(userId));
+    }
+
+    public boolean isStudent(ObjectId userId) {
+        return this.students.contains(userId);
+    }
+
+    public boolean isStudent(User user) {
+        return this.students.contains(user.getId());
     }
 
     // description
