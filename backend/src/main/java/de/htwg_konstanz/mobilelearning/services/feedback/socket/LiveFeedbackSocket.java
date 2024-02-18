@@ -71,6 +71,12 @@ public class LiveFeedbackSocket {
             System.out.println("Form ID: " + formId);
             System.out.println("User ID: " + userId);
 
+            // check if user is student of the course
+            if (!course.isStudent(userId)) {
+                System.out.println("User is not a student of the course");
+                return;
+            }
+
             // check if the user is a participant or a owner (by checking if the user is owner of the course)
             Boolean isOwner = course.isOwner(userId);
             SocketConnectionType type = isOwner ? SocketConnectionType.OWNER : SocketConnectionType.PARTICIPANT;
