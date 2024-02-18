@@ -22,6 +22,7 @@ public class Course implements Serializable {
     public List<ObjectId> owners;
     public List<ObjectId> students;
     public String key;
+    public String moodleCourseId;
 
     // feedback
     public List<FeedbackForm> feedbackForms;
@@ -46,6 +47,7 @@ public class Course implements Serializable {
         this.quizForms = new ArrayList<QuizForm>();
         this.quizQuestions = new ArrayList<QuizQuestion>();
         this.key = "";
+        this.moodleCourseId = "";
     }
 
     // id
@@ -322,6 +324,14 @@ public class Course implements Serializable {
         return this.key;
     }
 
+    public void setMoodleCourseId(String moodleCourseId) {
+        this.moodleCourseId = moodleCourseId;
+    }
+
+    public String getMoodleCourseId() {
+        return this.moodleCourseId;
+    }
+
     public static Course fromApiCourse(ApiCourse apiCourse) throws IllegalArgumentException {
         
         // validate input
@@ -341,6 +351,7 @@ public class Course implements Serializable {
         // create course
         Course course = new Course(apiCourse.getName(), apiCourse.getDescription());
         course.setKey(apiCourse.getKey());
+        course.setMoodleCourseId(apiCourse.getMoodleCourseId());
 
         // create the feedback forms
         for (ApiFeedbackForm apiFeedbackForm : apiCourse.getFeedbackForms()) {
@@ -375,6 +386,7 @@ public class Course implements Serializable {
         // update course
         this.setName(apiCourse.getName());
         this.setDescription(apiCourse.getDescription());
+        this.setMoodleCourseId(apiCourse.getMoodleCourseId());
 
         // update feedback forms
         for (ApiFeedbackForm apiFeedbackForm : apiCourse.getFeedbackForms()) {
@@ -398,5 +410,7 @@ public class Course implements Serializable {
             }
         }
     }
+
+
 
 }
