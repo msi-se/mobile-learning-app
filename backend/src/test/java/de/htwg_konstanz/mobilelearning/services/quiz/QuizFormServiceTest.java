@@ -115,18 +115,16 @@ public class QuizFormServiceTest {
 
     @Test
     @TestSecurity(user = "Prof", roles = { UserRole.PROF})
-    @JwtSecurity(claims = { @Claim(key = "email", value = "prof@htwg-konstanz.de") })
+    @JwtSecurity(claims = { @Claim(key = "sub", value = "111111111111111111111111") })
     public void participateUniqueAlias() {
         //create & get courses + ids
         List<Course> courses = createCourse();
         String courseId = courses.getFirst().getId().toString();
         String formId = courses.getFirst().getQuizForms().get(0).getId().toString();
         createProfUser();
-        String studentJwt = createStudentUser();
 
         // Check successful RestResponse
         given()
-            .header("Authorization", "Bearer " + studentJwt)
             .pathParam("courseId", courseId)
             .pathParam("formId", formId)
             .body("alias")
@@ -138,7 +136,6 @@ public class QuizFormServiceTest {
 
         // 409 if alias already taken
         given()
-            .header("Authorization", "Bearer " + studentJwt)
             .pathParam("courseId", courseId)
             .pathParam("formId", formId)
             .body("alias")
