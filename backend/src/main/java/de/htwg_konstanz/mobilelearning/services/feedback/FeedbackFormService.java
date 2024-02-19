@@ -3,6 +3,7 @@ package de.htwg_konstanz.mobilelearning.services.feedback;
 import java.util.List;
 
 import org.bson.types.ObjectId;
+import org.eclipse.microprofile.jwt.JsonWebToken;
 import org.jboss.resteasy.reactive.RestPath;
 
 import de.htwg_konstanz.mobilelearning.enums.FormStatus;
@@ -27,6 +28,9 @@ public class FeedbackFormService {
 
     @Inject
     private CourseRepository courseRepository;
+
+    @Inject
+    private JsonWebToken jwt;
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
@@ -72,7 +76,9 @@ public class FeedbackFormService {
         if (feedbackFormToUpdate == null) {
             throw new NotFoundException("Feedbackcourse not found");
         }
-
+        if(!course.isOwner(jwt.getSubject())){
+            return null;
+        }
         if (feedbackForm.description != null) {
             feedbackFormToUpdate.description = feedbackForm.description;
         }
@@ -130,7 +136,10 @@ public class FeedbackFormService {
         if (feedbackForm == null) {
             throw new NotFoundException("Feedbackcourse not found");
         }
-
+        if (!course.isOwner(jwt.getSubject())) {
+            System.out.println("User is not owner of course");
+            return null;
+        }
         feedbackForm.clearResults();
         courseRepository.update(course);
         return feedbackForm;

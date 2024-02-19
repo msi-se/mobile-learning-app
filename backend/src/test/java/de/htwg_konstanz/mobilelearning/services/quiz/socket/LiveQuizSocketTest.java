@@ -2,7 +2,6 @@ package de.htwg_konstanz.mobilelearning.services.quiz.socket;
 
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
 import java.util.Base64;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -14,7 +13,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInfo;
 
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import de.htwg_konstanz.mobilelearning.LiveFeedbackSocketClient;
@@ -36,7 +34,6 @@ import io.quarkus.test.junit.TestProfile;
 import io.quarkus.test.security.TestSecurity;
 import io.quarkus.test.security.jwt.Claim;
 import io.quarkus.test.security.jwt.JwtSecurity;
-import io.smallrye.common.constraint.Assert;
 import io.smallrye.jwt.auth.principal.DefaultJWTCallerPrincipal;
 import jakarta.inject.Inject;
 import jakarta.websocket.ContainerProvider;
@@ -208,7 +205,7 @@ public class LiveQuizSocketTest {
         addResult(courseId, formId, questionId, "Prof");
         List<QuizForm> quizForms = quizFormService.getQuizForms(courses.get(0).id.toString());
         
-        // Assert get quiz form without results
+        // check that the result was added
         QuizForm quizFormFromService = quizFormService.getQuizForm(courses.get(0).id.toString(), quizForms.get(0).id.toString(), true);
         Assertions.assertEquals("Rollenverständnis bei Scrum", quizFormFromService.name);
         Assertions.assertEquals("Ein Quiz zum Rollenverständnis und Teamaufbau bei Scrum", quizFormFromService.description);
@@ -232,7 +229,7 @@ public class LiveQuizSocketTest {
         addResult(courseId, formId, questionId, "Prof");
         List<QuizForm> quizForms = quizFormService.getQuizForms(courses.get(0).id.toString());
         
-        // Assert get quiz form without results
+        // check that only one result was added
         QuizForm quizFormFromService = quizFormService.getQuizForm(courses.get(0).id.toString(), quizForms.get(0).id.toString(), true);
         Assertions.assertEquals("Rollenverständnis bei Scrum", quizFormFromService.name);
         Assertions.assertEquals("Ein Quiz zum Rollenverständnis und Teamaufbau bei Scrum", quizFormFromService.description);
@@ -453,6 +450,7 @@ public class LiveQuizSocketTest {
             session.close();
 
             quizForm = quizFormService.getQuizForms(courses.get(0).id.toString()).get(0);
+            // form should be cleared after status is set to NOT_STARTED
             Assertions.assertEquals(0, quizForm.questions.get(0).results.size());	
         } catch (Exception e) {
             System.out.println(e);
@@ -498,6 +496,7 @@ public class LiveQuizSocketTest {
                 }
             """); 
             Thread.sleep(500);
+            // newest messagqueue item after first next should be CLOSED_QUESTION
             Map<String, String> next1 = mapper.readerFor(Map.class).readValue(client.getMessageQueue().get(1));
             Assertions.assertEquals("CLOSED_QUESTION", next1.get("action"));
             Object obj1 = next1.get("form");  // replace with your object
@@ -512,6 +511,7 @@ public class LiveQuizSocketTest {
                 }
             """);
             Thread.sleep(500);
+            // newest messagqueue item after second next should be OPENED_NEXT_QUESTION
             Map<String, String> next2 = mapper.readerFor(Map.class).readValue(client.getMessageQueue().get(2));
             Assertions.assertEquals("OPENED_NEXT_QUESTION", next2.get("action"));
             client.sendMessage("""
@@ -521,6 +521,7 @@ public class LiveQuizSocketTest {
                 }
             """);
             Thread.sleep(500);
+            // newest messagqueue item after third next should be CLOSED_QUESTION
             Map<String, String> next3 = mapper.readerFor(Map.class).readValue(client.getMessageQueue().get(3));
             Assertions.assertEquals("CLOSED_QUESTION", next3.get("action"));
             client.sendMessage("""
@@ -530,6 +531,7 @@ public class LiveQuizSocketTest {
                 }
             """);
             Thread.sleep(500);
+            // newest messagqueue items after fourth next should be CLOSED_QUESTION & FINISHED
             Map<String, String> next4 = mapper.readerFor(Map.class).readValue(client.getMessageQueue().get(4));
             Assertions.assertEquals("CLOSED_QUESTION", next4.get("action"));
             Map<String, String> next5 = mapper.readerFor(Map.class).readValue(client.getMessageQueue().get(5));
@@ -564,6 +566,7 @@ public class LiveQuizSocketTest {
         // create a websocket client
         // (@ServerEndpoint("/course/{courseId}/quiz/form/{formId}/subscribe/{userId}/{jwt}")
         try {
+            // Owner stats feedback & 2nd prof (not owner) tries to change question
             LiveFeedbackSocketClient client = new LiveFeedbackSocketClient();
             LiveFeedbackSocketClient client2 = new LiveFeedbackSocketClient();
             Session session = ContainerProvider.getWebSocketContainer().connectToServer(
@@ -618,6 +621,7 @@ public class LiveQuizSocketTest {
         // create a websocket client
         // (@ServerEndpoint("/course/{courseId}/quiz/form/{formId}/subscribe/{userId}/{jwt}")
         try {
+            // Owner stats feedback & 2nd prof (with student role) tries to change question
             LiveFeedbackSocketClient client = new LiveFeedbackSocketClient();
             LiveFeedbackSocketClient client2 = new LiveFeedbackSocketClient();
             Session session = ContainerProvider.getWebSocketContainer().connectToServer(
