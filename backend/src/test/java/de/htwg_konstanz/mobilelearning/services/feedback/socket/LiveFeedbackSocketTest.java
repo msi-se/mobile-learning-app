@@ -298,7 +298,7 @@ public class LiveFeedbackSocketTest {
             Thread.sleep(1000);
             session.close();
  
-             // form status should not change because user student
+             // form should be cleared after status is set to NOT_STARTED
             Assertions.assertTrue(courseService.getCourse(courseId).getFeedbackForms().get(0).getStatus().toString().equals("NOT_STARTED"));
             Assertions.assertEquals(0, feedbackFormService.getFeedbackForms(courseId).get(0).getQuestions().get(0).results.size()); 
         } catch (Exception e) {
@@ -349,7 +349,7 @@ public class LiveFeedbackSocketTest {
             session.close();
             session2.close();
  
-            // form status should not change because user student
+            // form status should not change because User is not owner of the course
             Assertions.assertTrue(courseService.getCourse(courseId).getFeedbackForms().get(0).getStatus().toString().equals("STARTED"));
             } catch (Exception e) {
              System.out.println(e);

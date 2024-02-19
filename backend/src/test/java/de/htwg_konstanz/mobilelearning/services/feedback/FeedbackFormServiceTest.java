@@ -132,7 +132,7 @@ public class FeedbackFormServiceTest {
         addResult(courseId, formId, questionId);
         List<FeedbackForm> feedbackForms = feedbackFormService.getFeedbackForms(courses.get(0).id.toString());
         
-        // Assert get feedback form without results
+        // Assert get feedback form with results
         FeedbackForm feedbackFormFromService = feedbackFormService.getFeedbackForm(courses.get(0).id.toString(), feedbackForms.get(0).id.toString(), true);
         Assertions.assertEquals("Erster Sprint", feedbackFormFromService.name);
         Assertions.assertEquals("Hier wollen wir Ihr Feedback zum ersten Sprint einholen", feedbackFormFromService.description);
