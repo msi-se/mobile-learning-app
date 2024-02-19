@@ -20,6 +20,7 @@ class _LoginPageState extends State<LoginPage> {
   final usernameController = TextEditingController();
   final passwordController = TextEditingController();
   bool _isLoading = false;
+  bool _isCheckingLoggedIn = true;
 
   @override
   void initState() {
@@ -28,9 +29,19 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   Future checkLoggedIn() async {
-    if (getSession() != null && mounted) {
-      Navigator.pushReplacementNamed(context, '/main');
+    await initPreferences();
+    if (getSession() != null) {
+      if (!JwtDecoder.isExpired(getSession()!.jwt) && mounted) {
+        Navigator.pushReplacementNamed(context, '/main');
+        return;
+      } else {
+        clearSession();
+      }
     }
+    if (!mounted) return;
+    setState(() {
+      _isCheckingLoggedIn = false;
+    });
   }
 
   Future signUserIn(BuildContext context) async {
@@ -49,17 +60,19 @@ class _LoginPageState extends State<LoginPage> {
         var jwt = JwtDecoder.decode(response.body);
         var userId = jwt["sub"];
         var username = jwt["preferred_username"];
+        var fullName = jwt["full_name"];
         var roles = jwt["groups"].cast<String>();
         await setSession(Session(
             jwt: response.body,
             userId: userId,
             username: username,
+            fullName: fullName,
             password: password,
             roles: roles));
-        if (!mounted) return;
+        if (!context.mounted) return;
         Navigator.pushReplacementNamed(context, '/main');
       } else {
-        if (!mounted) return;
+        if (!context.mounted) return;
         showDialog(
           context: context,
           builder: (BuildContext context) {
@@ -85,6 +98,14 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     final colors = Theme.of(context).colorScheme;
+
+    if (_isCheckingLoggedIn) {
+      return const Scaffold(
+        body: Center(
+          child: CircularProgressIndicator(),
+        ),
+      );
+    }
 
     return Scaffold(
       appBar: AppBar(

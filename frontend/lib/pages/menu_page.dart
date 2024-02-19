@@ -9,10 +9,10 @@ import 'package:frontend/utils.dart';
 import 'package:http/http.dart' as http;
 
 class MenuPage extends StatefulWidget {
-  const MenuPage({Key? key}) : super(key: key);
+  const MenuPage({super.key});
 
   @override
-  _MenuPageState createState() => _MenuPageState();
+  State<MenuPage> createState() => _MenuPageState();
 }
 
 class _MenuPageState extends State<MenuPage> with TickerProviderStateMixin {

@@ -41,6 +41,7 @@ class _CoursesTabState extends State<CoursesTab> {
           "AUTHORIZATION": "Bearer ${getSession()!.jwt}",
         },
       );
+      if (!mounted) return;
       if (response.statusCode == 200) {
         var data = jsonDecode(response.body);
         setState(() {

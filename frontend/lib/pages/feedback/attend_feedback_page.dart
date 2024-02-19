@@ -1,9 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/svg.dart';
 import 'package:frontend/components/elements/feedback/single_choice_feedback.dart';
-import 'package:frontend/components/elements/quiz/single_choice_quiz.dart';
 import 'package:frontend/components/elements/feedback/slider_feedback.dart';
 import 'package:frontend/components/elements/feedback/star_feedback.dart';
 import 'package:frontend/global.dart';
@@ -145,11 +143,16 @@ class _AttendFeedbackPageState extends State<AttendFeedbackPage> {
     final appbar = AppBar(
       title: Text(_form.name,
           style: const TextStyle(
-            color: Colors.white,
+            color: Colors.black,
             fontWeight: FontWeight.bold,
           )),
-      backgroundColor: colors.primary,
-      actions: [Image.asset(incognitoCirclePng, width: 40, height: 40)],
+      backgroundColor: Colors.black38,
+      actions: [
+        Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Image.asset(incognitoCirclePng, width: 40, height: 40),
+        )
+      ],
     );
 
     if (_form.status != "STARTED") {
