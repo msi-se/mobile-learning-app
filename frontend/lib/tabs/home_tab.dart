@@ -33,20 +33,22 @@ class HomeTab extends StatefulWidget {
 }
 
 class _HomeTabState extends State<HomeTab> {
-  bool loading = true;
+  bool _loading = true;
+  bool _isSmallPhone = false;
+  bool _isTablet = false;
 
   @override
   void initState() {
     super.initState();
     setState(() {
-      loading = false;
+      _loading = false;
     });
   }
 
   @override
   Widget build(BuildContext context) {
     final colors = Theme.of(context).colorScheme;
-    if (loading) {
+    if (_loading) {
       return const Center(
         child: CircularProgressIndicator(),
       );
@@ -57,11 +59,11 @@ class _HomeTabState extends State<HomeTab> {
           builder: (context, constraints) {
             if (constraints.maxWidth < 600) {
               // mobile version
-              final isSmallPhone = constraints.maxHeight < 570;
+              _isSmallPhone = constraints.maxHeight < 570;
               return Column(
                 children: [
                   Expanded(
-                    flex: isSmallPhone ? 6 : 3,
+                    flex: _isSmallPhone ? 6 : 3,
                     child: GridView.count(
                         crossAxisCount: 2,
                         shrinkWrap: true,
@@ -70,14 +72,13 @@ class _HomeTabState extends State<HomeTab> {
                               title: 'Events',
                               cardColor: colors.surfaceVariant,
                               imageName: events,
-                              route: '/main'
-                              ),
+                              route: '/main'),
                           MyCard(
-                              title: 'Mensa',
-                              cardColor: colors.surfaceVariant,
-                              imageName: mensa,
-                              route: '/menu',
-                              ),
+                            title: 'Mensa',
+                            cardColor: colors.surfaceVariant,
+                            imageName: mensa,
+                            route: '/menu',
+                          ),
                           MyCard(
                             title: 'LSF',
                             cardColor: colors.surfaceVariant,
@@ -92,7 +93,6 @@ class _HomeTabState extends State<HomeTab> {
                           ),
                         ]),
                   ),
-                  const SizedBox(height: 10),
                   Expanded(
                     flex: 2,
                     child: Container(
@@ -108,18 +108,18 @@ class _HomeTabState extends State<HomeTab> {
                             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                             children: [
                               _buildColumn(
-                                  'Gegebene Feedbacks', '12', isSmallPhone),
+                                  'Gegebene Feedbacks', '12', _isSmallPhone),
                               _buildColumn(
-                                  'Absolvierte Quizze', '55', isSmallPhone),
+                                  'Absolvierte Quizze', '55', _isSmallPhone),
                             ],
                           ),
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                             children: [
                               _buildColumn(
-                                  'Ø Quiz-Position', '4', isSmallPhone),
+                                  'Ø Quiz-Position', '4', _isSmallPhone),
                               _buildColumn(
-                                  'Alle Feedbacks ', '1923', isSmallPhone),
+                                  'Alle Feedbacks ', '1923', _isSmallPhone),
                             ],
                           ),
                         ],
@@ -129,13 +129,19 @@ class _HomeTabState extends State<HomeTab> {
                 ],
               );
             } else {
-              //desktop version
+              //desktop and tablet version
+              _isSmallPhone = false;
+              if (constraints.maxWidth < 1100) {
+                _isTablet = true;
+              } else {
+                _isTablet = false;
+              }
               return Row(
                 children: [
                   Expanded(
                     flex: 1,
                     child: GridView.count(
-                        crossAxisCount: 2,
+                        crossAxisCount: _isTablet ? 1 : 2,
                         childAspectRatio: 2,
                         children: [
                           MyCard(
@@ -149,20 +155,17 @@ class _HomeTabState extends State<HomeTab> {
                               imageName: mensa,
                               route: '/menu'),
                           MyCard(
-                            title: 'LSF',
-                            cardColor: colors.surfaceVariant,
-                            imageName: calendar,
-                            route: '/main'
-                          ),
+                              title: 'LSF',
+                              cardColor: colors.surfaceVariant,
+                              imageName: calendar,
+                              route: '/main'),
                           MyCard(
-                            title: 'Noten',
-                            cardColor: colors.surfaceVariant,
-                            imageName: analytics,
-                            route: '/main'
-                          ),
+                              title: 'Noten',
+                              cardColor: colors.surfaceVariant,
+                              imageName: analytics,
+                              route: '/main'),
                         ]),
                   ),
-                  const SizedBox(width: 40),
                   Expanded(
                     flex: 1,
                     child: Container(
@@ -177,15 +180,19 @@ class _HomeTabState extends State<HomeTab> {
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                             children: [
-                              _buildColumn('Gegebene Feedbacks', '12', false),
-                              _buildColumn('Absolvierte Quizze', '55', false),
+                              _buildColumn(
+                                  'Gegebene Feedbacks', '12', _isSmallPhone),
+                              _buildColumn(
+                                  'Absolvierte Quizze', '55', _isSmallPhone),
                             ],
                           ),
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                             children: [
-                              _buildColumn('Ø Quiz-Position', '4', false),
-                              _buildColumn('Alle Feedbacks ', '1923', false),
+                              _buildColumn(
+                                  'Ø Quiz-Position', '4', _isSmallPhone),
+                              _buildColumn(
+                                  'Alle Feedbacks ', '1923', _isSmallPhone),
                             ],
                           ),
                         ],
