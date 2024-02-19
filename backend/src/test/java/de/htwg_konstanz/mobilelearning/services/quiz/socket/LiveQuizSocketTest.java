@@ -711,7 +711,9 @@ public class LiveQuizSocketTest {
                                         "Wie gut hat Ihnen ihre Pizza gefallen?",
                                         "SLIDER",
                                         List.of(),
-                                        "F-Q-ROLLE")),
+                                        "F-Q-ROLLE",
+                                        "gut",
+                                        "schlecht")),
                         "F-ERSTERSPRINT")),
         List.of(
                 new ApiQuizForm(
