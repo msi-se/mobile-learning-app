@@ -23,6 +23,9 @@ import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 
+/**
+ * Creates courses, feedback forms and quiz forms for testing purposes.
+ */
 @Path("/mock")
 public class MockingService {
 

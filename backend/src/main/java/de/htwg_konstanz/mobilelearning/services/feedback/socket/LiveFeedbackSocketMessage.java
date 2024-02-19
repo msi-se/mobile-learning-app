@@ -9,6 +9,9 @@ import com.google.gson.GsonBuilder;
 import de.htwg_konstanz.mobilelearning.helper.ObjectIdTypeAdapter;
 import de.htwg_konstanz.mobilelearning.models.feedback.FeedbackForm;
 
+/**
+ * Strucure of a LiveFeedbackSocketMessage
+ */
 public class LiveFeedbackSocketMessage {
 
     // general

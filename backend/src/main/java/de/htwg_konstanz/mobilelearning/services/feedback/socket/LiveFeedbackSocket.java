@@ -29,6 +29,9 @@ import jakarta.websocket.server.PathParam;
 import jakarta.websocket.server.ServerEndpoint;
 import jakarta.websocket.Session;
 
+/**
+ * Socket run to live feedback sessions of a course.
+ */	
 @ServerEndpoint("/course/{courseId}/feedback/form/{formId}/subscribe/{userId}/{jwt}")
 @ApplicationScoped
 public class LiveFeedbackSocket {
@@ -43,6 +46,17 @@ public class LiveFeedbackSocket {
     @Inject
     JwtService jwtService;
 
+    /**
+     * Method called when a new connection is opened.
+     * User has to either student or owner of the course to connect.
+     * 
+     * @param session Session that is created for the connection.
+     * @param courseId 
+     * @param formId
+     * @param userId
+     * @param jwt
+     * @throws Exception
+     */
     @OnOpen
     public void onOpen(Session session, @PathParam("courseId") String courseId, @PathParam("formId") String formId, @PathParam("userId") String userId, @PathParam("jwt") String jwt) throws Exception {
         // userId from Jwt has to match userId from path
@@ -88,17 +102,39 @@ public class LiveFeedbackSocket {
         }
     }
 
+    /**
+     * Method called when a connection is closed.
+     * @param session
+     * @param courseId
+     * @param formId
+     * @param userId
+     */
     @OnClose
     public void onClose(Session session, @PathParam("courseId") String courseId, @PathParam("formId") String formId, @PathParam("userId") String userId) {
         connections.remove(session.getId());
     }
 
+    /**
+     * Method called when an error occurs.
+     * @param session
+     * @param courseId
+     * @param formId
+     * @param userId
+     * @param throwable
+     */
     @OnError
     public void onError(Session session, @PathParam("courseId") String courseId, @PathParam("formId") String formId, @PathParam("userId") String userId, Throwable throwable) {
         throwable.printStackTrace();
         connections.remove(session.getId());
     }
 
+    /**
+     * Method called when a message is received via broadcast.
+     * @param message
+     * @param courseId
+     * @param formId
+     * @param userId
+     */
     @OnMessage
     public void onMessage(String message, @PathParam("courseId") String courseId, @PathParam("formId") String formId, @PathParam("userId") String userId) {
         LiveFeedbackSocketMessage feedbackSocketMessage = new LiveFeedbackSocketMessage(message);

@@ -13,6 +13,10 @@ import de.htwg_konstanz.mobilelearning.models.Form;
 import de.htwg_konstanz.mobilelearning.models.QuestionWrapper;
 import de.htwg_konstanz.mobilelearning.services.api.models.ApiQuizForm;
 
+/**
+ * Type of form for quizzes.
+ * Contains index of current question that is shown in the session and whether it is finished.
+ */
 public class QuizForm extends Form {
 
     public Integer currentQuestionIndex;

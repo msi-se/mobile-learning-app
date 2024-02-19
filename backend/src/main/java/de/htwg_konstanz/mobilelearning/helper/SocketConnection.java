@@ -4,6 +4,9 @@ import org.bson.types.ObjectId;
 
 import jakarta.websocket.Session;
 
+/**
+ * Socket connection that is added to current connections of a socket.
+ */
 public class SocketConnection {
     public ObjectId id;
     public Session session;

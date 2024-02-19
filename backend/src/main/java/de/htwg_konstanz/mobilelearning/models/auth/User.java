@@ -17,6 +17,15 @@ public class User {
     public User() {
     }
 
+    /**
+     * Constructor for User.
+     * Generates a new ObjectId for the user.
+     * 
+     * @param email
+     * @param name
+     * @param username
+     * @param password
+     */
     public User(String email, String name, String username, String password) {
         this.id = new ObjectId();
         this.email = email;
@@ -63,6 +72,12 @@ public class User {
         this.username = username;
     }
 
+    /**
+     * Assigns roles to user based on ldap id.
+     * Ids 121, 103 or 137 are reserved for Profs.
+     * 
+     * @param id
+     */
 	public void assignProfAndStudentRoleByLdapId(String id) {
 		if (id == null || id.isBlank()){
 			return;

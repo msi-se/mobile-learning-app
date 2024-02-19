@@ -9,6 +9,9 @@ import com.google.gson.GsonBuilder;
 import de.htwg_konstanz.mobilelearning.helper.ObjectIdTypeAdapter;
 import de.htwg_konstanz.mobilelearning.models.quiz.QuizForm;
 
+/**
+ * Strucure of a LiveFeedbackSocketMessage
+ */
 public class LiveQuizSocketMessage {
 
     // general

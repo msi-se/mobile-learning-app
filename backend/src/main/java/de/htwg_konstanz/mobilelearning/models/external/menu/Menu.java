@@ -7,6 +7,10 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlElementWrapper;
 
+/**
+ * Structure of a menu day.
+ * Constists of a list of days. 
+ */
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Menu implements Serializable {
 

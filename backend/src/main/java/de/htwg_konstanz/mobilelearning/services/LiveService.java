@@ -27,6 +27,11 @@ public class LiveService {
     @Inject
     JsonWebToken jwt;
 
+    /**
+     * Returns all live forms of a user.
+     * 
+     * @return List of live forms
+     */
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @Path("/{courseId}")

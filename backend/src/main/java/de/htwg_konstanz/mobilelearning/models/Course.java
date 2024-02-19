@@ -14,7 +14,14 @@ import de.htwg_konstanz.mobilelearning.services.api.models.ApiCourse;
 import de.htwg_konstanz.mobilelearning.services.api.models.ApiFeedbackForm;
 import de.htwg_konstanz.mobilelearning.services.api.models.ApiQuizForm;
 
-
+/**
+ * Structure of a course.
+ * Has unique id, key.
+ * Contains a list of owners and students.
+ * Contains a list of feedback forms and quiz forms.
+ * Contains a list of feedback questions and quiz questions.
+ * moodleCourseId is the corresponding id of the moodle course.
+ */
 public class Course implements Serializable {
     public ObjectId id;
     public String name;

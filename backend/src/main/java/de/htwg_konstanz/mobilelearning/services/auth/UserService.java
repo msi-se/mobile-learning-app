@@ -34,6 +34,14 @@ public class UserService {
     @Inject
     JwtService JwtService;
     
+    /**
+     * Login user.
+     * If user does not exist, create new user. 
+     * 
+     * @param authorization
+     * @return
+     * @throws Exception
+     */
     @POST
     @PermitAll
     @Produces(MediaType.APPLICATION_JSON)

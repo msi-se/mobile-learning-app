@@ -3,6 +3,9 @@ package de.htwg_konstanz.mobilelearning.helper.moodle;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+/**
+ * Moodle course structure.
+ */
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class MoodleCourse {
     public String id;
