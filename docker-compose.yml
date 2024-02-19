@@ -36,7 +36,16 @@ services:
     #   - "host.docker.internal:host-gateway"
     network_mode: "host"
 
-  # flutter frontend (todo)
+  # flutter frontend
+  mobile-learning-frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - "5000:80"
+    container_name: mobile-learning-frontend
+    restart: always
+
 
   # nginx reverse proxy
   mobile-learning-nginx:
