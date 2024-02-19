@@ -10,16 +10,20 @@ public class ApiFeedbackForm {
         public String type; // SLIDER, STARS, FULLTEXT, YES_NO, SINGLE_CHOICE
         public List<String> options;
         public String key;
+        public String rangeLow;
+        public String rangeHigh;
 
         public ApiFeedbackQuestion() {
         }
 
-        public ApiFeedbackQuestion(String name, String description, String type, List<String> options, String key) {
+        public ApiFeedbackQuestion(String name, String description, String type, List<String> options, String key, String rangeLow, String rangeHigh) {
             this.name = name;
             this.description = description;
             this.type = type;
             this.options = options;
             this.key = key;
+            this.rangeLow = rangeLow;
+            this.rangeHigh = rangeHigh;
         }
 
         public String getKey() { return this.key; }
@@ -29,6 +33,8 @@ public class ApiFeedbackForm {
         public List<String> getOptions() {
             return this.options != null ? this.options : List.of();
         }
+        public String getRangeLow() { return this.rangeLow; }
+        public String getRangeHigh() { return this.rangeHigh; }
     }
 
     public String name;

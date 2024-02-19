@@ -45,56 +45,72 @@ public class MockingService {
             "Wie verständlich war das Thema Kombinatorik?",
             FeedbackQuestionType.STARS,
             null,
-            "F-Q-COMBINATORICS"
+            "F-Q-COMBINATORICS",
+            null,
+            null
         );
         FeedbackQuestion question2 = new FeedbackQuestion(
             "Kurzweiligkeit",
-            "Wie kurzweilig war die Vorlesung? (links = langweilig, rechts = kurzweilig)",
+            "Wie kurzweilig war die Vorlesung?",
             FeedbackQuestionType.SLIDER,
             null,
-            "F-Q-ENTERTAINMENT"
+            "F-Q-ENTERTAINMENT",
+            "langweilig",
+            "spannend"
         );
         FeedbackQuestion question3 = new FeedbackQuestion(
             "Praxisbezug",
-            "Wie bewerten Sie den Praxisbezug der Vorlesung? (links = wenig Praxisbezug, rechts = viel Praxisbezug)",
+            "Wie bewerten Sie den Praxisbezug der Vorlesung?",
             FeedbackQuestionType.SLIDER,
             null,
-            "F-Q-PRACTICALITY"
+            "F-Q-PRACTICALITY",
+            "wenig Praxisbezug",
+            "viel Praxisbezug"
         );
         FeedbackQuestion question4 = new FeedbackQuestion(
             "Sprachbarriere",
             "Die Vorlesung wurde auf Englisch gehalten. Wie fanden Sie die Verständlichkeit?",
             FeedbackQuestionType.SLIDER,
             null,
-            "F-Q-ENGLISH"
+            "F-Q-ENGLISH",
+            null,
+            null
         );
         FeedbackQuestion question5 = new FeedbackQuestion(
             "Prüfungsvorbereitung",
             "Wenn jetzt direkt die Prüfung wäre, wie gut fühlen Sie sich vorbereitet?",
             FeedbackQuestionType.STARS,
             null,
-            "F-Q-EXAM"
+            "F-Q-EXAM",
+            null,
+            null
         );
         FeedbackQuestion question6 = new FeedbackQuestion(
             "Technische Mittel",
             "Wie bewerten Sie die technischen Mittel, die in der Vorlesung verwendet wurden?",
             FeedbackQuestionType.STARS,
             null,
-            "F-Q-TECHNOLOGY"
+            "F-Q-TECHNOLOGY",
+            null,
+            null
         );
         FeedbackQuestion question7 = new FeedbackQuestion(
             "Schwierigstes Thema",
             "Welches Thema war für Sie am schwierigsten?",
             FeedbackQuestionType.SINGLE_CHOICE,
             List.of("Kombinatorik", "Graphen", "Relationen", "Formale Sprachen", "Endliche Automaten", "Turingmaschinen", "Berechenbarkeit"),
-            "F-Q-HARDEST-TOPIC"
+            "F-Q-HARDEST-TOPIC",
+            null,
+            null
         );
         FeedbackQuestion question8 = new FeedbackQuestion(
             "Schwierigstes Thema",
             "Welches Thema war für Sie am schwierigsten?",
             FeedbackQuestionType.SINGLE_CHOICE,
             List.of("Multitenancy", "Microservices", "Cloud Foundry", "Docker", "Kubernetes", "Cloud Native", "Cloud Native Buildpacks"),
-            "F-Q-HARDEST-TOPIC-2"
+            "F-Q-HARDEST-TOPIC-2",
+            null,
+            null
         );
 
         // generate a Course
