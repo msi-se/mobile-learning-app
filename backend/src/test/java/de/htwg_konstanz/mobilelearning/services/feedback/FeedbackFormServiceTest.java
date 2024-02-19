@@ -5,6 +5,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.List;
 
+import org.bson.types.ObjectId;
 import org.jose4j.jwt.JwtClaims;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -17,6 +18,7 @@ import de.htwg_konstanz.mobilelearning.enums.FormStatus;
 import de.htwg_konstanz.mobilelearning.models.Course;
 import de.htwg_konstanz.mobilelearning.models.auth.UserRole;
 import de.htwg_konstanz.mobilelearning.models.feedback.FeedbackForm;
+import de.htwg_konstanz.mobilelearning.repositories.CourseRepository;
 import de.htwg_konstanz.mobilelearning.services.CourseService;
 import de.htwg_konstanz.mobilelearning.services.api.ApiService;
 import de.htwg_konstanz.mobilelearning.services.api.models.ApiCourse;
@@ -43,6 +45,9 @@ public class FeedbackFormServiceTest {
 
     @Inject
     private CourseService courseService;
+
+    @Inject
+    private CourseRepository courseRepository;
 
     @Inject
     private ApiService apiService;
@@ -143,7 +148,7 @@ public class FeedbackFormServiceTest {
 
     @Test
     @TestSecurity(user = "Prof", roles = { UserRole.PROF})
-    @JwtSecurity(claims = { @Claim(key = "email", value = "prof@htwg-konstanz.de") })
+    @JwtSecurity(claims = { @Claim(key = "sub", value = "111111111111111111111111") })
     public void clearResults() {
         //create & get courses + ids
         List<Course> courses = createCourse();
@@ -153,6 +158,12 @@ public class FeedbackFormServiceTest {
         // add a result & get feedback forms
         addResult(courseId, formId, questionId);
         FeedbackForm feedbackForm = feedbackFormService.getFeedbackForm(courses.get(0).id.toString(), formId, true);
+
+        // need to manually add owner because anntation sub claim needs to be static and profId is different
+        Course course = courseService.getCourse(courseId);
+        ObjectId ownerId = new ObjectId("111111111111111111111111");
+        course.addOwner(ownerId);
+        courseRepository.update(course);
 
         // Assert that results were cleared
         Assertions.assertEquals(1, feedbackForm.questions.get(0).results.size());
@@ -174,11 +185,11 @@ public class FeedbackFormServiceTest {
         addResult(courseId, formId, questionId);
         FeedbackForm feedbackForm = feedbackFormService.getFeedbackForm(courses.get(0).id.toString(), formId, true);
 
-        // Todo Assert that results were not cleared (not owner)
+        // Assert that results were not cleared (not owner)
         Assertions.assertEquals(1, feedbackForm.questions.get(0).results.size());
         feedbackFormService.clearFeedbackFormResults(courses.get(0).id.toString(), feedbackForm.id.toString());
         FeedbackForm feedbackFormCleared = feedbackFormService.getFeedbackForm(courses.get(0).id.toString(), formId, true);
-        Assertions.assertEquals(0, feedbackFormCleared.questions.get(0).results.size());
+        Assertions.assertEquals(1, feedbackFormCleared.questions.get(0).results.size());
     }
 
     @Test
@@ -200,13 +211,19 @@ public class FeedbackFormServiceTest {
 
     @Test
     @TestSecurity(user = "Prof", roles = { UserRole.PROF})
-    @JwtSecurity(claims = { @Claim(key = "email", value = "prof@htwg-konstanz.de") })
+    @JwtSecurity(claims = { @Claim(key = "sub", value = "111111111111111111111111") })
     public void updateFeedbackForm() {
         //create & get courses + ids
         List<Course> courses = createCourse();
         String courseId = courses.getFirst().getId().toString();
         String formId = courses.getFirst().getFeedbackForms().get(0).getId().toString();
       
+        // need to manually add owner because anntation sub claim needs to be static profId is different
+        Course course = courseService.getCourse(courseId);
+        ObjectId ownerId = new ObjectId("111111111111111111111111");
+        course.addOwner(ownerId);
+        courseRepository.update(course);
+
         // update the feedback form name, description and questions
         FeedbackForm feedbackFormUpdate = new FeedbackForm(courses.get(0).id, "nameUpdate", "descriptionUpdate", List.of(), FormStatus.NOT_STARTED);
         feedbackFormService.updateFeedbackForm(courseId, formId, feedbackFormUpdate);
@@ -231,11 +248,11 @@ public class FeedbackFormServiceTest {
         FeedbackForm feedbackFormUpdate = new FeedbackForm(courses.get(0).id, "nameUpdate", "descriptionUpdate", List.of(), FormStatus.NOT_STARTED);
         feedbackFormService.updateFeedbackForm(courseId, formId, feedbackFormUpdate);
         
-        // Todo Assert that results were not cleared (not owner)
+        // Assert that results were not cleared (not owner)
         List<FeedbackForm> updatedFeedbackForms = feedbackFormService.getFeedbackForms(courses.get(0).id.toString());
-        Assertions.assertEquals("nameUpdate", updatedFeedbackForms.get(0).name);
-        Assertions.assertEquals("descriptionUpdate", updatedFeedbackForms.get(0).description);
-        Assertions.assertEquals(0, updatedFeedbackForms.get(0).questions.size());
+        Assertions.assertEquals("Erster Sprint", updatedFeedbackForms.get(0).name);
+        Assertions.assertEquals("Hier wollen wir Ihr Feedback zum ersten Sprint einholen", updatedFeedbackForms.get(0).description);
+        Assertions.assertEquals(1, updatedFeedbackForms.get(0).questions.size());
     }
     
     @Test

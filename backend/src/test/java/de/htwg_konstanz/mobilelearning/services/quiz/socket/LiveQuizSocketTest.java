@@ -2,7 +2,6 @@ package de.htwg_konstanz.mobilelearning.services.quiz.socket;
 
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
 import java.util.Base64;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -14,7 +13,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInfo;
 
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import de.htwg_konstanz.mobilelearning.LiveFeedbackSocketClient;
@@ -36,7 +34,6 @@ import io.quarkus.test.junit.TestProfile;
 import io.quarkus.test.security.TestSecurity;
 import io.quarkus.test.security.jwt.Claim;
 import io.quarkus.test.security.jwt.JwtSecurity;
-import io.smallrye.common.constraint.Assert;
 import io.smallrye.jwt.auth.principal.DefaultJWTCallerPrincipal;
 import jakarta.inject.Inject;
 import jakarta.websocket.ContainerProvider;
