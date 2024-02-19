@@ -1,3 +1,4 @@
 .env
 personal-playground/
 .DS_Store
+mongo-data
