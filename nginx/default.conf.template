@@ -1,0 +1,31 @@
+server {
+    listen 80;
+    
+    location /api {
+        rewrite /api/(.*) /$1 break;
+        proxy_pass         ${MOBILE_LEARNING_BACKEND_URL};
+        proxy_redirect     off;
+        proxy_set_header   Host $host;
+        proxy_set_header   X-Real-IP $remote_addr;
+        proxy_set_header   X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header   X-Forwarded-Host $server_name;
+        proxy_set_header   Upgrade $http_upgrade;
+        proxy_set_header   Connection "upgrade";
+        proxy_http_version 1.1;
+        proxy_connect_timeout 7d;
+        proxy_send_timeout 7d;
+        proxy_read_timeout 7d;
+    }
+
+    location / {
+        rewrite /(.*) /$1 break;
+        proxy_pass         ${MOBILE_LEARNING_FRONTEND_URL};
+        proxy_redirect     off;
+        proxy_set_header   Host $host;
+        proxy_set_header   X-Real-IP $remote_addr;
+        proxy_set_header   X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header   X-Forwarded-Host $server_name;
+    }
+
+    
+}

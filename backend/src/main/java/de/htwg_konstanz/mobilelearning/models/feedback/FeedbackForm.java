@@ -145,7 +145,9 @@ public class FeedbackForm extends Form {
                     apiFeedbackQuestion.getDescription(),
                     FeedbackQuestionType.valueOf(apiFeedbackQuestion.getType()),
                     apiFeedbackQuestion.getOptions(),
-                    apiFeedbackQuestion.getKey()
+                    apiFeedbackQuestion.getKey(),
+                    apiFeedbackQuestion.getRangeLow(),
+                    apiFeedbackQuestion.getRangeHigh()
                     );
 
             course.addFeedbackQuestion(feedbackQuestion);

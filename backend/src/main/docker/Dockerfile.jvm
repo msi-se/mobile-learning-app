@@ -77,16 +77,38 @@
 #   accessed directly. (example: "foo.example.com,bar.example.com")
 #
 ###
-FROM registry.access.redhat.com/ubi8/openjdk-21:1.17
+
+
+FROM registry.access.redhat.com/ubi8/openjdk-21:latest as builder
+
+# copy the pom.xml and all the necessary files (copy .pem files after build)
+WORKDIR /project
+COPY pom.xml /project/pom.xml
+COPY src /project/src
+COPY .mvn /project/.mvn
+COPY mvnw /project/mvnw
+
+# build the application
+RUN ./mvnw package -DskipTests
+
+# Start the runner image
+FROM registry.access.redhat.com/ubi8/openjdk-21:latest as runner
 
 ENV LANGUAGE='en_US:en'
 
-
 # We make four distinct layers so if there are application changes the library layers can be re-used
-COPY --chown=185 target/quarkus-app/lib/ /deployments/lib/
-COPY --chown=185 target/quarkus-app/*.jar /deployments/
-COPY --chown=185 target/quarkus-app/app/ /deployments/app/
-COPY --chown=185 target/quarkus-app/quarkus/ /deployments/quarkus/
+COPY --from=builder --chown=185 /project/target/quarkus-app/lib/ /deployments/lib/
+COPY --from=builder --chown=185 /project/target/quarkus-app/*.jar /deployments/
+COPY --from=builder --chown=185 /project/target/quarkus-app/app/ /deployments/app/
+COPY --from=builder --chown=185 /project/target/quarkus-app/quarkus/ /deployments/quarkus/
+
+# Ensure group permissions are added to the runner
+USER root
+RUN chgrp -R 0 /deployments && chmod -R g=u /deployments
+USER 185
+
+# copy the pem files
+COPY src/main/resources/*.pem /deployments/quarkus-app/
 
 EXPOSE 8080
 USER 185
