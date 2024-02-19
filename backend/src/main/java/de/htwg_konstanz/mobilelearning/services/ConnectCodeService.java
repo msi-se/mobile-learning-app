@@ -30,7 +30,7 @@ public class ConnectCodeService {
     /**
      * Returns the course and feedback form id for a given connect code.
      * 
-     * @param connectCode
+     * @param connectCode random 6-digit connect code created in Form.java
      * @return Course and feedback form id
      */
     @GET
@@ -63,7 +63,7 @@ public class ConnectCodeService {
     /**
      * Returns the course and quiz form id for a given connect code.
      * 
-     * @param connectCode
+     * @param connectCode random 6-digit connect code
      * @return Course and quiz form id
      */
     @GET

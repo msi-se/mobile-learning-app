@@ -38,7 +38,7 @@ public class UserService {
      * Login user.
      * If user does not exist, create new user. 
      * 
-     * @param authorization
+     * @param authorization Auth header of the request
      * @return
      * @throws Exception
      */
