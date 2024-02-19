@@ -20,7 +20,8 @@ class _ProfilePage extends State<ProfilePage> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Profile"),
+        backgroundColor: Theme.of(context).colorScheme.primary,
+        title: const Text("Profilseite"),
       ),
       body: SafeArea(
         child: Padding(
@@ -32,7 +33,7 @@ class _ProfilePage extends State<ProfilePage> {
                 //   radius: 50,
                 //   backgroundImage: NetworkImage('https://via.placeholder.com/150'),
                 // ),
-                Icon(Icons.account_circle, size: 100, color: colors.primary),
+                Icon(Icons.account_circle, size: 100, color: colors.secondary),
                 Text(
                   getSession()!.fullName,
                   style: const TextStyle(
