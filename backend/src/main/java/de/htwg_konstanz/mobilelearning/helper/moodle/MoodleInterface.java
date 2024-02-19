@@ -9,6 +9,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.util.List;
 
+/**
+ * Moodle service that returns moodle courses of a user.
+ */
 public class MoodleInterface {
     public List<MoodleCourse> courses;
     private String username;
@@ -68,6 +71,12 @@ public class MoodleInterface {
 
     };
 
+    /**
+     * Returns moodle courses of the user.
+     * Courses are fetched from moodle api with username & password.
+     * 
+     * @return List of moodle courses
+     */
     public List<MoodleCourse> getCourses() {
 
         // TEMP: mock the special users (Prof, Student, Admin)

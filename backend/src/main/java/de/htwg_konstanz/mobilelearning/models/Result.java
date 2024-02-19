@@ -4,6 +4,10 @@ import java.util.List;
 
 import org.bson.types.ObjectId;
 
+/**
+ * Result of feedback/quiz form.
+ * User id is hashed for anonymity.
+ */
 public class Result {
     public ObjectId id;
     public ObjectId userId;

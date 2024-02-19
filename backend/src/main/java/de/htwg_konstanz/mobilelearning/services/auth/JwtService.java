@@ -12,15 +12,38 @@ import jakarta.enterprise.context.ApplicationScoped;
 import org.jose4j.jwt.JwtClaims;
 import org.jose4j.jwt.consumer.InvalidJwtException;
 
+/**
+ * Service used to manage JWT tokens.
+ */
 @ApplicationScoped
 public class JwtService {
 
+        /**
+         * Returns decoded claims of a JWT token.
+         * 
+         * @param jwt
+         * @return
+         * @throws InvalidJwtException
+         */
         public DefaultJWTCallerPrincipal getJwtClaims(String jwt) throws InvalidJwtException {
             String jwtJson = new String(Base64.getUrlDecoder().decode(jwt.split("\\.")[1]), StandardCharsets.UTF_8);
             DefaultJWTCallerPrincipal defaultJWTCallerPrincipal = new DefaultJWTCallerPrincipal(JwtClaims.parse(jwtJson));
             return defaultJWTCallerPrincipal;
         }
 
+        /**
+         * Returns a JWT token for a given user.
+         * Creates claims & sings jwt with private key:
+         *   name full name of the user from ldap
+         *   sub user id
+         *   email email of the user from ldap
+         *   preferred_username username of the user from ldap
+         *   groups roles of the user 
+         *   exp expiration time of the token (2 days)
+         * 
+         * @param user
+         * @return JWT token
+         */
         public String getToken(User user) {
 
 

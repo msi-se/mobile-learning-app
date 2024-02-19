@@ -5,6 +5,10 @@ import java.util.List;
 import de.htwg_konstanz.mobilelearning.enums.QuizQuestionType;
 import de.htwg_konstanz.mobilelearning.models.Question;
 
+/**
+ * Type of question that is used in the quiz form.
+ * Contains a list of correct answers and QuizQuestionType.
+ */
 public class QuizQuestion extends Question {
 
     public Boolean hasCorrectAnswers;

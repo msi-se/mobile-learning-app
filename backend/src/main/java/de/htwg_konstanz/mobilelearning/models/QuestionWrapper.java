@@ -7,6 +7,9 @@ import org.bson.types.ObjectId;
 
 import de.htwg_konstanz.mobilelearning.helper.Analytics;
 
+/**
+ * Saves the results of a questions and references question with id.
+ */
 public class QuestionWrapper {
     
     public ObjectId id;
