@@ -91,8 +91,6 @@ COPY mvnw /project/mvnw
 # build the application
 RUN ./mvnw package -DskipTests
 
-# COPY src/main/resources/*.pem /project/target/quarkus-app/
-
 # Start the runner image
 FROM registry.access.redhat.com/ubi8/openjdk-21:latest as runner
 
