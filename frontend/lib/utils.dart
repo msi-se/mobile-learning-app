@@ -5,9 +5,8 @@ String getBackendUrl({String protocol = 'http'}) {
 
   // get the current domain (when running in a browser)
   final String domain = Uri.base.host;
-
   // if the domain is localhost, use the local backend
-  if (domain == 'localhost') {
+  if (domain == '' || domain == 'localhost') {
     if (defaultTargetPlatform == TargetPlatform.android) {
       return '$protocol://10.0.2.2:8080';
     }
