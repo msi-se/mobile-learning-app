@@ -1,8 +1,9 @@
 package de.htwg_konstanz.mobilelearning.helper;
 
-// static class to generate random aliases
-// like curios zebra, intelligent tiger, strange squirrel, ... (positive adjectives)
-
+/**
+ * static class to generate random aliases
+like curios zebra, intelligent tiger, strange squirrel, ... (positive adjectives)
+*/
 public class AliasGenerator {
 
     private static String[] adjectives = {
@@ -63,6 +64,10 @@ public class AliasGenerator {
             "viper", "vulture", "wallaby", "walrus", "wasp", "weasel", "whale", "wildcat", "wolf", "wolverine",
             "wombat", "woodcock", "woodpecker", "worm", "wren", "yak", "zebra", };
 
+    /**
+     * generates a random alias from adjectives & animals.
+     * @return a random alias
+     */
     public static String generateAlias() {
         int adjectiveIndex = (int) (Math.random() * adjectives.length);
         int animalIndex = (int) (Math.random() * animals.length);

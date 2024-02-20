@@ -23,6 +23,9 @@ import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
+/**
+ * Service used to manage quiz forms of a course.
+ */
 @Path("/course/{courseId}/quiz/form")
 public class QuizFormService {
     
@@ -31,6 +34,12 @@ public class QuizFormService {
     @Inject
     JsonWebToken jwt;
 
+    /**
+     * Returns all quiz forms of a course.
+     * 
+     * @param courseId
+     * @return List of quiz forms
+     */
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @RolesAllowed({ UserRole.PROF, UserRole.STUDENT })
@@ -40,6 +49,14 @@ public class QuizFormService {
         return course.getQuizForms();
     }
 
+    /**
+     * Returns a single quiz form of a course.
+     * 
+     * @param courseId
+     * @param formId
+     * @param results (optional query param - default: false)
+     * @return Quiz form
+     */
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @Path("/{formId}")
@@ -62,8 +79,13 @@ public class QuizFormService {
     }
 
     /*
-     * Endpoint to participate in a quiz
-     * The user has to be registered with the user id and he has to provide an alias (String)
+     * Endpoint to participate in a quiz.
+     * The user has to be registered with the user id and he has to provide an alias (String).
+     * 
+     * @param alias
+     * @param courseId
+     * @param formId
+     * @return RestResponse
      */
     @POST
     @Produces(MediaType.APPLICATION_JSON)

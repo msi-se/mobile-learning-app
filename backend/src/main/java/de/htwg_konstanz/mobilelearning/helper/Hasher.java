@@ -4,6 +4,13 @@ import java.security.MessageDigest;
 
 public class Hasher {
     
+    /**
+     * Hashes a given input string with MD5.
+     * Used to hash userId to ensure anonymity.
+     * 
+     * @param input
+     * @return
+     */
     public static String hash(String input) {
         try {
             MessageDigest md = MessageDigest.getInstance("MD5");

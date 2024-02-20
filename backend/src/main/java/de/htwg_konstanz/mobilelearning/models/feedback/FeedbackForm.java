@@ -99,7 +99,7 @@ public class FeedbackForm extends Form {
             List<ApiFeedbackQuestion> questions, Course course) {
 
         // create feedback questions
-        List<ObjectId> feedbackQuestionIds = new ArrayList<>();
+        List<ObjectId> feedbackQuestionIds = new ArrayList<ObjectId>();
         for (ApiFeedbackForm.ApiFeedbackQuestion apiFeedbackQuestion : questions) {
 
             if (apiFeedbackQuestion.getName() == null || apiFeedbackQuestion.getName().isEmpty()) {
@@ -155,7 +155,7 @@ public class FeedbackForm extends Form {
         }
 
         // create question wrappers
-        List<QuestionWrapper> questionWrappers = new ArrayList<>();
+        List<QuestionWrapper> questionWrappers = new ArrayList<QuestionWrapper>();
         for (ObjectId feedbackQuestionId : feedbackQuestionIds) {
             questionWrappers.add(new QuestionWrapper(feedbackQuestionId, null));
         }

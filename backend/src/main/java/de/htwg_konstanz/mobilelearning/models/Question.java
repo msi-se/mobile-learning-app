@@ -5,6 +5,10 @@ import java.util.List;
 
 import org.bson.types.ObjectId;
 
+/**
+ * Contains name & description of a question.
+ * Options are the possible answers to the question.
+ */
 public abstract class Question {
     
     public ObjectId id;

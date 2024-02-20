@@ -5,6 +5,10 @@ import java.io.Serializable;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+/**
+ * Structure of a menu item.
+ * Represents structre of xml data provided by Seezeit. 
+ */
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Item implements Serializable {
 

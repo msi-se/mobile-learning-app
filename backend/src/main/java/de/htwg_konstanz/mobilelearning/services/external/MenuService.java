@@ -17,6 +17,9 @@ import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 
+/**
+ * Mensa menu service.
+ */
 @Path("/external/menu")
 public class MenuService {
 
@@ -26,6 +29,11 @@ public class MenuService {
     public MenuService() {
     }
 
+    /**
+     * Returns the current menu.
+     * 
+     * @return MenuState
+     */
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @Path("")

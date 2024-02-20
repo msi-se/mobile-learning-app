@@ -2,6 +2,7 @@ package de.htwg_konstanz.mobilelearning.services.feedback;
 
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
 
@@ -16,6 +17,7 @@ import de.htwg_konstanz.mobilelearning.LiveFeedbackSocketClient;
 import de.htwg_konstanz.mobilelearning.MockMongoTestProfile;
 import de.htwg_konstanz.mobilelearning.enums.FormStatus;
 import de.htwg_konstanz.mobilelearning.models.Course;
+import de.htwg_konstanz.mobilelearning.models.QuestionWrapper;
 import de.htwg_konstanz.mobilelearning.models.auth.UserRole;
 import de.htwg_konstanz.mobilelearning.models.feedback.FeedbackForm;
 import de.htwg_konstanz.mobilelearning.repositories.CourseRepository;
@@ -75,7 +77,7 @@ public class FeedbackFormServiceTest {
     public void createFeedbackForm() {
         //create & get courses
         List<Course> courses = createCourse();
-        FeedbackForm feedbackForm = new FeedbackForm(courses.get(0).id, "name", "description", List.of(), FormStatus.NOT_STARTED);
+        FeedbackForm feedbackForm = new FeedbackForm(courses.get(0).id, "name", "description", new ArrayList<QuestionWrapper>(), FormStatus.NOT_STARTED);
 
         // create a feedback form
         feedbackFormService.createFeedbackForm(courses.getFirst().id.toString(), feedbackForm);
@@ -93,7 +95,7 @@ public class FeedbackFormServiceTest {
     public void createFeedbackFormForbidden() {
         //create & get courses
         List<Course> courses = createCourse();
-        FeedbackForm feedbackForm = new FeedbackForm(courses.get(0).id, "name", "description", List.of(), FormStatus.NOT_STARTED);
+        FeedbackForm feedbackForm = new FeedbackForm(courses.get(0).id, "name", "description", new ArrayList<QuestionWrapper>(), FormStatus.NOT_STARTED);
         
         Exception exception = Assertions.assertThrows(ForbiddenException.class, () -> {
             feedbackFormService.createFeedbackForm(courses.getFirst().id.toString(), feedbackForm);
@@ -225,7 +227,7 @@ public class FeedbackFormServiceTest {
         courseRepository.update(course);
 
         // update the feedback form name, description and questions
-        FeedbackForm feedbackFormUpdate = new FeedbackForm(courses.get(0).id, "nameUpdate", "descriptionUpdate", List.of(), FormStatus.NOT_STARTED);
+        FeedbackForm feedbackFormUpdate = new FeedbackForm(courses.get(0).id, "nameUpdate", "descriptionUpdate", new ArrayList<QuestionWrapper>(), FormStatus.NOT_STARTED);
         feedbackFormService.updateFeedbackForm(courseId, formId, feedbackFormUpdate);
         
         // check if the feedback form was updated
@@ -245,7 +247,7 @@ public class FeedbackFormServiceTest {
         String formId = courses.getFirst().getFeedbackForms().get(0).getId().toString();
 
         // update the feedback form name, description and questions
-        FeedbackForm feedbackFormUpdate = new FeedbackForm(courses.get(0).id, "nameUpdate", "descriptionUpdate", List.of(), FormStatus.NOT_STARTED);
+        FeedbackForm feedbackFormUpdate = new FeedbackForm(courses.get(0).id, "nameUpdate", "descriptionUpdate", new ArrayList<QuestionWrapper>(), FormStatus.NOT_STARTED);
         feedbackFormService.updateFeedbackForm(courseId, formId, feedbackFormUpdate);
         
         // Assert that results were not cleared (not owner)
@@ -265,7 +267,7 @@ public class FeedbackFormServiceTest {
         String formId = courses.getFirst().getFeedbackForms().get(0).getId().toString();
         
         // update the feedback form name, description and questions
-        FeedbackForm feedbackFormUpdate = new FeedbackForm(courses.get(0).id, "nameUpdate", "descriptionUpdate", List.of(), FormStatus.NOT_STARTED);
+        FeedbackForm feedbackFormUpdate = new FeedbackForm(courses.get(0).id, "nameUpdate", "descriptionUpdate", new ArrayList<QuestionWrapper>(), FormStatus.NOT_STARTED);
         Exception exception = Assertions.assertThrows(ForbiddenException.class, () -> {
             feedbackFormService.updateFeedbackForm(courseId, formId, feedbackFormUpdate);
         });
@@ -329,7 +331,7 @@ public class FeedbackFormServiceTest {
                                             "Rolle",
                                             "Wie gut hat Ihnen ihre Pizza gefallen?",
                                             "SLIDER",
-                                            List.of(),
+                                            new ArrayList<String>(),
                                             "F-Q-ROLLE",
                                             "gut",
                                             "schlecht")),

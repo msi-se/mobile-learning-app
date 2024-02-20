@@ -1,5 +1,6 @@
 package de.htwg_konstanz.mobilelearning.services.api.models;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class ApiFeedbackForm {
@@ -31,7 +32,7 @@ public class ApiFeedbackForm {
         public String getDescription() { return this.description; }
         public String getType() { return this.type; }
         public List<String> getOptions() {
-            return this.options != null ? this.options : List.of();
+            return this.options != null ? this.options : new ArrayList<String>();
         }
         public String getRangeLow() { return this.rangeLow; }
         public String getRangeHigh() { return this.rangeHigh; }
@@ -65,6 +66,6 @@ public class ApiFeedbackForm {
     }
 
     public List<ApiFeedbackQuestion> getQuestions() {
-        return questions == null ? List.of() : questions;
+        return questions == null ? new ArrayList<ApiFeedbackQuestion>() : questions;
     }
 }

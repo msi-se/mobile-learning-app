@@ -31,6 +31,9 @@ import jakarta.websocket.server.PathParam;
 import jakarta.websocket.server.ServerEndpoint;
 import jakarta.websocket.Session;
 
+/**
+ * Socket run to live quiz sessions of a course.
+ */	
 @ServerEndpoint("/course/{courseId}/quiz/form/{formId}/subscribe/{userId}/{jwt}")
 @ApplicationScoped
 public class LiveQuizSocket {
@@ -45,6 +48,18 @@ public class LiveQuizSocket {
     @Inject
     JwtService jwtService;
 
+    /**
+     * Method called when a new connection is opened.
+     * User has to either (student & participant of the session) or owner of the course to connect.
+     * Before the connection user call participate method.
+     * 
+     * @param session
+     * @param courseId
+     * @param formId
+     * @param userId
+     * @param jwt
+     * @throws Exception
+     */
     @OnOpen
     public void onOpen(
         Session session,
@@ -103,17 +118,42 @@ public class LiveQuizSocket {
         }
     }
 
+    /**
+     * Method called when a connection is closed.
+     * 
+     * @param session
+     * @param courseId
+     * @param formId
+     * @param userId
+     */
     @OnClose
     public void onClose(Session session, @PathParam("courseId") String courseId, @PathParam("formId") String formId, @PathParam("userId") String userId) {
         connections.remove(session.getId());
     }
 
+    /**
+     * Method called when an error occurs.
+     * 
+     * @param session
+     * @param courseId
+     * @param formId
+     * @param userId
+     * @param throwable
+     */
     @OnError
     public void onError(Session session, @PathParam("courseId") String courseId, @PathParam("formId") String formId, @PathParam("userId") String userId, Throwable throwable) {
         throwable.printStackTrace();
         connections.remove(session.getId());
     }
 
+    /**
+     * Method called when a message is received via broadcast.
+     * 
+     * @param message
+     * @param courseId
+     * @param formId
+     * @param userId
+     */
     @OnMessage
     public void onMessage(String message, @PathParam("courseId") String courseId, @PathParam("formId") String formId, @PathParam("userId") String userId) {
         LiveQuizSocketMessage quizSocketMessage = new LiveQuizSocketMessage(message);

@@ -2,6 +2,7 @@ package de.htwg_konstanz.mobilelearning.services.feedback.socket;
 
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
 
@@ -372,7 +373,7 @@ public class LiveFeedbackSocketTest {
                                             "Rolle",
                                             "Wie gut hat Ihnen ihre Pizza gefallen?",
                                             "SLIDER",
-                                            List.of(),
+                                            new ArrayList<String>(),
                                             "F-Q-ROLLE",
                                             "gut",
                                             "schlecht")),
