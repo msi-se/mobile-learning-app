@@ -3,7 +3,8 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:frontend/components/button.dart';
-import 'package:frontend/components/error/network_specific_error.dart';
+import 'package:frontend/components/error/general_error_widget.dart';
+import 'package:frontend/components/error/network_error_widget.dart';
 import 'package:frontend/components/textfield.dart';
 import 'package:frontend/global.dart';
 import 'package:frontend/theme/assets.dart';
@@ -81,23 +82,26 @@ class _LoginPageState extends State<LoginPage> {
         );
       }
     } on http.ClientException {
-      if (mounted) {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-              builder: (context) =>
-                  const NetworkErrorWidget(originalRoute: '/login')),
-        );
-      }
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return const NetworkErrorWidget();
+        },
+      );
     } on SocketException {
-      if (mounted) {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-              builder: (context) =>
-                  const NetworkErrorWidget(originalRoute: '/login')),
-        );
-      }
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return const NetworkErrorWidget();
+        },
+      );
+    } catch (e) {
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return const GeneralErrorWidget();
+        },
+      );
     }
   }
 

@@ -10,7 +10,6 @@ import 'package:frontend/pages/quiz/attend_quiz_page.dart';
 import 'package:frontend/pages/quiz/quiz_control_page.dart';
 import 'package:frontend/pages/quiz/quiz_preview_page.dart';
 import 'package:frontend/theme/themes.dart';
-import 'package:frontend/components/error/flutter_specific_error.dart';
 
 void main() {
   runApp(const MyApp());
