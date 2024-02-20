@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:frontend/components/code_input.dart';
@@ -14,16 +16,61 @@ class LiveTab extends StatefulWidget {
   State<LiveTab> createState() => _LiveTabState();
 }
 
+class FormShell {
+  final String connectCode;
+  final String name;
+  FormShell(this.connectCode, this.name);
+
+  factory FormShell.fromJson(Map<String, dynamic> json) {
+    return FormShell((json['connectCode'] as int).toString(), json['name']);
+  }
+}
+
+List<FormShell> getFormShellsFromJson(List<dynamic> json) {
+  return json.map((e) => FormShell.fromJson(e)).toList();
+}
+
 class _LiveTabState extends State<LiveTab> {
   final TextEditingController _joinCodeController = TextEditingController();
+
+  late List<FormShell> _forms;
+
+  bool _loading = true;
 
   @override
   void initState() {
     super.initState();
+
+    _forms = [];
+
+    fetchForms();
+  }
+
+  Future fetchForms() async {
+    try {
+      final response = await http.get(
+        Uri.parse(
+            "${getBackendUrl()}/live?password=${getSession()!.password}"),
+        headers: {
+          "Content-Type": "application/json",
+          "AUTHORIZATION": "Bearer ${getSession()!.jwt}",
+        },
+      );
+      if (!mounted) return;
+      if (response.statusCode == 200) {
+        var data = jsonDecode(response.body);
+        setState(() {
+          _loading = false;
+          _forms = _forms + getFormShellsFromJson(data);
+        });
+      }
+    } on http.ClientException catch (_) {
+      // TODO: handle error
+    }
   }
 
   void joinCourse(code) async {
-      code = code.replaceAll(' ', '');
+    code = code.replaceAll(' ', '');
     // TODO: do nicer
     try {
       final response = await http.get(
@@ -84,11 +131,17 @@ class _LiveTabState extends State<LiveTab> {
   Widget build(BuildContext context) {
     final colors = Theme.of(context).colorScheme;
 
+    if (_loading) {
+      return const Center(
+        child: CircularProgressIndicator(),
+      );
+    }
+
     return Column(
       children: <Widget>[
         Padding(
           padding:
-              const EdgeInsets.only(top: 32.0, bottom: 32, left: 16, right: 16),
+              const EdgeInsets.only(top: 16.0, bottom: 0, left: 16, right: 16),
           child: Row(
             children: [
               const Expanded(
@@ -207,6 +260,31 @@ class _LiveTabState extends State<LiveTab> {
                   ],
                 ),
               ),
+            ),
+          ),
+        ),
+        Expanded(
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: ListView.builder(
+              shrinkWrap: false,
+              itemCount: _forms.length,
+              itemBuilder: (context, index) {
+                return Card(
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10.0),
+                  ),
+                  child: ListTile(
+                    title: Text(_forms[index].name),
+                    // subtitle: Text(widget.courses[index].description),
+                    // dense: true,
+                    // trailing: const Icon(Icons.arrow_forward_ios),
+                    onTap: () {
+                      joinCourse(_forms[index].connectCode);
+                    },
+                  ),
+                );
+              },
             ),
           ),
         ),
