@@ -7,6 +7,7 @@
     - Feedback voll einsatzfähig
     - Quiz voll einsatzfähig
   - UI zum Erstellen erst später
+- danach größere geführte Tests
 
 ## Sprintergebnis
 
@@ -28,6 +29,19 @@
 ## Abstimmung
 
 - SSL auf Server
+  - mit Let's Encrypt
 - Deployment App-/PlayStore
+  - Extra Session mit einem Dev und Herr Schimkat
 
 ## Sprintplanning
+
+- Feedback + Quiz "finalisieren"
+  - Vorgefertigte Umfragen (mit Frau Landwehr abstimmen)
+  - aktuelle Live-Feedback und Quiz direkt in Frontend anzeigen
+  - Rollen Student + Prof stärker trennen
+    - Student sollen keine Fragen sehen
+    - Avatar Symbol
+    - farbliche Trennung
+- Demo als Vorstellung für Arbeitskrei lernen → Marketing
+  - User-Journey (Screenshots (+ Mockups))
+  - previewd.app
