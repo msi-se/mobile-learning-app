@@ -6,6 +6,7 @@ import 'package:frontend/components/elements/feedback/slider_feedback_result.dar
 import 'package:frontend/components/elements/feedback/star_feedback_result.dart';
 import 'package:frontend/global.dart';
 import 'package:frontend/models/feedback/feedback_form.dart';
+import 'package:frontend/models/feedback/feedback_question.dart';
 import 'package:frontend/utils.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 import 'package:http/http.dart' as http;
@@ -222,7 +223,7 @@ class _FeedbackResultPageState extends State<FeedbackResultPage> {
                         physics: const NeverScrollableScrollPhysics(),
                         itemCount: _form.questions.length,
                         itemBuilder: (context, index) {
-                          final element = _form.questions[index];
+                          final element = _form.questions[index] as FeedbackQuestion;
                           final double average = _results[index]["average"];
                           final roundAverage = (average * 100).round() / 100;
                           final values = _results[index]["values"];
@@ -241,6 +242,8 @@ class _FeedbackResultPageState extends State<FeedbackResultPage> {
                                 else if (element.type == 'SLIDER')
                                   SliderFeedbackResult(
                                     results: values,
+                                    rangeLow: element.rangeLow,
+                                    rangeHigh: element.rangeHigh,
                                     average: average,
                                     min: 0,
                                     max: 10,

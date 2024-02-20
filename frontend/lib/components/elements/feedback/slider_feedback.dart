@@ -1,11 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 
 class SliderFeedback extends StatefulWidget {
   final int initialFeedback;
+  final String rangeLow;
+  final String rangeHigh;
   final ValueChanged<int> onFeedbackChanged;
 
   const SliderFeedback(
-      {super.key, this.initialFeedback = 5, required this.onFeedbackChanged});
+      {super.key,
+      this.initialFeedback = 5,
+      this.rangeLow = "0",
+      this.rangeHigh = "10",
+      required this.onFeedbackChanged});
 
   @override
   State<SliderFeedback> createState() => _SliderFeedbackState();
@@ -37,20 +44,31 @@ class _SliderFeedbackState extends State<SliderFeedback> {
       }
     }
 
-    return Slider(
-      value: _feedback,
-      min: 0,
-      max: 10,
-      divisions: 10,
-      onChanged: (newFeedback) {
-        setState(() {
-          _feedback = newFeedback;
-          _hasChanged = true;
-        });
-        widget.onFeedbackChanged(newFeedback.toInt());
-      },
-      activeColor: activeColor,
-      label: _feedback.toInt().toString(),
+    return Column(
+      children: [
+        Slider(
+          value: _feedback,
+          min: 0,
+          max: 10,
+          divisions: 10,
+          onChanged: (newFeedback) {
+            setState(() {
+              _feedback = newFeedback;
+              _hasChanged = true;
+            });
+            widget.onFeedbackChanged(newFeedback.toInt());
+          },
+          activeColor: activeColor,
+          label: _feedback.toInt().toString(),
+        ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(widget.rangeLow),
+            Text(widget.rangeHigh),
+          ],
+        ),
+      ],
     );
   }
 }
