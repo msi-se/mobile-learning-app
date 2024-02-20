@@ -16,12 +16,23 @@ import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 
+/**
+ * Service used to get the course and form id for a given connect code.
+ * Each form has a unique connect code which is used to identify the form.
+ * Professors share this code with their students in a live session.
+ */
 @Path("/connectto")
 public class ConnectCodeService {
     
     @Inject
     private CourseRepository courseRepository;
 
+    /**
+     * Returns the course and feedback form id for a given connect code.
+     * 
+     * @param connectCode random 6-digit connect code created in Form.java
+     * @return Course and feedback form id
+     */
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @Path("/feedback/{connectCode}")
@@ -49,6 +60,12 @@ public class ConnectCodeService {
         return jsonObject.toString();
     }
 
+    /**
+     * Returns the course and quiz form id for a given connect code.
+     * 
+     * @param connectCode random 6-digit connect code
+     * @return Course and quiz form id
+     */
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @Path("/quiz/{connectCode}")

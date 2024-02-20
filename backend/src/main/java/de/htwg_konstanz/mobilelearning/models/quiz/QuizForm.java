@@ -13,6 +13,10 @@ import de.htwg_konstanz.mobilelearning.models.Form;
 import de.htwg_konstanz.mobilelearning.models.QuestionWrapper;
 import de.htwg_konstanz.mobilelearning.services.api.models.ApiQuizForm;
 
+/**
+ * Type of form for quizzes.
+ * Contains index of current question that is shown in the session and whether it is finished.
+ */
 public class QuizForm extends Form {
 
     public Integer currentQuestionIndex;
@@ -35,7 +39,7 @@ public class QuizForm extends Form {
         super(courseId, name, description, questions, status);
         this.currentQuestionIndex = currentQuestionIndex;
         this.currentQuestionFinished = currentQuestionFinished;
-        this.participants = List.of();
+        this.participants = new ArrayList<QuizParticipant>();
     }
 
     public void fillQuestionContents(Course course) {
@@ -224,7 +228,7 @@ public class QuizForm extends Form {
             List<ApiQuizForm.ApiQuizQuestion> questions,
             Course course) throws IllegalArgumentException {
 
-        List<ObjectId> quizQuestionIds = new ArrayList<>();
+        List<ObjectId> quizQuestionIds = new ArrayList<ObjectId>();
         for (ApiQuizForm.ApiQuizQuestion apiQuizQuestion : questions) {
             if (apiQuizQuestion.getName() == null || apiQuizQuestion.getName().isEmpty()) {
                 throw new IllegalArgumentException("Quiz question name must not be empty.");
@@ -283,7 +287,7 @@ public class QuizForm extends Form {
         }
 
         // create question wrappers
-        List<QuestionWrapper> questionWrappers = new ArrayList<>();
+        List<QuestionWrapper> questionWrappers = new ArrayList<QuestionWrapper>();
         for (ObjectId quizQuestionId : quizQuestionIds) {
             questionWrappers.add(new QuestionWrapper(quizQuestionId, null));
         }

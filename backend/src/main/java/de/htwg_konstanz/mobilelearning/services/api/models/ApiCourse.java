@@ -1,5 +1,6 @@
 package de.htwg_konstanz.mobilelearning.services.api.models;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class ApiCourse {
@@ -16,16 +17,16 @@ public class ApiCourse {
     public ApiCourse(String name, String description, String key) {
         this.name = name;
         this.description = description;
-        this.feedbackForms = List.of();
-        this.quizForms = List.of();
+        this.feedbackForms = new ArrayList<ApiFeedbackForm>();
+        this.quizForms = new ArrayList<ApiQuizForm>();
         this.key = key;
     }
 
     public ApiCourse(String name, String description, List<ApiFeedbackForm> feedbackForms, List<ApiQuizForm> quizForms, String key, String moodleCourseId) {
         this.name = name;
         this.description = description;
-        this.feedbackForms = feedbackForms == null ? List.of() : feedbackForms;
-        this.quizForms = quizForms == null ? List.of() : quizForms;
+        this.feedbackForms = feedbackForms == null ? new ArrayList<ApiFeedbackForm>() : feedbackForms;
+        this.quizForms = quizForms == null ? new ArrayList<ApiQuizForm>() : quizForms;
         this.key = key;
         this.moodleCourseId = moodleCourseId;
     }
@@ -39,11 +40,11 @@ public class ApiCourse {
     }
 
     public List<ApiFeedbackForm> getFeedbackForms() {
-        return feedbackForms == null ? List.of() : feedbackForms;
+        return feedbackForms == null ? new ArrayList<ApiFeedbackForm>() : feedbackForms;
     }
 
     public List<ApiQuizForm> getQuizForms() {
-        return quizForms == null ? List.of() : quizForms;
+        return quizForms == null ? new ArrayList<ApiQuizForm>() : quizForms;
     }
 
     public String getKey() {

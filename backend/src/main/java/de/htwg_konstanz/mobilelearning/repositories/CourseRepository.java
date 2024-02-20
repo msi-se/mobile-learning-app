@@ -2,10 +2,7 @@ package de.htwg_konstanz.mobilelearning.repositories;
 
 
 
-import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Set;
-
 import org.bson.types.ObjectId;
 
 import de.htwg_konstanz.mobilelearning.models.Course;

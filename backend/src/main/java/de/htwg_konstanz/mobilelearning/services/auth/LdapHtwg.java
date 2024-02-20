@@ -14,6 +14,9 @@ import javax.naming.directory.InitialDirContext;
 import javax.naming.directory.SearchControls;
 import javax.naming.directory.SearchResult;
 
+/**
+ * Service used to authenticate users against the HTWG LDAP server.
+ */
 public class LdapHtwg {
 
     private static final String PRINCIPAL = "ou=users,dc=fh-konstanz,dc=de";

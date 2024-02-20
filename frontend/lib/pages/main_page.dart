@@ -39,7 +39,18 @@ class _MainPageState extends State<MainPage> {
           onPressed: () {
             popFunction!();
           },
-        ) : null
+        ) : null,
+        actions: [
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: IconButton(
+              icon: const Icon(Icons.person, size: 30, color: Colors.black),
+              onPressed: () {
+                Navigator.pushNamed(context, '/profile');
+              },
+            ),
+          )
+        ]
       ),
       body: SafeArea(
         child: <Widget>[

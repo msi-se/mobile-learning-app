@@ -1,5 +1,6 @@
 package de.htwg_konstanz.mobilelearning.services.api.models;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class ApiQuizForm {
@@ -33,10 +34,10 @@ public class ApiQuizForm {
         public String getType() { return this.type; }
         public Boolean getHasCorrectAnswers() { return this.hasCorrectAnswers; }
         public List<String> getOptions() {
-            return this.options != null ? this.options : List.of();
+            return this.options != null ? this.options : new ArrayList<String>();
         }
         public List<String> getCorrectAnswers() {
-            return this.correctAnswers != null ? this.correctAnswers : List.of();
+            return this.correctAnswers != null ? this.correctAnswers : new ArrayList<String>();
         }
     }
 
@@ -68,7 +69,7 @@ public class ApiQuizForm {
     }
 
     public List<ApiQuizQuestion> getQuestions() {
-        return questions != null ? questions : List.of();
+        return questions != null ? questions : new ArrayList<ApiQuizQuestion>();
     }
 
 }

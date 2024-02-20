@@ -3,6 +3,7 @@ package de.htwg_konstanz.mobilelearning.services.feedback;
 import java.util.List;
 
 import org.bson.types.ObjectId;
+import org.eclipse.microprofile.jwt.JsonWebToken;
 import org.jboss.resteasy.reactive.RestPath;
 
 import de.htwg_konstanz.mobilelearning.enums.FormStatus;
@@ -22,12 +23,24 @@ import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.MediaType;
 
+/**
+ * Service used to manage feedback forms of a course.
+ */
 @Path("/course/{courseId}/feedback/form")
 public class FeedbackFormService {
 
     @Inject
     private CourseRepository courseRepository;
 
+    @Inject
+    private JsonWebToken jwt;
+
+    /**
+     * Returns all feedback forms of a course.
+     * 
+     * @param courseId
+     * @return List of feedback forms
+     */
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @RolesAllowed({ UserRole.PROF, UserRole.STUDENT })
@@ -37,6 +50,14 @@ public class FeedbackFormService {
         return course.getFeedbackForms();
     }
 
+    /**
+     * Returns a single feedback form of a course.
+     * 
+     * @param courseId
+     * @param formId
+     * @param results (optional query param - default: false)
+     * @return Feedback form
+     */
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @Path("/{formId}")
@@ -59,6 +80,15 @@ public class FeedbackFormService {
         return feedbackFormWithQuestionContents;
     }
 
+    /**
+     * Updates a feedback form.
+     * User has to be owner to update the form.
+     * 
+     * @param courseId
+     * @param formId
+     * @param feedbackForm
+     * @return Updated feedback form
+     */
     @PUT
     @Produces(MediaType.APPLICATION_JSON)
     @Path("/{formId}")
@@ -72,7 +102,9 @@ public class FeedbackFormService {
         if (feedbackFormToUpdate == null) {
             throw new NotFoundException("Feedbackcourse not found");
         }
-
+        if(!course.isOwner(jwt.getSubject())){
+            return null;
+        }
         if (feedbackForm.description != null) {
             feedbackFormToUpdate.description = feedbackForm.description;
         }
@@ -93,6 +125,13 @@ public class FeedbackFormService {
         return feedbackFormToUpdate;
     }
 
+    /**
+     * Creates a new feedback form.
+     * 
+     * @param courseId
+     * @param feedbackForm
+     * @return Created feedback form
+     */
     @POST
     @Produces(MediaType.APPLICATION_JSON)
     @Path("")
@@ -117,6 +156,14 @@ public class FeedbackFormService {
         return feedbackForm;
     }
 
+    /**
+     * Clears the results of a feedback form.
+     * User has to be owner to clear the results.
+     * 
+     * @param courseId
+     * @param formId
+     * @return Cleared feedback form
+     */
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @Path("/{formId}/clearresults")
@@ -130,7 +177,10 @@ public class FeedbackFormService {
         if (feedbackForm == null) {
             throw new NotFoundException("Feedbackcourse not found");
         }
-
+        if (!course.isOwner(jwt.getSubject())) {
+            System.out.println("User is not owner of course");
+            return null;
+        }
         feedbackForm.clearResults();
         courseRepository.update(course);
         return feedbackForm;

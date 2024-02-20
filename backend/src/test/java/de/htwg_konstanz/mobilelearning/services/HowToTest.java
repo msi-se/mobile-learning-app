@@ -132,8 +132,10 @@ public class HowToTest {
                                                 "Rolle",
                                                 "Wie gut hat Ihnen ihre Pizza gefallen?",
                                                 "SLIDER",
-                                                List.of(),
-                                                "F-Q-ROLLE")),
+                                                new ArrayList<String>(),
+                                                "F-Q-ROLLE",
+                                                "gut",
+                                                "schlecht")),
                                 "F-ERSTERSPRINT")),
                 List.of(
                         new ApiQuizForm(

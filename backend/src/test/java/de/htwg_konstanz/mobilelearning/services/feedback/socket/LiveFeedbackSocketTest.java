@@ -2,6 +2,7 @@ package de.htwg_konstanz.mobilelearning.services.feedback.socket;
 
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
 
@@ -298,7 +299,7 @@ public class LiveFeedbackSocketTest {
             Thread.sleep(1000);
             session.close();
  
-             // form status should not change because user student
+             // form should be cleared after status is set to NOT_STARTED
             Assertions.assertTrue(courseService.getCourse(courseId).getFeedbackForms().get(0).getStatus().toString().equals("NOT_STARTED"));
             Assertions.assertEquals(0, feedbackFormService.getFeedbackForms(courseId).get(0).getQuestions().get(0).results.size()); 
         } catch (Exception e) {
@@ -349,7 +350,7 @@ public class LiveFeedbackSocketTest {
             session.close();
             session2.close();
  
-            // form status should not change because user student
+            // form status should not change because User is not owner of the course
             Assertions.assertTrue(courseService.getCourse(courseId).getFeedbackForms().get(0).getStatus().toString().equals("STARTED"));
             } catch (Exception e) {
              System.out.println(e);
@@ -372,8 +373,10 @@ public class LiveFeedbackSocketTest {
                                             "Rolle",
                                             "Wie gut hat Ihnen ihre Pizza gefallen?",
                                             "SLIDER",
-                                            List.of(),
-                                            "F-Q-ROLLE")),
+                                            new ArrayList<String>(),
+                                            "F-Q-ROLLE",
+                                            "gut",
+                                            "schlecht")),
                             "F-ERSTERSPRINT")),
             List.of(
                     new ApiQuizForm(

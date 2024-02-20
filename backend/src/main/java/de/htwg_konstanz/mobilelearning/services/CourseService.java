@@ -10,6 +10,7 @@ import org.jboss.resteasy.reactive.RestPath;
 import de.htwg_konstanz.mobilelearning.helper.moodle.MoodleCourse;
 import de.htwg_konstanz.mobilelearning.helper.moodle.MoodleInterface;
 import de.htwg_konstanz.mobilelearning.models.Course;
+import de.htwg_konstanz.mobilelearning.models.QuestionWrapper;
 import de.htwg_konstanz.mobilelearning.models.auth.User;
 import de.htwg_konstanz.mobilelearning.models.auth.UserRole;
 import de.htwg_konstanz.mobilelearning.repositories.CourseRepository;
@@ -25,6 +26,9 @@ import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.MediaType;
 
+/**
+ * Service used to manage courses.
+ */
 @Path("/course")
 public class CourseService {
 
@@ -37,6 +41,12 @@ public class CourseService {
     @Inject
     JsonWebToken jwt;
 
+    /**
+     * Returns a single course.
+     * 
+     * @param courseId
+     * @return Course
+     */
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @Path("/{courseId}")
@@ -47,6 +57,12 @@ public class CourseService {
         return course;
     }
 
+    /**
+     * Returns all courses of a user.
+     * 
+     * @param password
+     * @return List of courses
+     */
     @GET
     @Path("")
     @Produces(MediaType.APPLICATION_JSON)
@@ -63,11 +79,11 @@ public class CourseService {
         List<Course> courses = courseRepository.listAllForOwnerAndStudent(user);
         courses.forEach(course -> {
             course.feedbackForms.forEach(form -> {
-                form.questions = List.of();
+                form.questions = new ArrayList<QuestionWrapper>();
                 form.clearResults();
             });
             course.quizForms.forEach(form -> {
-                form.questions = List.of();
+                form.questions = new ArrayList<QuestionWrapper>();
                 form.clearResults();
                 form.clearParticipants();
             });
@@ -75,6 +91,13 @@ public class CourseService {
         return courses;
     }
 
+    /**
+     * Updates a course.
+     * 
+     * @param courseId
+     * @param course
+     * @return Updated course
+     */	
     @PUT
     @Produces(MediaType.APPLICATION_JSON)
     @Path("/{courseId}")
@@ -112,6 +135,12 @@ public class CourseService {
         return courseToUpdate;
     }
 
+    /**
+     * Creates a new course.
+     * 
+     * @param course
+     * @return Created course
+     */
     @POST
     @Produces(MediaType.APPLICATION_JSON)
     @Path("")
@@ -123,10 +152,21 @@ public class CourseService {
         return course;
     }
 
+    /**
+     * Deletes all course (for testing purposes only).
+     * 
+     * @param courseId
+     */
     public void deleteAllCourses() {
         courseRepository.deleteAll();
     }
 
+    /**
+     * Updates the courses linked to the user.
+     * 
+     * @param user
+     * @param password
+     */
     public void updateCourseLinkedToUser(User user, String password) {
 
         // use the moodle interface to get the courses linked to the user
