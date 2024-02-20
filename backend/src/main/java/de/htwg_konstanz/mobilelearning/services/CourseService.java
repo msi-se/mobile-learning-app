@@ -10,6 +10,7 @@ import org.jboss.resteasy.reactive.RestPath;
 import de.htwg_konstanz.mobilelearning.helper.moodle.MoodleCourse;
 import de.htwg_konstanz.mobilelearning.helper.moodle.MoodleInterface;
 import de.htwg_konstanz.mobilelearning.models.Course;
+import de.htwg_konstanz.mobilelearning.models.QuestionWrapper;
 import de.htwg_konstanz.mobilelearning.models.auth.User;
 import de.htwg_konstanz.mobilelearning.models.auth.UserRole;
 import de.htwg_konstanz.mobilelearning.repositories.CourseRepository;
@@ -78,11 +79,11 @@ public class CourseService {
         List<Course> courses = courseRepository.listAllForOwnerAndStudent(user);
         courses.forEach(course -> {
             course.feedbackForms.forEach(form -> {
-                form.questions = List.of();
+                form.questions = new ArrayList<QuestionWrapper>();
                 form.clearResults();
             });
             course.quizForms.forEach(form -> {
-                form.questions = List.of();
+                form.questions = new ArrayList<QuestionWrapper>();
                 form.clearResults();
                 form.clearParticipants();
             });

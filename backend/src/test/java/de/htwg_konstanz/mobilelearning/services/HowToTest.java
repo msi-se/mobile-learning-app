@@ -132,7 +132,7 @@ public class HowToTest {
                                                 "Rolle",
                                                 "Wie gut hat Ihnen ihre Pizza gefallen?",
                                                 "SLIDER",
-                                                List.of(),
+                                                new ArrayList<String>(),
                                                 "F-Q-ROLLE",
                                                 "gut",
                                                 "schlecht")),

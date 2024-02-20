@@ -7,6 +7,7 @@ import org.apache.http.util.EntityUtils;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -92,7 +93,7 @@ public class MoodleInterface {
         // if token is not set login first
         if (this.token == null) {
             if (!this.login()) {
-                return List.of();
+                return new ArrayList<MoodleCourse>();
             }
         }
 
@@ -114,7 +115,7 @@ public class MoodleInterface {
 
         } catch (Exception e) {
             System.out.println("Error while getting courses from moodle: " + e.getMessage());
-            return List.of();
+            return new ArrayList<MoodleCourse>();
         }
 
     }
