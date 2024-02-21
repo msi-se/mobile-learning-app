@@ -22,6 +22,16 @@ class _QuizScoreboardState extends State<QuizScoreboard> {
   }
 
   @override
+  void didUpdateWidget(QuizScoreboard oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.scoreboard != widget.scoreboard) {
+      setState(() {
+        _scoreboard = widget.scoreboard;
+      });
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     final colors = Theme.of(context).colorScheme;
 
