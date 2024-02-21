@@ -39,7 +39,7 @@ public class JwtService {
          *   email email of the user from ldap
          *   preferred_username username of the user from ldap
          *   groups roles of the user 
-         *   exp expiration time of the token (2 days)
+         *   exp expiration time of the token (365 days)
          * 
          * @param user
          * @return JWT token
@@ -71,7 +71,7 @@ public class JwtService {
                     .claim(Claims.email.name(), user.getEmail())
                     .claim(Claims.preferred_username.name(), user.getUsername())
                     .groups(new HashSet<String>(user.getRoles()))
-                    .expiresAt((System.currentTimeMillis() + 172800000L)/1000L)
+                    .expiresAt((System.currentTimeMillis() + 31536000000L)/1000L)
                     .sign();
             return token;
     }    
