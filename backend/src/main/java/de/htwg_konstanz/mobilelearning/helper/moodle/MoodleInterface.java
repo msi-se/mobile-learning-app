@@ -82,7 +82,7 @@ public class MoodleInterface {
 
         // TEMP: mock the special users (Prof, Student, Admin)
         if (this.username.equals("Prof") || this.username.equals("Student") || this.username.equals("Admin")) {
-            return List.of(new MoodleCourse("1"), new MoodleCourse("2"), new MoodleCourse("3"));
+            return List.of(new MoodleCourse("1"), new MoodleCourse("2"), new MoodleCourse("3"), new MoodleCourse("940"));
         }
 
         // if courses are already set return them if not fetch them 
