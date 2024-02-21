@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:frontend/components/elements/feedback/fulltext_feedback_result.dart';
 import 'package:frontend/components/elements/feedback/single_choice_feedback_result.dart';
 import 'package:frontend/components/elements/feedback/slider_feedback_result.dart';
 import 'package:frontend/components/elements/feedback/star_feedback_result.dart';
@@ -21,6 +22,19 @@ class FeedbackResultPage extends StatefulWidget {
 
   @override
   State<FeedbackResultPage> createState() => _FeedbackResultPageState();
+}
+
+// helper function to convert a list of strings to a list of integers
+List<int> convertStringListToIntList(List<String> list) {
+  List<int> result = [];
+  for (var value in list) {
+    try {
+      result.add(int.parse(value));
+    } catch (e) {
+      return [];
+    }
+  }
+  return result;
 }
 
 class _FeedbackResultPageState extends State<FeedbackResultPage> {
@@ -140,12 +154,17 @@ class _FeedbackResultPageState extends State<FeedbackResultPage> {
     List<dynamic> elements = json["questions"];
     return elements.map((element) {
       List<dynamic> results = element["results"];
-      List<int> resultValues =
-          results.map((result) => int.parse(result["values"][0])).toList();
+      List<String> resultValues =
+          results.map((result) => (result["values"][0]).toString()).toList();
       double average = 0;
       if (resultValues.isNotEmpty) {
-        average = resultValues.reduce((curr, next) => curr + next) /
-            resultValues.length;
+        // try convert the values to int and calculate the average
+        List<int> resultValuesInts = convertStringListToIntList(resultValues);
+
+        if (resultValuesInts.isNotEmpty) {
+          average = resultValuesInts.reduce((curr, next) => curr + next) /
+              resultValues.length;
+        }
       }
       return {"values": resultValues, "average": average};
     }).toList();
@@ -223,7 +242,8 @@ class _FeedbackResultPageState extends State<FeedbackResultPage> {
                         physics: const NeverScrollableScrollPhysics(),
                         itemCount: _form.questions.length,
                         itemBuilder: (context, index) {
-                          final element = _form.questions[index] as FeedbackQuestion;
+                          final element =
+                              _form.questions[index] as FeedbackQuestion;
                           final double average = _results[index]["average"];
                           final roundAverage = (average * 100).round() / 100;
                           final values = _results[index]["values"];
@@ -233,7 +253,8 @@ class _FeedbackResultPageState extends State<FeedbackResultPage> {
                               children: <Widget>[
                                 Text(element.name,
                                     style: const TextStyle(
-                                        fontSize: 24, fontWeight: FontWeight.bold)),
+                                        fontSize: 24,
+                                        fontWeight: FontWeight.bold)),
                                 Text(element.description,
                                     style: const TextStyle(fontSize: 15),
                                     textAlign: TextAlign.center),
@@ -241,7 +262,7 @@ class _FeedbackResultPageState extends State<FeedbackResultPage> {
                                   StarFeedbackResult(average: average)
                                 else if (element.type == 'SLIDER')
                                   SliderFeedbackResult(
-                                    results: values,
+                                    results: convertStringListToIntList(values),
                                     rangeLow: element.rangeLow,
                                     rangeHigh: element.rangeHigh,
                                     average: average,
@@ -250,9 +271,11 @@ class _FeedbackResultPageState extends State<FeedbackResultPage> {
                                   )
                                 else if (element.type == 'SINGLE_CHOICE')
                                   SingleChoiceFeedbackResult(
-                                    results: values,
+                                    results: convertStringListToIntList(values),
                                     options: element.options,
                                   )
+                                else if (element.type == 'FULLTEXT')
+                                  FulltextFeedbackResult(results: values)
                                 else
                                   const Text('Unknown element type'),
                                 if (element.type == 'STARS' ||
