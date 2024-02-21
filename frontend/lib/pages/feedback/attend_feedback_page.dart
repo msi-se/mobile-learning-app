@@ -249,6 +249,14 @@ class _AttendFeedbackPageState extends State<AttendFeedbackPage> {
                             });
                           },
                         )
+                      else if (element.type == 'FULLTEXT')
+                        TextField(
+                          onChanged: (newFeedback) {
+                            setState(() {
+                              _feedbackValues[element.id] = newFeedback;
+                            });
+                          },
+                        )
                       else
                         const Text('Unknown element type')
                     ],
