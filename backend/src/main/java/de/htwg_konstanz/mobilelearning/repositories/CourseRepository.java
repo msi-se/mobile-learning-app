@@ -1,7 +1,6 @@
 package de.htwg_konstanz.mobilelearning.repositories;
 
-
-
+import java.io.Serializable;
 import java.util.List;
 import org.bson.types.ObjectId;
 
@@ -10,7 +9,9 @@ import de.htwg_konstanz.mobilelearning.models.Form;
 import de.htwg_konstanz.mobilelearning.models.auth.User;
 import de.htwg_konstanz.mobilelearning.models.feedback.FeedbackForm;
 import de.htwg_konstanz.mobilelearning.models.quiz.QuizForm;
+import de.htwg_konstanz.mobilelearning.repositories.projectionclasses.CourseWithoutForms;
 import io.quarkus.mongodb.panache.PanacheMongoRepository;
+import io.quarkus.mongodb.panache.common.ProjectionFor;
 import jakarta.enterprise.context.ApplicationScoped;
 
 @ApplicationScoped
@@ -82,7 +83,7 @@ public class CourseRepository implements PanacheMongoRepository<Course> {
     public List<Course> listAllForStudent(User user) {
         return find("students", user.getId()).list();
     }
-    
+
     public List<Course> listAllForStudent(ObjectId userId) {
         return find("students", userId).list();
     }
@@ -98,7 +99,7 @@ public class CourseRepository implements PanacheMongoRepository<Course> {
     public List<Course> listAllForOwnerAndStudent(User user) {
         List<Course> coursesForOwner = listAllForOwner(user);
         List<Course> coursesForStudent = listAllForStudent(user);
-        
+
         for (Course course : coursesForStudent) {
             if (!coursesForOwner.contains(course)) {
                 coursesForOwner.add(course);
@@ -118,5 +119,29 @@ public class CourseRepository implements PanacheMongoRepository<Course> {
         }
         return coursesForOwner;
     }
+
+    public Course findByIdWithoutForms(ObjectId id) {
+
+        CourseWithoutForms course = find("_id", id).project(CourseWithoutForms.class).firstResult();
+        if (course == null) {
+            return null;
+        }
+        return new Course(course.id(), course.name(), course.description(), course.owners(), course.students(), course.key(),
+                course.moodleCourseId());
+    }
+
+    public Course findByIdWithSpecificFeedbackForm(ObjectId id, ObjectId formId) {
+        
+        // fist query the course without the forms and then project the specific form
+        Course course = findByIdWithoutForms(id);
+        FeedbackForm form = find("feedbackForms._id", formId).project(FeedbackForm.class).firstResult();
+        if (form != null && form instanceof FeedbackForm) {
+            course.addFeedbackForm(form);
+        }
+
+        return course;
+    }
+
+
 
 }

@@ -57,6 +57,22 @@ public class Course implements Serializable {
         this.moodleCourseId = "";
     }
 
+    //new Course(course.id, course.name, course.description, course.owners, course.students, course.key, course.moodleCourseId);
+
+    public Course(ObjectId id, String name, String description, List<ObjectId> owners, List<ObjectId> students, String key, String moodleCourseId) {
+        this.id = id;
+        this.name = name;
+        this.description = description;
+        this.owners = owners;
+        this.students = students;
+        this.key = key;
+        this.moodleCourseId = moodleCourseId;
+        this.feedbackForms = new ArrayList<FeedbackForm>();
+        this.feedbackQuestions = new ArrayList<FeedbackQuestion>();
+        this.quizForms = new ArrayList<QuizForm>();
+        this.quizQuestions = new ArrayList<QuizQuestion>();
+    }
+
     // id
     public ObjectId getId() {
         return this.id;

@@ -215,4 +215,13 @@ public class CourseService {
     public CourseRepository getCourseRepository() {
         return courseRepository;
     }
+
+    @GET
+    @Path("/{courseId}/withOnlyForm/{formId}")
+    @Produces(MediaType.APPLICATION_JSON)
+    @RolesAllowed({ UserRole.PROF, UserRole.STUDENT })
+    public Course getCourseWithOnlyForm(@RestPath String courseId, @RestPath String formId) {
+        return courseRepository.findByIdWithSpecificFeedbackForm(new ObjectId(courseId), new ObjectId(formId));
+    }
+
 }
