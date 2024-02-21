@@ -10,7 +10,6 @@ import 'package:frontend/models/feedback/feedback_question.dart';
 import 'package:frontend/utils.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 import 'package:http/http.dart' as http;
-import 'package:qr_flutter/qr_flutter.dart';
 
 class FeedbackResultPage extends StatefulWidget {
   final String courseId;
@@ -186,11 +185,6 @@ class _FeedbackResultPageState extends State<FeedbackResultPage> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
-              QrImageView(
-                data: code,
-                version: QrVersions.auto,
-                size: 200.0,
-              ),
               Text(
                 code,
                 style: Theme.of(context).textTheme.headlineMedium,
