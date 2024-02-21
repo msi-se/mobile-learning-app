@@ -220,108 +220,83 @@ class _FeedbackResultPageState extends State<FeedbackResultPage> {
     }
 
     return Scaffold(
-        appBar: appbar,
-        body: Stack(
-          children: [
-            SingleChildScrollView(
-              child: SizedBox(
-                width: double.infinity,
-                child: Column(
-                  children: <Widget>[
-                    const SizedBox(height: 16),
-                    Container(
-                      constraints: const BoxConstraints(maxWidth: 800),
-                      child: ListView.builder(
-                        shrinkWrap: true,
-                        physics: const NeverScrollableScrollPhysics(),
-                        itemCount: _form.questions.length,
-                        itemBuilder: (context, index) {
-                          final element =
-                              _form.questions[index] as FeedbackQuestion;
-                          final double average = _results[index]["average"];
-                          final roundAverage = (average * 100).round() / 100;
-                          final values = _results[index]["values"];
-                          return Padding(
-                            padding: const EdgeInsets.all(32.0),
-                            child: Column(
-                              children: <Widget>[
-                                Text(element.name,
-                                    style: const TextStyle(
-                                        fontSize: 24,
-                                        fontWeight: FontWeight.bold)),
-                                Text(element.description,
-                                    style: const TextStyle(fontSize: 15),
-                                    textAlign: TextAlign.center),
-                                if (element.type == 'STARS')
-                                  StarFeedbackResult(average: average)
-                                else if (element.type == 'SLIDER')
-                                  SliderFeedbackResult(
-                                    results: convertStringListToIntList(values),
-                                    rangeLow: element.rangeLow,
-                                    rangeHigh: element.rangeHigh,
-                                    average: average,
-                                    min: 0,
-                                    max: 10,
-                                  )
-                                else if (element.type == 'SINGLE_CHOICE')
-                                  SingleChoiceFeedbackResult(
-                                    results: convertStringListToIntList(values),
-                                    options: element.options,
-                                  )
-                                else if (element.type == 'FULLTEXT')
-                                  FulltextFeedbackResult(results: values)
-                                else
-                                  const Text('Unknown element type'),
-                                if (element.type == 'STARS' ||
-                                    element.type == 'SLIDER')
-                                  Text("$roundAverage",
-                                      style: const TextStyle(fontSize: 20),
+      appBar: appbar,
+      body: Stack(
+        children: [
+          SingleChildScrollView(
+            child: SizedBox(
+              width: double.infinity,
+              child: Column(
+                children: <Widget>[
+                  const SizedBox(height: 16),
+                  Container(
+                    constraints: const BoxConstraints(maxWidth: 1600),
+                    padding: const EdgeInsets.all(16),
+                    child: Wrap(
+                      alignment: WrapAlignment.spaceEvenly,
+                      spacing: 16.0,
+                      runSpacing: 16.0,
+                      children: List<Widget>.generate(_form.questions.length, (index) {
+                        final element = _form.questions[index] as FeedbackQuestion;
+                        final double average = _results[index]["average"];
+                        final roundAverage = (average * 100).round() / 100;
+                        final values = _results[index]["values"];
+                        return SizedBox(
+                          width: MediaQuery.of(context).size.width < 600 ? double.infinity : 600,
+                          child: Card(
+                            color: colors.surface,
+                            child: Padding(
+                              padding: const EdgeInsets.all(16.0),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: <Widget>[
+                                  Text('${index + 1}. ${element.name}',
+                                      style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
                                       textAlign: TextAlign.center),
-                              ],
+                                  const SizedBox(height: 8),
+                                  Text(element.description,
+                                      style: const TextStyle(fontSize: 15),
+                                      textAlign: TextAlign.center),
+                                  const SizedBox(height: 16),
+                                  if (element.type == 'STARS')
+                                    StarFeedbackResult(average: average)
+                                  else if (element.type == 'SLIDER')
+                                    SliderFeedbackResult(
+                                      results: convertStringListToIntList(values),
+                                      rangeLow: element.rangeLow,
+                                      rangeHigh: element.rangeHigh,
+                                      average: average,
+                                      min: 0,
+                                      max: 10,
+                                    )
+                                  else if (element.type == 'SINGLE_CHOICE')
+                                    SingleChoiceFeedbackResult(
+                                      results: convertStringListToIntList(values),
+                                      options: element.options,
+                                    )
+                                  else if (element.type == 'FULLTEXT')
+                                    FulltextFeedbackResult(results: values)
+                                  else
+                                    const Text('Unknown element type', textAlign: TextAlign.center),
+                                  if (element.type == 'STARS' || element.type == 'SLIDER')
+                                    Text("$roundAverage",
+                                        style: const TextStyle(fontSize: 20),
+                                        textAlign: TextAlign.center),
+                                ],
+                              ),
                             ),
-                          );
-                        },
-                      ),
+                          ),
+                        );
+                      }),
                     ),
-                    if (_form.status == "STARTED")
-                      ElevatedButton(
-                        onPressed: stopForm,
-                        child: const Text('Feedback beenden'),
-                      ),
-                    if (_form.status == "FINISHED")
-                      Column(
-                        children: [
-                          ElevatedButton(
-                            onPressed: startForm,
-                            child: const Text('Feedback fortsetzen'),
-                          ),
-                          const SizedBox(height: 8),
-                          ElevatedButton(
-                            onPressed: resetForm,
-                            child: Text('Feedback zurücksetzen',
-                                style: TextStyle(color: colors.error)),
-                          ),
-                        ],
-                      ),
-                    const SizedBox(height: 32),
-                  ],
-                ),
+                  ),
+                ],
               ),
             ),
-            Positioned(
-              top: 0,
-              left: 0,
-              right: 0,
-              child: Container(
-                color: colors.surfaceVariant,
-                child: Text(
-                  "${_form.connectCode.substring(0, 3)} ${_form.connectCode.substring(3, 6)}",
-                  style: Theme.of(context).textTheme.headlineSmall,
-                  textAlign: TextAlign.center,
-                ),
-              ),
-            )
-          ],
-        ));
+          ),
+        ],
+      ),
+    );
+
   }
 }
