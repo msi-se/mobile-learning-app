@@ -35,8 +35,6 @@ class _CoursesTabState extends State<CoursesTab> {
 
   Future<String> fetchCourses() async {
     try {
-      //throw Error();
-      //throw http.ClientException('rofl');
       final response = await http.get(
         Uri.parse(
             "${getBackendUrl()}/course?password=${getSession()!.password}"),
@@ -45,7 +43,6 @@ class _CoursesTabState extends State<CoursesTab> {
           "AUTHORIZATION": "Bearer ${getSession()!.jwt}",
         },
       );
-      if (!mounted) return;
       if (response.statusCode == 200) {
         var data = jsonDecode(response.body);
         setState(() {
@@ -66,16 +63,15 @@ class _CoursesTabState extends State<CoursesTab> {
   void _showErrorDialog(String errorType) {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       showDialog(
-        context: context,
-        barrierDismissible: false,
-        builder: (BuildContext context) {
-          return (errorType == 'network')
-              ? const NetworkErrorWidget()
-              : const GeneralErrorWidget();
-        },
-      ).then((value) {
+          context: context,
+          barrierDismissible: false,
+          builder: (BuildContext context) {
+            return (errorType == 'network')
+                ? const NetworkErrorWidget()
+                : const GeneralErrorWidget();
+          }).then((value) {
         if (value == 'back') {
-          Navigator.pushNamed(context, '/main');
+          Navigator.pushReplacementNamed(context, '/main');
         }
       });
     });
@@ -105,7 +101,7 @@ class _CoursesTabState extends State<CoursesTab> {
             _showErrorDialog('network');
           } else if (result == 'general_error') {
             _showErrorDialog('general');
-          } else {
+          } else if (result == 'success') {
             return PopScope(
               canPop: _selectedCourse == null,
               onPopInvoked: (bool didPop) {
