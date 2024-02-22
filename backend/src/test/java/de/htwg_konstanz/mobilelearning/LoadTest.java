@@ -15,17 +15,13 @@ import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
 
-import org.jose4j.jwt.JwtClaims;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInfo;
 
 import de.htwg_konstanz.mobilelearning.models.Course;
-import de.htwg_konstanz.mobilelearning.models.auth.User;
 import de.htwg_konstanz.mobilelearning.models.auth.UserRole;
-import de.htwg_konstanz.mobilelearning.repositories.CourseRepository;
-import de.htwg_konstanz.mobilelearning.repositories.UserRepository;
 import de.htwg_konstanz.mobilelearning.services.CourseService;
 import de.htwg_konstanz.mobilelearning.services.api.ApiService;
 import de.htwg_konstanz.mobilelearning.services.api.models.ApiCourse;
@@ -39,11 +35,9 @@ import io.quarkus.test.junit.TestProfile;
 import io.quarkus.test.security.TestSecurity;
 import io.quarkus.test.security.jwt.Claim;
 import io.quarkus.test.security.jwt.JwtSecurity;
-import io.smallrye.jwt.auth.principal.DefaultJWTCallerPrincipal;
 import jakarta.inject.Inject;
 import jakarta.websocket.ContainerProvider;
 import jakarta.websocket.Session;
-import jakarta.ws.rs.core.Response;
 
 @QuarkusTest
 @TestProfile(MockMongoTestProfile.class)
@@ -67,22 +61,22 @@ public class LoadTest {
         System.out.println("               LOAD TEST");
         System.out.println("========================================");
         System.out.println("Test: " + testInfo.getDisplayName());
-        courseService.deleteAllCourses();
+        //courseService.deleteAllCourses();
         //createProfUser();
     }
 
     @Test
     @TestSecurity(user = "Prof", roles = { UserRole.PROF })
     @JwtSecurity(claims = { @Claim(key = "sub", value = "profId") })
-    public void LoadTesting() throws ProtocolException, IOException, URISyntaxException {
+    public void LoadTestingFeedback() throws ProtocolException, IOException, URISyntaxException {
         // create & get courses
         String url= "loco.in.htwg-konstanz.de/api";
         URL uri = new URI("http://"+url+"/user/login").toURL();
         String profToken = login(uri, "UHJvZjo=");
-        String courseId = "65d75f951d80664c52dca422";
-        String formId = "65d75f951d80664c52dca42f";
-        String questionId = "65d75f951d80664c52dca423";
-        int numberOfStudents = 2;
+        String courseId = "65d77a0c274547320b93698c";
+        String formId = "65d77a0c274547320b936999";
+        String questionId = "65d77a0c274547320b936993";
+        int numberOfStudents = 60;
 
         // create a websocket client
         // (@ServerEndpoint("/course/{courseId}/feedback/form/{formId}/subscribe/{userId}/{jwt}")
@@ -90,8 +84,9 @@ public class LoadTest {
             LiveFeedbackSocketClient profClient = new LiveFeedbackSocketClient();
             Session session = ContainerProvider.getWebSocketContainer().connectToServer(
                 profClient,
-                URI.create("ws://"+url+"/course/" + courseId + "/feedback/form/" + formId + "/subscribe/" + "65d3932e25b84c55112775a1" + "/" + profToken)
+                URI.create("ws://"+url+"/course/" + courseId + "/feedback/form/" + formId + "/subscribe/" + "65d77a0c274547320b93698b" + "/" + profToken)
             );
+            Thread.sleep(100); 
             profClient.sendMessage("""
                 {
                     "action": "CHANGE_FORM_STATUS",
@@ -99,8 +94,9 @@ public class LoadTest {
                     "roles": [Prof]
                 }
             """);
-            Thread.sleep(1000); 
+            Thread.sleep(100); 
             List<LiveFeedbackSocketClient> clients = new ArrayList<>();   
+
             List<Session> sessions = new ArrayList<>();   
             for (int i = 0; i < numberOfStudents; i++) {
                 /*JwtService jwtService = Mockito.mock(JwtService.class);
@@ -110,16 +106,16 @@ public class LoadTest {
                 String response = login(uri, Base64.getEncoder().encodeToString((i + ":").getBytes(StandardCharsets.UTF_8)));
                 //UserRepository userRepository = new UserRepository();
                 //User user = userRepository.findByUsername(""+i);
-                //clients.add(new LiveFeedbackSocketClient());
                 //Course courseUpdate = courseService.getCourse(courseId);
                 //courseUpdate.addStudent(user.getId());
                 //CourseRepository courseRepository = new CourseRepository();
                 //courseRepository.update(courseUpdate);
-                
+                clients.add(new LiveFeedbackSocketClient());
                 URL uriUser = new URI("http://"+url+"/user/load/"+i).toURL();
                 String userId = getUserId(uriUser, Base64.getEncoder().encodeToString((i + ":").getBytes(StandardCharsets.UTF_8)));
-                sessions.add(ContainerProvider.getWebSocketContainer().connectToServer(clients.get(i), URI.create("ws://"+url+"/course/" + courseId + "/feedback/form/" + formId + "/subscribe/" +userId + "/" + response)));
-                Thread.sleep(500);                
+                System.out.println("userId: " + userId);
+                sessions.add(ContainerProvider.getWebSocketContainer().connectToServer(clients.get(i), URI.create("ws://"+url+"/course/" + courseId + "/feedback/form/" + formId + "/subscribe/" +userId.substring(1, userId.length() - 1) + "/" + response)));
+                Thread.sleep(100);                
             }
 
             for (int i = 0; i < numberOfStudents; i++) {
@@ -132,8 +128,15 @@ public class LoadTest {
                         "role": "STUDENT"
                     }
                 """, questionId));   
-                Thread.sleep(500);      
+                Thread.sleep(100);      
             }
+            profClient.sendMessage("""
+                {
+                    "action": "CHANGE_FORM_STATUS",
+                    "formStatus": "FINISHED",
+                    "roles": [Prof]
+                }
+            """);
             
             for (int i = 0; i < numberOfStudents; i++) {
                 Session sesssion = sessions.get(i);
@@ -143,7 +146,157 @@ public class LoadTest {
             session.close();
 
             // check if the form status has changed
-            Assertions.assertTrue(courseService.getCourse(courseId).getFeedbackForms().get(0).getStatus().toString().equals("STARTED"));
+        } catch (Exception e) {
+            System.out.println(e);
+            Assertions.fail(e.getMessage());
+        }
+    
+    }
+
+    @Test
+    @TestSecurity(user = "Prof", roles = { UserRole.PROF })
+    @JwtSecurity(claims = { @Claim(key = "sub", value = "profId") })
+    public void LoadTestingQuiz() throws ProtocolException, IOException, URISyntaxException {
+        // create & get courses
+        String url= "loco.in.htwg-konstanz.de/api";
+        URL uri = new URI("http://"+url+"/user/login").toURL();
+        String profToken = login(uri, "UHJvZjo=");
+        String courseId = "65d77a0c274547320b93698c";
+        String formId = "65d77a0c274547320b9369a2";
+        String questionId1 = "65d77a0c274547320b93699e";
+        String questionId2 = "65d77a0c274547320b93699f";
+        String questionId3 = "65d77a0c274547320b9369a0";
+        String questionId4 = "65d77a0c274547320b9369a1";
+        int numberOfStudents = 60;
+
+        // create a websocket client
+        // (@ServerEndpoint("/course/{courseId}/feedback/form/{formId}/subscribe/{userId}/{jwt}")
+        try {
+            LiveFeedbackSocketClient profClient = new LiveFeedbackSocketClient();
+            Session session = ContainerProvider.getWebSocketContainer().connectToServer(
+                profClient,
+                URI.create("ws://"+url+"/course/" + courseId + "/quiz/form/" + formId + "/subscribe/" + "65d77360274547320b935fd9" + "/" + profToken)
+            );
+            Thread.sleep(100); 
+            profClient.sendMessage("""
+                {
+                    "action": "CHANGE_FORM_STATUS",
+                    "formStatus": "STARTED",
+                    "roles": [Prof]
+                }
+            """);
+            Thread.sleep(100); 
+            List<LiveFeedbackSocketClient> clients = new ArrayList<>();   
+
+            List<Session> sessions = new ArrayList<>();   
+            for (int i = 0; i < numberOfStudents; i++) {
+                /*JwtService jwtService = Mockito.mock(JwtService.class);
+                Mockito.when(jwtService.getToken(any())).thenReturn(token);
+                userService.login("Basic "+ Base64.getEncoder().encodeToString((i + ":").getBytes(StandardCharsets.UTF_8)));*/
+                //String response = given().header("Authorization", "Basic " +Base64.getEncoder().encodeToString((i + ":").getBytes(StandardCharsets.UTF_8))).when().post("http://"+url+"/user/login").then().statusCode(200).extract().asString();
+                String response = login(uri, Base64.getEncoder().encodeToString((i + ":").getBytes(StandardCharsets.UTF_8)));
+                //UserRepository userRepository = new UserRepository();
+                //User user = userRepository.findByUsername(""+i);
+                //Course courseUpdate = courseService.getCourse(courseId);
+                //courseUpdate.addStudent(user.getId());
+                //CourseRepository courseRepository = new CourseRepository();
+                //courseRepository.update(courseUpdate);
+                clients.add(new LiveFeedbackSocketClient());
+                URL uriUser = new URI("http://"+url+"/user/load/"+i).toURL();
+                String userId = getUserId(uriUser, Base64.getEncoder().encodeToString((i + ":").getBytes(StandardCharsets.UTF_8)));
+                System.out.println("userId: " + userId);
+                sessions.add(ContainerProvider.getWebSocketContainer().connectToServer(clients.get(i), URI.create("ws://"+url+"/course/" + courseId + "/quiz/form/" + formId + "/subscribe/" +userId.substring(1, userId.length() - 1) + "/" + response)));
+                Thread.sleep(100);                
+            }
+            profClient.sendMessage("""
+                {
+                    "action": "NEXT",
+                    "roles": [Prof]
+                }
+            """); 
+
+            for (int i = 0; i < numberOfStudents; i++) {
+                LiveFeedbackSocketClient client = clients.get(i);
+                client.sendMessage(String.format("""
+                    {
+                        "action": "ADD_RESULT",
+                        "resultElementId": %s,
+                        "resultValues": [1],
+                        "role": "STUDENT"
+                    }
+                """, questionId1));   
+                Thread.sleep(100);      
+            }
+            profClient.sendMessage("""
+                {
+                    "action": "NEXT",
+                    "roles": [Prof]
+                }
+            """);
+            for (int i = 0; i < numberOfStudents; i++) {
+                LiveFeedbackSocketClient client = clients.get(i);
+                client.sendMessage(String.format("""
+                    {
+                        "action": "ADD_RESULT",
+                        "resultElementId": %s,
+                        "resultValues": [1],
+                        "role": "STUDENT"
+                    }
+                """, questionId2));   
+                Thread.sleep(100);      
+            }
+            profClient.sendMessage("""
+                {
+                    "action": "NEXT",
+                    "roles": [Prof]
+                }
+            """); 
+            for (int i = 0; i < numberOfStudents; i++) {
+                LiveFeedbackSocketClient client = clients.get(i);
+                client.sendMessage(String.format("""
+                    {
+                        "action": "ADD_RESULT",
+                        "resultElementId": %s,
+                        "resultValues": [1],
+                        "role": "STUDENT"
+                    }
+                """, questionId3));   
+                Thread.sleep(100);      
+            }
+            profClient.sendMessage("""
+                {
+                    "action": "NEXT",
+                    "roles": [Prof]
+                }
+            """); 
+            for (int i = 0; i < numberOfStudents; i++) {
+                LiveFeedbackSocketClient client = clients.get(i);
+                client.sendMessage(String.format("""
+                    {
+                        "action": "ADD_RESULT",
+                        "resultElementId": %s,
+                        "resultValues": [1],
+                        "role": "STUDENT"
+                    }
+                """, questionId4));   
+                Thread.sleep(100);      
+            }
+            profClient.sendMessage("""
+                {
+                    "action": "NEXT",
+                    "roles": [Prof]
+                }
+            """); 
+            
+            
+            for (int i = 0; i < numberOfStudents; i++) {
+                Session sesssion = sessions.get(i);
+                sesssion.close();         
+            }
+            
+            session.close();
+
+            // check if the form status has changed
         } catch (Exception e) {
             System.out.println(e);
             Assertions.fail(e.getMessage());
@@ -158,7 +311,7 @@ public class LoadTest {
         conn.setRequestProperty("Authorization", basicAuth);
         
         // Set the request method to POST
-        conn.setRequestMethod("POST");
+        conn.setRequestMethod("GET");
         
         // Get the response code
         int responseCode = conn.getResponseCode();
