@@ -286,17 +286,51 @@ class _FeedbackResultPageState extends State<FeedbackResultPage> {
                               ),
                             ),
                           ),
-                        );
-                      }),
+                          );
+                        },
+                      ),
                     ),
                   ),
-                ],
+                  if (_form.status == "STARTED")
+                    ElevatedButton(
+                      onPressed: stopForm,
+                      child: const Text('Feedback beenden'),
+                    ),
+                  if (_form.status == "FINISHED")
+                    Column(
+                      children: [
+                        ElevatedButton(
+                          onPressed: startForm,
+                          child: const Text('Feedback fortsetzen'),
+                        ),
+                        const SizedBox(height: 8),
+                        ElevatedButton(
+                          onPressed: resetForm,
+                          child: Text('Feedback zurücksetzen',
+                              style: TextStyle(color: colors.error)),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 32),
+                  ],
+                ),
               ),
             ),
-          ),
-        ],
-      ),
-    );
-
+            Positioned(
+              top: 0,
+              left: 0,
+              right: 0,
+              child: Container(
+                color: colors.surfaceVariant,
+                child: Text(
+                  "${_form.connectCode.substring(0, 3)} ${_form.connectCode.substring(3, 6)}",
+                  style: Theme.of(context).textTheme.headlineSmall,
+                  textAlign: TextAlign.center,
+                ),
+              ),
+            ),
+          ],
+        )
+      );
   }
 }

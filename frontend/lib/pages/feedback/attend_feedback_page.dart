@@ -201,81 +201,103 @@ class _AttendFeedbackPageState extends State<AttendFeedbackPage> {
     return Scaffold(
       appBar: appbar,
       body: SingleChildScrollView(
-        child: Center(
-          child: Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Wrap(
-              alignment: WrapAlignment.spaceEvenly,
-              spacing: 16.0,
-              runSpacing: 16.0,
-              children: List<Widget>.generate(_form.questions.length, (index) {
-                final element = _form.questions[index] as FeedbackQuestion;
-                return SizedBox(
-                  width: MediaQuery.of(context).size.width < 600 ? double.infinity : 600,
-                  child: Card(
-                    color: colors.surface,
-                    child: Padding(
-                      padding: const EdgeInsets.all(16.0),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: <Widget>[
-                          Text('${index + 1}. ${element.name}',
-                              style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-                              textAlign: TextAlign.center),
-                          const SizedBox(height: 8),
-                          Text(element.description,
-                              style: const TextStyle(fontSize: 15),
-                              textAlign: TextAlign.center),
-                          const SizedBox(height: 16),
-                          if (element.type == 'STARS')
-                            StarFeedback(
-                              initialRating: _feedbackValues[element.id],
-                              onRatingChanged: (newRating) {
-                                setState(() {
-                                  _feedbackValues[element.id] = newRating;
-                                });
-                              },
-                            )
-                          else if (element.type == 'SLIDER')
-                            SliderFeedback(
-                              initialFeedback: _feedbackValues[element.id],
-                              rangeLow: element.rangeLow,
-                              rangeHigh: element.rangeHigh,
-                              onFeedbackChanged: (newFeedback) {
-                                setState(() {
-                                  _feedbackValues[element.id] = newFeedback;
-                                });
-                              },
-                            )
-                          else if (element.type == 'SINGLE_CHOICE')
-                            SingleChoiceFeedback(
-                              options: element.options,
-                              initialFeedback: _feedbackValues[element.id],
-                              onFeedbackChanged: (newFeedback) {
-                                setState(() {
-                                  _feedbackValues[element.id] = newFeedback;
-                                });
-                              },
-                            )
-                          else if (element.type == 'FULLTEXT')
-                            TextField(
-                              onChanged: (newFeedback) {
-                                setState(() {
-                                  _feedbackValues[element.id] = newFeedback;
-                                });
-                              },
-                            )
-                          else
-                            const Text('Unknown element type')
-                        ],
+        child: Column(
+          children: [
+            Center(
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Wrap(
+                  alignment: WrapAlignment.spaceEvenly,
+                  spacing: 16.0,
+                  runSpacing: 16.0,
+                  children: List<Widget>.generate(_form.questions.length, (index) {
+                    final element = _form.questions[index] as FeedbackQuestion;
+                    return SizedBox(
+                      width: MediaQuery.of(context).size.width < 600 ? double.infinity : 600,
+                      child: Card(
+                        color: colors.surface,
+                        child: Padding(
+                          padding: const EdgeInsets.all(16.0),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: <Widget>[
+                              Text('${index + 1}. ${element.name}',
+                                  style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                                  textAlign: TextAlign.center),
+                              const SizedBox(height: 8),
+                              Text(element.description,
+                                  style: const TextStyle(fontSize: 15),
+                                  textAlign: TextAlign.center),
+                              const SizedBox(height: 16),
+                              if (element.type == 'STARS')
+                                StarFeedback(
+                                  initialRating: _feedbackValues[element.id],
+                                  onRatingChanged: (newRating) {
+                                    setState(() {
+                                      _feedbackValues[element.id] = newRating;
+                                    });
+                                  },
+                                )
+                              else if (element.type == 'SLIDER')
+                                SliderFeedback(
+                                  initialFeedback: _feedbackValues[element.id],
+                                  rangeLow: element.rangeLow,
+                                  rangeHigh: element.rangeHigh,
+                                  onFeedbackChanged: (newFeedback) {
+                                    setState(() {
+                                      _feedbackValues[element.id] = newFeedback;
+                                    });
+                                  },
+                                )
+                              else if (element.type == 'SINGLE_CHOICE')
+                                SingleChoiceFeedback(
+                                  options: element.options,
+                                  initialFeedback: _feedbackValues[element.id],
+                                  onFeedbackChanged: (newFeedback) {
+                                    setState(() {
+                                      _feedbackValues[element.id] = newFeedback;
+                                    });
+                                  },
+                                )
+                              else if (element.type == 'FULLTEXT')
+                                TextField(
+                                  onChanged: (newFeedback) {
+                                    setState(() {
+                                      _feedbackValues[element.id] = newFeedback;
+                                    });
+                                  },
+                                )
+                              else
+                                const Text('Unknown element type')
+                            ],
+                          ),
+                        ),
                       ),
-                    ),
+                    );}   
                   ),
-                );
-              }),
+                ),
+              ),
             ),
-          ),
-        ),
+            ElevatedButton(
+              child: const Text('Senden'),
+              onPressed: () {
+                // Iterate over the feedbackValues Map and send each feedback value to the socket
+                for (var entry in _feedbackValues.entries) {
+                  var message = {
+                    "action": "ADD_RESULT",
+                    "resultElementId": entry.key,
+                    "resultValues": [entry.value],
+                    "role": "STUDENT"
+                  };
+                  _socketChannel?.sink.add(jsonEncode(message));
+                }
+                setState(() {
+                  _voted = true;
+                });
+              },
+            ),
+            const SizedBox(height: 32),
+        ]),
       ),
     );
   }
