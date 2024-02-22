@@ -1,9 +1,11 @@
 package de.htwg_konstanz.mobilelearning.services.auth;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 import org.jboss.resteasy.reactive.RestHeader;
+import org.jboss.resteasy.reactive.RestPath;
 
 import de.htwg_konstanz.mobilelearning.models.Course;
 import de.htwg_konstanz.mobilelearning.models.auth.User;
@@ -12,6 +14,7 @@ import de.htwg_konstanz.mobilelearning.repositories.CourseRepository;
 import de.htwg_konstanz.mobilelearning.repositories.UserRepository;
 import jakarta.annotation.security.PermitAll;
 import jakarta.inject.Inject;
+import jakarta.ws.rs.GET;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
@@ -33,6 +36,15 @@ public class UserService {
 
     @Inject
     JwtService JwtService;
+
+    @GET
+    @PermitAll
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path("/load/{username}")
+    public Response loadUser(@RestPath String username){
+        User user = userRepository.findByUsername(username);
+        return Response.ok(user.getId()).build();
+    }
     
     /**
      * Login user.
@@ -60,7 +72,11 @@ public class UserService {
 
         // TEMP: bypass ldap (student, prof, admin as username)
         List<String> demoUsernames = Arrays.asList("Student", "Prof", "Prof2", "Admin", "Brande", "Tobi", "Marvin", "Leon", "Fabi", "Schimkat", "Landwehr" );
-        if (demoUsernames.contains(username)) {
+        List<String> loadTestUsers = new ArrayList<>();
+        for (int i = 0; i < 60; i++) {
+            loadTestUsers.add("" + i);
+        }
+        if (demoUsernames.contains(username) || loadTestUsers.contains(username)) {
 
             // check if user exists in db
             User existingUser = userRepository.findByUsername(username);
