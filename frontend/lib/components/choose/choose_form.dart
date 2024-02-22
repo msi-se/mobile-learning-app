@@ -32,36 +32,46 @@ class _ChooseFormState extends State<ChooseForm> {
       collapsable: true,
       expandedTitleScale: 1,
       title: (percentage) {
-        return Align(
-          alignment: Alignment.centerLeft,
-          child: Padding(
-            padding:
-                EdgeInsets.only(left: 16, right: percentage < 0.2 ? 0 : 120),
-            child: Text(
-              widget.course.name,
-              style: TextStyle(
-                color: colors.onSurface,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-          ),
-        );
-      },
-      // round button in Background with "Moodle"
-      background: Padding(
-          padding: const EdgeInsets.only(right: 20),
-          child: Align(
-            alignment: Alignment.centerRight,
-            child: ElevatedButton(
-              onPressed: () {},
-              style: ElevatedButton.styleFrom(
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(20.0),
+        return LayoutBuilder(
+          builder: (context, constraints) {
+            final isNarrow = constraints.maxWidth < 360;
+            return Align(
+              alignment: Alignment.centerLeft,
+              child: Padding(
+                padding: EdgeInsets.only(
+                  left: 16,
+                  right: percentage < 0.2 || isNarrow ? 0 : 120,
+                ),
+                child: Text(
+                  widget.course.name,
+                  style: TextStyle(
+                    color: colors.onSurface,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 16,
+                  ),
+                  overflow: TextOverflow.ellipsis,
                 ),
               ),
-              child: Image.asset(moodleLogo, width: 80),
+            );
+          },
+        );
+      },
+      background: Padding(
+        padding: const EdgeInsets.only(right: 20),
+        child: Align(
+          alignment: Alignment.centerRight,
+          child: ElevatedButton(
+            onPressed: () {},
+            style: ElevatedButton.styleFrom(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(20.0),
+              ),
             ),
-          )),
+            child: Image.asset(moodleLogo, width: 80),
+          ),
+        ),
+      ),
+
       body: Column(
         children: [
           Row(

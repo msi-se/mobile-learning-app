@@ -1,42 +1,17 @@
 import 'package:flutter/material.dart';
-import 'package:frontend/components/dashboard_card.dart';
-import 'package:frontend/components/dashboard_statistics.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:frontend/theme/assets.dart';
+import 'package:frontend/components/dashboard_statistics.dart';
+import 'package:frontend/components/dashboard_card.dart';
 
-Widget _buildColumn(String title, String value, bool smallDevice) {
-  return Column(
-    children: [
-      SizedBox(height: smallDevice ? 10 : 20),
-      Text(
-        title,
-        style: TextStyle(
-          fontSize: smallDevice ? 10 : 17,
-          color: Colors.black,
-        ),
-        textAlign: TextAlign.center,
-      ),
-      Text(
-        value,
-        style: TextStyle(fontSize: smallDevice ? 15 : 30, color: Colors.white),
-        textAlign: TextAlign.center,
-      ),
-    ],
-  );
-}
-
-class HomeTab extends StatefulWidget {
-  const HomeTab({super.key, required this.title});
-
-  final String title;
+class TestPage extends StatefulWidget {
+  const TestPage({super.key});
 
   @override
-  State<HomeTab> createState() => _HomeTabState();
+  State<TestPage> createState() => _TestPageState();
 }
 
-class _HomeTabState extends State<HomeTab> with TickerProviderStateMixin {
-  bool _loading = true;
-  bool _isSmallPhone = false;
-  bool _isTablet = false;
+class _TestPageState extends State<TestPage> with TickerProviderStateMixin {
   late AnimationController _controller;
 
   @override
@@ -46,10 +21,6 @@ class _HomeTabState extends State<HomeTab> with TickerProviderStateMixin {
       duration: const Duration(milliseconds: 600),
       vsync: this,
     )..forward();
-    setState(() {
-      _loading = false;
-    });
-    
   }
 
   @override
@@ -63,16 +34,14 @@ class _HomeTabState extends State<HomeTab> with TickerProviderStateMixin {
       analytics,
     ];
     final texts = ['Events', 'Mensa', 'LSF', 'Noten'];
-    
-    var screenWidth = MediaQuery.of(context).size.width;
-    int crossAxisCount = screenWidth > 800 ? 4 : 2; 
 
-    if (_loading) {
-      return const Center(
-        child: CircularProgressIndicator(),
-      );
-    }
     return Scaffold(
+      appBar: AppBar(
+        title: const Text("Test Seite",
+            style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+        centerTitle: true,
+        backgroundColor: colors.primary,
+      ),
       body: SafeArea(
         child: SingleChildScrollView(
           child: Column(
@@ -81,11 +50,11 @@ class _HomeTabState extends State<HomeTab> with TickerProviderStateMixin {
               Padding(
                 padding: const EdgeInsets.all(16),
                 child: GridView.builder(
-                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: crossAxisCount,
-                  crossAxisSpacing: 10,
-                  mainAxisSpacing: 10,
-                  childAspectRatio: 1,
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 2,
+                    crossAxisSpacing: 10,
+                    mainAxisSpacing: 10,
+                    childAspectRatio: 1,
                   ),
                   itemCount: 4,
                   primary: false,
@@ -108,5 +77,11 @@ class _HomeTabState extends State<HomeTab> with TickerProviderStateMixin {
         ),
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
   }
 }

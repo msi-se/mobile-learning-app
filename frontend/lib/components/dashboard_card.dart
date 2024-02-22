@@ -1,65 +1,81 @@
 import 'package:flutter/material.dart';
-import 'package:frontend/theme/assets.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
-class MyCard extends StatelessWidget {
-  final Color cardColor;
-  final String title;
-  final String imageName;
-  final String route;
+class DashboardCard extends StatefulWidget {
+  final String svgImage;
+  final String text;
+  final VoidCallback onTap;
 
-  const MyCard({
+  const DashboardCard({
     Key? key,
-    required this.title,
-    required this.cardColor,
-    required this.imageName,
-    required this.route,
+    required this.svgImage,
+    required this.text,
+    required this.onTap,
   }) : super(key: key);
 
   @override
+  State<DashboardCard> createState() => _DashboardCardState();
+}
+
+class _DashboardCardState extends State<DashboardCard> with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+  late Animation<double> _animation;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      duration: const Duration(milliseconds: 400),
+      vsync: this,
+    );
+
+    _animation = CurvedAnimation(
+      parent: _controller,
+      curve: Curves.easeOut,
+    );
+
+    _controller.forward();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return InkWell(
-      onTap: () {
-        Navigator.pushNamed(context, route);
-      },
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 15),
+    return GestureDetector(
+      onTap: widget.onTap,
+      child: ScaleTransition(
+        scale: _animation,
         child: Container(
-            margin: const EdgeInsets.all(10),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(25),
-              color: cardColor,
-              boxShadow: const [
-                BoxShadow(
-                  color: Colors.grey,
-                  spreadRadius: 1,
-                  blurRadius: 3,
-                )
-              ],
-            ),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(
-                  title,
-                  style: const TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black,
-                  ),
-                  textAlign: TextAlign.center,
+          decoration: BoxDecoration(
+            color: const Color(0xffd9e5ec),
+            borderRadius: BorderRadius.circular(24),
+          ),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              SvgPicture.asset(
+                widget.svgImage,
+                height: 110,
+                width: 110,
+              ),
+              const SizedBox(height: 8),
+              Text(
+                widget.text,
+                textAlign: TextAlign.center,
+                style: const TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
                 ),
-                const SizedBox(height: 5),
-                Align(
-                    alignment: Alignment.center,
-                    child: SvgPicture.asset(
-                      imageName,
-                      height: 80,
-                      width: 80,
-                    ))
-              ],
-            )),
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
 }
+

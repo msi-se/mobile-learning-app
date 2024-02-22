@@ -6,6 +6,7 @@ import 'package:frontend/pages/feedback/feedback_result_page.dart';
 import 'package:frontend/pages/login_page.dart';
 import 'package:frontend/pages/main_page.dart';
 import 'package:frontend/pages/menu_page.dart';
+import 'package:frontend/pages/test_page.dart';
 import 'package:frontend/pages/profile_page.dart';
 import 'package:frontend/pages/quiz/attend_quiz_page.dart';
 import 'package:frontend/pages/quiz/quiz_control_page.dart';
@@ -24,14 +25,16 @@ class MyApp extends StatelessWidget {
     initPreferences();
 
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       title: 'Flutter Demo',
       theme: getTheme(lightColorScheme),
       initialRoute: '/login',
       routes: <String, WidgetBuilder>{
-        '/login': (_) => const LoginPage(),
-        '/main': (_) => const MainPage(),
-        '/profile': (_) => const ProfilePage(),
-        '/menu': (_) => const MenuPage(),
+        '/login': (context) => const LoginPage(),
+        '/main': (context) => const MainPage(),
+        '/profile': (context) => const ProfilePage(),
+        '/menu': (context) => const MenuPage(),
+        '/test': (context) => const TestPage(),
         '/feedback-info': (context) {
           var arguments = ModalRoute.of(context)!.settings.arguments
               as Map<String, dynamic>?;
