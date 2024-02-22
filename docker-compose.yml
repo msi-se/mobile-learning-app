@@ -48,6 +48,21 @@ services:
     container_name: mobile-learning-frontend
     restart: always
 
+  # mongo express (debug only)
+  mobile-learning-mongoexpress:
+    image: mongo-express
+    container_name: mobile-learning-mongoexpress
+    ports:
+      - 8085:8081
+    environment:
+      - ME_CONFIG_MONGODB_SERVER=mobile-learning-mongo
+      - ME_CONFIG_MONGODB_URL=mongodb://mobile-learning-mongo:27017
+      - ME_CONFIG_MONGODB_PORT=27017
+      - ME_CONFIG_SITE_BASEURL=/mongo
+    depends_on:
+      - mobile-learning-mongo
+    # network_mode: "host"
+
 
   # nginx reverse proxy
   mobile-learning-nginx:
@@ -56,6 +71,7 @@ services:
     environment:
       - MOBILE_LEARNING_BACKEND_URL=http://localhost:8080
       - MOBILE_LEARNING_FRONTEND_URL=http://localhost:5000
+      - MOBILE_LEARNING_MONGOEXPRESS_URL=http://localhost:8085
     ports:
       - 80:80
     depends_on:

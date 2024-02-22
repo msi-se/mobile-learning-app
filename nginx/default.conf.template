@@ -17,6 +17,12 @@ server {
         proxy_read_timeout 7d;
     }
 
+    location /mongo/ {
+		proxy_pass		    ${MOBILE_LEARNING_MONGOEXPRESS_URL};
+		proxy_set_header	Host		$host;
+		proxy_set_header	X-Real_IP	$remote_addr;
+    }
+
     location / {
         rewrite /(.*) /$1 break;
         proxy_pass         ${MOBILE_LEARNING_FRONTEND_URL};

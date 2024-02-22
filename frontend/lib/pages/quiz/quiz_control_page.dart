@@ -7,7 +7,6 @@ import 'package:frontend/global.dart';
 import 'package:frontend/models/quiz/quiz_form.dart';
 import 'package:frontend/models/quiz/quiz_question.dart';
 import 'package:frontend/utils.dart';
-import 'package:qr_flutter/qr_flutter.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 import 'package:http/http.dart' as http;
 
@@ -229,11 +228,6 @@ class _QuizControlPageState extends State<QuizControlPage> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
-              QrImageView(
-                data: code,
-                version: QrVersions.auto,
-                size: 200.0,
-              ),
               Text(
                 code,
                 style: Theme.of(context).textTheme.headlineMedium,

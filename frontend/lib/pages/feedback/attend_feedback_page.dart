@@ -6,6 +6,7 @@ import 'package:frontend/components/elements/feedback/slider_feedback.dart';
 import 'package:frontend/components/elements/feedback/star_feedback.dart';
 import 'package:frontend/global.dart';
 import 'package:frontend/models/feedback/feedback_form.dart';
+import 'package:frontend/models/feedback/feedback_question.dart';
 import 'package:frontend/theme/assets.dart';
 import 'package:frontend/utils.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
@@ -207,7 +208,7 @@ class _AttendFeedbackPageState extends State<AttendFeedbackPage> {
               physics: const NeverScrollableScrollPhysics(),
               itemCount: _form.questions.length,
               itemBuilder: (context, index) {
-                var element = _form.questions[index];
+                final element = _form.questions[index] as FeedbackQuestion;
                 return Padding(
                   padding: const EdgeInsets.all(32.0),
                   child: Column(
@@ -230,6 +231,8 @@ class _AttendFeedbackPageState extends State<AttendFeedbackPage> {
                       else if (element.type == 'SLIDER')
                         SliderFeedback(
                           initialFeedback: _feedbackValues[element.id],
+                          rangeLow: element.rangeLow,
+                          rangeHigh: element.rangeHigh,
                           onFeedbackChanged: (newFeedback) {
                             setState(() {
                               _feedbackValues[element.id] = newFeedback;
@@ -241,6 +244,14 @@ class _AttendFeedbackPageState extends State<AttendFeedbackPage> {
                           options: element.options,
                           initialFeedback: _feedbackValues[element.id],
                           onFeedbackChanged: (newFeedback) {
+                            setState(() {
+                              _feedbackValues[element.id] = newFeedback;
+                            });
+                          },
+                        )
+                      else if (element.type == 'FULLTEXT')
+                        TextField(
+                          onChanged: (newFeedback) {
                             setState(() {
                               _feedbackValues[element.id] = newFeedback;
                             });
