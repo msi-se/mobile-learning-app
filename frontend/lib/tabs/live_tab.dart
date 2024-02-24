@@ -19,10 +19,12 @@ class LiveTab extends StatefulWidget {
 class FormShell {
   final String connectCode;
   final String name;
-  FormShell(this.connectCode, this.name);
+  final String type;
+  FormShell(this.connectCode, this.name, this.type);
 
   factory FormShell.fromJson(Map<String, dynamic> json) {
-    return FormShell((json['connectCode'] as int).toString(), json['name']);
+    return FormShell(
+        (json['connectCode'] as int).toString(), json['name'], json['type']);
   }
 }
 
@@ -49,8 +51,7 @@ class _LiveTabState extends State<LiveTab> {
   Future fetchForms() async {
     try {
       final response = await http.get(
-        Uri.parse(
-            "${getBackendUrl()}/live?password=${getSession()!.password}"),
+        Uri.parse("${getBackendUrl()}/live?password=${getSession()!.password}"),
         headers: {
           "Content-Type": "application/json",
           "AUTHORIZATION": "Bearer ${getSession()!.jwt}",
@@ -275,7 +276,8 @@ class _LiveTabState extends State<LiveTab> {
                     borderRadius: BorderRadius.circular(10.0),
                   ),
                   child: ListTile(
-                    title: Text(_forms[index].name),
+                    title: Text(
+                        '${_forms[index].name} (${_forms[index].type == 'feedback' ? 'Feedback' : 'Quiz'})'),
                     // subtitle: Text(widget.courses[index].description),
                     // dense: true,
                     // trailing: const Icon(Icons.arrow_forward_ios),
