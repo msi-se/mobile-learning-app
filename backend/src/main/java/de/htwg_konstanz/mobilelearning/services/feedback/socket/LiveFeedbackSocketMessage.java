@@ -15,7 +15,7 @@ import de.htwg_konstanz.mobilelearning.models.feedback.FeedbackForm;
 public class LiveFeedbackSocketMessage {
 
     // general
-    public String action; // CHANGE_FORM_STATUS, ADD_RESULT, FORM_STATUS_CHANGED, RESULT_ADDED
+    public String action; // CHANGE_FORM_STATUS (client), ADD_RESULT (client), FORM_STATUS_CHANGED (server), RESULT_ADDED (server), PARTICIPANT_JOINED (server)
     public String formStatus; // NOT_STARTED, STARTED, FINISHED
     public List<String> roles; // STUDENT, PROF, SERVER // not really used yet
     

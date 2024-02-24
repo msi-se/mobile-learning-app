@@ -98,7 +98,7 @@ public class LiveService {
         List<Course> courses = courseRepository.listAllForOwnerAndStudent(user);
         for (Course course : courses) {
             for (Form form : course.getFeedbackForms()) {
-                if (form.getStatus() == FormStatus.STARTED) {
+                if (form.getStatus() == FormStatus.STARTED || form.getStatus() == FormStatus.WAITING) {
                     forms.add(form);
                 }
             }
@@ -129,7 +129,7 @@ public class LiveService {
         List<Course> courses = courseRepository.listAllForOwnerAndStudent(user);
         for (Course course : courses) {
             for (Form form : course.getQuizForms()) {
-                if (form.getStatus() == FormStatus.STARTED) {
+                if (form.getStatus() == FormStatus.STARTED || form.getStatus() == FormStatus.WAITING) {
                     forms.add(form);
                 }
             }
