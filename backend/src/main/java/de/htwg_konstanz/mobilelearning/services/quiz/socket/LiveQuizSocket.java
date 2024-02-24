@@ -5,6 +5,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import de.htwg_konstanz.mobilelearning.services.auth.JwtService;
+import de.htwg_konstanz.mobilelearning.services.auth.UserService;
 
 import org.bson.types.ObjectId;
 
@@ -46,7 +47,11 @@ public class LiveQuizSocket {
     private UserRepository userRepository;
 
     @Inject
+    private UserService userService;
+
+    @Inject
     JwtService jwtService;
+
 
     /**
      * Method called when a new connection is opened.
@@ -277,6 +282,11 @@ public class LiveQuizSocket {
         // update the form in the database
         form.clearQuestionContents();
         courseRepository.update(course);
+
+        // update the userstats of the participants
+        if (formStatusEnum == FormStatus.FINISHED) {
+            userService.updateUserStatsByQuizForm(form);
+        }
 
         return true;
     };
