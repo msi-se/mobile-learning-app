@@ -88,18 +88,13 @@ public class LiveQuizSocket {
                 return;
             }
 
-            // check if the user is owner or a participant of the course (is registered)
+            // check if the user is owner or a participant of the form (is registered)
             Boolean isParticipant = form.isParticipant(userId);
             Boolean isOwner = course.isOwner(userId);
             if (!isParticipant && !isOwner) {
                 System.out.println("User is not a participant of the course. Please register first.");
                 return;
             }
-
-            System.out.println("New connection with session ID: " + session.getId());
-            System.out.println("Course ID: " + courseId);
-            System.out.println("Form ID: " + formId);
-            System.out.println("User ID: " + userId);
 
             // check if user is student of the course
             if (!course.isStudent(userId) && !course.isOwner(userId)) {
