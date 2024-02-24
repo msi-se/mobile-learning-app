@@ -5,6 +5,8 @@ import 'package:frontend/components/elements/feedback/fulltext_feedback_result.d
 import 'package:frontend/components/elements/feedback/single_choice_feedback_result.dart';
 import 'package:frontend/components/elements/feedback/slider_feedback_result.dart';
 import 'package:frontend/components/elements/feedback/star_feedback_result.dart';
+import 'package:frontend/components/error/general_error_widget.dart';
+import 'package:frontend/components/error/network_error_widget.dart';
 import 'package:frontend/global.dart';
 import 'package:frontend/models/feedback/feedback_form.dart';
 import 'package:frontend/models/feedback/feedback_question.dart';
@@ -37,8 +39,6 @@ List<int> convertStringListToIntList(List<String> list) {
 }
 
 class _FeedbackResultPageState extends State<FeedbackResultPage> {
-  bool _loading = true;
-
   late String _courseId;
   late String _formId;
   late String _userId;
@@ -48,6 +48,9 @@ class _FeedbackResultPageState extends State<FeedbackResultPage> {
   WebSocketChannel? _socketChannel;
 
   late List<Map<String, dynamic>> _results;
+
+  bool _loading = false;
+  String _fetchResult = '';
 
   @override
   void initState() {
@@ -65,6 +68,10 @@ class _FeedbackResultPageState extends State<FeedbackResultPage> {
   }
 
   Future fetchForm() async {
+    setState(() {
+      _loading = true;
+      _fetchResult = '';
+    });
     try {
       final response = await http.get(
         Uri.parse(
@@ -84,11 +91,43 @@ class _FeedbackResultPageState extends State<FeedbackResultPage> {
           _form = form;
           _results = getResults(data);
           _loading = false;
+          _fetchResult = 'success';
+        });
+      } else {
+        setState(() {
+          _loading = false;
+          _fetchResult = 'network_error';
         });
       }
-    } on http.ClientException catch (_) {
-      // TODO: handle error
+    } on http.ClientException {
+      setState(() {
+        _loading = false;
+        _fetchResult = 'network_error';
+      });
+    } catch (e) {
+      setState(() {
+        _loading = false;
+        _fetchResult = 'general_error';
+      });
     }
+  }
+
+  void _showErrorDialog(String errorType) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      showDialog(
+          context: context,
+          barrierDismissible: false,
+          builder: (BuildContext context) {
+            return (errorType == 'network_error')
+                ? const NetworkErrorWidget()
+                : const GeneralErrorWidget();
+          }).then((value) {
+        if (value == 'back') {
+          Navigator.pushReplacementNamed(
+              context, '/feedback-info'); // TODO: Where should you go here?
+        }
+      });
+    });
   }
 
   void startWebsocket() {
@@ -112,6 +151,10 @@ class _FeedbackResultPageState extends State<FeedbackResultPage> {
     }, onError: (error) {
       setState(() {
         _form.status = "ERROR";
+        _loading =
+            false; //TODO: maybe remove this later if this is not necessary
+        _fetchResult =
+            'network_error'; //TODO: maybe remove this later if this is not necessary
       });
     });
   }
@@ -183,154 +226,173 @@ class _FeedbackResultPageState extends State<FeedbackResultPage> {
           child: CircularProgressIndicator(),
         ),
       );
-    }
+    } else if (_fetchResult == 'success') {
+      final colors = Theme.of(context).colorScheme;
 
-    final colors = Theme.of(context).colorScheme;
+      final appbar = AppBar(
+        title: Text(_form.name,
+            style: const TextStyle(
+                color: Colors.white, fontWeight: FontWeight.bold)),
+        backgroundColor: colors.primary,
+      );
 
-    final appbar = AppBar(
-      title: Text(_form.name,
-          style: const TextStyle(
-              color: Colors.white, fontWeight: FontWeight.bold)),
-      backgroundColor: colors.primary,
-    );
+      if (_form.status == "NOT_STARTED") {
+        var code = _form.connectCode;
+        code = "${code.substring(0, 3)} ${code.substring(3, 6)}";
 
-    if (_form.status == "NOT_STARTED") {
-      var code = _form.connectCode;
-      code = "${code.substring(0, 3)} ${code.substring(3, 6)}";
+        return Scaffold(
+          appBar: appbar,
+          body: Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                Text(
+                  code,
+                  style: Theme.of(context).textTheme.headlineMedium,
+                ),
+                const SizedBox(height: 16),
+                ElevatedButton(
+                  onPressed: startForm,
+                  child: const Text('Feedback starten'),
+                ),
+              ],
+            ),
+          ),
+        );
+      }
 
       return Scaffold(
-        appBar: appbar,
-        body: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              Text(
-                code,
-                style: Theme.of(context).textTheme.headlineMedium,
+          appBar: appbar,
+          body: Stack(
+            children: [
+              SingleChildScrollView(
+                child: SizedBox(
+                  width: double.infinity,
+                  child: Column(
+                    children: <Widget>[
+                      const SizedBox(height: 16),
+                      Container(
+                        constraints: const BoxConstraints(maxWidth: 1600),
+                        padding: const EdgeInsets.all(16),
+                        child: Wrap(
+                          alignment: WrapAlignment.spaceEvenly,
+                          spacing: 16.0,
+                          runSpacing: 16.0,
+                          children: List<Widget>.generate(
+                            _form.questions.length,
+                            (index) {
+                              final element =
+                                  _form.questions[index] as FeedbackQuestion;
+                              final double average = _results[index]["average"];
+                              final roundAverage =
+                                  (average * 100).round() / 100;
+                              final values = _results[index]["values"];
+                              return SizedBox(
+                                width: MediaQuery.of(context).size.width < 600
+                                    ? double.infinity
+                                    : 600,
+                                child: Card(
+                                  color: colors.surface,
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(16.0),
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.center,
+                                      children: <Widget>[
+                                        Text('${index + 1}. ${element.name}',
+                                            style: const TextStyle(
+                                                fontSize: 24,
+                                                fontWeight: FontWeight.bold),
+                                            textAlign: TextAlign.center),
+                                        const SizedBox(height: 8),
+                                        Text(element.description,
+                                            style:
+                                                const TextStyle(fontSize: 15),
+                                            textAlign: TextAlign.center),
+                                        const SizedBox(height: 16),
+                                        if (element.type == 'STARS')
+                                          StarFeedbackResult(average: average)
+                                        else if (element.type == 'SLIDER')
+                                          SliderFeedbackResult(
+                                            results: convertStringListToIntList(
+                                                values),
+                                            rangeLow: element.rangeLow,
+                                            rangeHigh: element.rangeHigh,
+                                            average: average,
+                                            min: 0,
+                                            max: 10,
+                                          )
+                                        else if (element.type ==
+                                            'SINGLE_CHOICE')
+                                          SingleChoiceFeedbackResult(
+                                            results: convertStringListToIntList(
+                                                values),
+                                            options: element.options,
+                                          )
+                                        else if (element.type == 'FULLTEXT')
+                                          FulltextFeedbackResult(
+                                              results: values)
+                                        else
+                                          const Text('Unknown element type',
+                                              textAlign: TextAlign.center),
+                                        if (element.type == 'STARS' ||
+                                            element.type == 'SLIDER')
+                                          Text("$roundAverage",
+                                              style:
+                                                  const TextStyle(fontSize: 20),
+                                              textAlign: TextAlign.center),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              );
+                            },
+                          ),
+                        ),
+                      ),
+                      if (_form.status == "STARTED")
+                        ElevatedButton(
+                          onPressed: stopForm,
+                          child: const Text('Feedback beenden'),
+                        ),
+                      if (_form.status == "FINISHED")
+                        Column(
+                          children: [
+                            ElevatedButton(
+                              onPressed: startForm,
+                              child: const Text('Feedback fortsetzen'),
+                            ),
+                            const SizedBox(height: 8),
+                            ElevatedButton(
+                              onPressed: resetForm,
+                              child: Text('Feedback zurücksetzen',
+                                  style: TextStyle(color: colors.error)),
+                            ),
+                          ],
+                        ),
+                      const SizedBox(height: 32),
+                    ],
+                  ),
+                ),
               ),
-              const SizedBox(height: 16),
-              ElevatedButton(
-                onPressed: startForm,
-                child: const Text('Feedback starten'),
+              Positioned(
+                top: 0,
+                left: 0,
+                right: 0,
+                child: Container(
+                  color: colors.surfaceVariant,
+                  child: Text(
+                    "${_form.connectCode.substring(0, 3)} ${_form.connectCode.substring(3, 6)}",
+                    style: Theme.of(context).textTheme.headlineSmall,
+                    textAlign: TextAlign.center,
+                  ),
+                ),
               ),
             ],
-          ),
-        ),
-      );
+          ));
+    } else {
+      _showErrorDialog(_fetchResult);
+      return Container();
     }
-
-    return Scaffold(
-      appBar: appbar,
-      body: Stack(
-        children: [
-          SingleChildScrollView(
-            child: SizedBox(
-              width: double.infinity,
-              child: Column(
-                children: <Widget>[
-                  const SizedBox(height: 16),
-                  Container(
-                    constraints: const BoxConstraints(maxWidth: 1600),
-                    padding: const EdgeInsets.all(16),
-                    child: Wrap(
-                      alignment: WrapAlignment.spaceEvenly,
-                      spacing: 16.0,
-                      runSpacing: 16.0,
-                      children: List<Widget>.generate(_form.questions.length, (index) {
-                        final element = _form.questions[index] as FeedbackQuestion;
-                        final double average = _results[index]["average"];
-                        final roundAverage = (average * 100).round() / 100;
-                        final values = _results[index]["values"];
-                        return SizedBox(
-                          width: MediaQuery.of(context).size.width < 600 ? double.infinity : 600,
-                          child: Card(
-                            color: colors.surface,
-                            child: Padding(
-                              padding: const EdgeInsets.all(16.0),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                children: <Widget>[
-                                  Text('${index + 1}. ${element.name}',
-                                      style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-                                      textAlign: TextAlign.center),
-                                  const SizedBox(height: 8),
-                                  Text(element.description,
-                                      style: const TextStyle(fontSize: 15),
-                                      textAlign: TextAlign.center),
-                                  const SizedBox(height: 16),
-                                  if (element.type == 'STARS')
-                                    StarFeedbackResult(average: average)
-                                  else if (element.type == 'SLIDER')
-                                    SliderFeedbackResult(
-                                      results: convertStringListToIntList(values),
-                                      rangeLow: element.rangeLow,
-                                      rangeHigh: element.rangeHigh,
-                                      average: average,
-                                      min: 0,
-                                      max: 10,
-                                    )
-                                  else if (element.type == 'SINGLE_CHOICE')
-                                    SingleChoiceFeedbackResult(
-                                      results: convertStringListToIntList(values),
-                                      options: element.options,
-                                    )
-                                  else if (element.type == 'FULLTEXT')
-                                    FulltextFeedbackResult(results: values)
-                                  else
-                                    const Text('Unknown element type', textAlign: TextAlign.center),
-                                  if (element.type == 'STARS' || element.type == 'SLIDER')
-                                    Text("$roundAverage",
-                                        style: const TextStyle(fontSize: 20),
-                                        textAlign: TextAlign.center),
-                                ],
-                              ),
-                            ),
-                          ),
-                          );
-                        },
-                      ),
-                    ),
-                  ),
-                  if (_form.status == "STARTED")
-                    ElevatedButton(
-                      onPressed: stopForm,
-                      child: const Text('Feedback beenden'),
-                    ),
-                  if (_form.status == "FINISHED")
-                    Column(
-                      children: [
-                        ElevatedButton(
-                          onPressed: startForm,
-                          child: const Text('Feedback fortsetzen'),
-                        ),
-                        const SizedBox(height: 8),
-                        ElevatedButton(
-                          onPressed: resetForm,
-                          child: Text('Feedback zurücksetzen',
-                              style: TextStyle(color: colors.error)),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 32),
-                  ],
-                ),
-              ),
-            ),
-            Positioned(
-              top: 0,
-              left: 0,
-              right: 0,
-              child: Container(
-                color: colors.surfaceVariant,
-                child: Text(
-                  "${_form.connectCode.substring(0, 3)} ${_form.connectCode.substring(3, 6)}",
-                  style: Theme.of(context).textTheme.headlineSmall,
-                  textAlign: TextAlign.center,
-                ),
-              ),
-            ),
-          ],
-        )
-      );
   }
 }

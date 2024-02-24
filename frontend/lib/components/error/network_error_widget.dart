@@ -26,7 +26,6 @@ class NetworkErrorWidget extends StatelessWidget {
             child: const Text('OK'),
             onPressed: () {
               Navigator.of(context).pop('back');
-              return;
             },
           ),
         ],

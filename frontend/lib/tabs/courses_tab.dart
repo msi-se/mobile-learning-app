@@ -25,15 +25,20 @@ class _CoursesTabState extends State<CoursesTab> {
 
   Course? _selectedCourse;
 
-  late Future<String> _future;
+  bool _loading = false;
+  String _fetchResult = '';
 
   @override
   void initState() {
     super.initState();
-    _future = fetchCourses();
+    fetchCourses();
   }
 
-  Future<String> fetchCourses() async {
+  Future fetchCourses() async {
+    setState(() {
+      _loading = true;
+      _fetchResult = '';
+    });
     try {
       final response = await http.get(
         Uri.parse(
@@ -47,17 +52,31 @@ class _CoursesTabState extends State<CoursesTab> {
         var data = jsonDecode(response.body);
         setState(() {
           _courses = getCoursesFromJson(data);
+          _loading = false;
+          _fetchResult = 'success';
         });
-        return 'success';
+      } else {
+        setState(() {
+          _loading = false;
+          _fetchResult = 'network_error';
+        });
       }
     } on http.ClientException {
-      return 'network_error';
+      setState(() {
+        _loading = false;
+        _fetchResult = 'network_error';
+      });
     } on SocketException {
-      return 'network_error';
+      setState(() {
+        _loading = false;
+        _fetchResult = 'network_error';
+      });
     } catch (e) {
-      return 'general_error';
+      setState(() {
+        _loading = false;
+        _fetchResult = 'general_error';
+      });
     }
-    return 'general_error';
   }
 
   void _showErrorDialog(String errorType) {
@@ -66,7 +85,7 @@ class _CoursesTabState extends State<CoursesTab> {
           context: context,
           barrierDismissible: false,
           builder: (BuildContext context) {
-            return (errorType == 'network')
+            return (errorType == 'network_error')
                 ? const NetworkErrorWidget()
                 : const GeneralErrorWidget();
           }).then((value) {
@@ -92,60 +111,50 @@ class _CoursesTabState extends State<CoursesTab> {
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder(
-      future: _future,
-      builder: (context, AsyncSnapshot<String> snapshot) {
-        if (snapshot.connectionState == ConnectionState.done) {
-          String? result = snapshot.data;
-          if (result == 'network_error') {
-            _showErrorDialog('network');
-          } else if (result == 'general_error') {
-            _showErrorDialog('general');
-          } else if (result == 'success') {
-            return PopScope(
-              canPop: _selectedCourse == null,
-              onPopInvoked: (bool didPop) {
-                if (didPop) {
-                  return;
-                }
-                pop();
-              },
-              child: _selectedCourse == null
-                  ? ChooseCourse(
-                      courses: _courses,
-                      choose: (id) {
-                        setState(() {
-                          _selectedCourse = _courses
-                              .firstWhere((element) => element.id == id);
-                        });
-                        widget.setPopFunction(pop);
-                      },
-                    )
-                  : ChooseForm(
-                      course: _selectedCourse!,
-                      choose: (id, feedbackOrQuiz) {
-                        if (feedbackOrQuiz == "Feedback") {
-                          Navigator.pushNamed(context, '/feedback-info',
-                              arguments: {
-                                "courseId": _selectedCourse!.id,
-                                "formId": id,
-                              });
-                        } else if (feedbackOrQuiz == "Quiz") {
-                          Navigator.pushNamed(context, '/quiz-info',
-                              arguments: {
-                                "courseId": _selectedCourse!.id,
-                                "formId": id,
-                              });
-                        }
-                      },
-                    ),
-            );
+    if (_loading) {
+      return const Center(
+        child: CircularProgressIndicator(),
+      );
+    } else if (_fetchResult == 'success') {
+      return PopScope(
+        canPop: _selectedCourse == null,
+        onPopInvoked: (bool didPop) {
+          if (didPop) {
+            return;
           }
-        }
-        return const Center(
-          child: CircularProgressIndicator(),
-        );
-      },
-    );
+          pop();
+        },
+        child: _selectedCourse == null
+            ? ChooseCourse(
+                courses: _courses,
+                choose: (id) {
+                  setState(() {
+                    _selectedCourse =
+                        _courses.firstWhere((element) => element.id == id);
+                  });
+                  widget.setPopFunction(pop);
+                },
+              )
+            : ChooseForm(
+                course: _selectedCourse!,
+                choose: (id, feedbackOrQuiz) {
+                  if (feedbackOrQuiz == "Feedback") {
+                    Navigator.pushNamed(context, '/feedback-info', arguments: {
+                      "courseId": _selectedCourse!.id,
+                      "formId": id,
+                    });
+                  } else if (feedbackOrQuiz == "Quiz") {
+                    Navigator.pushNamed(context, '/quiz-info', arguments: {
+                      "courseId": _selectedCourse!.id,
+                      "formId": id,
+                    });
+                  }
+                },
+              ),
+      );
+    } else {
+      _showErrorDialog(_fetchResult);
+      return Container();
+    }
   }
 }
