@@ -5,6 +5,7 @@ import java.util.List;
 import org.bson.types.ObjectId;
 import org.eclipse.microprofile.jwt.JsonWebToken;
 import org.jboss.resteasy.reactive.RestPath;
+import org.jboss.resteasy.reactive.RestResponse;
 
 import de.htwg_konstanz.mobilelearning.enums.FormStatus;
 import de.htwg_konstanz.mobilelearning.models.Course;
@@ -22,6 +23,7 @@ import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
 
 /**
  * Service used to manage feedback forms of a course.
@@ -184,6 +186,41 @@ public class FeedbackFormService {
         feedbackForm.clearResults();
         courseRepository.update(course);
         return feedbackForm;
+    }
+
+    /*
+     * Endpoint to participate in a feedback.
+     * The user has to be registered with the user id.
+     * 
+     * @param courseId
+     * @param formId
+     * @return RestResponse
+     */
+    @POST
+    @Produces(MediaType.APPLICATION_JSON)
+    @RolesAllowed({ UserRole.STUDENT, UserRole.PROF })
+    @Path("/{formId}/participate")
+    public RestResponse<String> participate(@RestPath String courseId, @RestPath String formId) {
+
+        // get the user
+        String userId = jwt.getSubject();
+
+        // get the course and the feedbackForm
+        ObjectId courseObjectId = new ObjectId(courseId);
+        ObjectId formObjectId = new ObjectId(formId);
+        Course course = courseRepository.findById(courseObjectId);
+        if (course == null) { throw new NotFoundException("Course not found"); }
+        FeedbackForm feedbackForm = course.getFeedbackFormById(formObjectId);
+        if (feedbackForm == null) { throw new NotFoundException("FeedbackForm not found"); }
+
+        // add the participant
+        Boolean successfullyAdded = feedbackForm.addParticipant(new ObjectId(userId));
+        if (!successfullyAdded) {
+            return RestResponse.status(Response.Status.CONFLICT, "Error while adding participant (should not happen)");
+        }
+        courseRepository.update(course);
+
+        return RestResponse.ok("Successfully added");
     }
 
 }
