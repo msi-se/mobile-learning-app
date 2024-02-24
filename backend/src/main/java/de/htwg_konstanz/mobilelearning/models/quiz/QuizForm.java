@@ -98,6 +98,12 @@ public class QuizForm extends Form {
         }
         for (QuizParticipant participant : this.participants) {
             if (participant.userAlias.equals(userAlias)) {
+
+                // if the user is already participating with the same alias, return true
+                if (participant.getUserId().equals(userId)) {
+                    return true;
+                }
+
                 return false;
             }
         }
