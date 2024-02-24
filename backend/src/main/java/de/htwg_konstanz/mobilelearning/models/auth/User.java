@@ -13,6 +13,10 @@ public class User {
     public String password;
     public List<String> roles;
     public List<ObjectId> courses;
+    public Integer completedFeedbackForms = 0;
+    public Integer completedFeedbackQuestions = 0;
+    public Integer qainedQuizPoints = 0;
+    public Integer avgQuizPosition = 0;
 
     public User() {
     }
@@ -187,5 +191,53 @@ public class User {
         this.courses.clear();
     }
 
+    // stats / analytics
+    public Integer getCompletedFeedbackForms() {
+        return this.completedFeedbackForms;
+    }
+
+    public void setCompletedFeedbackForms(Integer completedFeedbackForms) {
+        this.completedFeedbackForms = completedFeedbackForms;
+    }
+
+    public Number incrementCompletedFeedbackForms() {
+        return this.completedFeedbackForms++;
+    }
+
+    public Integer getCompletedFeedbackQuestions() {
+        return this.completedFeedbackQuestions;
+    }
+
+    public void setCompletedFeedbackQuestions(Integer completedFeedbackQuestions) {
+        this.completedFeedbackQuestions = completedFeedbackQuestions;
+    }
+
+    public Number incrementCompletedFeedbackQuestions() {
+        return this.completedFeedbackQuestions++;
+    }
+
+    public Integer getQainedQuizPoints() {
+        return this.qainedQuizPoints;
+    }
+
+    public void setQainedQuizPoints(Integer qainedQuizPoints) {
+        this.qainedQuizPoints = qainedQuizPoints;
+    }
+
+    public Number incrementQainedQuizPoints(Integer qainedQuizPoints) {
+        return this.qainedQuizPoints += qainedQuizPoints;
+    }
+
+    public Integer getAvgQuizPosition() {
+        return this.avgQuizPosition;
+    }
+
+    public void setAvgQuizPosition(Integer avgQuizPosition) {
+        this.avgQuizPosition = avgQuizPosition;
+    }
+
+    public Number incrementAvgQuizPosition(Integer avgQuizPosition) {
+        return this.avgQuizPosition += avgQuizPosition;
+    }
 
 }
