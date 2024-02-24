@@ -3,6 +3,7 @@ package de.htwg_konstanz.mobilelearning.services.feedback.socket;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import de.htwg_konstanz.mobilelearning.services.StatsService;
 import de.htwg_konstanz.mobilelearning.services.auth.JwtService;
 import de.htwg_konstanz.mobilelearning.services.auth.UserService;
 
@@ -48,6 +49,9 @@ public class LiveFeedbackSocket {
 
     @Inject
     JwtService jwtService;
+
+    @Inject
+    StatsService statsService;
 
     /**
      * Method called when a new connection is opened.
@@ -255,8 +259,11 @@ public class LiveFeedbackSocket {
         form.clearQuestionContents();
         courseRepository.update(course);
 
-        // update the userstats of the participants
-        this.userService.updateUserStatsByFeedbackForm(form);
+        // update the userstats of the participants and the global stats
+        if (formStatusEnum == FormStatus.FINISHED) {
+            this.userService.updateUserStatsByFeedbackForm(form);
+            this.statsService.incrementCompletedFeedbackForms();
+        }
 
         return true;
     };
