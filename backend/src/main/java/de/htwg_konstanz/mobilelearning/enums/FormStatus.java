@@ -3,5 +3,6 @@ package de.htwg_konstanz.mobilelearning.enums;
 public enum FormStatus {
     STARTED,
     FINISHED,
-    NOT_STARTED
+    NOT_STARTED,
+    WAITING,
 }

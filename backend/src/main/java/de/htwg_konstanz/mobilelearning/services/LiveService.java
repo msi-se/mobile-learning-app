@@ -60,13 +60,13 @@ public class LiveService {
         List<Course> courses = courseRepository.listAllForOwnerAndStudent(user);
         for (Course course : courses) {
             for (Form form : course.getFeedbackForms()) {
-                if (form.getStatus() == FormStatus.STARTED) {
+                if (form.getStatus() == FormStatus.STARTED || form.getStatus() == FormStatus.WAITING) {
                     // convert the forms to form shells to not have all the data in them (e.g. the questions)
                     forms.add(new FormShell(form.getId(), form.getCourseId(), form.getName(), form.getDescription(), form.getStatus(), form.getConnectCode(), form.getKey(), "feedback"));
                 }
             }
             for (Form form : course.getQuizForms()) {
-                if (form.getStatus() == FormStatus.STARTED) {
+                if (form.getStatus() == FormStatus.STARTED || form.getStatus() == FormStatus.WAITING) {
                     forms.add(new FormShell(form.getId(), form.getCourseId(), form.getName(), form.getDescription(), form.getStatus(), form.getConnectCode(), form.getKey(), "quiz"));
                 }
             }
