@@ -38,6 +38,10 @@ public abstract class Form {
         return this.id;
     }
 
+    public ObjectId getCourseId() {
+        return this.courseId;
+    }
+
     public String getName() {
         return this.name;
     }
