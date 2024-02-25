@@ -1,8 +1,11 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:frontend/components/elements/quiz/single_choice_quiz.dart';
 import 'package:frontend/components/elements/quiz/yes_no_quiz.dart';
+import 'package:frontend/components/error/general_error_widget.dart';
+import 'package:frontend/components/error/network_error_widget.dart';
 import 'package:frontend/components/general/quiz/choose_alias.dart';
 import 'package:frontend/global.dart';
 import 'package:frontend/models/quiz/quiz_form.dart';
@@ -21,19 +24,21 @@ class AttendQuizPage extends StatefulWidget {
 
 class _AttendQuizPageState extends State<AttendQuizPage> {
   bool _aliasChosen = false;
-  bool _loading = true;
 
   late String _courseId;
   late String _formId;
   late String _userId;
   late String _alias;
-  String _aliasError = ''; 
+  String _aliasError = '';
 
   late QuizForm _form;
   WebSocketChannel? _socketChannel;
 
   dynamic _value;
   bool _voted = false;
+
+  bool _loading = false;
+  String _fetchResult = '';
 
   @override
   void initState() {
@@ -46,6 +51,10 @@ class _AttendQuizPageState extends State<AttendQuizPage> {
 
   Future init() async {
     var code = widget.code;
+    setState(() {
+      _loading = true;
+      _fetchResult = '';
+    });
     try {
       final response = await http.get(
         Uri.parse("${getBackendUrl()}/connectto/quiz/$code"),
@@ -60,9 +69,23 @@ class _AttendQuizPageState extends State<AttendQuizPage> {
         _formId = data["formId"];
         await fetchForm();
       }
-    } on http.ClientException catch (_) {
-      // TODO: handle error
+    } on http.ClientException {
+      setState(() {
+        _loading = false;
+        _fetchResult = 'network_error';
+      });
+    } on SocketException {
+      setState(() {
+        _loading = false;
+        _fetchResult = 'network_error';
+      });
+    } catch (e) {
+      setState(() {
+        _loading = false;
+        _fetchResult = 'general_error';
+      });
     }
+
     if (!mounted) return;
     //Navigator.pop(context);
   }
@@ -70,7 +93,8 @@ class _AttendQuizPageState extends State<AttendQuizPage> {
   Future<bool> participate() async {
     try {
       final response = await http.post(
-        Uri.parse("${getBackendUrl()}/course/$_courseId/quiz/form/$_formId/participate"),
+        Uri.parse(
+            "${getBackendUrl()}/course/$_courseId/quiz/form/$_formId/participate"),
         headers: {
           "Content-Type": "application/json",
           "AUTHORIZATION": "Bearer ${getSession()!.jwt}",
@@ -80,17 +104,33 @@ class _AttendQuizPageState extends State<AttendQuizPage> {
       if (response.statusCode == 200) {
         setState(() {
           _aliasChosen = true;
+          _loading = false;
+          _fetchResult = 'success';
         });
         return true;
       } else if (response.statusCode == 409) {
         setState(() {
-          _aliasError = "Dieser Nickname ist bereits vergeben. Bitte wählen Sie einen anderen.";
+          _aliasError =
+              "Dieser Nickname ist bereits vergeben. Bitte wählen Sie einen anderen.";
           _aliasChosen = false;
         });
         return false;
       }
-    } on http.ClientException catch (e) {
-      print('Network error occurred: $e');
+    } on http.ClientException {
+      setState(() {
+        _loading = false;
+        _fetchResult = 'network_error';
+      });
+    } on SocketException {
+      setState(() {
+        _loading = false;
+        _fetchResult = 'network_error';
+      });
+    } catch (e) {
+      setState(() {
+        _loading = false;
+        _fetchResult = 'general_error';
+      });
     }
     return false;
   }
@@ -113,11 +153,42 @@ class _AttendQuizPageState extends State<AttendQuizPage> {
         setState(() {
           _form = form;
           _loading = false;
+          _fetchResult = 'success';
         });
       }
-    } on http.ClientException catch (_) {
-      // TODO: handle error
+    } on http.ClientException {
+      setState(() {
+        _loading = false;
+        _fetchResult = 'network_error';
+      });
+    } on SocketException {
+      setState(() {
+        _loading = false;
+        _fetchResult = 'network_error';
+      });
+    } catch (e) {
+      setState(() {
+        _loading = false;
+        _fetchResult = 'general_error';
+      });
     }
+  }
+
+  void _showErrorDialog(String errorType) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      showDialog(
+          context: context,
+          barrierDismissible: false,
+          builder: (BuildContext context) {
+            return (errorType == 'network_error')
+                ? const NetworkErrorWidget()
+                : const GeneralErrorWidget();
+          }).then((value) {
+        if (value == 'back') {
+          Navigator.pushReplacementNamed(context, '/main');
+        }
+      });
+    });
   }
 
   void startWebsocket() {
@@ -149,6 +220,7 @@ class _AttendQuizPageState extends State<AttendQuizPage> {
         });
       }
     }, onError: (error) {
+      //TODO: Should there be another error handling for this?
       setState(() {
         _form.status = "ERROR";
       });
@@ -163,162 +235,166 @@ class _AttendQuizPageState extends State<AttendQuizPage> {
 
   @override
   Widget build(BuildContext context) {
-
     if (_loading) {
       return const Scaffold(
         body: Center(
           child: CircularProgressIndicator(),
         ),
       );
-    }
+    } else if (_fetchResult == 'success') {
+      final colors = Theme.of(context).colorScheme;
 
-    final colors = Theme.of(context).colorScheme;
-
-    final appbar = AppBar(
-      title: Text(_form.name,
-          style: const TextStyle(
-              color: Colors.white, fontWeight: FontWeight.bold)),
-      backgroundColor: colors.primary,
-    );
-
-    if (!_aliasChosen) {
-      return Scaffold(
-        appBar: appbar,
-        body: ChooseAlias(
-          onAliasSubmitted: (chosenAlias) async {
-            setState(() {
-              _alias = chosenAlias;
-            });
-            bool success = await participate();
-            if (!success) {
-              ScaffoldMessenger.of(context)
-                .showSnackBar(SnackBar(content: Text(_aliasError), backgroundColor: Colors.redAccent));
-            }
-          },
-        ),
+      final appbar = AppBar(
+        title: Text(_form.name,
+            style: const TextStyle(
+                color: Colors.white, fontWeight: FontWeight.bold)),
+        backgroundColor: colors.primary,
       );
-    }
 
-    if (_form.status != "STARTED" || _voted) {
-      return Scaffold(
-        appBar: appbar,
-        body: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              Padding(
-                padding: const EdgeInsets.only(left: 20.0, right: 20.0),
-                child: _form.status != "STARTED"
-                    ? const Text("Bitte warten Sie bis das Quiz gestartet wird")
-                    : const Text(
-                        "Bitte warten Sie bis die nächste Frage gestellt wird"),
-              ),
-              Padding(
-                padding: const EdgeInsets.all(20.0),
-                child: LinearProgressIndicator(
-                  valueColor: AlwaysStoppedAnimation<Color>(colors.primary),
-                  backgroundColor: colors.secondary.withAlpha(32),
-                ),
-              ),
-            ],
+      if (!_aliasChosen) {
+        return Scaffold(
+          appBar: appbar,
+          body: ChooseAlias(
+            onAliasSubmitted: (chosenAlias) async {
+              setState(() {
+                _alias = chosenAlias;
+              });
+              bool success = await participate();
+              if (!success) {
+                ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                    content: Text(_aliasError),
+                    backgroundColor: Colors.redAccent));
+              }
+            },
           ),
-        ),
-      );
-    }
+        );
+      }
 
-    if (_form.currentQuestionFinished) {
-      return Scaffold(
-        appBar: appbar,
-        body: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              const Padding(
-                padding: EdgeInsets.only(left: 20.0, right: 20.0),
-                child: Text(
-                    "Bitte warten Sie bis die nächste Frage gestellt wird"),
-              ),
-              Padding(
-                padding: const EdgeInsets.all(20.0),
-                child: LinearProgressIndicator(
-                  valueColor: AlwaysStoppedAnimation<Color>(colors.primary),
-                  backgroundColor: colors.secondary.withAlpha(32),
+      if (_form.status != "STARTED" || _voted) {
+        return Scaffold(
+          appBar: appbar,
+          body: Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                Padding(
+                  padding: const EdgeInsets.only(left: 20.0, right: 20.0),
+                  child: _form.status != "STARTED"
+                      ? const Text(
+                          "Bitte warten Sie bis das Quiz gestartet wird")
+                      : const Text(
+                          "Bitte warten Sie bis die nächste Frage gestellt wird"),
                 ),
-              ),
-            ],
-          ),
-        ),
-      );
-    }
-
-    final element = _form.questions[_form.currentQuestionIndex];
-
-    return Scaffold(
-      appBar: appbar,
-      body: SizedBox(
-        width: double.infinity,
-        child: Column(
-          children: [
-            Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                children: <Widget>[
-                  const SizedBox(height: 16),
-                  Text(element.name,
-                      style: const TextStyle(
-                          fontSize: 24, fontWeight: FontWeight.bold)),
-                  Text(element.description,
-                      style: const TextStyle(fontSize: 15),
-                      textAlign: TextAlign.center),
-                  const SizedBox(height: 16),
-                  Card(
-                    child: Padding(
-                      padding: const EdgeInsets.all(16),
-                      child: element.type == 'SINGLE_CHOICE'
-                          ? SingleChoiceQuiz(
-                              options: element.options,
-                              onSelectionChanged: (newValue) {
-                                setState(() {
-                                  _value = newValue;
-                                });
-                              },
-                            )
-                          : element.type == 'YES_NO'
-                              ? YesNoQuiz(
-                                  onSelectionChanged: (newValue) {
-                                    setState(() {
-                                      _value = newValue;
-                                    });
-                                  },
-                                )
-                              : Text(element.type),
-                    ),
+                Padding(
+                  padding: const EdgeInsets.all(20.0),
+                  child: LinearProgressIndicator(
+                    valueColor: AlwaysStoppedAnimation<Color>(colors.primary),
+                    backgroundColor: colors.secondary.withAlpha(32),
                   ),
-                ],
+                ),
+              ],
+            ),
+          ),
+        );
+      }
+
+      if (_form.currentQuestionFinished) {
+        return Scaffold(
+          appBar: appbar,
+          body: Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                const Padding(
+                  padding: EdgeInsets.only(left: 20.0, right: 20.0),
+                  child: Text(
+                      "Bitte warten Sie bis die nächste Frage gestellt wird"),
+                ),
+                Padding(
+                  padding: const EdgeInsets.all(20.0),
+                  child: LinearProgressIndicator(
+                    valueColor: AlwaysStoppedAnimation<Color>(colors.primary),
+                    backgroundColor: colors.secondary.withAlpha(32),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      }
+
+      final element = _form.questions[_form.currentQuestionIndex];
+
+      return Scaffold(
+        appBar: appbar,
+        body: SizedBox(
+          width: double.infinity,
+          child: Column(
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  children: <Widget>[
+                    const SizedBox(height: 16),
+                    Text(element.name,
+                        style: const TextStyle(
+                            fontSize: 24, fontWeight: FontWeight.bold)),
+                    Text(element.description,
+                        style: const TextStyle(fontSize: 15),
+                        textAlign: TextAlign.center),
+                    const SizedBox(height: 16),
+                    Card(
+                      child: Padding(
+                        padding: const EdgeInsets.all(16),
+                        child: element.type == 'SINGLE_CHOICE'
+                            ? SingleChoiceQuiz(
+                                options: element.options,
+                                onSelectionChanged: (newValue) {
+                                  setState(() {
+                                    _value = newValue;
+                                  });
+                                },
+                              )
+                            : element.type == 'YES_NO'
+                                ? YesNoQuiz(
+                                    onSelectionChanged: (newValue) {
+                                      setState(() {
+                                        _value = newValue;
+                                      });
+                                    },
+                                  )
+                                : Text(element.type),
+                      ),
+                    ),
+                  ],
+                ),
               ),
-            ),
-            ElevatedButton(
-              child: const Text('Senden'),
-              onPressed: () {
-                if (_value == null) {
-                  return;
-                }
-                var message = {
-                  "action": "ADD_RESULT",
-                  "resultElementId": element.id,
-                  "resultValues": [_value],
-                  "role": "STUDENT"
-                };
-                _socketChannel?.sink.add(jsonEncode(message));
-                setState(() {
-                  _voted = true;
-                });
-              },
-            ),
-            const SizedBox(height: 32),
-          ],
+              ElevatedButton(
+                child: const Text('Senden'),
+                onPressed: () {
+                  if (_value == null) {
+                    return;
+                  }
+                  var message = {
+                    "action": "ADD_RESULT",
+                    "resultElementId": element.id,
+                    "resultValues": [_value],
+                    "role": "STUDENT"
+                  };
+                  _socketChannel?.sink.add(jsonEncode(message));
+                  setState(() {
+                    _voted = true;
+                  });
+                },
+              ),
+              const SizedBox(height: 32),
+            ],
+          ),
         ),
-      ),
-    );
+      );
+    } else {
+      _showErrorDialog(_fetchResult);
+      return Container();
+    }
   }
 }

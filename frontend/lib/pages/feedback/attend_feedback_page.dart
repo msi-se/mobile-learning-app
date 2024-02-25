@@ -1,9 +1,12 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:frontend/components/elements/feedback/single_choice_feedback.dart';
 import 'package:frontend/components/elements/feedback/slider_feedback.dart';
 import 'package:frontend/components/elements/feedback/star_feedback.dart';
+import 'package:frontend/components/error/general_error_widget.dart';
+import 'package:frontend/components/error/network_error_widget.dart';
 import 'package:frontend/global.dart';
 import 'package:frontend/models/feedback/feedback_form.dart';
 import 'package:frontend/models/feedback/feedback_question.dart';
@@ -22,8 +25,6 @@ class AttendFeedbackPage extends StatefulWidget {
 }
 
 class _AttendFeedbackPageState extends State<AttendFeedbackPage> {
-  bool _loading = true;
-
   late String _courseId;
   late String _formId;
   late String _userId;
@@ -34,6 +35,9 @@ class _AttendFeedbackPageState extends State<AttendFeedbackPage> {
   final Map<String, dynamic> _feedbackValues = {};
   bool _voted = false;
 
+  bool _loading = false;
+  String _fetchResult = '';
+
   @override
   void initState() {
     super.initState();
@@ -43,6 +47,10 @@ class _AttendFeedbackPageState extends State<AttendFeedbackPage> {
   }
 
   Future init() async {
+    setState(() {
+      _loading = true;
+      _fetchResult = '';
+    });
     var code = widget.code;
     try {
       final response = await http.get(
@@ -57,16 +65,35 @@ class _AttendFeedbackPageState extends State<AttendFeedbackPage> {
         _courseId = data["courseId"];
         _formId = data["formId"];
         fetchForm();
-        return;
+        return; //TODO: Is this necessary?
       }
-    } on http.ClientException catch (_) {
-      // TODO: handle error
+    } on http.ClientException {
+      setState(() {
+        _loading = false;
+        _fetchResult = 'network_error';
+      });
+    } on SocketException {
+      setState(() {
+        _loading = false;
+        _fetchResult = 'network_error';
+      });
+    } catch (e) {
+      setState(() {
+        _loading = false;
+        _fetchResult = 'general_error';
+      });
     }
+
+    //TODO: Is this necessary?
     if (!mounted) return;
     Navigator.pop(context);
   }
 
   Future fetchForm() async {
+    setState(() {
+      _loading = true;
+      _fetchResult = '';
+    });
     try {
       final response = await http.get(
         Uri.parse(
@@ -95,11 +122,42 @@ class _AttendFeedbackPageState extends State<AttendFeedbackPage> {
         setState(() {
           _form = form;
           _loading = false;
+          _fetchResult = 'success';
         });
       }
-    } on http.ClientException catch (_) {
-      // TODO: handle error
+    } on http.ClientException {
+      setState(() {
+        _loading = false;
+        _fetchResult = 'network_error';
+      });
+    } on SocketException {
+      setState(() {
+        _loading = false;
+        _fetchResult = 'network_error';
+      });
+    } catch (e) {
+      setState(() {
+        _loading = false;
+        _fetchResult = 'general_error';
+      });
     }
+  }
+
+  void _showErrorDialog(String errorType) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      showDialog(
+          context: context,
+          barrierDismissible: false,
+          builder: (BuildContext context) {
+            return (errorType == 'network_error')
+                ? const NetworkErrorWidget()
+                : const GeneralErrorWidget();
+          }).then((value) {
+        if (value == 'back') {
+          Navigator.pushReplacementNamed(context, '/main');
+        }
+      });
+    });
   }
 
   void startWebsocket() {
@@ -117,6 +175,7 @@ class _AttendFeedbackPageState extends State<AttendFeedbackPage> {
         });
       }
     }, onError: (error) {
+      //TODO: Should there be another error handling for this?
       setState(() {
         _form.status = "ERROR";
       });
@@ -137,72 +196,70 @@ class _AttendFeedbackPageState extends State<AttendFeedbackPage> {
           child: CircularProgressIndicator(),
         ),
       );
-    }
+    } else if (_fetchResult == 'success') {
+      final colors = Theme.of(context).colorScheme;
 
-    final colors = Theme.of(context).colorScheme;
+      final appbar = AppBar(
+        title: Text(_form.name,
+            style: const TextStyle(
+              color: Colors.black,
+              fontWeight: FontWeight.bold,
+            )),
+        backgroundColor: Colors.black38,
+        actions: [
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Image.asset(incognitoCirclePng, width: 40, height: 40),
+          )
+        ],
+      );
 
-    final appbar = AppBar(
-      title: Text(_form.name,
-          style: const TextStyle(
-            color: Colors.black,
-            fontWeight: FontWeight.bold,
-          )),
-      backgroundColor: Colors.black38,
-      actions: [
-        Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Image.asset(incognitoCirclePng, width: 40, height: 40),
-        )
-      ],
-    );
-
-    if (_form.status != "STARTED") {
-      return Scaffold(
-        appBar: appbar,
-        body: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              const Padding(
-                padding: EdgeInsets.only(left: 20.0, right: 20.0),
-                child: Text(
-                    "Bitte warten Sie bis die Feedbackrunde gestartet wird"),
-              ),
-              Padding(
-                padding: const EdgeInsets.all(20.0),
-                child: LinearProgressIndicator(
-                  valueColor: AlwaysStoppedAnimation<Color>(colors.primary),
-                  backgroundColor: colors.secondary.withAlpha(32),
+      if (_form.status != "STARTED") {
+        return Scaffold(
+          appBar: appbar,
+          body: Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                const Padding(
+                  padding: EdgeInsets.only(left: 20.0, right: 20.0),
+                  child: Text(
+                      "Bitte warten Sie bis die Feedbackrunde gestartet wird"),
                 ),
-              ),
-            ],
+                Padding(
+                  padding: const EdgeInsets.all(20.0),
+                  child: LinearProgressIndicator(
+                    valueColor: AlwaysStoppedAnimation<Color>(colors.primary),
+                    backgroundColor: colors.secondary.withAlpha(32),
+                  ),
+                ),
+              ],
+            ),
           ),
-        ),
-      );
-    }
+        );
+      }
 
-    if (_voted) {
+      if (_voted) {
+        return Scaffold(
+          appBar: appbar,
+          body: const Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                Padding(
+                  padding: EdgeInsets.only(left: 20.0, right: 20.0),
+                  child: Text("Vielen Dank für Ihr Feedback"),
+                )
+              ],
+            ),
+          ),
+        );
+      }
+
       return Scaffold(
         appBar: appbar,
-        body: const Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              Padding(
-                padding: EdgeInsets.only(left: 20.0, right: 20.0),
-                child: Text("Vielen Dank für Ihr Feedback"),
-              )
-            ],
-          ),
-        ),
-      );
-    }
-
-    return Scaffold(
-      appBar: appbar,
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
+        body: SingleChildScrollView(
+          child: Column(children: [
             Center(
               child: Padding(
                 padding: const EdgeInsets.all(16.0),
@@ -210,10 +267,13 @@ class _AttendFeedbackPageState extends State<AttendFeedbackPage> {
                   alignment: WrapAlignment.spaceEvenly,
                   spacing: 16.0,
                   runSpacing: 16.0,
-                  children: List<Widget>.generate(_form.questions.length, (index) {
+                  children:
+                      List<Widget>.generate(_form.questions.length, (index) {
                     final element = _form.questions[index] as FeedbackQuestion;
                     return SizedBox(
-                      width: MediaQuery.of(context).size.width < 600 ? double.infinity : 600,
+                      width: MediaQuery.of(context).size.width < 600
+                          ? double.infinity
+                          : 600,
                       child: Card(
                         color: colors.surface,
                         child: Padding(
@@ -222,7 +282,9 @@ class _AttendFeedbackPageState extends State<AttendFeedbackPage> {
                             crossAxisAlignment: CrossAxisAlignment.center,
                             children: <Widget>[
                               Text('${index + 1}. ${element.name}',
-                                  style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                                  style: const TextStyle(
+                                      fontSize: 24,
+                                      fontWeight: FontWeight.bold),
                                   textAlign: TextAlign.center),
                               const SizedBox(height: 8),
                               Text(element.description,
@@ -273,8 +335,8 @@ class _AttendFeedbackPageState extends State<AttendFeedbackPage> {
                           ),
                         ),
                       ),
-                    );}   
-                  ),
+                    );
+                  }),
                 ),
               ),
             ),
@@ -297,9 +359,12 @@ class _AttendFeedbackPageState extends State<AttendFeedbackPage> {
               },
             ),
             const SizedBox(height: 32),
-        ]),
-      ),
-    );
+          ]),
+        ),
+      );
+    } else {
+      _showErrorDialog(_fetchResult);
+      return Container();
+    }
   }
 }
-// 

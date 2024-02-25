@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:frontend/components/elements/feedback/fulltext_feedback_result.dart';
@@ -93,13 +94,13 @@ class _FeedbackResultPageState extends State<FeedbackResultPage> {
           _loading = false;
           _fetchResult = 'success';
         });
-      } else {
-        setState(() {
-          _loading = false;
-          _fetchResult = 'network_error';
-        });
       }
     } on http.ClientException {
+      setState(() {
+        _loading = false;
+        _fetchResult = 'network_error';
+      });
+    } on SocketException {
       setState(() {
         _loading = false;
         _fetchResult = 'network_error';
@@ -149,12 +150,9 @@ class _FeedbackResultPageState extends State<FeedbackResultPage> {
         });
       }
     }, onError: (error) {
+      //TODO: Should there be another error handling for this?
       setState(() {
         _form.status = "ERROR";
-        _loading =
-            false; //TODO: maybe remove this later if this is not necessary
-        _fetchResult =
-            'network_error'; //TODO: maybe remove this later if this is not necessary
       });
     });
   }

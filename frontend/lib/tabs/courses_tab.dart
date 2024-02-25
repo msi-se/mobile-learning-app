@@ -55,11 +55,6 @@ class _CoursesTabState extends State<CoursesTab> {
           _loading = false;
           _fetchResult = 'success';
         });
-      } else {
-        setState(() {
-          _loading = false;
-          _fetchResult = 'network_error';
-        });
       }
     } on http.ClientException {
       setState(() {
