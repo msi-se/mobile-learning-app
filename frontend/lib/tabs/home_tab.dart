@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/components/dashboard_card.dart';
+import 'package:frontend/components/dashboard_statistics.dart';
 import 'package:frontend/theme/assets.dart';
 
 Widget _buildColumn(String title, String value, bool smallDevice) {
@@ -32,177 +33,78 @@ class HomeTab extends StatefulWidget {
   State<HomeTab> createState() => _HomeTabState();
 }
 
-class _HomeTabState extends State<HomeTab> {
+class _HomeTabState extends State<HomeTab> with TickerProviderStateMixin {
   bool _loading = true;
   bool _isSmallPhone = false;
   bool _isTablet = false;
+  late AnimationController _controller;
 
   @override
   void initState() {
     super.initState();
+    _controller = AnimationController(
+      duration: const Duration(milliseconds: 600),
+      vsync: this,
+    )..forward();
     setState(() {
       _loading = false;
     });
+    
   }
 
   @override
   Widget build(BuildContext context) {
     final colors = Theme.of(context).colorScheme;
+    final pages = ['/test', '/menu', '/test', '/test'];
+    final svgImages = [
+      events,
+      mensa,
+      calendar,
+      analytics,
+    ];
+    final texts = ['Events', 'Mensa', 'LSF', 'Noten'];
+    
+    var screenWidth = MediaQuery.of(context).size.width;
+    int crossAxisCount = screenWidth > 800 ? 4 : 2; 
+
     if (_loading) {
       return const Center(
         child: CircularProgressIndicator(),
       );
     }
     return Scaffold(
-      body: Center(
-        child: LayoutBuilder(
-          builder: (context, constraints) {
-            if (constraints.maxWidth < 600) {
-              // mobile version
-              _isSmallPhone = constraints.maxHeight < 570;
-              return Column(
-                children: [
-                  Expanded(
-                    flex: _isSmallPhone ? 6 : 3,
-                    child: GridView.count(
-                        crossAxisCount: 2,
-                        shrinkWrap: true,
-                        children: [
-                          MyCard(
-                              title: 'Events',
-                              cardColor: colors.surfaceVariant,
-                              imageName: events,
-                              route: '/main'),
-                          MyCard(
-                            title: 'Mensa',
-                            cardColor: colors.surfaceVariant,
-                            imageName: mensa,
-                            route: '/menu',
-                          ),
-                          MyCard(
-                            title: 'LSF',
-                            cardColor: colors.surfaceVariant,
-                            imageName: calendar,
-                            route: '/main',
-                          ),
-                          MyCard(
-                            title: 'Noten',
-                            cardColor: colors.surfaceVariant,
-                            imageName: analytics,
-                            route: '/main',
-                          ),
-                        ]),
+      body: SafeArea(
+        child: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(16),
+                child: GridView.builder(
+                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: crossAxisCount,
+                  crossAxisSpacing: 10,
+                  mainAxisSpacing: 10,
+                  childAspectRatio: 1,
                   ),
-                  Expanded(
-                    flex: 2,
-                    child: Container(
-                      decoration: BoxDecoration(
-                          color: colors.outlineVariant,
-                          borderRadius: const BorderRadius.only(
-                              topLeft: Radius.circular(10),
-                              topRight: Radius.circular(10))),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: [
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                            children: [
-                              _buildColumn(
-                                  'Gegebene Feedbacks', '12', _isSmallPhone),
-                              _buildColumn(
-                                  'Absolvierte Quizze', '55', _isSmallPhone),
-                            ],
-                          ),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                            children: [
-                              _buildColumn(
-                                  'Ø Quiz-Position', '4', _isSmallPhone),
-                              _buildColumn(
-                                  'Alle Feedbacks ', '1923', _isSmallPhone),
-                            ],
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ],
-              );
-            } else {
-              //desktop and tablet version
-              _isSmallPhone = false;
-              if (constraints.maxWidth < 1100) {
-                _isTablet = true;
-              } else {
-                _isTablet = false;
-              }
-              return Row(
-                children: [
-                  Expanded(
-                    flex: 1,
-                    child: GridView.count(
-                        crossAxisCount: _isTablet ? 1 : 2,
-                        childAspectRatio: 2,
-                        children: [
-                          MyCard(
-                              title: 'Events',
-                              cardColor: colors.surfaceVariant,
-                              imageName: events,
-                              route: '/main'),
-                          MyCard(
-                              title: 'Mensa',
-                              cardColor: colors.surfaceVariant,
-                              imageName: mensa,
-                              route: '/menu'),
-                          MyCard(
-                              title: 'LSF',
-                              cardColor: colors.surfaceVariant,
-                              imageName: calendar,
-                              route: '/main'),
-                          MyCard(
-                              title: 'Noten',
-                              cardColor: colors.surfaceVariant,
-                              imageName: analytics,
-                              route: '/main'),
-                        ]),
-                  ),
-                  Expanded(
-                    flex: 1,
-                    child: Container(
-                      decoration: BoxDecoration(
-                          color: colors.outlineVariant,
-                          borderRadius: const BorderRadius.only(
-                              topLeft: Radius.circular(20),
-                              bottomLeft: Radius.circular(20))),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: [
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                            children: [
-                              _buildColumn(
-                                  'Gegebene Feedbacks', '12', _isSmallPhone),
-                              _buildColumn(
-                                  'Absolvierte Quizze', '55', _isSmallPhone),
-                            ],
-                          ),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                            children: [
-                              _buildColumn(
-                                  'Ø Quiz-Position', '4', _isSmallPhone),
-                              _buildColumn(
-                                  'Alle Feedbacks ', '1923', _isSmallPhone),
-                            ],
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ],
-              );
-            }
-          },
+                  itemCount: 4,
+                  primary: false,
+                  shrinkWrap: true,
+                  itemBuilder: (context, index) {
+                    return DashboardCard(
+                      svgImage: svgImages[index],
+                      text: texts[index],
+                      onTap: () => Navigator.pushNamed(context, pages[index]),
+                    );
+                  },
+                ),
+              ),
+              const Padding(
+                padding: EdgeInsets.all(16), 
+                child: DashboardStatisticsWidget()
+              ),
+            ],
+          ),
         ),
       ),
     );

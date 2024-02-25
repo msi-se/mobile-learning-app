@@ -87,6 +87,10 @@ public class QuizForm extends Form {
         return copy;
     }
 
+    public List<QuizParticipant> getParticipants() {
+        return this.participants;
+    }
+
     public Boolean addParticipant(ObjectId userId, String userAlias) {
         if (this.participants == null) {
             this.participants = new java.util.ArrayList<QuizParticipant>();

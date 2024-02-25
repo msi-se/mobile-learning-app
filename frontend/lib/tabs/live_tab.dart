@@ -138,159 +138,144 @@ class _LiveTabState extends State<LiveTab> {
       );
     }
 
-    return Column(
-      children: <Widget>[
-        Padding(
-          padding:
-              const EdgeInsets.only(top: 16.0, bottom: 0, left: 16, right: 16),
-          child: Row(
-            children: [
-              const Expanded(
-                child: Text(
-                  "Live Umfrage",
-                  style: TextStyle(fontSize: 40, fontWeight: FontWeight.bold),
-                ),
-              ),
-              SvgPicture.asset(
-                undrawQuestions,
-                width: 150,
-              ),
-            ],
-          ),
-        ),
-        Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Card(
-            color: colors.background,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(25),
-            ),
-            // color: colors.secondary,
-            child: Center(
-              child: SizedBox(
-                child: Column(
-                  children: [
-                    const Padding(
-                      padding: EdgeInsets.only(top: 24, bottom: 16),
-                      child: Text(
-                        'Beitreten',
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 28,
-                        ),
-                      ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.only(bottom: 4),
-                      child: Text(
-                        'Mit Code beitreten',
-                        style: Theme.of(context).textTheme.bodyMedium,
-                      ),
-                    ),
-                    CodeInput(
-                      inputText: '123 456',
-                      textInputController: _joinCodeController,
-                      textInput: TextInputType.number,
-                      maxLength: 7,
-                      onChanged: (value) {
-                        var code = value.replaceAll(' ', '');
-                        if (code.length > 3) {
-                          code = '${code.substring(0, 3)} ${code.substring(3)}';
-                        }
-                        var selection = TextSelection.fromPosition(
-                          TextPosition(offset: code.length),
-                        );
-                        _joinCodeController.value = TextEditingValue(
-                          text: code,
-                          selection: selection,
-                        );
-                      },
-                      onSubmit: () {
-                        joinCourse(_joinCodeController.text);
-                      },
-                    ),
-                    const Padding(
-                      padding: EdgeInsets.all(8.0),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: [
-                          Expanded(
-                            child: Padding(
-                              padding: EdgeInsets.all(8.0),
-                              child: Divider(
-                                thickness: 1,
-                              ),
-                            ),
-                          ),
-                          Text(
-                            'oder',
-                            style: TextStyle(
-                              fontWeight: FontWeight.normal,
-                            ),
-                          ),
-                          Expanded(
-                            child: Padding(
-                              padding: EdgeInsets.all(8.0),
-                              child: Divider(
-                                thickness: 1,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.only(bottom: 24),
-                      child: ElevatedButton(
-                        onPressed: () {
-                          // openScanner();
-                        },
-                        style: ElevatedButton.styleFrom(
-                          padding: EdgeInsets.zero,
-                          shape: const CircleBorder(),
-                          fixedSize: const Size(50, 50),
-                          backgroundColor: colors.primary,
-                        ),
-                        child: Icon(
-                          size: 35,
-                          Icons.qr_code_scanner,
-                          color: colors.background,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ),
-        ),
-        Expanded(
-          child: Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: ListView.builder(
-              shrinkWrap: false,
-              itemCount: _forms.length,
-              itemBuilder: (context, index) {
-                return Card(
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10.0),
+    return SingleChildScrollView(
+      child: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.only(
+                top: 16.0, bottom: 0, left: 16, right: 16),
+            child: Row(
+              children: [
+                const Expanded(
+                  child: Text(
+                    "Live Umfrage",
+                    style: TextStyle(fontSize: 40, fontWeight: FontWeight.bold),
                   ),
-                  child: ListTile(
-                    title: Text(
-                        '${_forms[index].name} (${_forms[index].type == 'feedback' ? 'Feedback' : 'Quiz'})'),
-                    // subtitle: Text(widget.courses[index].description),
-                    // dense: true,
-                    // trailing: const Icon(Icons.arrow_forward_ios),
-                    onTap: () {
-                      joinCourse(_forms[index].connectCode);
+                ),
+                SvgPicture.asset(undrawQuestions, width: 150),
+              ],
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Card(
+              color: colors.background,
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(25)),
+              child: Column(
+                children: [
+                  const Padding(
+                    padding: EdgeInsets.only(top: 24, bottom: 16),
+                    child: Text(
+                      'Beitreten',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 28,
+                      ),
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 4),
+                    child: Text(
+                      'Mit Code beitreten',
+                      style: Theme.of(context).textTheme.bodyMedium,
+                    ),
+                  ),
+                  CodeInput(
+                    inputText: '123 456',
+                    textInputController: _joinCodeController,
+                    textInput: TextInputType.number,
+                    maxLength: 7,
+                    onChanged: (value) {
+                      var code = value.replaceAll(' ', '');
+                      if (code.length > 3) {
+                        code = '${code.substring(0, 3)} ${code.substring(3)}';
+                      }
+                      var selection = TextSelection.fromPosition(
+                        TextPosition(offset: code.length),
+                      );
+                      _joinCodeController.value = TextEditingValue(
+                        text: code,
+                        selection: selection,
+                      );
+                    },
+                    onSubmit: () {
+                      joinCourse(_joinCodeController.text);
                     },
                   ),
-                );
-              },
+                  const Padding(
+                    padding: EdgeInsets.all(8.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        Expanded(
+                          child: Padding(
+                            padding: EdgeInsets.all(8.0),
+                            child: Divider(
+                              thickness: 1,
+                            ),
+                          ),
+                        ),
+                        Text(
+                          'oder',
+                          style: TextStyle(
+                            fontWeight: FontWeight.normal,
+                          ),
+                        ),
+                        Expanded(
+                          child: Padding(
+                            padding: EdgeInsets.all(8.0),
+                            child: Divider(
+                              thickness: 1,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 24),
+                    child: ElevatedButton(
+                      onPressed: () {
+                        // openScanner(); Uncomment and implement as needed
+                      },
+                      style: ElevatedButton.styleFrom(
+                        padding: EdgeInsets.zero,
+                        shape: const CircleBorder(),
+                        fixedSize: const Size(50, 50),
+                        backgroundColor: colors.primary,
+                      ),
+                      child: Icon(
+                        size: 35,
+                        Icons.qr_code_scanner,
+                        color: colors.background,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
-        ),
-      ],
+          const Padding(padding: EdgeInsets.all(8.0), child: Divider()),
+          const Padding(
+            padding: EdgeInsets.fromLTRB(16.0, 0.0, 16.0, 0.0),
+            child: Text(
+              "Aktive Umfragen",
+              style: TextStyle(fontSize: 24.0, fontWeight: FontWeight.bold),
+            ),
+          ),
+          ..._forms
+              .map((form) => Card(
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10.0)),
+                    child: ListTile(
+                      title: Text(form.name),
+                      onTap: () => joinCourse(form.connectCode),
+                    ),
+                  ))
+              .toList(),
+        ],
+      ),
     );
   }
 }
