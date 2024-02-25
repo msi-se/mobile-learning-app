@@ -25,8 +25,8 @@ class FormShell {
   FormShell(this.connectCode, this.name, this.course, this.type, this.status);
 
   factory FormShell.fromJson(Map<String, dynamic> json) {
-    return FormShell((json['connectCode'] as int).toString(), json['name'], json['course'] ?? "Kurs",
-        json['type'], json['status']);
+    return FormShell((json['connectCode'] as int).toString(), json['name'],
+        json['course'], json['type'], json['status']);
   }
 }
 
