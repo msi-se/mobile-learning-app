@@ -19,13 +19,14 @@ class LiveTab extends StatefulWidget {
 class FormShell {
   final String connectCode;
   final String name;
+  final String course;
   final String type;
   final String status;
-  FormShell(this.connectCode, this.name, this.type, this.status);
+  FormShell(this.connectCode, this.name, this.course, this.type, this.status);
 
   factory FormShell.fromJson(Map<String, dynamic> json) {
-    return FormShell((json['connectCode'] as int).toString(), json['name'],
-        json['type'], json['status']); // TODO: get type and status from json
+    return FormShell((json['connectCode'] as int).toString(), json['name'], json['course'] ?? "Kurs",
+        json['type'], json['status']);
   }
 }
 
@@ -281,6 +282,7 @@ class _LiveTabState extends State<LiveTab> {
                       trailing: Icon(Icons.circle,
                           color: statusColors[form.status], size: 20),
                       title: Text(form.name),
+                      subtitle: Text(form.course),
                       onTap: () => joinCourse(form.connectCode),
                     ),
                   ))
