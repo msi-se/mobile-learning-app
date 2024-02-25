@@ -56,6 +56,7 @@ class _ChooseCourseState extends State<ChooseCourse> {
               ),
               elevation: 1.0,
               surfaceTintColor: Colors.white,
+              clipBehavior: Clip.antiAlias,
               child: ListTile(
                 title: Text(widget.courses[index].name),
                 subtitle: Text(widget.courses[index].description),

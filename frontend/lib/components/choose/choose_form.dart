@@ -160,6 +160,7 @@ class _ChooseFormState extends State<ChooseForm> {
                   ),
                   elevation: 1.0,
                   surfaceTintColor: Colors.white,
+                  clipBehavior: Clip.antiAlias,
                   child: ListTile(
                     title: Text(forms[index].name),
                     subtitle: Text(forms[index].description),
