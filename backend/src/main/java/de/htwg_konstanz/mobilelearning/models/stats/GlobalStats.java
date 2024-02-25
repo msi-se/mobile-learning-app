@@ -1,6 +1,9 @@
 package de.htwg_konstanz.mobilelearning.models.stats;
 
+import org.bson.types.ObjectId;
+
 public class GlobalStats {
+    public ObjectId id;
     public Integer totalUsers = 0;
     public Integer totalCourses = 0;
     public Integer totalFeedbackForms = 0;
@@ -12,6 +15,7 @@ public class GlobalStats {
     }
 
     public GlobalStats(Integer totalUsers, Integer totalCourses, Integer totalFeedbackForms, Integer totalQuizForms, Integer completedFeedbackForms, Integer completedQuizForms) {
+        this.id = new ObjectId();
         this.totalUsers = totalUsers;
         this.totalCourses = totalCourses;
         this.totalFeedbackForms = totalFeedbackForms;

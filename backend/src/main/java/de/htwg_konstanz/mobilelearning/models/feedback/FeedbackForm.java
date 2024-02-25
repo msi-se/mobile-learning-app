@@ -85,11 +85,13 @@ public class FeedbackForm extends Form {
     }
 
     public void clearParticipants() {
+        if (this.participants == null) { this.participants = new ArrayList<FeedbackParticipant>(); }
         this.participants.clear();
     }
 
     public Boolean isParticipant(String userId) {
         if (this.participants == null) {
+            this.participants = new ArrayList<FeedbackParticipant>();
             return false;
         }
         for (FeedbackParticipant participant : this.participants) {
