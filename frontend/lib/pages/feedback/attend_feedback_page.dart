@@ -65,7 +65,7 @@ class _AttendFeedbackPageState extends State<AttendFeedbackPage> {
         _courseId = data["courseId"];
         _formId = data["formId"];
         fetchForm();
-        return; //TODO: Is this necessary?
+        return;
       }
     } on http.ClientException {
       setState(() {
