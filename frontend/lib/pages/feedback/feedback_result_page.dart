@@ -124,8 +124,7 @@ class _FeedbackResultPageState extends State<FeedbackResultPage> {
                 : const GeneralErrorWidget();
           }).then((value) {
         if (value == 'back') {
-          Navigator.pushReplacementNamed(
-              context, '/feedback-info'); // TODO: Where should you go here?
+          Navigator.pushReplacementNamed(context, '/main');
         }
       });
     });
