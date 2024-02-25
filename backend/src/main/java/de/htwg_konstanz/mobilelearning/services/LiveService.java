@@ -62,12 +62,12 @@ public class LiveService {
             for (Form form : course.getFeedbackForms()) {
                 if (form.getStatus() == FormStatus.STARTED || form.getStatus() == FormStatus.WAITING) {
                     // convert the forms to form shells to not have all the data in them (e.g. the questions)
-                    forms.add(new FormShell(form.getId(), form.getCourseId(), form.getName(), form.getDescription(), form.getStatus(), form.getConnectCode(), form.getKey(), "feedback"));
+                    forms.add(new FormShell(form.getId(), form.getCourseId(), form.getName(), form.getDescription(), form.getStatus(), form.getConnectCode(), form.getKey(), "feedback", course.getName()));
                 }
             }
             for (Form form : course.getQuizForms()) {
                 if (form.getStatus() == FormStatus.STARTED || form.getStatus() == FormStatus.WAITING) {
-                    forms.add(new FormShell(form.getId(), form.getCourseId(), form.getName(), form.getDescription(), form.getStatus(), form.getConnectCode(), form.getKey(), "quiz"));
+                    forms.add(new FormShell(form.getId(), form.getCourseId(), form.getName(), form.getDescription(), form.getStatus(), form.getConnectCode(), form.getKey(), "quiz", course.getName()));
                 }
             }
         }
