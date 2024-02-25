@@ -63,6 +63,10 @@ public class FeedbackForm extends Form {
         return copy;
     }
 
+    public List<FeedbackParticipant> getParticipants() {
+        return this.participants;
+    }
+
     public Boolean addParticipant(ObjectId userId) {
         if (this.participants == null) {
             this.participants = new java.util.ArrayList<FeedbackParticipant>();

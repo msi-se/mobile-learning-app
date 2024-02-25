@@ -10,6 +10,7 @@ import de.htwg_konstanz.mobilelearning.models.Course;
 import de.htwg_konstanz.mobilelearning.models.auth.User;
 import de.htwg_konstanz.mobilelearning.models.auth.UserRole;
 import de.htwg_konstanz.mobilelearning.models.feedback.FeedbackForm;
+import de.htwg_konstanz.mobilelearning.models.feedback.FeedbackParticipant;
 import de.htwg_konstanz.mobilelearning.models.quiz.QuizForm;
 import de.htwg_konstanz.mobilelearning.models.quiz.QuizParticipant;
 import de.htwg_konstanz.mobilelearning.models.stats.UserStats;
@@ -170,7 +171,17 @@ public class UserService {
     }
 
     public void updateUserStatsByFeedbackForm(FeedbackForm form) {
-        // TODO: implement
+        for (FeedbackParticipant participant : form.getParticipants()) {
+            User user = userRepository.findById(participant.getUserId());
+            if (user == null) {
+                continue;
+            }
+            UserStats stats = user.getStats();
+            if (stats == null) { stats = new UserStats(); }
+            stats.incrementCompletedFeedbackForms();
+            user.setStats(stats);
+            userRepository.update(user);
+        }
     }
 
     public void updateUserStatsByQuizForm(QuizForm form) {
