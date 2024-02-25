@@ -37,6 +37,7 @@ public class User {
         this.password = password;
         this.roles = new ArrayList<String>();
         this.courses = new ArrayList<ObjectId>();
+        this.stats = new UserStats();
 
         // check if email, name and username have ": " in it and if so, only take the part after it
         if (this.email.contains(": ")) {

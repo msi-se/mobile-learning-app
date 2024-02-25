@@ -28,12 +28,6 @@ public class StatsService {
     @Inject
     JsonWebToken jwt;
 
-    /**
-     * Returns a single course.
-     * 
-     * @param courseId
-     * @return Course
-     */
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @Path("")

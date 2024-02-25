@@ -8,6 +8,10 @@ public class UserStats {
     public Integer avgQuizPosition = 0;
 
     public UserStats() {
+        this.completedFeedbackForms = 0;
+        this.completedQuizForms = 0;
+        this.qainedQuizPoints = 0;
+        this.avgQuizPosition = 0;
     }
 
     public UserStats(Integer completedFeedbackForms, Integer completedQuizForms, Integer qainedQuizPoints, Integer avgQuizPosition) {

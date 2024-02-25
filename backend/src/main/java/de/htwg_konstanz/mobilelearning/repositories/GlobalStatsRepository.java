@@ -7,7 +7,15 @@ import jakarta.enterprise.context.ApplicationScoped;
 @ApplicationScoped
 public class GlobalStatsRepository implements PanacheMongoRepository<GlobalStats> {
     public GlobalStats getGlobalStats() {
-        return findAll().firstResult();
+
+        GlobalStats globalStats = findAll().firstResult();
+
+        if (globalStats == null) {
+            globalStats = new GlobalStats();
+            persist(globalStats);
+        }
+
+        return globalStats;
     }
     
     public void updateGlobalStats(GlobalStats globalStats) {
