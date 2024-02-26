@@ -23,6 +23,7 @@ import de.htwg_konstanz.mobilelearning.MockUser;
 import de.htwg_konstanz.mobilelearning.models.Course;
 import de.htwg_konstanz.mobilelearning.models.auth.UserRole;
 import de.htwg_konstanz.mobilelearning.models.quiz.QuizForm;
+import de.htwg_konstanz.mobilelearning.models.stats.Stats;
 import de.htwg_konstanz.mobilelearning.services.CourseService;
 import de.htwg_konstanz.mobilelearning.services.api.ApiService;
 import de.htwg_konstanz.mobilelearning.services.api.models.ApiCourse;
@@ -148,8 +149,7 @@ public class QuizFormServiceTest {
         String formId = courses.getFirst().getQuizForms().get(0).getId().toString();
 
         // Check successful RestResponse
-        given()
-                .header("Authorization", "Bearer " + Helper.createMockUser("Student1").getJwt())
+        given().header("Authorization", "Bearer " + Helper.createMockUser("Student1").getJwt())
                 .pathParam("courseId", courseId)
                 .pathParam("formId", formId)
                 .body("alias")
@@ -160,8 +160,7 @@ public class QuizFormServiceTest {
                 .body(is("Successfully added"));
 
         // 200 if alias already taken by the same user
-        given()
-                .header("Authorization", "Bearer " + Helper.createMockUser("Student1").getJwt())
+        given().header("Authorization", "Bearer " + Helper.createMockUser("Student1").getJwt())
                 .pathParam("courseId", courseId)
                 .pathParam("formId", formId)
                 .body("alias")
@@ -172,8 +171,7 @@ public class QuizFormServiceTest {
                 .body(is("Successfully added"));
 
         // 409 if alias already taken by another user
-        given()
-                .header("Authorization", "Bearer " + Helper.createMockUser("Student2").getJwt())
+        given().header("Authorization", "Bearer " + Helper.createMockUser("Student2").getJwt())
                 .pathParam("courseId", courseId)
                 .pathParam("formId", formId)
                 .body("alias")
@@ -222,4 +220,450 @@ public class QuizFormServiceTest {
             Assertions.fail(e.getMessage());
         }
     }
+
+    // TODO: move to different test class (socket)
+    @Test
+    public void testUserStats() {
+        courseService.deleteAllCourses();
+        userService.deleteAllUsers();
+
+        // create a course with the prof user
+        List<Course> courses = Helper.createCourse("Prof");
+        String courseId = courses.get(0).getId().toString();
+        String formId = courses.get(0).getQuizForms().get(0).getId().toString();
+        MockUser prof = Helper.createMockUser("Prof");
+
+        // create 2 students
+        MockUser student1 = Helper.createMockUser("Student1");
+        MockUser student2 = Helper.createMockUser("Student2");
+
+        // participate in the quiz
+        given().header("Authorization", "Bearer " + student1.getJwt())
+                .pathParam("courseId", courseId)
+                .pathParam("formId", formId)
+                .body("Student1")
+                .when()
+                .post("/course/{courseId}/quiz/form/{formId}/participate")
+                .then()
+                .statusCode(200)
+                .body(is("Successfully added"));
+
+        given().header("Authorization", "Bearer " + student2.getJwt())
+                .pathParam("courseId", courseId)
+                .pathParam("formId", formId)
+                .body("Student2")
+                .when()
+                .post("/course/{courseId}/quiz/form/{formId}/participate")
+                .then()
+                .statusCode(200)
+                .body(is("Successfully added"));
+
+        // create a websocket client for the prof and the students
+        LiveFeedbackSocketClient profClient = new LiveFeedbackSocketClient();
+        LiveFeedbackSocketClient student1Client = new LiveFeedbackSocketClient();
+        LiveFeedbackSocketClient student2Client = new LiveFeedbackSocketClient();
+
+        try {
+            // connect to the websocket
+            Session profSession = ContainerProvider.getWebSocketContainer().connectToServer(
+                    profClient,
+                    URI.create("ws://localhost:8081/course/" + courseId + "/quiz/form/" + formId
+                            + "/subscribe/"
+                            + prof.getId() + "/" + prof.getJwt()));
+            Session student1Session = ContainerProvider.getWebSocketContainer().connectToServer(
+                    student1Client,
+                    URI.create("ws://localhost:8081/course/" + courseId + "/quiz/form/" + formId
+                            + "/subscribe/"
+                            + student1.getId() + "/" + student1.getJwt()));
+            Session student2Session = ContainerProvider.getWebSocketContainer().connectToServer(
+                    student2Client,
+                    URI.create("ws://localhost:8081/course/" + courseId + "/quiz/form/" + formId
+                            + "/subscribe/"
+                            + student2.getId() + "/" + student2.getJwt()));
+
+            Thread.sleep(1000);
+
+            // start the quiz
+            profClient.sendMessage(String.format("""
+                        {
+                            "action": "CHANGE_FORM_STATUS",
+                            "formStatus": "STARTED",
+                            "roles": ["PROF"]
+                        }
+                    """));
+
+            Thread.sleep(1000);
+
+            Assertions.assertTrue(
+                    courseService.getCourse(courseId).getQuizForms().get(0).getStatus().toString().equals("STARTED"));
+            Assertions
+                    .assertTrue(courseService.getCourse(courseId).getQuizForms().get(0).getParticipants().size() == 2);
+
+            // add a result for student 1 (correct)
+            student1Client.sendMessage(String.format("""
+                        {
+                            "action": "ADD_RESULT",
+                            "resultElementId": %s,
+                            "resultValues": ["2"]
+                        }
+                    """, courses.get(0).getQuizForms().get(0).questions.get(0).getId().toString()));
+
+            Thread.sleep(1000);
+
+            // add a result for student 2 (incorrect)
+            student2Client.sendMessage(String.format("""
+                        {
+                            "action": "ADD_RESULT",
+                            "resultElementId": %s,
+                            "resultValues": ["1"]
+                        }
+                    """, courses.get(0).getQuizForms().get(0).questions.get(0).getId().toString()));
+
+            Thread.sleep(1000);
+
+            // complete the quiz
+            profClient.sendMessage(String.format("""
+                        {
+                            "action": "CHANGE_FORM_STATUS",
+                            "formStatus": "FINISHED"
+                        }
+                    """));
+
+            Thread.sleep(1000);
+
+            // get the user stats
+            io.restassured.response.Response response = given()
+                    .header("Authorization", "Bearer " + student1.getJwt())
+                    .when()
+                    .get("/stats");
+            Stats student1Stats = response
+                    .then()
+                    .statusCode(200)
+                    .extract()
+                    .body()
+                    .as(Stats.class);
+            response = given()
+                    .header("Authorization", "Bearer " + student2.getJwt())
+                    .when()
+                    .get("/stats");
+            Stats student2Stats = response
+                    .then()
+                    .statusCode(200)
+                    .extract()
+                    .body()
+                    .as(Stats.class);
+
+            // check the user stats
+            Assertions.assertEquals(1, student1Stats.userStats.getCompletedQuizForms());
+            Assertions.assertEquals(1, student1Stats.userStats.getQainedQuizPoints());
+            Assertions.assertEquals(1.0, student1Stats.userStats.getAvgQuizPosition());
+
+            Assertions.assertEquals(1, student2Stats.userStats.getCompletedQuizForms());
+            Assertions.assertEquals(0, student2Stats.userStats.getQainedQuizPoints());
+            Assertions.assertEquals(2.0, student2Stats.userStats.getAvgQuizPosition());
+
+            // reset the quiz
+            profClient.sendMessage(String.format("""
+                {
+                    "action": "CHANGE_FORM_STATUS",
+                    "formStatus": "NOT_STARTED",
+                    "roles": ["PROF"]
+                }
+            """));
+
+            Thread.sleep(1000);
+
+            // close the websocket
+            profSession.close();
+            student1Session.close();
+            student2Session.close();
+        } catch (Exception e) {
+            System.out.println(e);
+            Assertions.fail(e.getMessage());
+        }
+
+        // participate in the quiz
+        given().header("Authorization", "Bearer " + student1.getJwt())
+                .pathParam("courseId", courseId)
+                .pathParam("formId", formId)
+                .body("Student1")
+                .when()
+                .post("/course/{courseId}/quiz/form/{formId}/participate")
+                .then()
+                .statusCode(200)
+                .body(is("Successfully added"));
+
+        given().header("Authorization", "Bearer " + student2.getJwt())
+                .pathParam("courseId", courseId)
+                .pathParam("formId", formId)
+                .body("Student2")
+                .when()
+                .post("/course/{courseId}/quiz/form/{formId}/participate")
+                .then()
+                .statusCode(200)
+                .body(is("Successfully added"));
+
+        try {
+            // connect to the websocket
+            Session profSession = ContainerProvider.getWebSocketContainer().connectToServer(
+                    profClient,
+                    URI.create("ws://localhost:8081/course/" + courseId + "/quiz/form/" + formId
+                            + "/subscribe/"
+                            + prof.getId() + "/" + prof.getJwt()));
+            Session student1Session = ContainerProvider.getWebSocketContainer().connectToServer(
+                    student1Client,
+                    URI.create("ws://localhost:8081/course/" + courseId + "/quiz/form/" + formId
+                            + "/subscribe/"
+                            + student1.getId() + "/" + student1.getJwt()));
+            Session student2Session = ContainerProvider.getWebSocketContainer().connectToServer(
+                    student2Client,
+                    URI.create("ws://localhost:8081/course/" + courseId + "/quiz/form/" + formId
+                            + "/subscribe/"
+                            + student2.getId() + "/" + student2.getJwt()));
+
+            Thread.sleep(1000);
+
+            // start the quiz
+            profClient.sendMessage(String.format("""
+                {
+                    "action": "CHANGE_FORM_STATUS",
+                    "formStatus": "STARTED",
+                    "roles": ["PROF"]
+                }
+            """));
+
+            Thread.sleep(1000);
+
+            Assertions.assertTrue(
+                    courseService.getCourse(courseId).getQuizForms().get(0).getStatus().toString().equals("STARTED"));
+            Assertions
+                    .assertTrue(courseService.getCourse(courseId).getQuizForms().get(0).getParticipants().size() == 2);
+
+            // add a result for student 1 (correct)
+            student1Client.sendMessage(String.format("""
+                        {
+                            "action": "ADD_RESULT",
+                            "resultElementId": %s,
+                            "resultValues": ["1"]
+                        }
+                    """, courses.get(0).getQuizForms().get(0).questions.get(0).getId().toString()));
+
+            Thread.sleep(1000);
+
+            // add a result for student 2 (incorrect)
+            student2Client.sendMessage(String.format("""
+                        {
+                            "action": "ADD_RESULT",
+                            "resultElementId": %s,
+                            "resultValues": ["2"]
+                        }
+                    """, courses.get(0).getQuizForms().get(0).questions.get(0).getId().toString()));
+
+            Thread.sleep(1000);
+
+            // complete the quiz
+            profClient.sendMessage(String.format("""
+                        {
+                            "action": "CHANGE_FORM_STATUS",
+                            "formStatus": "FINISHED"
+                        }
+                    """));
+
+            Thread.sleep(1000);
+
+            // get the user stats
+            io.restassured.response.Response response = given()
+                    .header("Authorization", "Bearer " + student1.getJwt())
+                    .when()
+                    .get("/stats");
+            Stats student1Stats = response
+                    .then()
+                    .statusCode(200)
+                    .extract()
+                    .body()
+                    .as(Stats.class);
+            response = given()
+                    .header("Authorization", "Bearer " + student2.getJwt())
+                    .when()
+                    .get("/stats");
+            Stats student2Stats = response
+                    .then()
+                    .statusCode(200)
+                    .extract()
+                    .body()
+                    .as(Stats.class);
+
+            // check the user stats
+            Assertions.assertEquals(2, student1Stats.userStats.getCompletedQuizForms());
+            Assertions.assertEquals(1, student1Stats.userStats.getQainedQuizPoints());
+            Assertions.assertEquals(1.5, student1Stats.userStats.getAvgQuizPosition());
+
+            Assertions.assertEquals(2, student2Stats.userStats.getCompletedQuizForms());
+            Assertions.assertEquals(1, student2Stats.userStats.getQainedQuizPoints());
+            Assertions.assertEquals(1.5, student2Stats.userStats.getAvgQuizPosition());
+
+            // reset the quiz
+            profClient.sendMessage(String.format("""
+                {
+                    "action": "CHANGE_FORM_STATUS",
+                    "formStatus": "NOT_STARTED",
+                    "roles": ["PROF"]
+                }
+            """));
+
+            Thread.sleep(1000);
+
+            // close the websocket
+            profSession.close();
+            student1Session.close();
+            student2Session.close();
+        } catch (Exception e) {
+            System.out.println(e);
+            Assertions.fail(e.getMessage());
+        }
+
+        // participate in the quiz
+        given().header("Authorization", "Bearer " + student1.getJwt())
+                .pathParam("courseId", courseId)
+                .pathParam("formId", formId)
+                .body("Student1")
+                .when()
+                .post("/course/{courseId}/quiz/form/{formId}/participate")
+                .then()
+                .statusCode(200)
+                .body(is("Successfully added"));
+
+        given().header("Authorization", "Bearer " + student2.getJwt())
+                .pathParam("courseId", courseId)
+                .pathParam("formId", formId)
+                .body("Student2")
+                .when()
+                .post("/course/{courseId}/quiz/form/{formId}/participate")
+                .then()
+                .statusCode(200)
+                .body(is("Successfully added"));
+
+        try {
+            // connect to the websocket
+            Session profSession = ContainerProvider.getWebSocketContainer().connectToServer(
+                    profClient,
+                    URI.create("ws://localhost:8081/course/" + courseId + "/quiz/form/" + formId
+                            + "/subscribe/"
+                            + prof.getId() + "/" + prof.getJwt()));
+            Session student1Session = ContainerProvider.getWebSocketContainer().connectToServer(
+                    student1Client,
+                    URI.create("ws://localhost:8081/course/" + courseId + "/quiz/form/" + formId
+                            + "/subscribe/"
+                            + student1.getId() + "/" + student1.getJwt()));
+            Session student2Session = ContainerProvider.getWebSocketContainer().connectToServer(
+                    student2Client,
+                    URI.create("ws://localhost:8081/course/" + courseId + "/quiz/form/" + formId
+                            + "/subscribe/"
+                            + student2.getId() + "/" + student2.getJwt()));
+
+            Thread.sleep(1000);
+
+            // start the quiz
+            profClient.sendMessage(String.format("""
+                {
+                    "action": "CHANGE_FORM_STATUS",
+                    "formStatus": "STARTED",
+                    "roles": ["PROF"]
+                }
+            """));
+
+            Thread.sleep(1000);
+
+            Assertions.assertTrue(
+                    courseService.getCourse(courseId).getQuizForms().get(0).getStatus().toString().equals("STARTED"));
+            Assertions
+                    .assertTrue(courseService.getCourse(courseId).getQuizForms().get(0).getParticipants().size() == 2);
+
+            // add a result for student 1 (correct)
+            student1Client.sendMessage(String.format("""
+                        {
+                            "action": "ADD_RESULT",
+                            "resultElementId": %s,
+                            "resultValues": ["1"]
+                        }
+                    """, courses.get(0).getQuizForms().get(0).questions.get(0).getId().toString()));
+
+            Thread.sleep(1000);
+
+            // add a result for student 2 (incorrect)
+            student2Client.sendMessage(String.format("""
+                        {
+                            "action": "ADD_RESULT",
+                            "resultElementId": %s,
+                            "resultValues": ["2"]
+                        }
+                    """, courses.get(0).getQuizForms().get(0).questions.get(0).getId().toString()));
+
+            Thread.sleep(1000);
+
+            // complete the quiz
+            profClient.sendMessage(String.format("""
+                        {
+                            "action": "CHANGE_FORM_STATUS",
+                            "formStatus": "FINISHED"
+                        }
+                    """));
+
+            Thread.sleep(1000);
+
+            // get the user stats
+            io.restassured.response.Response response = given()
+                    .header("Authorization", "Bearer " + student1.getJwt())
+                    .when()
+                    .get("/stats");
+            Stats student1Stats = response
+                    .then()
+                    .statusCode(200)
+                    .extract()
+                    .body()
+                    .as(Stats.class);
+            response = given()
+                    .header("Authorization", "Bearer " + student2.getJwt())
+                    .when()
+                    .get("/stats");
+            Stats student2Stats = response
+                    .then()
+                    .statusCode(200)
+                    .extract()
+                    .body()
+                    .as(Stats.class);
+
+            // check the user stats
+            Assertions.assertEquals(3, student1Stats.userStats.getCompletedQuizForms());
+            Assertions.assertEquals(1, student1Stats.userStats.getQainedQuizPoints());
+            Assertions.assertEquals(5.0 / 3.0, student1Stats.userStats.getAvgQuizPosition());
+
+            Assertions.assertEquals(3, student2Stats.userStats.getCompletedQuizForms());
+            Assertions.assertEquals(2, student2Stats.userStats.getQainedQuizPoints());
+            Assertions.assertEquals(4.0 / 3.0, student2Stats.userStats.getAvgQuizPosition());
+
+            // reset the quiz
+            profClient.sendMessage(String.format("""
+                {
+                    "action": "CHANGE_FORM_STATUS",
+                    "formStatus": "NOT_STARTED",
+                    "roles": ["PROF"]
+                }
+            """));
+
+            Thread.sleep(1000);
+
+            // close the websocket
+            profSession.close();
+            student1Session.close();
+            student2Session.close();
+        } catch (Exception e) {
+            System.out.println(e);
+            Assertions.fail(e.getMessage());
+        }
+
+    }
+
+
+    // TODO: test Status WAITING (lobby)
 }

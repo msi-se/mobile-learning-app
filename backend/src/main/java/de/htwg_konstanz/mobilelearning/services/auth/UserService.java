@@ -206,9 +206,7 @@ public class UserService {
             UserStats stats = user.getStats();
             if (stats == null) { stats = new UserStats(); }
 
-            stats.incrementCompletedQuizForms();
-            stats.incrementQainedQuizPoints(participant.getScore());
-            stats.updateAvgQuizPosition(participants.indexOf(participant) + 1);
+            stats.doneQuiz(participants.indexOf(participant) + 1, participant.getScore());
 
             user.setStats(stats);
             userRepository.update(user);

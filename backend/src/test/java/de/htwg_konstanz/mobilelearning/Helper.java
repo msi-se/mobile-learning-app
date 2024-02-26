@@ -23,7 +23,12 @@ import io.smallrye.jwt.auth.principal.DefaultJWTCallerPrincipal;
 import io.restassured.response.Response;
 
 public class Helper {
+
     public static List<Course> createCourse() {
+        return createCourse("Prof");
+    }
+
+    public static List<Course> createCourse(String username) {
         // create a course via the json api
         ApiCourse apiCourse = new ApiCourse(
                 "AUME 23/24",
@@ -68,7 +73,7 @@ public class Helper {
         Response response = null;
         try {
 
-            String jwt = createMockUser("Prof").getJwt();
+            String jwt = createMockUser(username).getJwt();
             response = given()
                     .accept(ContentType.JSON)
                     .contentType(ContentType.JSON)
@@ -101,14 +106,14 @@ public class Helper {
         try {
             String basicAuth = "Basic " + Base64.getEncoder().encodeToString((username + ":").getBytes());
 
-
             Response response = given()
                     .header("Authorization", basicAuth)
                     .when()
                     .post("/user/login");
 
             jwt = response.getBody().asString();
-            String jwtJson = new String(Base64.getUrlDecoder().decode(jwt.split("\\.")[1]), StandardCharsets.UTF_8);
+            String jwtJson = new String(Base64.getUrlDecoder().decode(jwt.split("\\.")[1]),
+                    StandardCharsets.UTF_8);
             DefaultJWTCallerPrincipal defaultJWTCallerPrincipal = new DefaultJWTCallerPrincipal(
                     JwtClaims.parse(jwtJson));
             Assertions.assertEquals(defaultJWTCallerPrincipal.getClaim("full_name"), username);

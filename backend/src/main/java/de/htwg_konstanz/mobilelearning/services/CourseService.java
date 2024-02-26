@@ -50,7 +50,6 @@ public class CourseService {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @Path("/{courseId}")
-    @RolesAllowed({ UserRole.PROF, UserRole.STUDENT })
     public Course getCourse(@RestPath String courseId) {
         ObjectId courseObjectId = new ObjectId(courseId);
         Course course = courseRepository.findById(courseObjectId);

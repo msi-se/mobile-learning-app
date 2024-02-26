@@ -245,12 +245,6 @@ public class LiveQuizSocket {
     private Boolean changeFormStatus(LiveQuizSocketMessage quizSocketMessage, String courseId, String formId,
             String userId) {
 
-        // check if the user has the role Prof
-        if (!quizSocketMessage.roles.contains(UserRole.PROF)) {
-            System.out.println("You need the role Prof to change the form status");
-            return false;
-        }
-
         // check if the user is an owner of the course
         Course course = courseRepository.findById(new ObjectId(courseId));
         if (course == null) {
@@ -385,12 +379,6 @@ public class LiveQuizSocket {
     };
 
     private Boolean next(LiveQuizSocketMessage quizSocketMessage, String courseId, String formId, String userId) {
-
-        // check if the user has the role Prof
-        if (!quizSocketMessage.roles.contains(UserRole.PROF)) {
-            System.out.println("You need the role Prof to get the next question");
-            return false;
-        }
 
         // check if the user is an owner of the course
         Course course = courseRepository.findById(new ObjectId(courseId));
