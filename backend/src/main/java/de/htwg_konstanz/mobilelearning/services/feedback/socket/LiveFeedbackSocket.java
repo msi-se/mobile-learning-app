@@ -112,6 +112,7 @@ public class LiveFeedbackSocket {
 
             // send a message to the owner to notify that a new participant has joined
             if (isParticipant) {
+                courseRepository.update(course);
                 LiveFeedbackSocketMessage message = new LiveFeedbackSocketMessage("PARTICIPANT_JOINED", null, null, null,
                         null, form);
                 this.broadcast(message, courseId, formId);
