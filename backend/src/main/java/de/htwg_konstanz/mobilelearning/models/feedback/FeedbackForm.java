@@ -231,4 +231,8 @@ public class FeedbackForm extends Form {
         this.setDescription(apiFeedbackForm.getDescription());
 
     }
+
+    public void setParticipants(List<FeedbackParticipant> participants) {
+        this.participants = participants;
+    }
 }

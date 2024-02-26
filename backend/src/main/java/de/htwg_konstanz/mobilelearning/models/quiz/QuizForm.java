@@ -93,7 +93,7 @@ public class QuizForm extends Form {
 
     public Boolean addParticipant(ObjectId userId, String userAlias) {
         if (this.participants == null) {
-            this.participants = new java.util.ArrayList<QuizParticipant>();
+            this.participants = new ArrayList<QuizParticipant>();
         }
 
         // if alias is empty or already taken, return false
@@ -329,5 +329,9 @@ public class QuizForm extends Form {
         // update quiz form
         this.setName(apiQuizForm.getName());
         this.setDescription(apiQuizForm.getDescription());
+    }
+
+    public void setParticipants(List<QuizParticipant> participants) {
+        this.participants = participants;
     }
 }

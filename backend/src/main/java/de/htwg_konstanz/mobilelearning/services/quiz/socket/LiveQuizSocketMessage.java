@@ -56,4 +56,8 @@ public class LiveQuizSocketMessage {
         Gson gson = new GsonBuilder().registerTypeAdapter(ObjectId.class, new ObjectIdTypeAdapter()).create();
         return gson.toJson(this);
     }
+
+    public LiveQuizSocketMessage copy() {
+        return new LiveQuizSocketMessage(this.action, this.formStatus, this.resultElementId, this.resultValues, this.roles, this.form);
+    }
 }

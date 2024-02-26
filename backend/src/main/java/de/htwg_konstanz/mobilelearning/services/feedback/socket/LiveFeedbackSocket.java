@@ -159,6 +159,11 @@ public class LiveFeedbackSocket {
     }
 
     private void broadcast(LiveFeedbackSocketMessage message, String courseId, String formId) {
+
+        // copy the message to not change the original 
+        LiveFeedbackSocketMessage messageToSend = new LiveFeedbackSocketMessage(message.action, message.formStatus,
+                message.resultElementId, message.resultValues, message.roles, null);
+
         connections.values().forEach(connection -> {
 
             // check if the course ID and form ID match
@@ -171,18 +176,21 @@ public class LiveFeedbackSocket {
 
             // check what the user is allowed to see and if the user has to be notified
             // if the user doesn't have to be notified, return
-            if (message.action.equals("RESULT_ADDED")
+            if (messageToSend.action.equals("RESULT_ADDED")
                     && connection.getType().equals(SocketConnectionType.PARTICIPANT)) {
                 return;
             }
+            
+            // fill the form with the question contents
+            messageToSend.form = new FeedbackForm(message.form.courseId, message.form.name, message.form.description, message.form.questions, message.form.status);
+            messageToSend.form.setId(message.form.getId());
+            messageToSend.form.fillQuestionContents(courseRepository.findById(new ObjectId(courseId)));
             if (connection.getType().equals(SocketConnectionType.PARTICIPANT)) {
-                // not show the results
-                message.form = message.form
-                        .copyWithoutResultsButWithQuestionContents(courseRepository.findById(new ObjectId(courseId)));
+                messageToSend.form.clearResults();
             } else {
-                // show the results
-                message.form = message.form.copyWithQuestionContents(courseRepository.findById(new ObjectId(courseId)));
+                messageToSend.form.setParticipants(message.form.getParticipants());
             }
+
 
             // send the message
             String messageString = message.toJson();
@@ -272,15 +280,15 @@ public class LiveFeedbackSocket {
                 form.status.toString(), null, null, null, form);
         this.broadcast(outgoingMessage, courseId, formId);
 
-        // update the form in the database
-        form.clearQuestionContents();
-        courseRepository.update(course);
-
         // update the userstats of the participants and the global stats
         if (formStatusEnum == FormStatus.FINISHED) {
             this.userService.updateUserStatsByFeedbackForm(form);
             this.statsService.incrementCompletedFeedbackForms();
         }
+
+        // update the form in the database
+        form.clearQuestionContents();
+        courseRepository.update(course);
 
         return true;
     };

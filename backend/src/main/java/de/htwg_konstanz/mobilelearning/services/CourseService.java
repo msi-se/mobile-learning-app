@@ -81,6 +81,7 @@ public class CourseService {
             course.feedbackForms.forEach(form -> {
                 form.questions = new ArrayList<QuestionWrapper>();
                 form.clearResults();
+                form.clearParticipants();
             });
             course.quizForms.forEach(form -> {
                 form.questions = new ArrayList<QuestionWrapper>();
