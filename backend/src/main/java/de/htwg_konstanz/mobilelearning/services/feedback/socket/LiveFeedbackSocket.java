@@ -56,6 +56,7 @@ public class LiveFeedbackSocket {
     /**
      * Method called when a new connection is opened.
      * User has to either student or owner of the course to connect.
+     * TODO: instead of just returning send a REFUSED message to the client (response.getHeaders().put(HandshakeResponse.SEC_WEBSOCKET_ACCEPT,finalEmpty);)
      * 
      * @param session  Session that is created for the connection.
      * @param courseId
@@ -87,8 +88,8 @@ public class LiveFeedbackSocket {
                 return;
             }
 
-            // check if the user is owner or a participant of the form (is registered)
-            Boolean isParticipant = form.isParticipant(userId);
+            // register the user (participate)
+            Boolean isParticipant = form.addParticipant(new ObjectId(userId));
             Boolean isOwner = course.isOwner(userId);
             if (!isParticipant && !isOwner) {
                 System.out.println("User is not a participant of the course. Please register first.");
@@ -108,6 +109,14 @@ public class LiveFeedbackSocket {
             // add the connection to the list
             SocketConnection socketMember = new SocketConnection(session, courseId, formId, userId, type);
             connections.put(session.getId(), socketMember);
+
+            // send a message to the owner to notify that a new participant has joined
+            if (isParticipant) {
+                LiveFeedbackSocketMessage message = new LiveFeedbackSocketMessage("PARTICIPANT_JOINED", null, null, null,
+                        null, form);
+                this.broadcast(message, courseId, formId);
+            }
+
         } else {
             connections.remove(session.getId());
         }
@@ -176,7 +185,8 @@ public class LiveFeedbackSocket {
 
             // check what the user is allowed to see and if the user has to be notified
             // if the user doesn't have to be notified, return
-            if (messageToSend.action.equals("RESULT_ADDED")
+            if ((messageToSend.action.equals("RESULT_ADDED") || messageToSend.action.equals("PARTICIPANT_JOINED"))
+
                     && connection.getType().equals(SocketConnectionType.PARTICIPANT)) {
                 return;
             }

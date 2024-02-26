@@ -35,7 +35,7 @@ import jakarta.websocket.Session;
 
 /**
  * Socket run to live quiz sessions of a course.
- */	
+ */
 @ServerEndpoint("/course/{courseId}/quiz/form/{formId}/subscribe/{userId}/{jwt}")
 @ApplicationScoped
 public class LiveQuizSocket {
@@ -58,7 +58,8 @@ public class LiveQuizSocket {
 
     /**
      * Method called when a new connection is opened.
-     * User has to either (student & participant of the session) or owner of the course to connect.
+     * User has to either (student & participant of the session) or owner of the
+     * course to connect.
      * Before the connection user call participate method.
      * 
      * @param session
@@ -70,14 +71,13 @@ public class LiveQuizSocket {
      */
     @OnOpen
     public void onOpen(
-        Session session,
-        @PathParam("courseId") String courseId,
-        @PathParam("formId") String formId,
-        @PathParam("userId") String userId,
-        @PathParam("jwt") String jwt
-        ) throws Exception {
+            Session session,
+            @PathParam("courseId") String courseId,
+            @PathParam("formId") String formId,
+            @PathParam("userId") String userId,
+            @PathParam("jwt") String jwt) throws Exception {
         // userId from Jwt has to match userId from path
-        if (jwtService.getJwtClaims(jwt).getSubject().equals(userId)){
+        if (jwtService.getJwtClaims(jwt).getSubject().equals(userId)) {
 
             // check if course, form and user exist
             Course course = courseRepository.findById(new ObjectId(courseId));
@@ -110,12 +110,20 @@ public class LiveQuizSocket {
                 return;
             }
 
-            // check if the user is a participant or a owner (by checking if the user is owner of the course)
+            // check if the user is a participant or a owner (by checking if the user is
+            // owner of the course)
             SocketConnectionType type = isOwner ? SocketConnectionType.OWNER : SocketConnectionType.PARTICIPANT;
 
             // add the connection to the list
             SocketConnection socketMember = new SocketConnection(session, courseId, formId, userId, type);
             connections.put(session.getId(), socketMember);
+
+            // send a message to the owner to notify that a new participant has joined
+            if (isParticipant) {
+                LiveQuizSocketMessage message = new LiveQuizSocketMessage("PARTICIPANT_JOINED", form.status.toString(),
+                        null, null, null, form);
+                this.broadcast(message, courseId, formId);
+            }
         } else {
             connections.remove(session.getId());
         }
@@ -130,7 +138,8 @@ public class LiveQuizSocket {
      * @param userId
      */
     @OnClose
-    public void onClose(Session session, @PathParam("courseId") String courseId, @PathParam("formId") String formId, @PathParam("userId") String userId) {
+    public void onClose(Session session, @PathParam("courseId") String courseId, @PathParam("formId") String formId,
+            @PathParam("userId") String userId) {
         connections.remove(session.getId());
     }
 
@@ -144,7 +153,8 @@ public class LiveQuizSocket {
      * @param throwable
      */
     @OnError
-    public void onError(Session session, @PathParam("courseId") String courseId, @PathParam("formId") String formId, @PathParam("userId") String userId, Throwable throwable) {
+    public void onError(Session session, @PathParam("courseId") String courseId, @PathParam("formId") String formId,
+            @PathParam("userId") String userId, Throwable throwable) {
         throwable.printStackTrace();
         connections.remove(session.getId());
     }
@@ -158,7 +168,8 @@ public class LiveQuizSocket {
      * @param userId
      */
     @OnMessage
-    public void onMessage(String message, @PathParam("courseId") String courseId, @PathParam("formId") String formId, @PathParam("userId") String userId) {
+    public void onMessage(String message, @PathParam("courseId") String courseId, @PathParam("formId") String formId,
+            @PathParam("userId") String userId) {
         LiveQuizSocketMessage quizSocketMessage = new LiveQuizSocketMessage(message);
         this.evaluateMessage(quizSocketMessage, courseId, formId, userId);
     }
@@ -182,7 +193,8 @@ public class LiveQuizSocket {
 
             // check what the user is allowed to see and if the user has to be notified
             // if the user doesn't have to be notified, return
-            if (messageToSend.action.equals("RESULT_ADDED") && connection.getType().equals(SocketConnectionType.PARTICIPANT)) {
+            if ((messageToSend.action.equals("RESULT_ADDED") || messageToSend.action.equals("PARTICIPANT_JOINED"))
+                    && connection.getType().equals(SocketConnectionType.PARTICIPANT)) {
                 return;
             }
 
@@ -206,10 +218,11 @@ public class LiveQuizSocket {
         });
     }
 
-    private Boolean evaluateMessage(LiveQuizSocketMessage quizSocketMessage, String courseId, String formId, String userId) {
-        
+    private Boolean evaluateMessage(LiveQuizSocketMessage quizSocketMessage, String courseId, String formId,
+            String userId) {
+
         // evaluate action
-        if (quizSocketMessage.action == null || quizSocketMessage.action.equals("")) { 
+        if (quizSocketMessage.action == null || quizSocketMessage.action.equals("")) {
             System.out.println("Action is null");
             return false;
         }
@@ -229,10 +242,11 @@ public class LiveQuizSocket {
         return false;
     };
 
-    private Boolean changeFormStatus(LiveQuizSocketMessage quizSocketMessage, String courseId, String formId, String userId) {
+    private Boolean changeFormStatus(LiveQuizSocketMessage quizSocketMessage, String courseId, String formId,
+            String userId) {
 
         // check if the user has the role Prof
-        if(!quizSocketMessage.roles.contains(UserRole.PROF)){
+        if (!quizSocketMessage.roles.contains(UserRole.PROF)) {
             System.out.println("You need the role Prof to change the form status");
             return false;
         }
@@ -247,12 +261,12 @@ public class LiveQuizSocket {
             System.out.println("Not an owner of the course");
             return false;
         }
-        
 
         System.out.println("Change form status");
 
         // evaluate formStatus
-        if (quizSocketMessage.formStatus == null || quizSocketMessage.formStatus.equals("") || FormStatus.valueOf(quizSocketMessage.formStatus) == null) {
+        if (quizSocketMessage.formStatus == null || quizSocketMessage.formStatus.equals("")
+                || FormStatus.valueOf(quizSocketMessage.formStatus) == null) {
             System.out.println("Form status is invalid");
             return false;
         }
@@ -278,12 +292,14 @@ public class LiveQuizSocket {
             form.currentQuestionIndex = 0;
             form.currentQuestionFinished = false;
             // send the event to all receivers
-            LiveQuizSocketMessage outgoingMessage = new LiveQuizSocketMessage("RESULT_ADDED", form.status.toString(), null, null, null, form);
+            LiveQuizSocketMessage outgoingMessage = new LiveQuizSocketMessage("RESULT_ADDED", form.status.toString(),
+                    null, null, null, form);
             this.broadcast(outgoingMessage, courseId, formId);
         }
-        
+
         // send the updated form to all receivers (stringify the form)
-        LiveQuizSocketMessage outgoingMessage = new LiveQuizSocketMessage("FORM_STATUS_CHANGED", form.status.toString(), null, null, null, form);
+        LiveQuizSocketMessage outgoingMessage = new LiveQuizSocketMessage("FORM_STATUS_CHANGED", form.status.toString(),
+                null, null, null, form);
         this.broadcast(outgoingMessage, courseId, formId);
 
         // update the userstats of the participants and the global stats
@@ -312,7 +328,8 @@ public class LiveQuizSocket {
         }
 
         // evaluate resultValue
-        if (quizSocketMessage.resultValues == null || quizSocketMessage.resultValues.size() < 1 || quizSocketMessage.resultValues.get(0).equals("")) {
+        if (quizSocketMessage.resultValues == null || quizSocketMessage.resultValues.size() < 1
+                || quizSocketMessage.resultValues.get(0).equals("")) {
             System.out.println("Result value is invalid");
             return false;
         }
@@ -361,7 +378,8 @@ public class LiveQuizSocket {
         courseRepository.update(course);
 
         // send the updated form to all receivers (stringify the form)
-        LiveQuizSocketMessage outgoingMessage = new LiveQuizSocketMessage("RESULT_ADDED", null, quizSocketMessage.resultElementId, quizSocketMessage.resultValues, quizSocketMessage.roles, form);
+        LiveQuizSocketMessage outgoingMessage = new LiveQuizSocketMessage("RESULT_ADDED", null,
+                quizSocketMessage.resultElementId, quizSocketMessage.resultValues, quizSocketMessage.roles, form);
         this.broadcast(outgoingMessage, courseId, formId);
         return true;
     };
@@ -369,7 +387,7 @@ public class LiveQuizSocket {
     private Boolean next(LiveQuizSocketMessage quizSocketMessage, String courseId, String formId, String userId) {
 
         // check if the user has the role Prof
-        if(!quizSocketMessage.roles.contains(UserRole.PROF)){
+        if (!quizSocketMessage.roles.contains(UserRole.PROF)) {
             System.out.println("You need the role Prof to get the next question");
             return false;
         }
@@ -400,11 +418,12 @@ public class LiveQuizSocket {
 
         // for all events, send a message
         events.forEach(event -> {
-            LiveQuizSocketMessage outgoingMessage = new LiveQuizSocketMessage(event, form.status.toString(), null, null, null, form);
+            LiveQuizSocketMessage outgoingMessage = new LiveQuizSocketMessage(event, form.status.toString(), null, null,
+                    null, form);
             this.broadcast(outgoingMessage, courseId, formId);
         });
 
         return true;
     }
-    
+
 }

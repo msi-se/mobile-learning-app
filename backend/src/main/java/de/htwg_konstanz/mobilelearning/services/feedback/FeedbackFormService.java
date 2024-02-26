@@ -191,6 +191,7 @@ public class FeedbackFormService {
     /*
      * Endpoint to participate in a feedback.
      * The user has to be registered with the user id.
+     * NOT NEEDED CURRENTLY (student gets registered directly in the socket service when he connects to the feedback form)
      * 
      * @param courseId
      * @param formId
