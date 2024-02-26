@@ -13,6 +13,7 @@ import jakarta.inject.Inject;
 import jakarta.ws.rs.NotFoundException;
 import jakarta.ws.rs.PATCH;
 import jakarta.ws.rs.Path;
+import jakarta.ws.rs.Produces;
 
 @Path("/public")
 public class ApiService {
@@ -28,6 +29,7 @@ public class ApiService {
 
     @PATCH
     @Path("/courses/")
+    @Produces("application/json")
     public List<Course> updateCourses(List<ApiCourse> courses) {
 
         User user = userRepository.findByUsername(jwt.getName());
