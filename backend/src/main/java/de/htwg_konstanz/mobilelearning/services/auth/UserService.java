@@ -66,7 +66,7 @@ public class UserService {
 
         // TEMP: bypass ldap (student, prof, admin as username)
         List<String> demoUsernames = Arrays.asList("Student", "Prof", "Prof2", "Admin", "Brande", "Tobi", "Marvin", "Leon", "Fabi", "Schimkat", "Landwehr" );
-        if (demoUsernames.contains(username)) {
+        if (demoUsernames.stream().anyMatch(username::startsWith)) {
 
             // check if user exists in db
             User existingUser = userRepository.findByUsername(username);
@@ -87,26 +87,17 @@ public class UserService {
                 password
             );
 
-            if (username.equals("Student")) {
+            if (username.startsWith("Student")) {
                 newUser.addRole(UserRole.STUDENT);
-            } else if (username.equals("Prof")) {
+            } else if (username.startsWith("Prof")) {
                 newUser.addRole(UserRole.PROF);
-            } else if (username.equals("Admin")) {
+            } else if (username.startsWith("Admin")) {
                 newUser.addRole(UserRole.ADMIN);
             } else {
                 newUser.addRole(UserRole.STUDENT);
             }
 
             userRepository.persist(newUser);
-
-            // add course "Diskrete Mathematik" to prof
-            if (username.equals("Prof")) {
-                Course course = courseRepository.findByName("Diskrete Mathematik");
-                if (course != null) {
-                    course.addOwner(newUser.getId());
-                    courseRepository.update(course);
-                }
-            }
 
             String json = JwtService.getToken(newUser);
             if (json == null) {
