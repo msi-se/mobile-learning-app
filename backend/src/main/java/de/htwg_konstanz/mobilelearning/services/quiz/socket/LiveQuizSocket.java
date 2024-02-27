@@ -18,7 +18,6 @@ import de.htwg_konstanz.mobilelearning.models.Course;
 import de.htwg_konstanz.mobilelearning.models.QuestionWrapper;
 import de.htwg_konstanz.mobilelearning.models.Result;
 import de.htwg_konstanz.mobilelearning.models.auth.User;
-import de.htwg_konstanz.mobilelearning.models.auth.UserRole;
 import de.htwg_konstanz.mobilelearning.models.quiz.QuizForm;
 import de.htwg_konstanz.mobilelearning.models.quiz.QuizQuestion;
 import de.htwg_konstanz.mobilelearning.repositories.CourseRepository;
@@ -121,7 +120,7 @@ public class LiveQuizSocket {
             // send a message to the owner to notify that a new participant has joined
             if (isParticipant) {
                 LiveQuizSocketMessage message = new LiveQuizSocketMessage("PARTICIPANT_JOINED", form.status.toString(),
-                        null, null, null, form);
+                        null, null, form);
                 this.broadcast(message, courseId, formId);
             }
         } else {
@@ -174,12 +173,10 @@ public class LiveQuizSocket {
         this.evaluateMessage(quizSocketMessage, courseId, formId, userId);
     }
 
-    // TODO: BUG: 
-
     private void broadcast(LiveQuizSocketMessage message, String courseId, String formId) {
 
         // copy the message to not change the original 
-        LiveQuizSocketMessage messageToSend = new LiveQuizSocketMessage(message.action, message.formStatus, message.resultElementId, message.resultValues, message.roles, null);
+        LiveQuizSocketMessage messageToSend = new LiveQuizSocketMessage(message.action, message.formStatus, message.resultElementId, message.resultValues, null);
 
         connections.values().forEach(connection -> {
 
@@ -242,8 +239,7 @@ public class LiveQuizSocket {
         return false;
     };
 
-    private Boolean changeFormStatus(LiveQuizSocketMessage quizSocketMessage, String courseId, String formId,
-            String userId) {
+    private Boolean changeFormStatus(LiveQuizSocketMessage quizSocketMessage, String courseId, String formId, String userId) {
 
         // check if the user is an owner of the course
         Course course = courseRepository.findById(new ObjectId(courseId));
@@ -286,14 +282,12 @@ public class LiveQuizSocket {
             form.currentQuestionIndex = 0;
             form.currentQuestionFinished = false;
             // send the event to all receivers
-            LiveQuizSocketMessage outgoingMessage = new LiveQuizSocketMessage("RESULT_ADDED", form.status.toString(),
-                    null, null, null, form);
+            LiveQuizSocketMessage outgoingMessage = new LiveQuizSocketMessage("RESULT_ADDED", form.status.toString(), null, null, form);
             this.broadcast(outgoingMessage, courseId, formId);
         }
 
         // send the updated form to all receivers (stringify the form)
-        LiveQuizSocketMessage outgoingMessage = new LiveQuizSocketMessage("FORM_STATUS_CHANGED", form.status.toString(),
-                null, null, null, form);
+        LiveQuizSocketMessage outgoingMessage = new LiveQuizSocketMessage("FORM_STATUS_CHANGED", form.status.toString(), null, null, form);
         this.broadcast(outgoingMessage, courseId, formId);
 
         // update the userstats of the participants and the global stats
@@ -372,8 +366,7 @@ public class LiveQuizSocket {
         courseRepository.update(course);
 
         // send the updated form to all receivers (stringify the form)
-        LiveQuizSocketMessage outgoingMessage = new LiveQuizSocketMessage("RESULT_ADDED", null,
-                quizSocketMessage.resultElementId, quizSocketMessage.resultValues, quizSocketMessage.roles, form);
+        LiveQuizSocketMessage outgoingMessage = new LiveQuizSocketMessage("RESULT_ADDED", null, quizSocketMessage.resultElementId, quizSocketMessage.resultValues, form);
         this.broadcast(outgoingMessage, courseId, formId);
         return true;
     };
@@ -406,8 +399,7 @@ public class LiveQuizSocket {
 
         // for all events, send a message
         events.forEach(event -> {
-            LiveQuizSocketMessage outgoingMessage = new LiveQuizSocketMessage(event, form.status.toString(), null, null,
-                    null, form);
+            LiveQuizSocketMessage outgoingMessage = new LiveQuizSocketMessage(event, form.status.toString(), null, null, form);
             this.broadcast(outgoingMessage, courseId, formId);
         });
 
