@@ -22,6 +22,8 @@ class _LoginPageState extends State<LoginPage> {
   bool _isLoading = false;
   bool _isCheckingLoggedIn = true;
 
+  final GlobalKey _sizedBoxKey = GlobalKey();
+
   @override
   void initState() {
     super.initState();
@@ -98,7 +100,6 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     final colors = Theme.of(context).colorScheme;
-
     if (_isCheckingLoggedIn) {
       return const Scaffold(
         body: Center(
@@ -109,14 +110,151 @@ class _LoginPageState extends State<LoginPage> {
 
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: colors.outlineVariant,
+        backgroundColor: colors.surface,
         toolbarHeight: 0,
       ),
       body: SafeArea(
-        child: SingleChildScrollView(
-          child: Container(
-            color: colors.outlineVariant,
-            child: Column(
+        child: LayoutBuilder(
+            builder: (BuildContext context, BoxConstraints constraints) {
+          // Tablet / desktop view
+          if (constraints.maxWidth > 600) {
+            return Center(
+              child: SizedBox(
+                key: _sizedBoxKey,
+                width: 480,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Container(
+                      decoration: BoxDecoration(
+                        borderRadius: const BorderRadius.only(
+                          topLeft: Radius.circular(15),
+                          topRight: Radius.circular(15),
+                        ),
+                        border: Border(
+                          top: BorderSide(
+                              color: colors.outlineVariant, width: 0.5),
+                          right: BorderSide(
+                              color: colors.outlineVariant, width: 0.5),
+                          left: BorderSide(
+                              color: colors.outlineVariant, width: 0.5),
+                        ),
+                      ),
+                      child: Column(
+                        children: [
+                          Container(
+                            margin: const EdgeInsets.all(20.0),
+                            child: Image.asset(
+                              htwgExtendedLogo,
+                              height: 100.0,
+                            ),
+                          ),
+                          // Login Text
+                          Container(
+                            margin: const EdgeInsets.all(18.0),
+                            child: const Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Text('Log In',
+                                    style: TextStyle(
+                                        fontSize: 40,
+                                        color: Colors.black,
+                                        fontWeight: FontWeight.bold),
+                                    textAlign: TextAlign.center),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    // Bottom Half of the Login Screen
+                    Container(
+                      decoration: BoxDecoration(
+                        borderRadius: const BorderRadius.only(
+                          bottomLeft: Radius.circular(15),
+                          bottomRight: Radius.circular(15),
+                        ),
+                        border: Border(
+                          bottom: BorderSide(
+                              color: colors.outlineVariant, width: 0.5),
+                          right: BorderSide(
+                              color: colors.outlineVariant, width: 0.5),
+                          left: BorderSide(
+                              color: colors.outlineVariant, width: 0.5),
+                        ),
+                      ),
+                      child: Column(
+                        children: [
+                          // Username TextField
+                          Container(
+                            padding: const EdgeInsets.only(top: 20),
+                            margin: const EdgeInsets.symmetric(horizontal: 20),
+                            child: const Row(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              children: [
+                                Text('Benutzername',
+                                    style: TextStyle(
+                                      fontSize: 15,
+                                      color: Colors.grey,
+                                    ),
+                                    textAlign: TextAlign.left),
+                              ],
+                            ),
+                          ),
+                          MyTextField(
+                              controller: usernameController,
+                              hintText: '',
+                              obscureText: false),
+
+                          // Password TextField
+                          Container(
+                            padding: const EdgeInsets.only(top: 10),
+                            margin: const EdgeInsets.symmetric(horizontal: 20),
+                            child: const Row(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              children: [
+                                Text('Passwort',
+                                    style: TextStyle(
+                                      fontSize: 15,
+                                      color: Colors.grey,
+                                    ),
+                                    textAlign: TextAlign.left),
+                              ],
+                            ),
+                          ),
+                          MyTextField(
+                              controller: passwordController,
+                              hintText: '',
+                              obscureText: true),
+                          const SizedBox(height: 10),
+
+                          // Submit Button
+                          if (_isLoading)
+                            const CircularProgressIndicator()
+                          else
+                            SubmitButton(
+                              onTap: () async {
+                                setState(() {
+                                  _isLoading = true;
+                                });
+                                await signUserIn(context);
+                                setState(() {
+                                  _isLoading = false;
+                                });
+                              },
+                            ),
+                          const SizedBox(height: 25)
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            );
+          } else {
+            // Mobile View
+            return Column(
               children: [
                 Container(
                   color: colors.outlineVariant,
@@ -218,9 +356,9 @@ class _LoginPageState extends State<LoginPage> {
                   ),
                 ),
               ],
-            ),
-          ),
-        ),
+            );
+          }
+        }),
       ),
     );
   }

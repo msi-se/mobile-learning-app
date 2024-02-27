@@ -37,15 +37,10 @@ class _HomeTabState extends State<HomeTab> with TickerProviderStateMixin {
   bool _loading = true;
   bool _isSmallPhone = false;
   bool _isTablet = false;
-  late AnimationController _controller;
 
   @override
   void initState() {
     super.initState();
-    _controller = AnimationController(
-      duration: const Duration(milliseconds: 600),
-      vsync: this,
-    )..forward();
     setState(() {
       _loading = false;
     });

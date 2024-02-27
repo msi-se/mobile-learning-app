@@ -168,6 +168,7 @@ class _ChooseFormState extends State<ChooseForm> {
                   ),
                   elevation: 1.0,
                   surfaceTintColor: Colors.white,
+                  clipBehavior: Clip.antiAlias,
                   child: ListTile(
                     trailing: Icon(Icons.circle,
                         color: statusColors[forms[index].status], size: 20.0),
