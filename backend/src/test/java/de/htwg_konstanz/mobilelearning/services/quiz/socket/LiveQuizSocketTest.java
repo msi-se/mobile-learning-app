@@ -158,7 +158,7 @@ public class LiveQuizSocketTest {
         String questionId = courses.getFirst().quizForms.get(0).questions.get(0).getId().toString();
         
         // add a result & get quiz forms
-        addResult(courseId, formId, questionId, "Prof");
+        addResult(courseId, formId, questionId);
         Response response = given()
                             .header("Authorization", "Bearer " + Helper.createMockUser("Prof").getJwt())
                             .pathParam("courseId", courseId)
@@ -191,8 +191,8 @@ public class LiveQuizSocketTest {
         String questionId = courses.getFirst().quizForms.get(0).questions.get(0).getId().toString();
         
         // add a result & get quiz forms
-        addResult(courseId, formId, questionId, "Prof");
-        addResult(courseId, formId, questionId, "Prof");
+        addResult(courseId, formId, questionId);
+        addResult(courseId, formId, questionId);
         Response response = given()
                                 .header("Authorization", "Bearer " + Helper.createMockUser("Prof").getJwt())
                                 .pathParam("courseId", courseId)
@@ -237,16 +237,14 @@ public class LiveQuizSocketTest {
             client.sendMessage("""
                 {
                     "action": "CHANGE_FORM_STATUS",
-                    "formStatus": "STARTED",
-                    "roles": [Prof]
+                    "formStatus": "STARTED"
                 }
             """);
             Thread.sleep(100);
             client.sendMessage("""
                 {
                     "action": "CHANGE_FORM_STATUS",
-                    "formStatus": "FINISHED",
-                    "roles": [Prof]
+                    "formStatus": "FINISHED"
                 }
             """);
             Thread.sleep(1000);
@@ -287,16 +285,14 @@ public class LiveQuizSocketTest {
             client.sendMessage("""
                 {
                     "action": "CHANGE_FORM_STATUS",
-                    "formStatus": "STARTED",
-                    "roles": [Prof]
+                    "formStatus": "STARTED"
                 }
             """);
             Thread.sleep(100);
             client2.sendMessage("""
                 {
                     "action": "CHANGE_FORM_STATUS",
-                    "formStatus": "FINISHED",
-                    "roles": [Prof]
+                    "formStatus": "FINISHED"
                 }
             """);
             Thread.sleep(1000);
@@ -311,7 +307,6 @@ public class LiveQuizSocketTest {
         }
     }
 
-    //TODO Fix this test
     @Test
     public void stopQuizFormStudent() {
         // create & get courses
@@ -332,26 +327,30 @@ public class LiveQuizSocketTest {
                 client,
                 URI.create("ws://localhost:8081/course/" + courseId + "/quiz/form/" + formId + "/subscribe/" + Helper.createMockUser("Prof").getId() + "/" + Helper.createMockUser("Prof").getJwt())
             );
+            LiveFeedbackSocketClient client2 = new LiveFeedbackSocketClient();
+            Session session2 = ContainerProvider.getWebSocketContainer().connectToServer(
+                client2,
+                URI.create("ws://localhost:8081/course/" + courseId + "/quiz/form/" + formId + "/subscribe/" + Helper.createMockUser("Student").getId() + "/" + Helper.createMockUser("Student").getJwt())
+            );
             client.sendMessage("""
                 {
                     "action": "CHANGE_FORM_STATUS",
-                    "formStatus": "STARTED",
-                    "roles": [Prof]
+                    "formStatus": "STARTED"
                 }
             """);
             Thread.sleep(100);
-            client.sendMessage("""
+            client2.sendMessage("""
                 {
                     "action": "CHANGE_FORM_STATUS",
-                    "formStatus": "FINISHED",
-                    "roles": [Student]
+                    "formStatus": "FINISHED"
                 }
             """);
             Thread.sleep(1000);
             session.close();
+            session2.close();
 
             // check if the form was started & status has not changed
-            Assertions.assertTrue(courseService.getCourse(courseId).getQuizForms().get(0).getStatus().toString().equals("FINISHED"));
+            Assertions.assertTrue(courseService.getCourse(courseId).getQuizForms().get(0).getStatus().toString().equals("STARTED"));
         } catch (Exception e) {
             System.out.println(e);
             Assertions.fail(e.getMessage());
@@ -382,8 +381,7 @@ public class LiveQuizSocketTest {
             client.sendMessage("""
                 {
                     "action": "CHANGE_FORM_STATUS",
-                    "formStatus": "STARTED",
-                    "roles": [Prof]
+                    "formStatus": "STARTED"
                 }
             """);
             Thread.sleep(100);
@@ -392,8 +390,7 @@ public class LiveQuizSocketTest {
                 {
                     "action": "ADD_RESULT",
                     "resultElementId": %s,
-                    "resultValues": ["1"],
-                    "role": "STUDENT"
+                    "resultValues": ["1"]
                 }
             """, questionId));
             Thread.sleep(100);
@@ -416,16 +413,14 @@ public class LiveQuizSocketTest {
             client.sendMessage("""
                 {
                     "action": "CHANGE_FORM_STATUS",
-                    "formStatus": "FINISHED",
-                    "roles": [Prof]
+                    "formStatus": "FINISHED"
                 }
             """);
             Thread.sleep(100);
             client.sendMessage("""
                 {
                     "action": "CHANGE_FORM_STATUS",
-                    "formStatus": "NOT_STARTED",
-                    "roles": [Prof]
+                    "formStatus": "NOT_STARTED"
                 }
             """);
             Thread.sleep(1000);
@@ -475,15 +470,13 @@ public class LiveQuizSocketTest {
             client.sendMessage("""
                 {
                     "action": "CHANGE_FORM_STATUS",
-                    "formStatus": "STARTED",
-                    "roles": [Prof]
+                    "formStatus": "STARTED"
                 }
             """);
             Thread.sleep(500);
             client.sendMessage("""
                 {
-                    "action": "NEXT",
-                    "roles": [Prof]
+                    "action": "NEXT"
                 }
             """); 
             Thread.sleep(500);
@@ -497,8 +490,7 @@ public class LiveQuizSocketTest {
 
             client.sendMessage("""
                 {
-                    "action": "NEXT",
-                    "roles": [Prof]
+                    "action": "NEXT"
                 }
             """);
             Thread.sleep(500);
@@ -507,8 +499,7 @@ public class LiveQuizSocketTest {
             Assertions.assertEquals("OPENED_NEXT_QUESTION", next2.get("action"));
             client.sendMessage("""
                 {
-                    "action": "NEXT",
-                    "roles": [Prof]
+                    "action": "NEXT"
                 }
             """);
             Thread.sleep(500);
@@ -517,8 +508,7 @@ public class LiveQuizSocketTest {
             Assertions.assertEquals("CLOSED_QUESTION", next3.get("action"));
             client.sendMessage("""
                 {
-                    "action": "NEXT",
-                    "roles": [Prof]
+                    "action": "NEXT"
                 }
             """);
             Thread.sleep(500);
@@ -569,15 +559,13 @@ public class LiveQuizSocketTest {
             client.sendMessage("""
                 {
                     "action": "CHANGE_FORM_STATUS",
-                    "formStatus": "STARTED",
-                    "roles": [Prof]
+                    "formStatus": "STARTED"
                 }
             """);
             Thread.sleep(500);
             client2.sendMessage("""
                 {
-                    "action": "NEXT",
-                    "roles": [Prof]
+                    "action": "NEXT"
                 }
             """); 
             Thread.sleep(500);
@@ -622,15 +610,13 @@ public class LiveQuizSocketTest {
             client.sendMessage("""
                 {
                     "action": "CHANGE_FORM_STATUS",
-                    "formStatus": "STARTED",
-                    "roles": [Prof]
+                    "formStatus": "STARTED"
                 }
             """);
             Thread.sleep(500);
             client2.sendMessage("""
                 {
-                    "action": "NEXT",
-                    "roles": [Student]
+                    "action": "NEXT"
                 }
             """); 
             Thread.sleep(500);
@@ -646,7 +632,7 @@ public class LiveQuizSocketTest {
         }
     }
 
-    private void addResult(String courseId, String formId, String questionId, String role) {
+    private void addResult(String courseId, String formId, String questionId) {
         // create a websocket client
         // (@ServerEndpoint("/course/{courseId}/quiz/form/{formId}/subscribe/{userId}/{jwt}")
         try {
@@ -656,20 +642,18 @@ public class LiveQuizSocketTest {
                 URI.create("ws://localhost:8081/course/" + courseId + "/quiz/form/" + formId + "/subscribe/" + Helper.createMockUser("Prof").getId() + "/" + Helper.createMockUser("Prof").getJwt())
             );
             // starts quiz session
-            client.sendMessage(String.format("""
+            client.sendMessage("""
                 {
                     "action": "CHANGE_FORM_STATUS",
-                    "formStatus": "STARTED",
-                    "roles": [%s]
+                    "formStatus": "STARTED"
                 }
-            """, role));
+            """);
             // adds result to quiz form
             client.sendMessage(String.format("""
                 {
                     "action": "ADD_RESULT",
                     "resultElementId": %s,
-                    "resultValues": ["1"],
-                    "role": "STUDENT"
+                    "resultValues": ["1"]
                 }
             """, questionId));
             Thread.sleep(1000);

@@ -219,8 +219,7 @@ public class FeedbackFormServiceTest {
             client.sendMessage("""
                 {
                     "action": "CHANGE_FORM_STATUS",
-                    "formStatus": "STARTED",
-                    "roles": [Prof]
+                    "formStatus": "STARTED"
                 }
             """);
             // adds result to feedbackform
@@ -228,8 +227,7 @@ public class FeedbackFormServiceTest {
                 {
                     "action": "ADD_RESULT",
                     "resultElementId": %s,
-                    "resultValues": [5],
-                    "role": "STUDENT"
+                    "resultValues": [5]
                 }
             """, questionId));
             Thread.sleep(1000);

@@ -70,7 +70,7 @@ public class QuizFormServiceTest {
         String questionId = courses.getFirst().quizForms.get(0).questions.get(0).getId().toString();
 
         // add a result & get quiz forms
-        addResult(courseId, formId, questionId, "Prof");
+        addResult(courseId, formId, questionId);
         Response response = given()
                             .header("Authorization", "Bearer " + Helper.createMockUser("Prof").getJwt())
                             .pathParam("courseId", courseId)
@@ -101,7 +101,7 @@ public class QuizFormServiceTest {
         String questionId = courses.getFirst().quizForms.get(0).questions.get(0).getId().toString();
 
         // add a result & get quiz forms
-        addResult(courseId, formId, questionId, "Prof");
+        addResult(courseId, formId, questionId);
         Response response = given()
                             .header("Authorization", "Bearer " + Helper.createMockUser("Prof").getJwt())
                             .pathParam("courseId", courseId)
@@ -166,7 +166,7 @@ public class QuizFormServiceTest {
                 .body(is("Alias already taken"));
     }
 
-    private void addResult(String courseId, String formId, String questionId, String role) {
+    private void addResult(String courseId, String formId, String questionId) {
         // create a websocket client
         // (@ServerEndpoint("/course/{courseId}/quiz/form/{formId}/subscribe/{userId}/{jwt}")
         try {
@@ -177,20 +177,18 @@ public class QuizFormServiceTest {
                             + "/subscribe/"
                             + Helper.createMockUser("Prof").getId() + "/" + Helper.createMockUser("Prof").getJwt()));
             // starts quiz session
-            client.sendMessage(String.format("""
+            client.sendMessage("""
                     {
                         "action": "CHANGE_FORM_STATUS",
-                        "formStatus": "STARTED",
-                        "roles": [%s]
+                        "formStatus": "STARTED"
                     }
-                    """, role));
+                    """);
             // adds result to quiz form
             client.sendMessage(String.format("""
                     {
                         "action": "ADD_RESULT",
                         "resultElementId": %s,
-                        "resultValues": ["1"],
-                        "role": "STUDENT"
+                        "resultValues": ["1"]
                     }
                     """, questionId));
             Thread.sleep(1000);

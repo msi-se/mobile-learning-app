@@ -60,8 +60,8 @@ public class LiveFeedbackSocketTest {
             client.sendMessage("""
                 {
                     "action": "CHANGE_FORM_STATUS",
-                    "formStatus": "STARTED",
-                    "roles": [Prof]
+                    "formStatus": "STARTED"
+                    
                 }
             """);
             Thread.sleep(1000);
@@ -125,8 +125,8 @@ public class LiveFeedbackSocketTest {
              client.sendMessage("""
                  {
                      "action": "CHANGE_FORM_STATUS",
-                     "formStatus": "STARTED",
-                     "roles": [Prof]
+                     "formStatus": "STARTED"
+                     
                  }
              """);
              Thread.sleep(1000);
@@ -141,7 +141,6 @@ public class LiveFeedbackSocketTest {
         
     }
 
-    //TODO Fix test not started
     @Test
     public void startFeedbackStudent() {
         //create & get courses + ids
@@ -155,20 +154,19 @@ public class LiveFeedbackSocketTest {
              LiveFeedbackSocketClient client = new LiveFeedbackSocketClient();
              Session session = ContainerProvider.getWebSocketContainer().connectToServer(
                  client,
-                 URI.create("ws://localhost:8081/course/" + courseId + "/feedback/form/" + formId + "/subscribe/" + Helper.createMockUser("Prof").getId() + "/" + Helper.createMockUser("Prof").getJwt())
+                 URI.create("ws://localhost:8081/course/" + courseId + "/feedback/form/" + formId + "/subscribe/" + Helper.createMockUser("Student").getId() + "/" + Helper.createMockUser("Student").getJwt())
              );
              client.sendMessage("""
                  {
                      "action": "CHANGE_FORM_STATUS",
-                     "formStatus": "STARTED",
-                     "roles": [Student]
+                     "formStatus": "STARTED"
                  }
              """);
              Thread.sleep(1000);
              session.close();
  
              // form status should not change because user student
-             Assertions.assertTrue(courseService.getCourse(courseId).getFeedbackForms().get(0).getStatus().toString().equals("STARTED"));
+             Assertions.assertTrue(courseService.getCourse(courseId).getFeedbackForms().get(0).getStatus().toString().equals("NOT_STARTED"));
          } catch (Exception e) {
              System.out.println(e);
              Assertions.fail(e.getMessage());
@@ -194,16 +192,16 @@ public class LiveFeedbackSocketTest {
              client.sendMessage("""
                  {
                      "action": "CHANGE_FORM_STATUS",
-                     "formStatus": "STARTED",
-                     "roles": [Prof]
+                     "formStatus": "STARTED"
+                     
                  }
              """);
              Thread.sleep(100);
              client.sendMessage("""
                 {
                     "action": "CHANGE_FORM_STATUS",
-                    "formStatus": "FINISHED",
-                    "roles": [Prof]
+                    "formStatus": "FINISHED"
+                    
                 }
             """);
             Thread.sleep(1000);
@@ -237,8 +235,8 @@ public class LiveFeedbackSocketTest {
              client.sendMessage("""
                  {
                      "action": "CHANGE_FORM_STATUS",
-                     "formStatus": "STARTED",
-                     "roles": [Prof]
+                     "formStatus": "STARTED"
+                     
                  }
              """);
             // adds result to feedbackform
@@ -246,16 +244,16 @@ public class LiveFeedbackSocketTest {
                 {
                     "action": "ADD_RESULT",
                     "resultElementId": %s,
-                    "resultValues": [5],
-                    "role": "STUDENT"
+                    "resultValues": [5]
+                    
                 }
             """, questionId));
              Thread.sleep(100);
              client.sendMessage("""
                 {
                     "action": "CHANGE_FORM_STATUS",
-                    "formStatus": "FINISHED",
-                    "roles": [Prof]
+                    "formStatus": "FINISHED"
+                    
                 }
             """); 
             Response response = given()
@@ -275,8 +273,8 @@ public class LiveFeedbackSocketTest {
             client.sendMessage("""
                 {
                     "action": "CHANGE_FORM_STATUS",
-                    "formStatus": "NOT_STARTED",
-                    "roles": [Prof]
+                    "formStatus": "NOT_STARTED"
+                    
                 }
             """);
             Thread.sleep(1000);
@@ -329,16 +327,16 @@ public class LiveFeedbackSocketTest {
              client.sendMessage("""
                  {
                      "action": "CHANGE_FORM_STATUS",
-                     "formStatus": "STARTED",
-                     "roles": [Prof]
+                     "formStatus": "STARTED"
+                     
                  }
              """);
              Thread.sleep(100);
              client2.sendMessage("""
                 {
                     "action": "CHANGE_FORM_STATUS",
-                    "formStatus": "FINISHED",
-                    "roles": [Prof]
+                    "formStatus": "FINISHED"
+                    
                 }
             """);
             Thread.sleep(1000);
@@ -367,8 +365,8 @@ public class LiveFeedbackSocketTest {
             client.sendMessage("""
                 {
                     "action": "CHANGE_FORM_STATUS",
-                    "formStatus": "STARTED",
-                    "roles": [Prof]
+                    "formStatus": "STARTED"
+                    
                 }
             """);
             // adds result to feedbackform
@@ -376,8 +374,8 @@ public class LiveFeedbackSocketTest {
                 {
                     "action": "ADD_RESULT",
                     "resultElementId": %s,
-                    "resultValues": [5],
-                    "role": "STUDENT"
+                    "resultValues": [5]
+                    
                 }
             """, questionId));
             Thread.sleep(1000);
