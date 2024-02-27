@@ -89,10 +89,13 @@ public class LiveFeedbackSocket {
             }
 
             // register the user (participate)
-            Boolean isParticipant = form.addParticipant(new ObjectId(userId));
             Boolean isOwner = course.isOwner(userId);
-            if (!isParticipant && !isOwner) {
-                System.out.println("User is not a participant of the course. Please register first.");
+            Boolean isParticipant = false;
+            if (!isOwner) {
+                isParticipant = form.addParticipant(new ObjectId(userId));
+            }
+            if (!isOwner && !isParticipant) {
+                System.out.println("User could not be added as participant");
                 return;
             }
 
@@ -114,7 +117,7 @@ public class LiveFeedbackSocket {
             if (isParticipant) {
                 courseRepository.update(course);
                 LiveFeedbackSocketMessage message = new LiveFeedbackSocketMessage("PARTICIPANT_JOINED", null, null, null,
-                        null, form);
+                        form);
                 this.broadcast(message, courseId, formId);
             }
 
@@ -172,7 +175,7 @@ public class LiveFeedbackSocket {
 
         // copy the message to not change the original 
         LiveFeedbackSocketMessage messageToSend = new LiveFeedbackSocketMessage(message.action, message.formStatus,
-                message.resultElementId, message.resultValues, message.roles, null);
+                message.resultElementId, message.resultValues, null);
 
         connections.values().forEach(connection -> {
 
@@ -236,11 +239,6 @@ public class LiveFeedbackSocket {
     private Boolean changeFormStatus(LiveFeedbackSocketMessage feedbackSocketMessage, String courseId, String formId,
             String userId) {
 
-        // check if the user has the role Prof
-        if (!feedbackSocketMessage.roles.contains(UserRole.PROF)) {
-            System.out.println("You need the role Prof to change the form status");
-            return false;
-        }
 
         // check if the user is an owner of the course
         Course course = courseRepository.findById(new ObjectId(courseId));
@@ -282,13 +280,13 @@ public class LiveFeedbackSocket {
             form.clearParticipants();
             // send the event to all receivers
             LiveFeedbackSocketMessage outgoingMessage = new LiveFeedbackSocketMessage("RESULT_ADDED",
-                    form.status.toString(), null, null, null, form);
+                    form.status.toString(), null, null, form);
             this.broadcast(outgoingMessage, courseId, formId);
         }
 
         // send the updated form to all receivers (stringify the form)
         LiveFeedbackSocketMessage outgoingMessage = new LiveFeedbackSocketMessage("FORM_STATUS_CHANGED",
-                form.status.toString(), null, null, null, form);
+                form.status.toString(), null, null, form);
         this.broadcast(outgoingMessage, courseId, formId);
 
         // update the userstats of the participants and the global stats
@@ -355,7 +353,7 @@ public class LiveFeedbackSocket {
 
         // send the updated form to all receivers (stringify the form)
         LiveFeedbackSocketMessage outgoingMessage = new LiveFeedbackSocketMessage("RESULT_ADDED", null,
-                feedbackSocketMessage.resultElementId, feedbackSocketMessage.resultValues, feedbackSocketMessage.roles,
+                feedbackSocketMessage.resultElementId, feedbackSocketMessage.resultValues,
                 form);
         this.broadcast(outgoingMessage, courseId, formId);
         return true;
