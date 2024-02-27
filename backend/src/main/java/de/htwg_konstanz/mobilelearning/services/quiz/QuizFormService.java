@@ -104,6 +104,8 @@ public class QuizFormService {
         QuizForm quizForm = course.getQuizFormById(formObjectId);
         if (quizForm == null) { throw new NotFoundException("QuizForm not found"); }
 
+        // TODO: check if user is student of the course
+
         // add the participant and check if the alias is already taken
         Boolean successfullyAdded = quizForm.addParticipant(new ObjectId(userId), alias);
         if (!successfullyAdded) {

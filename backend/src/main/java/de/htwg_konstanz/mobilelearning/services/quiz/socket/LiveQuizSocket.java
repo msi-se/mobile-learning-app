@@ -99,7 +99,7 @@ public class LiveQuizSocket {
             Boolean isParticipant = form.isParticipant(userId);
             Boolean isOwner = course.isOwner(userId);
             if (!isParticipant && !isOwner) {
-                System.out.println("User is not a participant of the course. Please register first.");
+                System.out.println(String.format("User %s is not a participant or owner of the form", user.getUsername()));
                 return;
             }
 
