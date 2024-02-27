@@ -4,18 +4,12 @@ import static io.restassured.RestAssured.given;
 import static org.hamcrest.CoreMatchers.is;
 
 import java.net.URI;
-import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.Base64;
 import java.util.List;
 
-import org.jose4j.jwt.JwtClaims;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInfo;
-
-import com.google.gson.Gson;
 
 import de.htwg_konstanz.mobilelearning.LiveFeedbackSocketClient;
 import de.htwg_konstanz.mobilelearning.MockMongoTestProfile;
@@ -26,25 +20,16 @@ import de.htwg_konstanz.mobilelearning.models.quiz.QuizForm;
 import de.htwg_konstanz.mobilelearning.models.stats.Stats;
 import de.htwg_konstanz.mobilelearning.services.CourseService;
 import de.htwg_konstanz.mobilelearning.services.api.ApiService;
-import de.htwg_konstanz.mobilelearning.services.api.models.ApiCourse;
-import de.htwg_konstanz.mobilelearning.services.api.models.ApiFeedbackForm;
-import de.htwg_konstanz.mobilelearning.services.api.models.ApiFeedbackForm.ApiFeedbackQuestion;
-import de.htwg_konstanz.mobilelearning.services.api.models.ApiQuizForm;
-import de.htwg_konstanz.mobilelearning.services.api.models.ApiQuizForm.ApiQuizQuestion;
 import de.htwg_konstanz.mobilelearning.services.auth.UserService;
-import io.quarkus.test.common.http.TestHTTPEndpoint;
 import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.junit.TestProfile;
 import io.quarkus.test.security.TestSecurity;
 import io.quarkus.test.security.jwt.Claim;
 import io.quarkus.test.security.jwt.JwtSecurity;
-import io.restassured.http.ContentType;
-import io.smallrye.jwt.auth.principal.DefaultJWTCallerPrincipal;
+import io.restassured.response.Response;
 import jakarta.inject.Inject;
 import jakarta.websocket.ContainerProvider;
 import jakarta.websocket.Session;
-import jakarta.ws.rs.core.Response;
-
 import de.htwg_konstanz.mobilelearning.Helper;
 
 @QuarkusTest
@@ -332,7 +317,7 @@ public class QuizFormServiceTest {
             Thread.sleep(1000);
 
             // get the user stats
-            io.restassured.response.Response response = given()
+            Response response = given()
                     .header("Authorization", "Bearer " + student1.getJwt())
                     .when()
                     .get("/stats");
@@ -472,7 +457,7 @@ public class QuizFormServiceTest {
             Thread.sleep(1000);
 
             // get the user stats
-            io.restassured.response.Response response = given()
+            Response response = given()
                     .header("Authorization", "Bearer " + student1.getJwt())
                     .when()
                     .get("/stats");
@@ -612,7 +597,7 @@ public class QuizFormServiceTest {
             Thread.sleep(1000);
 
             // get the user stats
-            io.restassured.response.Response response = given()
+            Response response = given()
                     .header("Authorization", "Bearer " + student1.getJwt())
                     .when()
                     .get("/stats");

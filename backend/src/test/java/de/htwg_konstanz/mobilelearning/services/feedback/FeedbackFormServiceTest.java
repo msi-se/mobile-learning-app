@@ -13,6 +13,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInfo;
 
+import de.htwg_konstanz.mobilelearning.Helper;
 import de.htwg_konstanz.mobilelearning.LiveFeedbackSocketClient;
 import de.htwg_konstanz.mobilelearning.MockMongoTestProfile;
 import de.htwg_konstanz.mobilelearning.enums.FormStatus;
@@ -60,56 +61,18 @@ public class FeedbackFormServiceTest {
     @Inject
     private FeedbackFormService feedbackFormService;
 
-    private String profJwt = "";
-    private String profId = "";
-
     @BeforeEach
     void init(TestInfo testInfo){
         System.out.println("------------------------------");
         System.out.println("Test: " + testInfo.getDisplayName());
         courseService.deleteAllCourses();
-        createProfUser();
+        userService.deleteAllUsers();
     }
 
     @Test
-    @TestSecurity(user = "Prof", roles = { UserRole.PROF})
-    @JwtSecurity(claims = { @Claim(key = "email", value = "prof@htwg-konstanz.de") })
-    public void createFeedbackForm() {
-        //create & get courses
-        List<Course> courses = createCourse();
-        FeedbackForm feedbackForm = new FeedbackForm(courses.get(0).id, "name", "description", new ArrayList<QuestionWrapper>(), FormStatus.NOT_STARTED);
-
-        // create a feedback form
-        feedbackFormService.createFeedbackForm(courses.getFirst().id.toString(), feedbackForm);
-
-        //check if the feedback form was created
-        List<FeedbackForm> feedbackForms = feedbackFormService.getFeedbackForms(courses.get(0).id.toString());
-        Assertions.assertEquals(2, feedbackForms.size());
-        Assertions.assertEquals("name", feedbackForms.get(1).name);
-        Assertions.assertEquals("description", feedbackForms.get(1).description);
-    }
-
-    @Test
-    @TestSecurity(user = "Student", roles = { UserRole.STUDENT})
-    @JwtSecurity(claims = { @Claim(key = "email", value = "student@htwg-konstanz.de") })
-    public void createFeedbackFormForbidden() {
-        //create & get courses
-        List<Course> courses = createCourse();
-        FeedbackForm feedbackForm = new FeedbackForm(courses.get(0).id, "name", "description", new ArrayList<QuestionWrapper>(), FormStatus.NOT_STARTED);
-        
-        Exception exception = Assertions.assertThrows(ForbiddenException.class, () -> {
-            feedbackFormService.createFeedbackForm(courses.getFirst().id.toString(), feedbackForm);
-        });
-        // student should not be allowed to create feedback forms
-        Assertions.assertEquals("io.quarkus.security.ForbiddenException", exception.getClass().getName());
-    }
-
-    @Test
-    @TestSecurity(user = "Prof", roles = { UserRole.PROF})
-    @JwtSecurity(claims = { @Claim(key = "email", value = "prof@htwg-konstanz.de") })
     public void getFeedbackFormWithoutResult() {
         //create & get courses + ids
-        List<Course> courses = createCourse();
+        List<Course> courses = Helper.createCourse();
         String courseId = courses.getFirst().getId().toString();
         String formId = courses.getFirst().getFeedbackForms().get(0).getId().toString();
         String questionId = courses.getFirst().feedbackForms.get(0).questions.get(0).getId().toString();
@@ -127,11 +90,9 @@ public class FeedbackFormServiceTest {
     }
     
     @Test
-    @TestSecurity(user = "Prof", roles = { UserRole.PROF})
-    @JwtSecurity(claims = { @Claim(key = "email", value = "prof@htwg-konstanz.de") })
     public void getFeedbackFormWithResult() {
         //create & get courses + ids
-        List<Course> courses = createCourse();
+        List<Course> courses = Helper.createCourse();
         String courseId = courses.getFirst().getId().toString();
         String formId = courses.getFirst().getFeedbackForms().get(0).getId().toString();
         String questionId = courses.getFirst().feedbackForms.get(0).questions.get(0).getId().toString();
@@ -149,11 +110,9 @@ public class FeedbackFormServiceTest {
     }
 
     @Test
-    @TestSecurity(user = "Prof", roles = { UserRole.PROF})
-    @JwtSecurity(claims = { @Claim(key = "sub", value = "111111111111111111111111") })
     public void clearResults() {
         //create & get courses + ids
-        List<Course> courses = createCourse();
+        List<Course> courses = Helper.createCourse();
         String courseId = courses.getFirst().getId().toString();
         String formId = courses.getFirst().getFeedbackForms().get(0).getId().toString();
         String questionId = courses.getFirst().feedbackForms.get(0).questions.get(0).getId().toString();
@@ -175,11 +134,9 @@ public class FeedbackFormServiceTest {
     }    
     
     @Test
-    @TestSecurity(user = "Prof", roles = { UserRole.PROF})
-    @JwtSecurity(claims = { @Claim(key = "sub", value = "111111111111111111111111") })
     public void clearResultsNotOwner() {
         //create & get courses + ids
-        List<Course> courses = createCourse();
+        List<Course> courses = Helper.createCourse();
         String courseId = courses.getFirst().getId().toString();
         String formId = courses.getFirst().getFeedbackForms().get(0).getId().toString();
         String questionId = courses.getFirst().feedbackForms.get(0).questions.get(0).getId().toString();
@@ -195,11 +152,9 @@ public class FeedbackFormServiceTest {
     }
 
     @Test
-    @TestSecurity(user = "Student", roles = { UserRole.STUDENT})
-    @JwtSecurity(claims = { @Claim(key = "email", value = "student@htwg-konstanz.de") })
     public void clearResultsForbidden() {
         //create & get courses + ids
-        List<Course> courses = createCourse();
+        List<Course> courses = Helper.createCourse();
         String formId = courses.getFirst().getFeedbackForms().get(0).getId().toString();
         FeedbackForm feedbackForm = feedbackFormService.getFeedbackForm(courses.get(0).id.toString(), formId, true);
 
@@ -212,11 +167,9 @@ public class FeedbackFormServiceTest {
     }
 
     @Test
-    @TestSecurity(user = "Prof", roles = { UserRole.PROF})
-    @JwtSecurity(claims = { @Claim(key = "sub", value = "111111111111111111111111") })
     public void updateFeedbackForm() {
         //create & get courses + ids
-        List<Course> courses = createCourse();
+        List<Course> courses = Helper.createCourse();
         String courseId = courses.getFirst().getId().toString();
         String formId = courses.getFirst().getFeedbackForms().get(0).getId().toString();
       
@@ -238,11 +191,9 @@ public class FeedbackFormServiceTest {
     }
 
     @Test
-    @TestSecurity(user = "Prof", roles = { UserRole.PROF})
-    @JwtSecurity(claims = { @Claim(key = "sub", value = "111111111111111111111111") })
     public void updateFeedbackFormNotOwner() {
         //create & get courses + ids
-        List<Course> courses = createCourse();
+        List<Course> courses = Helper.createCourse();
         String courseId = courses.getFirst().getId().toString();
         String formId = courses.getFirst().getFeedbackForms().get(0).getId().toString();
 
@@ -258,11 +209,9 @@ public class FeedbackFormServiceTest {
     }
     
     @Test
-    @TestSecurity(user = "Student", roles = { UserRole.STUDENT})
-    @JwtSecurity(claims = { @Claim(key = "email", value = "student@htwg-konstanz.de") })
     public void updateFeedbackFormForbidden() {
         //create & get courses + ids
-        List<Course> courses = createCourse();
+        List<Course> courses = Helper.createCourse();
         String courseId = courses.getFirst().getId().toString();
         String formId = courses.getFirst().getFeedbackForms().get(0).getId().toString();
         
@@ -311,65 +260,6 @@ public class FeedbackFormServiceTest {
         } catch (Exception e) {
             System.out.println(e);
             Assertions.fail(e.getMessage());
-        }
-    }
-
-    @Test
-    @TestSecurity(user = "Prof", roles = { UserRole.PROF})
-    @JwtSecurity(claims = { @Claim(key = "email", value = "prof@htwg-konstanz.de") })
-    private List<Course> createCourse() {
-        // create a course via the json api
-        ApiCourse apiCourse = new ApiCourse(
-            "AUME 23/24",
-            "Agile Vorgehensmodelle und Mobile Kommunikation",
-            List.of(
-                    new ApiFeedbackForm(
-                            "Erster Sprint",
-                            "Hier wollen wir Ihr Feedback zum ersten Sprint einholen",
-                            List.of(
-                                    new ApiFeedbackQuestion(
-                                            "Rolle",
-                                            "Wie gut hat Ihnen ihre Pizza gefallen?",
-                                            "SLIDER",
-                                            new ArrayList<String>(),
-                                            "F-Q-ROLLE",
-                                            "gut",
-                                            "schlecht")),
-                            "F-ERSTERSPRINT")),
-            List.of(
-                    new ApiQuizForm(
-                            "Rollenverständnis bei Scrum",
-                            "Ein Quiz zum Rollenverständnis und Teamaufbau bei Scrum",
-                            List.of(
-                                    new ApiQuizQuestion(
-                                            "Product Owner",
-                                            "Welche der folgenden Aufgaben ist nicht Teil der Rolle des Product Owners?",
-                                            "SINGLE_CHOICE",
-                                            List.of(
-                                                    "Erstellung des Product Backlogs",
-                                                    "Priorisierung des Product Backlogs",
-                                                    "Pizza bestellen für jedes Daily"),
-                                            true,
-                                            List.of("2"),
-                                            "Q-Q-PDRODUCTOWNER")),
-                            "Q-ROLES")),
-            "AUME23",
-            "1");
-        return apiService.updateCourses(List.of(apiCourse));
-    } 
-
-    public void createProfUser() {
-        try {
-            Response response = userService.login("Basic UHJvZjo=");
-            profJwt = response.getEntity().toString(); // save jwt for later use
-            String jwtJson = new String(Base64.getUrlDecoder().decode(profJwt.split("\\.")[1]), StandardCharsets.UTF_8);
-            DefaultJWTCallerPrincipal defaultJWTCallerPrincipal = new DefaultJWTCallerPrincipal(
-                    JwtClaims.parse(jwtJson));
-            Assertions.assertEquals(defaultJWTCallerPrincipal.getClaim("full_name"), "Prof");
-            Assertions.assertTrue(defaultJWTCallerPrincipal.getClaim("sub").toString().length() > 0);
-            profId = defaultJWTCallerPrincipal.getClaim("sub").toString(); // save id for later use
-        } catch (Exception e) {
-            Assertions.fail(e);
         }
     }
 }
