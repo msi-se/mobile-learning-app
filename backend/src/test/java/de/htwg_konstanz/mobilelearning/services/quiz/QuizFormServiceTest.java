@@ -11,48 +11,37 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInfo;
 
+import de.htwg_konstanz.mobilelearning.Helper;
 import de.htwg_konstanz.mobilelearning.LiveFeedbackSocketClient;
 import de.htwg_konstanz.mobilelearning.MockMongoTestProfile;
 import de.htwg_konstanz.mobilelearning.MockUser;
 import de.htwg_konstanz.mobilelearning.models.Course;
-import de.htwg_konstanz.mobilelearning.models.auth.UserRole;
 import de.htwg_konstanz.mobilelearning.models.quiz.QuizForm;
-import de.htwg_konstanz.mobilelearning.models.stats.Stats;
 import de.htwg_konstanz.mobilelearning.services.CourseService;
-import de.htwg_konstanz.mobilelearning.services.api.ApiService;
 import de.htwg_konstanz.mobilelearning.services.auth.UserService;
 import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.junit.TestProfile;
-import io.quarkus.test.security.TestSecurity;
-import io.quarkus.test.security.jwt.Claim;
-import io.quarkus.test.security.jwt.JwtSecurity;
 import io.restassured.response.Response;
 import jakarta.inject.Inject;
 import jakarta.websocket.ContainerProvider;
 import jakarta.websocket.Session;
-import de.htwg_konstanz.mobilelearning.Helper;
 
 @QuarkusTest
 @TestProfile(MockMongoTestProfile.class)
 public class QuizFormServiceTest {
 
     @Inject
-    private CourseService courseService;
-
-    @Inject
-    private ApiService apiService;
+    private CourseService courseService;   
 
     @Inject
     private UserService userService;
 
-    @Inject
-    private QuizFormService quizFormService;
-
     @BeforeEach
     void init(TestInfo testInfo) {
-        // System.out.println("------------------------------");
-        // System.out.println("Test: " + testInfo.getDisplayName());
-        // courseService.deleteAllCourses();
+        System.out.println("------------------------------");
+        System.out.println("Test: " + testInfo.getDisplayName());
+        courseService.deleteAllCourses();
+        userService.deleteAllUsers();
     }
 
     @Test
@@ -73,8 +62,6 @@ public class QuizFormServiceTest {
     }
 
     @Test
-    @TestSecurity(user = "Prof", roles = { UserRole.PROF })
-    @JwtSecurity(claims = { @Claim(key = "email", value = "prof@htwg-konstanz.de") })
     public void getQuizFormWithoutResult() {
         // create & get courses + ids
         List<Course> courses = Helper.createCourse();
@@ -84,11 +71,21 @@ public class QuizFormServiceTest {
 
         // add a result & get quiz forms
         addResult(courseId, formId, questionId, "Prof");
-        List<QuizForm> quizForms = quizFormService.getQuizForms(courses.get(0).id.toString());
+        Response response = given()
+                            .header("Authorization", "Bearer " + Helper.createMockUser("Prof").getJwt())
+                            .pathParam("courseId", courseId)
+                            .pathParam("formId", formId)
+                            .when()
+                            .get("/course/{courseId}/quiz/form/{formId}");
+        QuizForm quizFormFromService = response
+                        .then()
+                        .statusCode(200)
+                        .extract()
+                        .body()
+                        .jsonPath()
+                        .getObject(".", QuizForm.class);
 
         // Assert get quiz form without results
-        QuizForm quizFormFromService = quizFormService.getQuizForm(courses.get(0).id.toString(),
-                quizForms.get(0).id.toString(), false);
         Assertions.assertEquals("Rollenverständnis bei Scrum",
                 quizFormFromService.name);
         Assertions.assertEquals("Ein Quiz zum Rollenverständnis und Teamaufbau bei Scrum",
@@ -99,8 +96,6 @@ public class QuizFormServiceTest {
     }
 
     @Test
-    @TestSecurity(user = "Prof", roles = { UserRole.PROF })
-    @JwtSecurity(claims = { @Claim(key = "email", value = "prof@htwg-konstanz.de") })
     public void getQuizFormWithResult() {
         // create & get courses + ids
         List<Course> courses = Helper.createCourse();
@@ -110,11 +105,22 @@ public class QuizFormServiceTest {
 
         // add a result & get quiz forms
         addResult(courseId, formId, questionId, "Prof");
-        List<QuizForm> quizForms = quizFormService.getQuizForms(courses.get(0).id.toString());
+        Response response = given()
+                            .header("Authorization", "Bearer " + Helper.createMockUser("Prof").getJwt())
+                            .pathParam("courseId", courseId)
+                            .pathParam("formId", formId)
+                            .queryParam("results", true)
+                            .when()
+                            .get("/course/{courseId}/quiz/form/{formId}");
+        QuizForm quizFormFromService = response
+                                        .then()
+                                        .statusCode(200)
+                                        .extract()
+                                        .body()
+                                        .jsonPath()
+                                        .getObject(".", QuizForm.class);
 
         // Assert get quiz form without results
-        QuizForm quizFormFromService = quizFormService.getQuizForm(courses.get(0).id.toString(),
-                quizForms.get(0).id.toString(), true);
         Assertions.assertEquals("Rollenverständnis bei Scrum",
                 quizFormFromService.name);
         Assertions.assertEquals("Ein Quiz zum Rollenverständnis und Teamaufbau bei Scrum",
