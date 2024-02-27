@@ -481,12 +481,11 @@ public class LiveQuizSocketTest {
             """); 
             Thread.sleep(500);
             // newest messagqueue item after first next should be CLOSED_QUESTION
-            Map<String, String> next1 = mapper.readerFor(Map.class).readValue(client.getMessageQueue().get(1));
-            Assertions.assertEquals("CLOSED_QUESTION", next1.get("action"));
-            Object obj1 = next1.get("form");  // replace with your object
-            LinkedHashMap<String, Object> form1 = (LinkedHashMap<String, Object>) obj1;
-            Assertions.assertEquals(true, form1.get("currentQuestionFinished"));
-            Assertions.assertEquals(0, form1.get("currentQuestionIndex"));
+            String messageString = client.getMessageQueue().get(1);
+            LiveQuizSocketMessage message = LiveQuizSocketMessage.getByJsonWithForm(messageString);
+            Assertions.assertEquals("CLOSED_QUESTION", message.action);
+            Assertions.assertEquals(true, message.form.currentQuestionFinished);
+            Assertions.assertEquals(0, message.form.currentQuestionIndex);
 
             client.sendMessage("""
                 {
@@ -495,8 +494,9 @@ public class LiveQuizSocketTest {
             """);
             Thread.sleep(500);
             // newest messagqueue item after second next should be OPENED_NEXT_QUESTION
-            Map<String, String> next2 = mapper.readerFor(Map.class).readValue(client.getMessageQueue().get(2));
-            Assertions.assertEquals("OPENED_NEXT_QUESTION", next2.get("action"));
+            messageString = client.getMessageQueue().get(2);
+            message = LiveQuizSocketMessage.getByJsonWithForm(messageString);
+            Assertions.assertEquals("OPENED_NEXT_QUESTION", message.action);
             client.sendMessage("""
                 {
                     "action": "NEXT"
@@ -504,8 +504,11 @@ public class LiveQuizSocketTest {
             """);
             Thread.sleep(500);
             // newest messagqueue item after third next should be CLOSED_QUESTION
-            Map<String, String> next3 = mapper.readerFor(Map.class).readValue(client.getMessageQueue().get(3));
-            Assertions.assertEquals("CLOSED_QUESTION", next3.get("action"));
+            messageString = client.getMessageQueue().get(3);
+            message = LiveQuizSocketMessage.getByJsonWithForm(messageString);
+            Assertions.assertEquals("CLOSED_QUESTION", message.action);
+            Assertions.assertEquals(true, message.form.currentQuestionFinished);
+            Assertions.assertEquals(1, message.form.currentQuestionIndex);
             client.sendMessage("""
                 {
                     "action": "NEXT"
@@ -513,11 +516,13 @@ public class LiveQuizSocketTest {
             """);
             Thread.sleep(500);
             // newest messagqueue items after fourth next should be CLOSED_QUESTION & FINISHED
-            Map<String, String> next4 = mapper.readerFor(Map.class).readValue(client.getMessageQueue().get(4));
-            Assertions.assertEquals("CLOSED_QUESTION", next4.get("action"));
-            Map<String, String> next5 = mapper.readerFor(Map.class).readValue(client.getMessageQueue().get(5));
-            Assertions.assertEquals("FORM_STATUS_CHANGED", next5.get("action"));
-            Assertions.assertEquals("FINISHED", next5.get("formStatus"));
+            messageString = client.getMessageQueue().get(4);
+            message = LiveQuizSocketMessage.getByJsonWithForm(messageString);
+            Assertions.assertEquals("CLOSED_QUESTION", message.action);
+            messageString = client.getMessageQueue().get(5);
+            message = LiveQuizSocketMessage.getByJsonWithForm(messageString);
+            Assertions.assertEquals("FORM_STATUS_CHANGED", message.action);
+            Assertions.assertEquals("FINISHED", message.formStatus);
 
             Thread.sleep(1000);
             session.close();
