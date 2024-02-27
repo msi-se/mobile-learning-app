@@ -15,7 +15,7 @@ import org.junit.jupiter.api.TestInfo;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import de.htwg_konstanz.mobilelearning.Helper;
-import de.htwg_konstanz.mobilelearning.LiveFeedbackSocketClient;
+import de.htwg_konstanz.mobilelearning.SocketClient;
 import de.htwg_konstanz.mobilelearning.MockMongoTestProfile;
 import de.htwg_konstanz.mobilelearning.MockUser;
 import de.htwg_konstanz.mobilelearning.models.Course;
@@ -56,7 +56,7 @@ public class LiveQuizSocketTest {
         // create a websocket client
         // (@ServerEndpoint("/course/{courseId}/quiz/form/{formId}/subscribe/{userId}/{jwt}")
         try {
-            LiveFeedbackSocketClient client = new LiveFeedbackSocketClient();
+            SocketClient client = new SocketClient();
             Session session = ContainerProvider.getWebSocketContainer().connectToServer(
                 client,
                 URI.create("ws://localhost:8081/course/" + courseId + "/quiz/form/" + formId + "/subscribe/" + Helper.createMockUser("Prof").getId() + "/" + Helper.createMockUser("Prof").getJwt())
@@ -91,7 +91,7 @@ public class LiveQuizSocketTest {
         // create a websocket client
         // (@ServerEndpoint("/course/{courseId}/quiz/form/{formId}/subscribe/{userId}/{jwt}")
         try {
-            LiveFeedbackSocketClient client = new LiveFeedbackSocketClient();
+            SocketClient client = new SocketClient();
             Session session = ContainerProvider.getWebSocketContainer().connectToServer(
                 client,
                 URI.create("ws://localhost:8081/course/" + courseId + "/quiz/form/" + formId + "/subscribe/" + Helper.createMockUser("Prof2").getId() + "/" + Helper.createMockUser("Prof2").getJwt())
@@ -128,7 +128,7 @@ public class LiveQuizSocketTest {
         // create a websocket client
         // (@ServerEndpoint("/course/{courseId}/quiz/form/{formId}/subscribe/{userId}/{jwt}")
         try {
-            LiveFeedbackSocketClient client = new LiveFeedbackSocketClient();
+            SocketClient client = new SocketClient();
             Session session = ContainerProvider.getWebSocketContainer().connectToServer(
                 client,
                 URI.create("ws://localhost:8081/course/" + courseId + "/quiz/form/" + formId + "/subscribe/" + Helper.createMockUser("Student").getId() + "/" + Helper.createMockUser("Student").getJwt())
@@ -230,7 +230,7 @@ public class LiveQuizSocketTest {
         // create a websocket client
         // (@ServerEndpoint("/course/{courseId}/quiz/form/{formId}/subscribe/{userId}/{jwt}")
         try {
-            LiveFeedbackSocketClient client = new LiveFeedbackSocketClient();
+            SocketClient client = new SocketClient();
             Session session = ContainerProvider.getWebSocketContainer().connectToServer(
                 client,
                 URI.create("ws://localhost:8081/course/" + courseId + "/quiz/form/" + formId + "/subscribe/" + Helper.createMockUser("Prof").getId() + "/" + Helper.createMockUser("Prof").getJwt())
@@ -274,8 +274,8 @@ public class LiveQuizSocketTest {
         // create a websocket client
         // (@ServerEndpoint("/course/{courseId}/quiz/form/{formId}/subscribe/{userId}/{jwt}")
         try {
-            LiveFeedbackSocketClient client = new LiveFeedbackSocketClient();
-            LiveFeedbackSocketClient client2 = new LiveFeedbackSocketClient();
+            SocketClient client = new SocketClient();
+            SocketClient client2 = new SocketClient();
             Session session = ContainerProvider.getWebSocketContainer().connectToServer(
                 client,
                 URI.create("ws://localhost:8081/course/" + courseId + "/quiz/form/" + formId + "/subscribe/" + Helper.createMockUser("Prof").getId() + "/" + Helper.createMockUser("Prof").getJwt())
@@ -323,12 +323,12 @@ public class LiveQuizSocketTest {
         // create a websocket client
         // (@ServerEndpoint("/course/{courseId}/quiz/form/{formId}/subscribe/{userId}/{jwt}")
         try {
-            LiveFeedbackSocketClient client = new LiveFeedbackSocketClient();
+            SocketClient client = new SocketClient();
             Session session = ContainerProvider.getWebSocketContainer().connectToServer(
                 client,
                 URI.create("ws://localhost:8081/course/" + courseId + "/quiz/form/" + formId + "/subscribe/" + Helper.createMockUser("Prof").getId() + "/" + Helper.createMockUser("Prof").getJwt())
             );
-            LiveFeedbackSocketClient client2 = new LiveFeedbackSocketClient();
+            SocketClient client2 = new SocketClient();
             Session session2 = ContainerProvider.getWebSocketContainer().connectToServer(
                 client2,
                 URI.create("ws://localhost:8081/course/" + courseId + "/quiz/form/" + formId + "/subscribe/" + Helper.createMockUser("Student").getId() + "/" + Helper.createMockUser("Student").getJwt())
@@ -374,7 +374,7 @@ public class LiveQuizSocketTest {
         // create a websocket client
         // (@ServerEndpoint("/course/{courseId}/quiz/form/{formId}/subscribe/{userId}/{jwt}")
         try {
-            LiveFeedbackSocketClient client = new LiveFeedbackSocketClient();
+            SocketClient client = new SocketClient();
             Session session = ContainerProvider.getWebSocketContainer().connectToServer(
                 client,
                 URI.create("ws://localhost:8081/course/" + courseId + "/quiz/form/" + formId + "/subscribe/" + Helper.createMockUser("Prof").getId() + "/" + Helper.createMockUser("Prof").getJwt())
@@ -463,7 +463,7 @@ public class LiveQuizSocketTest {
         // create a websocket client
         // (@ServerEndpoint("/course/{courseId}/quiz/form/{formId}/subscribe/{userId}/{jwt}")
         try {
-            LiveFeedbackSocketClient client = new LiveFeedbackSocketClient();
+            SocketClient client = new SocketClient();
             Session session = ContainerProvider.getWebSocketContainer().connectToServer(
                 client,
                 URI.create("ws://localhost:8081/course/" + courseId + "/quiz/form/" + formId + "/subscribe/" + Helper.createMockUser("Prof").getId() + "/" + Helper.createMockUser("Prof").getJwt())
@@ -552,8 +552,8 @@ public class LiveQuizSocketTest {
         // (@ServerEndpoint("/course/{courseId}/quiz/form/{formId}/subscribe/{userId}/{jwt}")
         try {
             // Owner stats feedback & 2nd prof (not owner) tries to change question
-            LiveFeedbackSocketClient client = new LiveFeedbackSocketClient();
-            LiveFeedbackSocketClient client2 = new LiveFeedbackSocketClient();
+            SocketClient client = new SocketClient();
+            SocketClient client2 = new SocketClient();
             Session session = ContainerProvider.getWebSocketContainer().connectToServer(
                 client,
                 URI.create("ws://localhost:8081/course/" + courseId + "/quiz/form/" + formId + "/subscribe/" + Helper.createMockUser("Prof").getId() + "/" + Helper.createMockUser("Prof").getJwt())
@@ -603,8 +603,8 @@ public class LiveQuizSocketTest {
         // (@ServerEndpoint("/course/{courseId}/quiz/form/{formId}/subscribe/{userId}/{jwt}")
         try {
             // Owner stats feedback & 2nd prof (with student role) tries to change question
-            LiveFeedbackSocketClient client = new LiveFeedbackSocketClient();
-            LiveFeedbackSocketClient client2 = new LiveFeedbackSocketClient();
+            SocketClient client = new SocketClient();
+            SocketClient client2 = new SocketClient();
             Session session = ContainerProvider.getWebSocketContainer().connectToServer(
                 client,
                 URI.create("ws://localhost:8081/course/" + courseId + "/quiz/form/" + formId + "/subscribe/" + Helper.createMockUser("Prof").getId() + "/" + Helper.createMockUser("Prof").getJwt())
@@ -642,7 +642,7 @@ public class LiveQuizSocketTest {
         // create a websocket client
         // (@ServerEndpoint("/course/{courseId}/quiz/form/{formId}/subscribe/{userId}/{jwt}")
         try {
-            LiveFeedbackSocketClient client = new LiveFeedbackSocketClient();
+            SocketClient client = new SocketClient();
             Session session = ContainerProvider.getWebSocketContainer().connectToServer(
                 client,
                 URI.create("ws://localhost:8081/course/" + courseId + "/quiz/form/" + formId + "/subscribe/" + Helper.createMockUser("Prof").getId() + "/" + Helper.createMockUser("Prof").getJwt())
@@ -704,8 +704,8 @@ public class LiveQuizSocketTest {
         try {
 
             // create websocket clients
-            LiveFeedbackSocketClient profClient = new LiveFeedbackSocketClient();
-            LiveFeedbackSocketClient studentClient = new LiveFeedbackSocketClient();
+            SocketClient profClient = new SocketClient();
+            SocketClient studentClient = new SocketClient();
 
             // connect the prof to the quiz form
             Session profSession = ContainerProvider.getWebSocketContainer().connectToServer(

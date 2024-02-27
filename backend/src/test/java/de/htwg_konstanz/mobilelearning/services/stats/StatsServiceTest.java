@@ -12,7 +12,7 @@ import static org.hamcrest.CoreMatchers.is;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 
-import de.htwg_konstanz.mobilelearning.LiveFeedbackSocketClient;
+import de.htwg_konstanz.mobilelearning.SocketClient;
 import de.htwg_konstanz.mobilelearning.MockMongoTestProfile;
 import de.htwg_konstanz.mobilelearning.MockUser;
 import de.htwg_konstanz.mobilelearning.models.Course;
@@ -87,9 +87,9 @@ public class StatsServiceTest {
                 .body(is("Successfully added"));
 
         // create a websocket client for the prof and the students
-        LiveFeedbackSocketClient profClient = new LiveFeedbackSocketClient();
-        LiveFeedbackSocketClient student1Client = new LiveFeedbackSocketClient();
-        LiveFeedbackSocketClient student2Client = new LiveFeedbackSocketClient();
+        SocketClient profClient = new SocketClient();
+        SocketClient student1Client = new SocketClient();
+        SocketClient student2Client = new SocketClient();
 
         try {
             // connect to the websocket
@@ -537,9 +537,9 @@ public class StatsServiceTest {
                 .body(is("Successfully added"));
 
         // create a websocket client for the prof and the students
-        LiveFeedbackSocketClient profClient = new LiveFeedbackSocketClient();
-        LiveFeedbackSocketClient student1Client = new LiveFeedbackSocketClient();
-        LiveFeedbackSocketClient student2Client = new LiveFeedbackSocketClient();
+        SocketClient profClient = new SocketClient();
+        SocketClient student1Client = new SocketClient();
+        SocketClient student2Client = new SocketClient();
 
         try {
             // connect to the websocket

@@ -22,4 +22,20 @@ public class FormShell extends Form {
         this.type = type;
         this.course = course;
     }
+
+    public String getType() {
+        return this.type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    public String getCourse() {
+        return this.course;
+    }
+
+    public void setCourse(String course) {
+        this.course = course;
+    }
 }
