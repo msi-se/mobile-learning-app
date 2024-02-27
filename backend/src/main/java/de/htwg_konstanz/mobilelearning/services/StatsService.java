@@ -96,4 +96,8 @@ public class StatsService {
     public GlobalStats getGlobalStats() {
         return globalStatsRepository.getGlobalStats();
     }
+
+    public void resetGlobalStats() {
+        globalStatsRepository.resetGlobalStats();
+    }
 }

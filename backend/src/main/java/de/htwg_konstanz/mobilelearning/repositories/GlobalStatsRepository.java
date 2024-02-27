@@ -32,4 +32,15 @@ public class GlobalStatsRepository implements PanacheMongoRepository<GlobalStats
             update(currentGlobalStats);
         }
     }
+
+    public void resetGlobalStats() {
+        GlobalStats globalStats = getGlobalStats();
+        globalStats.setTotalUsers(0);
+        globalStats.setTotalCourses(0);
+        globalStats.setTotalFeedbackForms(0);
+        globalStats.setTotalQuizForms(0);
+        globalStats.setCompletedFeedbackForms(0);
+        globalStats.setCompletedQuizForms(0);
+        update(globalStats);
+    }
 }
