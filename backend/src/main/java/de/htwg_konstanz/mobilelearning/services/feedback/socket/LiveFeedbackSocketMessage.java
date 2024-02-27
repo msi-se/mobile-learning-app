@@ -52,4 +52,10 @@ public class LiveFeedbackSocketMessage {
         Gson gson = new GsonBuilder().registerTypeAdapter(ObjectId.class, new ObjectIdTypeAdapter()).create();
         return gson.toJson(this);
     }
+
+    public static LiveFeedbackSocketMessage getByJsonWithForm(String message) {
+        Gson gson = new GsonBuilder().registerTypeAdapter(ObjectId.class, new ObjectIdTypeAdapter()).create();
+        return gson.fromJson(message, LiveFeedbackSocketMessage.class);
+    }
+
 }

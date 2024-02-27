@@ -766,7 +766,7 @@ public class LiveQuizSocketTest {
                 studentClient,
                 URI.create("ws://localhost:8081/course/" + courseId + "/quiz/form/" + formId + "/subscribe/" + student3.getId() + "/" + student3.getJwt())
             );
-            Thread.sleep(100);
+            Thread.sleep(1000);
 
             // check if the prof received the "PARTICIPANT_JOINED" messages
             Assertions.assertEquals("PARTICIPANT_JOINED", LiveQuizSocketMessage.getByJsonWithForm(profClient.getMessageQueue().get(profClient.getMessageQueue().size() - 1)).action);

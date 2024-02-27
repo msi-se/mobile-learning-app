@@ -13,6 +13,7 @@ import org.junit.jupiter.api.TestInfo;
 import de.htwg_konstanz.mobilelearning.Helper;
 import de.htwg_konstanz.mobilelearning.LiveFeedbackSocketClient;
 import de.htwg_konstanz.mobilelearning.MockMongoTestProfile;
+import de.htwg_konstanz.mobilelearning.MockUser;
 import de.htwg_konstanz.mobilelearning.models.Course;
 import de.htwg_konstanz.mobilelearning.models.feedback.FeedbackForm;
 import de.htwg_konstanz.mobilelearning.services.CourseService;
@@ -388,4 +389,112 @@ public class LiveFeedbackSocketTest {
             Assertions.fail(e.getMessage());
         }
     }  
+
+        // test the participate function in combination with the new "WAITING" status
+    // a student should be able to participate in a feedback form
+    // the prof should get a message every time a student joins the feedback form ("PARTICIPANT_JOINED")
+    @Test
+    public void participateInFeedbackForm() {
+
+        // create & get courses
+        List<Course> courses = Helper.createCourse("Prof-1");
+        Course course = courses.get(0);
+
+        // make 1 prof and 3 students
+        MockUser prof = Helper.createMockUser("Prof-1");
+        MockUser student1 = Helper.createMockUser("Student-1");
+        MockUser student2 = Helper.createMockUser("Student-2");
+        MockUser student3 = Helper.createMockUser("Student-3");
+
+        // call the get courses endpoint for each user to update the course-user relation
+        given().header("Authorization", "Bearer " + prof.getJwt()).when().get("/course").then().statusCode(200);
+        given().header("Authorization", "Bearer " + student1.getJwt()).when().get("/course").then().statusCode(200);
+        given().header("Authorization", "Bearer " + student2.getJwt()).when().get("/course").then().statusCode(200);
+        given().header("Authorization", "Bearer " + student3.getJwt()).when().get("/course").then().statusCode(200);
+
+        // get course and feedback form id
+        String courseId = course.getId().toString();
+        String formId = course.getFeedbackForms().get(0).getId().toString();
+
+        // try catch block to handle exceptions of websocket connection
+        try {
+
+            // create websocket clients
+            LiveFeedbackSocketClient profClient = new LiveFeedbackSocketClient();
+            LiveFeedbackSocketClient studentClient = new LiveFeedbackSocketClient();
+
+            // connect the prof to the feedback form
+            Session profSession = ContainerProvider.getWebSocketContainer().connectToServer(
+                profClient,
+                URI.create("ws://localhost:8081/course/" + courseId + "/feedback/form/" + formId + "/subscribe/" + prof.getId() + "/" + prof.getJwt())
+            );
+
+            // set the form status to "WAITING" and check if it was set
+            profClient.sendMessage("""
+                {
+                    "action": "CHANGE_FORM_STATUS",
+                    "formStatus": "WAITING"
+                }
+            """);
+            Thread.sleep(100);
+            Assertions.assertEquals("WAITING", courseService.getCourse(courseId).getFeedbackForms().get(0).getStatus().toString());
+            Assertions.assertEquals(0, courseService.getCourse(courseId).getFeedbackForms().get(0).getParticipants().size());
+
+            // connect the students to the feedback form
+            Session studentSession1 = ContainerProvider.getWebSocketContainer().connectToServer(
+                studentClient,
+                URI.create("ws://localhost:8081/course/" + courseId + "/feedback/form/" + formId + "/subscribe/" + student1.getId() + "/" + student1.getJwt())
+            );
+            Thread.sleep(100);
+            Assertions.assertEquals(1, courseService.getCourse(courseId).getFeedbackForms().get(0).getParticipants().size());
+
+            Session studentSession2 = ContainerProvider.getWebSocketContainer().connectToServer(
+                studentClient,
+                URI.create("ws://localhost:8081/course/" + courseId + "/feedback/form/" + formId + "/subscribe/" + student2.getId() + "/" + student2.getJwt())
+            );
+            Thread.sleep(100);
+            Assertions.assertEquals(2, courseService.getCourse(courseId).getFeedbackForms().get(0).getParticipants().size());
+            Session studentSession3 = ContainerProvider.getWebSocketContainer().connectToServer(
+                studentClient,
+                URI.create("ws://localhost:8081/course/" + courseId + "/feedback/form/" + formId + "/subscribe/" + student3.getId() + "/" + student3.getJwt())
+            );
+            Thread.sleep(100);
+            Assertions.assertEquals(3, courseService.getCourse(courseId).getFeedbackForms().get(0).getParticipants().size());   
+
+            // check if the prof received the "PARTICIPANT_JOINED" messages
+            Assertions.assertEquals("PARTICIPANT_JOINED", LiveFeedbackSocketMessage.getByJsonWithForm(profClient.getMessageQueue().get(profClient.getMessageQueue().size() - 1)).action);
+            Assertions.assertEquals("PARTICIPANT_JOINED", LiveFeedbackSocketMessage.getByJsonWithForm(profClient.getMessageQueue().get(profClient.getMessageQueue().size() - 2)).action);
+            Assertions.assertEquals("PARTICIPANT_JOINED", LiveFeedbackSocketMessage.getByJsonWithForm(profClient.getMessageQueue().get(profClient.getMessageQueue().size() - 3)).action);
+            Assertions.assertEquals("FORM_STATUS_CHANGED", LiveFeedbackSocketMessage.getByJsonWithForm(profClient.getMessageQueue().get(profClient.getMessageQueue().size() - 4)).action);
+            
+            // check if the prof gets the right amount of participants in the last message
+            Assertions.assertEquals(3, LiveFeedbackSocketMessage.getByJsonWithForm(profClient.getMessageQueue().get(profClient.getMessageQueue().size() - 1)).form.participants.size());
+
+            // change the form status to "STARTED" and check if it was set
+            profClient.sendMessage("""
+                {
+                    "action": "CHANGE_FORM_STATUS",
+                    "formStatus": "STARTED"
+                }
+            """);
+            Thread.sleep(100);
+            Assertions.assertEquals("STARTED", courseService.getCourse(courseId).getFeedbackForms().get(0).getStatus().toString());
+
+            // check if the students received the "FORM_STATUS_CHANGED" message
+            Assertions.assertEquals("FORM_STATUS_CHANGED", LiveFeedbackSocketMessage.getByJsonWithForm(studentClient.getMessageQueue().get(studentClient.getMessageQueue().size() - 1)).action);
+            Assertions.assertEquals("FORM_STATUS_CHANGED", LiveFeedbackSocketMessage.getByJsonWithForm(studentClient.getMessageQueue().get(studentClient.getMessageQueue().size() - 1)).action);
+            Assertions.assertEquals("FORM_STATUS_CHANGED", LiveFeedbackSocketMessage.getByJsonWithForm(studentClient.getMessageQueue().get(studentClient.getMessageQueue().size() - 1)).action);
+
+            // close the websocket connections
+            profSession.close();
+            studentSession1.close();
+            studentSession2.close();
+            studentSession3.close();
+
+
+        } catch (Exception e) {
+            System.out.println(e);
+            Assertions.fail(e.getMessage());
+        }
+    }
 }
