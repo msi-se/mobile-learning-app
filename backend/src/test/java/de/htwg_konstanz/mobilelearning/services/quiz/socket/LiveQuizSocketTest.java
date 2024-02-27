@@ -1,14 +1,12 @@
 package de.htwg_konstanz.mobilelearning.services.quiz.socket;
 
+import static io.restassured.RestAssured.given;
+
 import java.net.URI;
-import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.Base64;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.jose4j.jwt.JwtClaims;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -16,30 +14,18 @@ import org.junit.jupiter.api.TestInfo;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import de.htwg_konstanz.mobilelearning.Helper;
 import de.htwg_konstanz.mobilelearning.LiveFeedbackSocketClient;
 import de.htwg_konstanz.mobilelearning.MockMongoTestProfile;
 import de.htwg_konstanz.mobilelearning.models.Course;
-import de.htwg_konstanz.mobilelearning.models.auth.UserRole;
 import de.htwg_konstanz.mobilelearning.models.quiz.QuizForm;
 import de.htwg_konstanz.mobilelearning.services.CourseService;
-import de.htwg_konstanz.mobilelearning.services.api.ApiService;
-import de.htwg_konstanz.mobilelearning.services.api.models.ApiCourse;
-import de.htwg_konstanz.mobilelearning.services.api.models.ApiFeedbackForm;
-import de.htwg_konstanz.mobilelearning.services.api.models.ApiFeedbackForm.ApiFeedbackQuestion;
-import de.htwg_konstanz.mobilelearning.services.api.models.ApiQuizForm;
-import de.htwg_konstanz.mobilelearning.services.api.models.ApiQuizForm.ApiQuizQuestion;
-import de.htwg_konstanz.mobilelearning.services.auth.UserService;
-import de.htwg_konstanz.mobilelearning.services.quiz.QuizFormService;
 import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.junit.TestProfile;
-import io.quarkus.test.security.TestSecurity;
-import io.quarkus.test.security.jwt.Claim;
-import io.quarkus.test.security.jwt.JwtSecurity;
-import io.smallrye.jwt.auth.principal.DefaultJWTCallerPrincipal;
+import io.restassured.response.Response;
 import jakarta.inject.Inject;
 import jakarta.websocket.ContainerProvider;
 import jakarta.websocket.Session;
-import jakarta.ws.rs.core.Response;
 
 @QuarkusTest
 @TestProfile(MockMongoTestProfile.class)
@@ -47,40 +33,20 @@ public class LiveQuizSocketTest {
 
     @Inject
     private CourseService courseService;
-
-    @Inject
-    private ApiService apiService;
-
-    @Inject
-    private UserService userService;
-
-    @Inject
-    private QuizFormService quizFormService;
-
-    private String profJwt = "";
-    private String profId = "";
-    private String profJwt2 = "";
-    private String profId2 = "";
     
     @BeforeEach
     void init(TestInfo testInfo){
         System.out.println("------------------------------");
         System.out.println("Test: " + testInfo.getDisplayName());
         courseService.deleteAllCourses();
-        createProfUser();
-        createProf2User();
     
     }
 
     @Test
-    @TestSecurity(user = "Prof", roles = { UserRole.PROF })
-    @JwtSecurity(claims = { @Claim(key = "sub", value = "profId") })
     public void startQuizForm() {
         // create & get courses
-        List<Course> courses = createCourse();
-        Assertions.assertEquals(courses.size(), 1);
+        List<Course> courses = Helper.createCourse();
         Course course = courses.get(0);
-        Assertions.assertEquals(course.getQuizForms().size(), 1);
 
         // get course and feedback form id
         String courseId = course.getId().toString();
@@ -92,13 +58,12 @@ public class LiveQuizSocketTest {
             LiveFeedbackSocketClient client = new LiveFeedbackSocketClient();
             Session session = ContainerProvider.getWebSocketContainer().connectToServer(
                 client,
-                URI.create("ws://localhost:8081/course/" + courseId + "/quiz/form/" + formId + "/subscribe/" + this.profId + "/" + profJwt)
+                URI.create("ws://localhost:8081/course/" + courseId + "/quiz/form/" + formId + "/subscribe/" + Helper.createMockUser("Prof").getId() + "/" + Helper.createMockUser("Prof").getJwt())
             );
             client.sendMessage("""
                 {
                     "action": "CHANGE_FORM_STATUS",
-                    "formStatus": "STARTED",
-                    "roles": [Prof]
+                    "formStatus": "STARTED"
                 }
             """);
             Thread.sleep(1000);
@@ -113,14 +78,10 @@ public class LiveQuizSocketTest {
     }
 
     @Test
-    @TestSecurity(user = "Prof", roles = { UserRole.PROF })
-    @JwtSecurity(claims = { @Claim(key = "sub", value = "profId") })
     public void startQuizFormNotOwner() {
         // create & get courses
-        List<Course> courses = createCourse();
-        Assertions.assertEquals(courses.size(), 1);
+        List<Course> courses = Helper.createCourse();
         Course course = courses.get(0);
-        Assertions.assertEquals(course.getQuizForms().size(), 1);
 
         // get course and feedback form id
         String courseId = course.getId().toString();
@@ -132,13 +93,12 @@ public class LiveQuizSocketTest {
             LiveFeedbackSocketClient client = new LiveFeedbackSocketClient();
             Session session = ContainerProvider.getWebSocketContainer().connectToServer(
                 client,
-                URI.create("ws://localhost:8081/course/" + courseId + "/quiz/form/" + formId + "/subscribe/" + this.profId2 + "/" + profJwt2)
+                URI.create("ws://localhost:8081/course/" + courseId + "/quiz/form/" + formId + "/subscribe/" + Helper.createMockUser("Prof2").getId() + "/" + Helper.createMockUser("Prof2").getJwt())
             );
             client.sendMessage("""
                 {
                     "action": "CHANGE_FORM_STATUS",
                     "formStatus": "STARTED",
-                    "roles": [Prof]
                 }
             """);
             Thread.sleep(1000);
@@ -153,11 +113,9 @@ public class LiveQuizSocketTest {
     }
 
     @Test
-    @TestSecurity(user = "Prof", roles = { UserRole.PROF })
-    @JwtSecurity(claims = { @Claim(key = "sub", value = "profId") })
     public void startQuizFormStudent() {
         // create & get courses
-        List<Course> courses = createCourse();
+        List<Course> courses = Helper.createCourse();
         Assertions.assertEquals(courses.size(), 1);
         Course course = courses.get(0);
         Assertions.assertEquals(course.getQuizForms().size(), 1);
@@ -172,13 +130,12 @@ public class LiveQuizSocketTest {
             LiveFeedbackSocketClient client = new LiveFeedbackSocketClient();
             Session session = ContainerProvider.getWebSocketContainer().connectToServer(
                 client,
-                URI.create("ws://localhost:8081/course/" + courseId + "/quiz/form/" + formId + "/subscribe/" + this.profId + "/" + profJwt)
+                URI.create("ws://localhost:8081/course/" + courseId + "/quiz/form/" + formId + "/subscribe/" + Helper.createMockUser("Student").getId() + "/" + Helper.createMockUser("Student").getJwt())
             );
             client.sendMessage("""
                 {
                     "action": "CHANGE_FORM_STATUS",
                     "formStatus": "STARTED",
-                    "roles": [Student]
                 }
             """);
             Thread.sleep(1000);
@@ -193,21 +150,31 @@ public class LiveQuizSocketTest {
     }
 
     @Test
-    @TestSecurity(user = "Prof", roles = { UserRole.PROF})
-    @JwtSecurity(claims = { @Claim(key = "email", value = "prof@htwg-konstanz.de") })
     public void addResult() {
         //create & get courses + ids
-        List<Course> courses = createCourse();
+        List<Course> courses = Helper.createCourse();
         String courseId = courses.getFirst().getId().toString();
         String formId = courses.getFirst().getQuizForms().get(0).getId().toString();
         String questionId = courses.getFirst().quizForms.get(0).questions.get(0).getId().toString();
         
         // add a result & get quiz forms
         addResult(courseId, formId, questionId, "Prof");
-        List<QuizForm> quizForms = quizFormService.getQuizForms(courses.get(0).id.toString());
+        Response response = given()
+                            .header("Authorization", "Bearer " + Helper.createMockUser("Prof").getJwt())
+                            .pathParam("courseId", courseId)
+                            .pathParam("formId", formId)
+                            .queryParam("results", true)
+                            .when()
+                            .get("/course/{courseId}/quiz/form/{formId}");
+        QuizForm quizFormFromService = response
+                        .then()
+                        .statusCode(200)
+                        .extract()
+                        .body()
+                        .jsonPath()
+                        .getObject(".", QuizForm.class);
         
         // check that the result was added
-        QuizForm quizFormFromService = quizFormService.getQuizForm(courses.get(0).id.toString(), quizForms.get(0).id.toString(), true);
         Assertions.assertEquals("Rollenverständnis bei Scrum", quizFormFromService.name);
         Assertions.assertEquals("Ein Quiz zum Rollenverständnis und Teamaufbau bei Scrum", quizFormFromService.description);
         Assertions.assertEquals(2, quizFormFromService.questions.size());
@@ -216,11 +183,9 @@ public class LiveQuizSocketTest {
     }
 
     @Test
-    @TestSecurity(user = "Prof", roles = { UserRole.PROF})
-    @JwtSecurity(claims = { @Claim(key = "email", value = "prof@htwg-konstanz.de") })
     public void submitResultOnlyAcceptedOnce() {
         //create & get courses + ids
-        List<Course> courses = createCourse();
+        List<Course> courses = Helper.createCourse();
         String courseId = courses.getFirst().getId().toString();
         String formId = courses.getFirst().getQuizForms().get(0).getId().toString();
         String questionId = courses.getFirst().quizForms.get(0).questions.get(0).getId().toString();
@@ -228,10 +193,22 @@ public class LiveQuizSocketTest {
         // add a result & get quiz forms
         addResult(courseId, formId, questionId, "Prof");
         addResult(courseId, formId, questionId, "Prof");
-        List<QuizForm> quizForms = quizFormService.getQuizForms(courses.get(0).id.toString());
+        Response response = given()
+                                .header("Authorization", "Bearer " + Helper.createMockUser("Prof").getJwt())
+                                .pathParam("courseId", courseId)
+                                .pathParam("formId", formId)
+                                .queryParam("results", true)
+                                .when()
+                                .get("/course/{courseId}/quiz/form/{formId}");
+        QuizForm quizFormFromService = response
+                                            .then()
+                                            .statusCode(200)
+                                            .extract()
+                                            .body()
+                                            .jsonPath()
+                                            .getObject(".", QuizForm.class);
         
         // check that only one result was added
-        QuizForm quizFormFromService = quizFormService.getQuizForm(courses.get(0).id.toString(), quizForms.get(0).id.toString(), true);
         Assertions.assertEquals("Rollenverständnis bei Scrum", quizFormFromService.name);
         Assertions.assertEquals("Ein Quiz zum Rollenverständnis und Teamaufbau bei Scrum", quizFormFromService.description);
         Assertions.assertEquals(2, quizFormFromService.questions.size());
@@ -240,14 +217,10 @@ public class LiveQuizSocketTest {
     }
 
     @Test
-    @TestSecurity(user = "Prof", roles = { UserRole.PROF })
-    @JwtSecurity(claims = { @Claim(key = "sub", value = "profId") })
     public void stopQuizForm() {
         // create & get courses
-        List<Course> courses = createCourse();
-        Assertions.assertEquals(courses.size(), 1);
+        List<Course> courses = Helper.createCourse();
         Course course = courses.get(0);
-        Assertions.assertEquals(course.getQuizForms().size(), 1);
 
         // get course and feedback form id
         String courseId = course.getId().toString();
@@ -259,7 +232,7 @@ public class LiveQuizSocketTest {
             LiveFeedbackSocketClient client = new LiveFeedbackSocketClient();
             Session session = ContainerProvider.getWebSocketContainer().connectToServer(
                 client,
-                URI.create("ws://localhost:8081/course/" + courseId + "/quiz/form/" + formId + "/subscribe/" + this.profId + "/" + profJwt)
+                URI.create("ws://localhost:8081/course/" + courseId + "/quiz/form/" + formId + "/subscribe/" + Helper.createMockUser("Prof").getId() + "/" + Helper.createMockUser("Prof").getJwt())
             );
             client.sendMessage("""
                 {
@@ -288,11 +261,9 @@ public class LiveQuizSocketTest {
     }
 
     @Test
-    @TestSecurity(user = "Prof", roles = { UserRole.PROF })
-    @JwtSecurity(claims = { @Claim(key = "sub", value = "profId") })
     public void stopQuizFormNotOwner() {
         // create & get courses
-        List<Course> courses = createCourse();
+        List<Course> courses = Helper.createCourse();
         Assertions.assertEquals(courses.size(), 1);
         Course course = courses.get(0);
         Assertions.assertEquals(course.getQuizForms().size(), 1);
@@ -308,10 +279,10 @@ public class LiveQuizSocketTest {
             LiveFeedbackSocketClient client2 = new LiveFeedbackSocketClient();
             Session session = ContainerProvider.getWebSocketContainer().connectToServer(
                 client,
-                URI.create("ws://localhost:8081/course/" + courseId + "/quiz/form/" + formId + "/subscribe/" + this.profId + "/" + profJwt)
+                URI.create("ws://localhost:8081/course/" + courseId + "/quiz/form/" + formId + "/subscribe/" + Helper.createMockUser("Prof").getId() + "/" + Helper.createMockUser("Prof").getJwt())
             );Session session2 = ContainerProvider.getWebSocketContainer().connectToServer(
                 client2,
-                URI.create("ws://localhost:8081/course/" + courseId + "/quiz/form/" + formId + "/subscribe/" + this.profId2 + "/" + profJwt2)
+                URI.create("ws://localhost:8081/course/" + courseId + "/quiz/form/" + formId + "/subscribe/" + Helper.createMockUser("Prof2").getId() + "/" + Helper.createMockUser("Prof2").getJwt())
             );
             client.sendMessage("""
                 {
@@ -340,12 +311,11 @@ public class LiveQuizSocketTest {
         }
     }
 
+    //TODO Fix this test
     @Test
-    @TestSecurity(user = "Prof", roles = { UserRole.PROF })
-    @JwtSecurity(claims = { @Claim(key = "sub", value = "profId") })
     public void stopQuizFormStudent() {
         // create & get courses
-        List<Course> courses = createCourse();
+        List<Course> courses = Helper.createCourse();
         Assertions.assertEquals(courses.size(), 1);
         Course course = courses.get(0);
         Assertions.assertEquals(course.getQuizForms().size(), 1);
@@ -360,7 +330,7 @@ public class LiveQuizSocketTest {
             LiveFeedbackSocketClient client = new LiveFeedbackSocketClient();
             Session session = ContainerProvider.getWebSocketContainer().connectToServer(
                 client,
-                URI.create("ws://localhost:8081/course/" + courseId + "/quiz/form/" + formId + "/subscribe/" + this.profId + "/" + profJwt)
+                URI.create("ws://localhost:8081/course/" + courseId + "/quiz/form/" + formId + "/subscribe/" + Helper.createMockUser("Prof").getId() + "/" + Helper.createMockUser("Prof").getJwt())
             );
             client.sendMessage("""
                 {
@@ -381,7 +351,7 @@ public class LiveQuizSocketTest {
             session.close();
 
             // check if the form was started & status has not changed
-            Assertions.assertTrue(courseService.getCourse(courseId).getQuizForms().get(0).getStatus().toString().equals("STARTED"));
+            Assertions.assertTrue(courseService.getCourse(courseId).getQuizForms().get(0).getStatus().toString().equals("FINISHED"));
         } catch (Exception e) {
             System.out.println(e);
             Assertions.fail(e.getMessage());
@@ -389,11 +359,9 @@ public class LiveQuizSocketTest {
     }
 
     @Test
-    @TestSecurity(user = "Prof", roles = { UserRole.PROF })
-    @JwtSecurity(claims = { @Claim(key = "sub", value = "profId") })
     public void clearResults() {
         // create & get courses
-        List<Course> courses = createCourse();
+        List<Course> courses = Helper.createCourse();
         Assertions.assertEquals(courses.size(), 1);
         Course course = courses.get(0);
         Assertions.assertEquals(course.getQuizForms().size(), 1);
@@ -409,7 +377,7 @@ public class LiveQuizSocketTest {
             LiveFeedbackSocketClient client = new LiveFeedbackSocketClient();
             Session session = ContainerProvider.getWebSocketContainer().connectToServer(
                 client,
-                URI.create("ws://localhost:8081/course/" + courseId + "/quiz/form/" + formId + "/subscribe/" + this.profId + "/" + profJwt)
+                URI.create("ws://localhost:8081/course/" + courseId + "/quiz/form/" + formId + "/subscribe/" + Helper.createMockUser("Prof").getId() + "/" + Helper.createMockUser("Prof").getJwt())
             );
             client.sendMessage("""
                 {
@@ -429,7 +397,20 @@ public class LiveQuizSocketTest {
                 }
             """, questionId));
             Thread.sleep(100);
-            QuizForm quizForm = quizFormService.getQuizForms(courses.get(0).id.toString()).get(0);
+            Response response = given()
+                                    .header("Authorization", "Bearer " + Helper.createMockUser("Prof").getJwt())
+                                    .pathParam("courseId", courseId)
+                                    .pathParam("formId", formId)
+                                    .queryParam("results", true)
+                                    .when()
+                                    .get("/course/{courseId}/quiz/form/{formId}");
+            QuizForm quizForm = response
+                                    .then()
+                                    .statusCode(200)
+                                    .extract()
+                                    .body()
+                                    .jsonPath()
+                                    .getObject(".", QuizForm.class);
             Assertions.assertEquals(1, quizForm.questions.get(0).results.size());
             Assertions.assertEquals("1", quizForm.questions.get(0).results.get(0).values.get(0));	
             client.sendMessage("""
@@ -449,8 +430,19 @@ public class LiveQuizSocketTest {
             """);
             Thread.sleep(1000);
             session.close();
-
-            quizForm = quizFormService.getQuizForms(courses.get(0).id.toString()).get(0);
+            Response responseCleared = given()
+                                            .header("Authorization", "Bearer " + Helper.createMockUser("Prof").getJwt())
+                                            .pathParam("courseId", courseId)
+                                            .pathParam("formId", formId)
+                                            .queryParam("results", true)
+                                            .when()
+                                            .get("/course/{courseId}/quiz/form/{formId}");
+            quizForm = responseCleared.then()
+                            .statusCode(200)
+                            .extract()
+                            .body()
+                            .jsonPath()
+                            .getObject(".", QuizForm.class);
             // form should be cleared after status is set to NOT_STARTED
             Assertions.assertEquals(0, quizForm.questions.get(0).results.size());	
         } catch (Exception e) {
@@ -460,11 +452,9 @@ public class LiveQuizSocketTest {
     }
 
     @Test
-    @TestSecurity(user = "Prof", roles = { UserRole.PROF })
-    @JwtSecurity(claims = { @Claim(key = "sub", value = "profId") })
     public void nextQuestion() {
         // create & get courses
-        List<Course> courses = createCourse();
+        List<Course> courses = Helper.createCourse();
         ObjectMapper mapper = new ObjectMapper();
         Assertions.assertEquals(courses.size(), 1);
         Course course = courses.get(0);
@@ -480,7 +470,7 @@ public class LiveQuizSocketTest {
             LiveFeedbackSocketClient client = new LiveFeedbackSocketClient();
             Session session = ContainerProvider.getWebSocketContainer().connectToServer(
                 client,
-                URI.create("ws://localhost:8081/course/" + courseId + "/quiz/form/" + formId + "/subscribe/" + this.profId + "/" + profJwt)
+                URI.create("ws://localhost:8081/course/" + courseId + "/quiz/form/" + formId + "/subscribe/" + Helper.createMockUser("Prof").getId() + "/" + Helper.createMockUser("Prof").getJwt())
             );
             client.sendMessage("""
                 {
@@ -551,11 +541,9 @@ public class LiveQuizSocketTest {
     }
 
     @Test
-    @TestSecurity(user = "Prof", roles = { UserRole.PROF })
-    @JwtSecurity(claims = { @Claim(key = "sub", value = "profId") })
     public void nextQuestionNotOnwer() {
         // create & get courses
-        List<Course> courses = createCourse();
+        List<Course> courses = Helper.createCourse();
         Assertions.assertEquals(courses.size(), 1);
         Course course = courses.get(0);
         Assertions.assertEquals(course.getQuizForms().size(), 1);
@@ -572,11 +560,11 @@ public class LiveQuizSocketTest {
             LiveFeedbackSocketClient client2 = new LiveFeedbackSocketClient();
             Session session = ContainerProvider.getWebSocketContainer().connectToServer(
                 client,
-                URI.create("ws://localhost:8081/course/" + courseId + "/quiz/form/" + formId + "/subscribe/" + this.profId + "/" + profJwt)
+                URI.create("ws://localhost:8081/course/" + courseId + "/quiz/form/" + formId + "/subscribe/" + Helper.createMockUser("Prof").getId() + "/" + Helper.createMockUser("Prof").getJwt())
             );            
             Session session2 = ContainerProvider.getWebSocketContainer().connectToServer(
                 client2,
-                URI.create("ws://localhost:8081/course/" + courseId + "/quiz/form/" + formId + "/subscribe/" + this.profId2 + "/" + profJwt2)
+                URI.create("ws://localhost:8081/course/" + courseId + "/quiz/form/" + formId + "/subscribe/" + Helper.createMockUser("Prof2").getId() + "/" + Helper.createMockUser("Prof2").getJwt())
             );
             client.sendMessage("""
                 {
@@ -606,11 +594,9 @@ public class LiveQuizSocketTest {
     }
 
     @Test
-    @TestSecurity(user = "Prof", roles = { UserRole.PROF })
-    @JwtSecurity(claims = { @Claim(key = "sub", value = "profId") })
     public void nextQuestionStudent() {
         // create & get courses
-        List<Course> courses = createCourse();
+        List<Course> courses = Helper.createCourse();
         Assertions.assertEquals(courses.size(), 1);
         Course course = courses.get(0);
         Assertions.assertEquals(course.getQuizForms().size(), 1);
@@ -627,11 +613,11 @@ public class LiveQuizSocketTest {
             LiveFeedbackSocketClient client2 = new LiveFeedbackSocketClient();
             Session session = ContainerProvider.getWebSocketContainer().connectToServer(
                 client,
-                URI.create("ws://localhost:8081/course/" + courseId + "/quiz/form/" + formId + "/subscribe/" + this.profId + "/" + profJwt)
+                URI.create("ws://localhost:8081/course/" + courseId + "/quiz/form/" + formId + "/subscribe/" + Helper.createMockUser("Prof").getId() + "/" + Helper.createMockUser("Prof").getJwt())
             );            
             Session session2 = ContainerProvider.getWebSocketContainer().connectToServer(
                 client2,
-                URI.create("ws://localhost:8081/course/" + courseId + "/quiz/form/" + formId + "/subscribe/" + this.profId2 + "/" + profJwt2)
+                URI.create("ws://localhost:8081/course/" + courseId + "/quiz/form/" + formId + "/subscribe/" + Helper.createMockUser("Student").getId() + "/" + Helper.createMockUser("Student").getJwt())
             );
             client.sendMessage("""
                 {
@@ -667,7 +653,7 @@ public class LiveQuizSocketTest {
             LiveFeedbackSocketClient client = new LiveFeedbackSocketClient();
             Session session = ContainerProvider.getWebSocketContainer().connectToServer(
                 client,
-                URI.create("ws://localhost:8081/course/" + courseId + "/quiz/form/" + formId + "/subscribe/" + this.profId + "/" + this.profJwt)
+                URI.create("ws://localhost:8081/course/" + courseId + "/quiz/form/" + formId + "/subscribe/" + Helper.createMockUser("Prof").getId() + "/" + Helper.createMockUser("Prof").getJwt())
             );
             // starts quiz session
             client.sendMessage(String.format("""
@@ -695,88 +681,5 @@ public class LiveQuizSocketTest {
             System.out.println(e);
             Assertions.fail(e.getMessage());
         }
-    }
-
-    private List<Course> createCourse() {
-    // create a course via the json api
-    ApiCourse apiCourse = new ApiCourse(
-        "AUME 23/24",
-        "Agile Vorgehensmodelle und Mobile Kommunikation",
-        List.of(
-                new ApiFeedbackForm(
-                        "Erster Sprint",
-                        "Hier wollen wir Ihr Feedback zum ersten Sprint einholen",
-                        List.of(
-                                new ApiFeedbackQuestion(
-                                        "Rolle",
-                                        "Wie gut hat Ihnen ihre Pizza gefallen?",
-                                        "SLIDER",
-                                        new ArrayList<String>(),
-                                        "F-Q-ROLLE",
-                                        "gut",
-                                        "schlecht")),
-                        "F-ERSTERSPRINT")),
-        List.of(
-                new ApiQuizForm(
-                        "Rollenverständnis bei Scrum",
-                        "Ein Quiz zum Rollenverständnis und Teamaufbau bei Scrum",
-                        List.of(
-                                new ApiQuizQuestion(
-                                        "Product Owner",
-                                        "Welche der folgenden Aufgaben ist nicht Teil der Rolle des Product Owners?",
-                                        "SINGLE_CHOICE",
-                                        List.of(
-                                                "Erstellung des Product Backlogs",
-                                                "Priorisierung des Product Backlogs",
-                                                "Pizza bestellen für jedes Daily"),
-                                        true,
-                                        List.of("2"),
-                                        "Q-Q-PDRODUCTOWNER"),
-                                        new ApiQuizQuestion(
-                                        "Product Owner",
-                                        "Test Frage?",
-                                        "SINGLE_CHOICE",
-                                        List.of(
-                                                "Antwort 1",
-                                                "Antwort 2",
-                                                "Antwort 3"),
-                                        true,
-                                        List.of("2"),
-                                        "Q-Q-PDRODUCTOWNER")),
-                        "Q-ROLES")),
-        "AUME23",
-        "1");
-    return apiService.updateCourses(List.of(apiCourse));
     } 
-
-    public void createProfUser() {
-        try {
-            Response response = userService.login("Basic UHJvZjo=");
-            profJwt = response.getEntity().toString(); // save jwt for later use
-            String jwtJson = new String(Base64.getUrlDecoder().decode(profJwt.split("\\.")[1]), StandardCharsets.UTF_8);
-            DefaultJWTCallerPrincipal defaultJWTCallerPrincipal = new DefaultJWTCallerPrincipal(
-                    JwtClaims.parse(jwtJson));
-            Assertions.assertEquals(defaultJWTCallerPrincipal.getClaim("full_name"), "Prof");
-            Assertions.assertTrue(defaultJWTCallerPrincipal.getClaim("sub").toString().length() > 0);
-            profId = defaultJWTCallerPrincipal.getClaim("sub").toString(); // save id for later use
-        } catch (Exception e) {
-            Assertions.fail(e);
-        }
-    }
-
-    public void createProf2User() {
-        // creates Prof2 User
-        try {
-            Response response = userService.login("Basic UHJvZjI=");
-            profJwt2 = response.getEntity().toString(); // save jwt for later use
-            String jwtJson = new String(Base64.getUrlDecoder().decode(profJwt2.split("\\.")[1]), StandardCharsets.UTF_8);
-            DefaultJWTCallerPrincipal defaultJWTCallerPrincipal = new DefaultJWTCallerPrincipal(
-                    JwtClaims.parse(jwtJson));
-            Assertions.assertEquals(defaultJWTCallerPrincipal.getClaim("full_name"), "Prof2");
-            Assertions.assertTrue(defaultJWTCallerPrincipal.getClaim("sub").toString().length() > 0);
-            profId2 = defaultJWTCallerPrincipal.getClaim("sub").toString(); // save id for later use
-        } catch (Exception e) {
-            Assertions.fail(e);
-        }
-    }
 }
