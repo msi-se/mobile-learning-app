@@ -86,13 +86,10 @@ public class QuizFormServiceTest {
                         .getObject(".", QuizForm.class);
 
         // Assert get quiz form without results
-        Assertions.assertEquals("Rollenverständnis bei Scrum",
-                quizFormFromService.name);
-        Assertions.assertEquals("Ein Quiz zum Rollenverständnis und Teamaufbau bei Scrum",
-                quizFormFromService.description);
-        Assertions.assertEquals(1, quizFormFromService.questions.size());
-        Assertions.assertEquals(0,
-                quizFormFromService.questions.get(0).results.size());
+        Assertions.assertEquals("Rollenverständnis bei Scrum", quizFormFromService.name);
+        Assertions.assertEquals("Ein Quiz zum Rollenverständnis und Teamaufbau bei Scrum", quizFormFromService.description);
+        Assertions.assertEquals(2, quizFormFromService.questions.size());
+        Assertions.assertEquals(0, quizFormFromService.questions.get(0).results.size());
     }
 
     @Test
@@ -121,15 +118,11 @@ public class QuizFormServiceTest {
                                         .getObject(".", QuizForm.class);
 
         // Assert get quiz form without results
-        Assertions.assertEquals("Rollenverständnis bei Scrum",
-                quizFormFromService.name);
-        Assertions.assertEquals("Ein Quiz zum Rollenverständnis und Teamaufbau bei Scrum",
-                quizFormFromService.description);
-        Assertions.assertEquals(1, quizFormFromService.questions.size());
-        Assertions.assertEquals(1,
-                quizFormFromService.questions.get(0).results.size());
-        Assertions.assertEquals("1",
-                quizFormFromService.questions.get(0).results.get(0).values.get(0));
+        Assertions.assertEquals("Rollenverständnis bei Scrum", quizFormFromService.name);
+        Assertions.assertEquals("Ein Quiz zum Rollenverständnis und Teamaufbau bei Scrum", quizFormFromService.description);
+        Assertions.assertEquals(2, quizFormFromService.questions.size());
+        Assertions.assertEquals(1, quizFormFromService.questions.get(0).results.size());
+        Assertions.assertEquals("1", quizFormFromService.questions.get(0).results.get(0).values.get(0));
     }
 
     @Test

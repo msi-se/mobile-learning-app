@@ -62,7 +62,19 @@ public class Helper {
                                                         "Pizza bestellen für jedes Daily"),
                                                 true,
                                                 List.of("2"),
-                                                "Q-Q-PDRODUCTOWNER")),
+                                                "Q-Q-PDRODUCTOWNER"),
+                                                
+                                        new ApiQuizQuestion(
+                                                "Product Owner",
+                                                "Test Frage?",
+                                                "SINGLE_CHOICE",
+                                                List.of(
+                                                        "Antwort 1",
+                                                        "Antwort 2",
+                                                        "Antwort 3"),
+                                                true,
+                                                List.of("2"),
+                                                "Q-Q-PDRODUCTOWNER")),                                        
                                 "Q-ROLES")),
                 "AUME23",
                 "1");
