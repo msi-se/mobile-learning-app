@@ -35,8 +35,6 @@ class HomeTab extends StatefulWidget {
 
 class _HomeTabState extends State<HomeTab> with TickerProviderStateMixin {
   bool _loading = true;
-  bool _isSmallPhone = false;
-  bool _isTablet = false;
 
   @override
   void initState() {
@@ -44,12 +42,10 @@ class _HomeTabState extends State<HomeTab> with TickerProviderStateMixin {
     setState(() {
       _loading = false;
     });
-    
   }
 
   @override
   Widget build(BuildContext context) {
-    final colors = Theme.of(context).colorScheme;
     final pages = ['/test', '/menu', '/test', '/test'];
     final svgImages = [
       events,
@@ -58,9 +54,9 @@ class _HomeTabState extends State<HomeTab> with TickerProviderStateMixin {
       analytics,
     ];
     final texts = ['Events', 'Mensa', 'LSF', 'Noten'];
-    
+
     var screenWidth = MediaQuery.of(context).size.width;
-    int crossAxisCount = screenWidth > 800 ? 4 : 2; 
+    int crossAxisCount = screenWidth > 800 ? 4 : 2;
 
     if (_loading) {
       return const Center(
@@ -76,11 +72,11 @@ class _HomeTabState extends State<HomeTab> with TickerProviderStateMixin {
               Padding(
                 padding: const EdgeInsets.all(16),
                 child: GridView.builder(
-                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: crossAxisCount,
-                  crossAxisSpacing: 10,
-                  mainAxisSpacing: 10,
-                  childAspectRatio: 1,
+                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: crossAxisCount,
+                    crossAxisSpacing: 10,
+                    mainAxisSpacing: 10,
+                    childAspectRatio: 1,
                   ),
                   itemCount: 4,
                   primary: false,
@@ -95,9 +91,8 @@ class _HomeTabState extends State<HomeTab> with TickerProviderStateMixin {
                 ),
               ),
               const Padding(
-                padding: EdgeInsets.all(16), 
-                child: DashboardStatisticsWidget()
-              ),
+                  padding: EdgeInsets.all(16),
+                  child: DashboardStatisticsWidget()),
             ],
           ),
         ),
