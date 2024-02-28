@@ -99,7 +99,7 @@ public class LiveQuizSocketTest {
             client.sendMessage("""
                 {
                     "action": "CHANGE_FORM_STATUS",
-                    "formStatus": "STARTED",
+                    "formStatus": "STARTED"
                 }
             """);
             Thread.sleep(1000);
@@ -136,7 +136,7 @@ public class LiveQuizSocketTest {
             client.sendMessage("""
                 {
                     "action": "CHANGE_FORM_STATUS",
-                    "formStatus": "STARTED",
+                    "formStatus": "STARTED"
                 }
             """);
             Thread.sleep(1000);

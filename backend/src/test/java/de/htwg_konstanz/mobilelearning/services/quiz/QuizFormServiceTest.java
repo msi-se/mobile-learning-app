@@ -62,6 +62,30 @@ public class QuizFormServiceTest {
     }
 
     @Test
+    public void getQuizForms(){
+        List<Course> courses = Helper.createCourse();
+        String courseId = courses.getFirst().getId().toString();
+        
+        Response response = given()
+                            .header("Authorization", "Bearer " + Helper.createMockUser("Prof").getJwt())
+                            .pathParam("courseId", courseId)
+                            .get("/course/{courseId}/quiz/form");
+        List<QuizForm> quizForms = response
+                                            .then()
+                                            .statusCode(200)
+                                            .extract()
+                                            .body()
+                                            .jsonPath()
+                                            .getList(".", QuizForm.class);
+                                            
+        Assertions.assertEquals(1, quizForms.size());
+        Assertions.assertEquals("Rollenverständnis bei Scrum", quizForms.get(0).name);
+        Assertions.assertEquals("Ein Quiz zum Rollenverständnis und Teamaufbau bei Scrum", quizForms.get(0).description);
+        Assertions.assertEquals(2, quizForms.get(0).questions.size());
+        Assertions.assertEquals(0, quizForms.get(0).questions.get(0).results.size());
+    }
+
+    @Test
     public void getQuizFormWithoutResult() {
         // create & get courses + ids
         List<Course> courses = Helper.createCourse();
