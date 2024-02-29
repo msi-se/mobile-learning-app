@@ -30,6 +30,7 @@ public class Course implements Serializable {
     public List<ObjectId> students;
     public String key;
     public String moodleCourseId;
+    public Boolean isLinkedToMoodle;
 
     // feedback
     public List<FeedbackForm> feedbackForms;
@@ -55,6 +56,7 @@ public class Course implements Serializable {
         this.quizQuestions = new ArrayList<QuizQuestion>();
         this.key = "";
         this.moodleCourseId = "";
+        this.isLinkedToMoodle = false;
     }
 
     // id
@@ -338,7 +340,15 @@ public class Course implements Serializable {
     }
 
     public void setMoodleCourseId(String moodleCourseId) {
+
+        if (moodleCourseId == null || moodleCourseId.isEmpty()) {
+            this.moodleCourseId = "";
+            this.isLinkedToMoodle = false;
+            return;
+        }
+
         this.moodleCourseId = moodleCourseId;
+        this.isLinkedToMoodle = true;
     }
 
     public String getMoodleCourseId() {
@@ -437,6 +447,10 @@ public class Course implements Serializable {
         }
         Course course = (Course) obj;
         return course.getId().equals(this.getId());
+    }
+
+    public Boolean getIsLinkedToMoodle() {
+        return this.isLinkedToMoodle;
     }
 
 

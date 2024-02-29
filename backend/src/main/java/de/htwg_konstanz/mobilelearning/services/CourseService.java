@@ -173,7 +173,7 @@ public class CourseService {
         MoodleInterface moodle = new MoodleInterface(user.getUsername(), password);
         List<MoodleCourse> moodleCourses = moodle.getCourses();
 
-        // update the courses linked to the user
+        // update the courses linked to the user (only the courses which are linked to a moodle course)
         List<ObjectId> previousCourses = user.getCourses();
         
         // case 1: the user was added to a new course (-> add the course to the user and the student to the course)
@@ -193,11 +193,11 @@ public class CourseService {
         List<String> moodleCourseIds = moodleCourses.stream().map(moodleCourse -> moodleCourse.getId()).toList();
         List<Course> coursesToRemove = new ArrayList<Course>();
         for (ObjectId courseId : previousCourses) {
-            Course course = courseRepository.findById(courseId);
+            Course course = courseRepository.findById(courseId); // TODO: use a single query later
             if (course == null) {
                 continue;
             }
-            if (!moodleCourseIds.contains(course.getMoodleCourseId())) {
+            if (!moodleCourseIds.contains(course.getMoodleCourseId()) && course.getIsLinkedToMoodle()) {
                 coursesToRemove.add(course);
             }
         };
