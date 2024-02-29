@@ -1,4 +1,4 @@
-package de.htwg_konstanz.mobilelearning_frontend
+package org.schimkat.learning
 
 import io.flutter.embedding.android.FlutterActivity
 
