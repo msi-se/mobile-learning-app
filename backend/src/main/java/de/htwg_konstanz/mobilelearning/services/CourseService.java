@@ -75,25 +75,54 @@ public class CourseService {
         }
         updateCourseLinkedToUser(user, password);
 
+        // don't return the results and participants (for security and data load reasons)
         List<Course> courses = courseRepository.listAllForOwnerAndStudent(user);
         courses.forEach(course -> {
-            course.feedbackForms.forEach(form -> {
-                form.questions = new ArrayList<QuestionWrapper>();
-                form.clearResults();
-                form.clearParticipants();
-            });
-            course.quizForms.forEach(form -> {
-                form.questions = new ArrayList<QuestionWrapper>();
-                form.clearResults();
-                form.clearParticipants();
-            });
+            course.clearFormsContent();
         });
         return courses;
     }
 
     /**
+     * Let's a student join a course which is not linked to a moodle course.
+     * @param courseId
+     * @return Course
+     */
+    @POST
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path("/{courseId}/join")
+    @RolesAllowed({ UserRole.STUDENT, UserRole.PROF })
+    public Course joinCourse(@RestPath String courseId) {
+        Course course = courseRepository.findById(new ObjectId(courseId));
+        if (course == null) {
+            throw new NotFoundException("Course not found");
+        }
+
+        // if the user is already a student, just return the course
+        User user = userRepository.findByUsername(jwt.getName());
+        if (user == null) {
+            throw new NotFoundException("User not found");
+        }
+        if (course.isStudent(user.getId())) {
+            return course.clearFormsContent();
+        }
+
+        // if the course is linked to a moodle course, the user cannot join the course
+        if (course.getIsLinkedToMoodle()) {
+            throw new NotFoundException("Course is linked to a moodle course");
+        }
+
+        // add the user to the course and the course to the user
+        course.addStudent(user.getId());
+        courseRepository.update(course);
+        user.addCourse(course.getId());
+        userRepository.update(user);
+        return course.clearFormsContent();
+    }
+
+    /**
      * Updates a course.
-     * 
+     * @note: This method is not used in the application yet.
      * @param courseId
      * @param course
      * @return Updated course

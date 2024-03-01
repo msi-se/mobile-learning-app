@@ -453,5 +453,26 @@ public class Course implements Serializable {
         return this.isLinkedToMoodle;
     }
 
+    /**
+     * Clears the content of all forms to not send to much data to the client.
+     * - clears the questions
+     * - clears the results
+     * - clears the participants
+     * @return Course
+     */
+    public Course clearFormsContent() {
+        this.feedbackForms.forEach(form -> {
+            form.questions = new ArrayList<QuestionWrapper>();
+            form.clearResults();
+            form.clearParticipants();
+        });
+        this.quizForms.forEach(form -> {
+            form.questions = new ArrayList<QuestionWrapper>();
+            form.clearResults();
+            form.clearParticipants();
+        });
+        return this;
+    }
+
 
 }
