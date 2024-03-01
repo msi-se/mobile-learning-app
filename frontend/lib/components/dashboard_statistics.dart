@@ -1,15 +1,28 @@
+import 'dart:convert';
+import 'dart:io';
+
 import 'package:flutter/material.dart';
+import 'package:frontend/global.dart';
+import 'package:frontend/models/stats/global-stats.dart';
+import 'package:frontend/models/stats/stats.dart';
+import 'package:frontend/models/stats/user-stats.dart';
+import 'package:frontend/utils.dart';
+import 'package:http/http.dart' as http;
+
 class DashboardStatisticsWidget extends StatefulWidget {
   const DashboardStatisticsWidget({Key? key}) : super(key: key);
 
   @override
-  State<DashboardStatisticsWidget> createState() => _DashboardStatisticsWidgetState();
+  State<DashboardStatisticsWidget> createState() =>
+      _DashboardStatisticsWidgetState();
 }
 
-class _DashboardStatisticsWidgetState extends State<DashboardStatisticsWidget> with SingleTickerProviderStateMixin {
+class _DashboardStatisticsWidgetState extends State<DashboardStatisticsWidget>
+    with TickerProviderStateMixin {
   late AnimationController _animationController;
   late Animation<double> _opacityAnimation;
   late Animation<Offset> _positionAnimation;
+  late Stats _stats;
 
   @override
   void initState() {
@@ -23,11 +36,30 @@ class _DashboardStatisticsWidgetState extends State<DashboardStatisticsWidget> w
       CurvedAnimation(parent: _animationController, curve: Curves.easeInOut),
     );
 
-    _positionAnimation = Tween<Offset>(begin: const Offset(0, 0.5), end: Offset.zero).animate(
+    _positionAnimation =
+        Tween<Offset>(begin: const Offset(0, 0.5), end: Offset.zero).animate(
       CurvedAnimation(parent: _animationController, curve: Curves.easeInOut),
     );
 
     _animationController.forward();
+
+    _stats = Stats(
+        globalStats: GlobalStats(
+            // totalFeedbackForms: 0,
+            // totalQuizForms: 0,
+            // totalCourses: 0,
+            // totalUsers: 0,
+            completedFeedbackForms: 0,
+            completedQuizForms: 0,
+            id: ''),
+        userStats: UserStats(
+          avgQuizPosition: 0,
+          completedFeedbackForms: 0,
+          completedQuizForms: 0,
+          qainedQuizPoints: 0,
+        ));
+
+    fetchStats();
   }
 
   @override
@@ -60,19 +92,20 @@ class _DashboardStatisticsWidgetState extends State<DashboardStatisticsWidget> w
               ],
               borderRadius: BorderRadius.circular(12),
             ),
-            child: const Padding(
-              padding: EdgeInsetsDirectional.fromSTEB(0, 0, 0, 8),
+            child: Padding(
+              padding: const EdgeInsetsDirectional.fromSTEB(0, 0, 0, 8),
               child: Column(
                 mainAxisSize: MainAxisSize.max,
                 children: [
-                  Padding(
+                  const Padding(
                     padding: EdgeInsetsDirectional.fromSTEB(0, 0, 12, 0),
                     child: Row(
                       mainAxisSize: MainAxisSize.max,
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Padding(
-                          padding: EdgeInsetsDirectional.fromSTEB(16, 12, 12, 0),
+                          padding:
+                              EdgeInsetsDirectional.fromSTEB(16, 12, 12, 0),
                           child: Column(
                             mainAxisSize: MainAxisSize.max,
                             crossAxisAlignment: CrossAxisAlignment.start,
@@ -92,7 +125,8 @@ class _DashboardStatisticsWidgetState extends State<DashboardStatisticsWidget> w
                     ),
                   ),
                   Padding(
-                    padding: EdgeInsetsDirectional.fromSTEB(16, 12, 16, 12),
+                    padding:
+                        const EdgeInsetsDirectional.fromSTEB(16, 12, 16, 12),
                     child: Row(
                       mainAxisSize: MainAxisSize.max,
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -103,15 +137,17 @@ class _DashboardStatisticsWidgetState extends State<DashboardStatisticsWidget> w
                             crossAxisAlignment: CrossAxisAlignment.center,
                             children: [
                               Text(
-                                '12',
-                                style: TextStyle(
+                                _stats.userStats.completedFeedbackForms
+                                    .toString(),
+                                style: const TextStyle(
                                   color: Color(0xFF14181B),
                                   fontSize: 36,
                                   fontWeight: FontWeight.w600,
                                 ),
                               ),
-                              Padding(
-                                padding: EdgeInsetsDirectional.fromSTEB(0, 4, 0, 0),
+                              const Padding(
+                                padding:
+                                    EdgeInsetsDirectional.fromSTEB(0, 4, 0, 0),
                                 child: Text(
                                   'Absolvierte Feedbacks',
                                   style: TextStyle(
@@ -130,15 +166,16 @@ class _DashboardStatisticsWidgetState extends State<DashboardStatisticsWidget> w
                             crossAxisAlignment: CrossAxisAlignment.center,
                             children: [
                               Text(
-                                '180',
-                                style: TextStyle(
+                                _stats.userStats.qainedQuizPoints.toString(),
+                                style: const TextStyle(
                                   color: Color(0xFF14181B),
                                   fontSize: 36,
                                   fontWeight: FontWeight.w600,
                                 ),
                               ),
-                              Padding(
-                                padding: EdgeInsetsDirectional.fromSTEB(0, 4, 0, 0),
+                              const Padding(
+                                padding:
+                                    EdgeInsetsDirectional.fromSTEB(0, 4, 0, 0),
                                 child: Text(
                                   'Gesammelte Punkte',
                                   style: TextStyle(
@@ -155,7 +192,8 @@ class _DashboardStatisticsWidgetState extends State<DashboardStatisticsWidget> w
                     ),
                   ),
                   Padding(
-                    padding: EdgeInsetsDirectional.fromSTEB(16, 12, 16, 12),
+                    padding:
+                        const EdgeInsetsDirectional.fromSTEB(16, 12, 16, 12),
                     child: Row(
                       mainAxisSize: MainAxisSize.max,
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -166,15 +204,16 @@ class _DashboardStatisticsWidgetState extends State<DashboardStatisticsWidget> w
                             crossAxisAlignment: CrossAxisAlignment.center,
                             children: [
                               Text(
-                                '7',
-                                style: TextStyle(
+                                _stats.userStats.completedQuizForms.toString(),
+                                style: const TextStyle(
                                   color: Color(0xFF14181B),
                                   fontSize: 36,
                                   fontWeight: FontWeight.w600,
                                 ),
                               ),
-                              Padding(
-                                padding: EdgeInsetsDirectional.fromSTEB(0, 4, 0, 0),
+                              const Padding(
+                                padding:
+                                    EdgeInsetsDirectional.fromSTEB(0, 4, 0, 0),
                                 child: Text(
                                   'Absolvierte Quizze',
                                   style: TextStyle(
@@ -193,15 +232,16 @@ class _DashboardStatisticsWidgetState extends State<DashboardStatisticsWidget> w
                             crossAxisAlignment: CrossAxisAlignment.center,
                             children: [
                               Text(
-                                '2',
-                                style: TextStyle(
+                                _stats.userStats.avgQuizPosition.toString(),
+                                style: const TextStyle(
                                   color: Color(0xFF14181B),
                                   fontSize: 36,
                                   fontWeight: FontWeight.w600,
                                 ),
                               ),
-                              Padding(
-                                padding: EdgeInsetsDirectional.fromSTEB(0, 4, 0, 0),
+                              const Padding(
+                                padding:
+                                    EdgeInsetsDirectional.fromSTEB(0, 4, 0, 0),
                                 child: Text(
                                   '⌀-Quiz-Position',
                                   style: TextStyle(
@@ -224,5 +264,29 @@ class _DashboardStatisticsWidgetState extends State<DashboardStatisticsWidget> w
         ),
       ),
     );
+  }
+
+  Future fetchStats() async {
+    try {
+      if (getSession() == null) {
+        await initPreferences();
+      }
+      final response = await http.get(
+        Uri.parse("${getBackendUrl()}/stats"),
+        headers: {
+          "Content-Type": "application/json",
+          "AUTHORIZATION": "Bearer ${getSession()!.jwt}",
+        },
+      );
+      if (!mounted) return;
+      if (response.statusCode == 200) {
+        var data = jsonDecode(response.body);
+        setState(() {
+          _stats = Stats.fromJson(data);
+        });
+      }
+    } on http.ClientException catch (_) {
+      // TODO: handle error
+    }
   }
 }
