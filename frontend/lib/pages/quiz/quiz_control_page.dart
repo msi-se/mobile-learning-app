@@ -1,7 +1,10 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:frontend/components/elements/quiz/single_choice_quiz_result.dart';
+import 'package:frontend/components/error/general_error_widget.dart';
+import 'package:frontend/components/error/network_error_widget.dart';
 import 'package:frontend/components/general/quiz/QuizScoreboard.dart';
 import 'package:frontend/global.dart';
 import 'package:frontend/models/quiz/quiz_form.dart';
@@ -22,8 +25,6 @@ class QuizControlPage extends StatefulWidget {
 }
 
 class _QuizControlPageState extends State<QuizControlPage> {
-  bool _loading = true;
-
   late String _courseId;
   late String _formId;
   late String _userId;
@@ -34,6 +35,9 @@ class _QuizControlPageState extends State<QuizControlPage> {
 
   late List<Map<String, dynamic>> _results;
   late List<dynamic> _scoreboard;
+
+  bool _loading = false;
+  String _fetchResult = '';
 
   @override
   void initState() {
@@ -51,6 +55,10 @@ class _QuizControlPageState extends State<QuizControlPage> {
   }
 
   Future fetchForm() async {
+    setState(() {
+      _loading = true;
+      _fetchResult = '';
+    });
     try {
       final response = await http.get(
         Uri.parse(
@@ -62,23 +70,55 @@ class _QuizControlPageState extends State<QuizControlPage> {
       );
       if (response.statusCode == 200) {
         var data = jsonDecode(response.body);
+        //TODO: Print in production code not good:
         print(data);
         var form = QuizForm.fromJson(data);
 
         startWebsocket();
 
         setState(() {
+          _loading = false;
+          _fetchResult = 'success';
           _form = form;
           _results = getResults(data);
           if (_form.status == "FINISHED") {
             _scoreboard = getScoreboard(data);
           }
-          _loading = false;
         });
       }
-    } on http.ClientException catch (_) {
-      // TODO: handle error
+    } on http.ClientException {
+      setState(() {
+        _loading = false;
+        _fetchResult = 'network_error';
+      });
+    } on SocketException {
+      setState(() {
+        _loading = false;
+        _fetchResult = 'network_error';
+      });
+    } catch (e) {
+      setState(() {
+        _loading = false;
+        _fetchResult = 'general_error';
+      });
     }
+  }
+
+  void _showErrorDialog(String errorType) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      showDialog(
+          context: context,
+          barrierDismissible: false,
+          builder: (BuildContext context) {
+            return (errorType == 'network_error')
+                ? const NetworkErrorWidget()
+                : const GeneralErrorWidget();
+          }).then((value) {
+        if (value == 'back') {
+          Navigator.pushReplacementNamed(context, '/main');
+        }
+      });
+    });
   }
 
   void startWebsocket() {
@@ -115,6 +155,7 @@ class _QuizControlPageState extends State<QuizControlPage> {
         });
       }
     }, onError: (error) {
+      //TODO: Should there be another error handling for this?
       setState(() {
         _form.status = "ERROR";
       });
@@ -207,182 +248,187 @@ class _QuizControlPageState extends State<QuizControlPage> {
           child: CircularProgressIndicator(),
         ),
       );
-    }
+    } else if (_fetchResult == 'success') {
+      final colors = Theme.of(context).colorScheme;
 
-    final colors = Theme.of(context).colorScheme;
-
-    final appBar = AppBar(
-      title: Text(_form.name,
-          style: const TextStyle(
-              color: Colors.white, fontWeight: FontWeight.bold)),
-      backgroundColor: colors.primary,
-    );
-
-    if (_form.status == "NOT_STARTED") {
-      var code = _form.connectCode;
-      code = "${code.substring(0, 3)} ${code.substring(3, 6)}";
-
-      return Scaffold(
-        appBar: appBar,
-        body: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              Text(
-                code,
-                style: Theme.of(context).textTheme.headlineMedium,
-              ),
-              const SizedBox(height: 16),
-              ElevatedButton(
-                onPressed: startForm,
-                child: const Text('Quiz starten'),
-              ),
-            ],
-          ),
-        ),
+      final appBar = AppBar(
+        title: Text(_form.name,
+            style: const TextStyle(
+                color: Colors.white, fontWeight: FontWeight.bold)),
+        backgroundColor: colors.primary,
       );
-    }
 
-    if (_form.status == "FINISHED") {
-      return Scaffold(
-        appBar: appBar,
-        body: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            children: <Widget>[
-              Text(
-                "Quiz beendet",
-                style: Theme.of(context).textTheme.headlineMedium,
-              ),
-              const SizedBox(height: 16),
-              Center(
-                child: Container(
-                  constraints: const BoxConstraints(maxWidth: 800),
-                  child: Card(
-                    child: Padding(
-                      padding: const EdgeInsets.all(8),
-                      child: QuizScoreboard(scoreboard: _scoreboard),
-                    ),
-                  ),
-                ),
-              ),
-              const SizedBox(height: 16),
-              ElevatedButton(
-                onPressed: resetForm,
-                child: const Text('Quiz zurücksetzen'),
-              ),
-            ],
-          ),
-        ),
-      );
-    }
+      if (_form.status == "NOT_STARTED") {
+        var code = _form.connectCode;
+        code = "${code.substring(0, 3)} ${code.substring(3, 6)}";
 
-    final QuizQuestion element =
-        _form.questions[_form.currentQuestionIndex] as QuizQuestion;
-    final values = _results[_form.currentQuestionIndex]["values"];
-
-    return Scaffold(
-      appBar: appBar,
-      body: Stack(
-        children: [
-          SizedBox(
-            width: double.infinity,
+        return Scaffold(
+          appBar: appBar,
+          body: Center(
             child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
-                const SizedBox(height: 32),
-                Padding(
-                  padding: const EdgeInsets.all(16),
-                  child: Container(
-                    constraints: const BoxConstraints(maxWidth: 800),
-                    child: Column(
-                      children: <Widget>[
-                        Text(element.name,
-                            style: const TextStyle(
-                                fontSize: 24, fontWeight: FontWeight.bold)),
-                        Text(element.description,
-                            style: const TextStyle(fontSize: 15),
-                            textAlign: TextAlign.center),
-                        const SizedBox(height: 16),
-                        if (_form.currentQuestionFinished == true)
-                          Card(
-                            child: Padding(
-                              padding: const EdgeInsets.all(16),
-                              child: element.type == 'SINGLE_CHOICE'
-                                  ? SingleChoiceQuizResult(
-                                      results: values
-                                          .map((e) => int.parse(e))
-                                          .toList()
-                                          .cast<int>(),
-                                      options: element.options,
-                                      correctAnswer: element.correctAnswers[0],
-                                    )
-                                  : element.type == 'YES_NO'
-                                      ? SingleChoiceQuizResult(
-                                          results: values
-                                              .map((e) => e == "yes" ? 0 : 1)
-                                              .toList()
-                                              .cast<int>(),
-                                          options: const ["Ja", "Nein"],
-                                          correctAnswer:
-                                              element.correctAnswers[0] == "yes"
-                                                  ? "0"
-                                                  : "1",
-                                        )
-                                      : Text(element.type),
-                            ),
-                          )
-                      ],
-                    ),
-                  ),
+                Text(
+                  code,
+                  style: Theme.of(context).textTheme.headlineMedium,
                 ),
-                if (_form.status == "STARTED")
-                  Column(
-                    children: [
-                      ElevatedButton(
-                        onPressed: next,
-                        child: const Text('Next'),
-                      ),
-                      const SizedBox(height: 8),
-                      ElevatedButton(
-                        onPressed: stopForm,
-                        child: const Text('Quiz beenden'),
-                      ),
-                    ],
-                  ),
-                if (_form.status == "FINISHED")
-                  Column(
-                    children: [
-                      ElevatedButton(
-                        onPressed: startForm,
-                        child: const Text('Quiz fortsetzen'),
-                      ),
-                      const SizedBox(height: 8),
-                      ElevatedButton(
-                        onPressed: resetForm,
-                        child: Text('Quiz zurücksetzen',
-                            style: TextStyle(color: colors.error)),
-                      ),
-                    ],
-                  ),
-                const SizedBox(height: 32),
+                const SizedBox(height: 16),
+                ElevatedButton(
+                  onPressed: startForm,
+                  child: const Text('Quiz starten'),
+                ),
               ],
             ),
           ),
-          Positioned(
-            top: 0,
-            left: 0,
-            right: 0,
-            child: Container(
-              color: colors.surfaceVariant,
-              child: Text(
-                "${_form.connectCode.substring(0, 3)} ${_form.connectCode.substring(3, 6)}",
-                style: Theme.of(context).textTheme.headlineSmall,
-                textAlign: TextAlign.center,
+        );
+      }
+
+      if (_form.status == "FINISHED") {
+        return Scaffold(
+          appBar: appBar,
+          body: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              children: <Widget>[
+                Text(
+                  "Quiz beendet",
+                  style: Theme.of(context).textTheme.headlineMedium,
+                ),
+                const SizedBox(height: 16),
+                Center(
+                  child: Container(
+                    constraints: const BoxConstraints(maxWidth: 800),
+                    child: Card(
+                      child: Padding(
+                        padding: const EdgeInsets.all(8),
+                        child: QuizScoreboard(scoreboard: _scoreboard),
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 16),
+                ElevatedButton(
+                  onPressed: resetForm,
+                  child: const Text('Quiz zurücksetzen'),
+                ),
+              ],
+            ),
+          ),
+        );
+      }
+
+      final QuizQuestion element =
+          _form.questions[_form.currentQuestionIndex] as QuizQuestion;
+      final values = _results[_form.currentQuestionIndex]["values"];
+
+      return Scaffold(
+        appBar: appBar,
+        body: Stack(
+          children: [
+            SizedBox(
+              width: double.infinity,
+              child: Column(
+                children: <Widget>[
+                  const SizedBox(height: 32),
+                  Padding(
+                    padding: const EdgeInsets.all(16),
+                    child: Container(
+                      constraints: const BoxConstraints(maxWidth: 800),
+                      child: Column(
+                        children: <Widget>[
+                          Text(element.name,
+                              style: const TextStyle(
+                                  fontSize: 24, fontWeight: FontWeight.bold)),
+                          Text(element.description,
+                              style: const TextStyle(fontSize: 15),
+                              textAlign: TextAlign.center),
+                          const SizedBox(height: 16),
+                          if (_form.currentQuestionFinished == true)
+                            Card(
+                              child: Padding(
+                                padding: const EdgeInsets.all(16),
+                                child: element.type == 'SINGLE_CHOICE'
+                                    ? SingleChoiceQuizResult(
+                                        results: values
+                                            .map((e) => int.parse(e))
+                                            .toList()
+                                            .cast<int>(),
+                                        options: element.options,
+                                        correctAnswer:
+                                            element.correctAnswers[0],
+                                      )
+                                    : element.type == 'YES_NO'
+                                        ? SingleChoiceQuizResult(
+                                            results: values
+                                                .map((e) => e == "yes" ? 0 : 1)
+                                                .toList()
+                                                .cast<int>(),
+                                            options: const ["Ja", "Nein"],
+                                            correctAnswer:
+                                                element.correctAnswers[0] ==
+                                                        "yes"
+                                                    ? "0"
+                                                    : "1",
+                                          )
+                                        : Text(element.type),
+                              ),
+                            )
+                        ],
+                      ),
+                    ),
+                  ),
+                  if (_form.status == "STARTED")
+                    Column(
+                      children: [
+                        ElevatedButton(
+                          onPressed: next,
+                          child: const Text('Next'),
+                        ),
+                        const SizedBox(height: 8),
+                        ElevatedButton(
+                          onPressed: stopForm,
+                          child: const Text('Quiz beenden'),
+                        ),
+                      ],
+                    ),
+                  if (_form.status == "FINISHED")
+                    Column(
+                      children: [
+                        ElevatedButton(
+                          onPressed: startForm,
+                          child: const Text('Quiz fortsetzen'),
+                        ),
+                        const SizedBox(height: 8),
+                        ElevatedButton(
+                          onPressed: resetForm,
+                          child: Text('Quiz zurücksetzen',
+                              style: TextStyle(color: colors.error)),
+                        ),
+                      ],
+                    ),
+                  const SizedBox(height: 32),
+                ],
               ),
             ),
-          )
-        ],
-      ),
-    );
+            Positioned(
+              top: 0,
+              left: 0,
+              right: 0,
+              child: Container(
+                color: colors.surfaceVariant,
+                child: Text(
+                  "${_form.connectCode.substring(0, 3)} ${_form.connectCode.substring(3, 6)}",
+                  style: Theme.of(context).textTheme.headlineSmall,
+                  textAlign: TextAlign.center,
+                ),
+              ),
+            )
+          ],
+        ),
+      );
+    } else {
+      _showErrorDialog(_fetchResult);
+      return Container();
+    }
   }
 }
