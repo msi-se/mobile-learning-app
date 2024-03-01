@@ -7,10 +7,6 @@ import jakarta.enterprise.context.ApplicationScoped;
 
 @ApplicationScoped
 public class UserRepository implements PanacheMongoRepository<User> {
-    
-    public User findById(String id) {
-        return find("id", id).firstResult();
-    }
 
     public User findByUsername(String username) {
         return find("username", username).firstResult();

@@ -65,7 +65,7 @@ public class LiveFeedbackSocketTest {
                     
                 }
             """);
-            Thread.sleep(1000);
+            Thread.sleep(100);
             session.close();
 
             // check if the form status has changed
@@ -130,7 +130,7 @@ public class LiveFeedbackSocketTest {
                      
                  }
              """);
-             Thread.sleep(1000);
+             Thread.sleep(100);
              session.close();
  
              // form status should not change because user is not owner
@@ -163,7 +163,7 @@ public class LiveFeedbackSocketTest {
                      "formStatus": "STARTED"
                  }
              """);
-             Thread.sleep(1000);
+             Thread.sleep(100);
              session.close();
  
              // form status should not change because user student
@@ -205,7 +205,7 @@ public class LiveFeedbackSocketTest {
                     
                 }
             """);
-            Thread.sleep(1000);
+            Thread.sleep(100);
             session.close();
  
              // form status should not change because user student
@@ -278,7 +278,7 @@ public class LiveFeedbackSocketTest {
                     
                 }
             """);
-            Thread.sleep(1000);
+            Thread.sleep(100);
             session.close();
 
             Response responseCleared = given()
@@ -340,7 +340,7 @@ public class LiveFeedbackSocketTest {
                     
                 }
             """);
-            Thread.sleep(1000);
+            Thread.sleep(100);
             session.close();
             session2.close();
  
@@ -379,7 +379,7 @@ public class LiveFeedbackSocketTest {
                     
                 }
             """, questionId));
-            Thread.sleep(1000);
+            Thread.sleep(100);
             session.close();
 
             // check if the form status has changed
