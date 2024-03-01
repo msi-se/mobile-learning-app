@@ -29,6 +29,10 @@ public class Helper {
     }
 
     public static List<Course> createCourse(String username) {
+        return createCourse(username, "1");
+    }
+
+    public static List<Course> createCourse(String username, String moodleCourseId) {
         // create a course via the json api
         ApiCourse apiCourse = new ApiCourse(
                 "AUME 23/24",
@@ -77,7 +81,7 @@ public class Helper {
                                                 "Q-Q-PDRODUCTOWNER")),                                        
                                 "Q-ROLES")),
                 "AUME23",
-                "1");
+                moodleCourseId);
 
         Gson gson = new Gson();
         String json = gson.toJson(List.of(apiCourse));
