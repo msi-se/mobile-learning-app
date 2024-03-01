@@ -53,14 +53,19 @@ public class LiveQuizSocketTest {
         String courseId = course.getId().toString();
         String formId = course.getQuizForms().get(0).getId().toString();
 
+        // create user and sync the course-user relation
+        MockUser prof = Helper.createMockUser("Prof");
+        given().header("Authorization", "Bearer " + prof.getJwt()).get("/course").then().statusCode(200);
+
         // create a websocket client
-        // (@ServerEndpoint("/course/{courseId}/quiz/form/{formId}/subscribe/{userId}/{jwt}")
         try {
             SocketClient client = new SocketClient();
             Session session = ContainerProvider.getWebSocketContainer().connectToServer(
                 client,
-                URI.create("ws://localhost:8081/course/" + courseId + "/quiz/form/" + formId + "/subscribe/" + Helper.createMockUser("Prof").getId() + "/" + Helper.createMockUser("Prof").getJwt())
+                URI.create("ws://localhost:8081/course/" + courseId + "/quiz/form/" + formId + "/subscribe/" + prof.getId() + "/" + prof.getJwt())
             );
+            Thread.sleep(100);
+            Assertions.assertTrue(session.isOpen());
             client.sendMessage("""
                 {
                     "action": "CHANGE_FORM_STATUS",
@@ -81,21 +86,26 @@ public class LiveQuizSocketTest {
     @Test
     public void startQuizFormNotOwner() {
         // create & get courses
-        List<Course> courses = Helper.createCourse();
+        List<Course> courses = Helper.createCourse("Prof");
         Course course = courses.get(0);
 
         // get course and feedback form id
         String courseId = course.getId().toString();
         String formId = course.getQuizForms().get(0).getId().toString();
 
+        // create user and sync the course-user relation
+        MockUser prof2 = Helper.createMockUser("Prof2");
+        given().header("Authorization", "Bearer " + prof2.getJwt()).get("/course").then().statusCode(200);
+
         // create a websocket client
-        // (@ServerEndpoint("/course/{courseId}/quiz/form/{formId}/subscribe/{userId}/{jwt}")
         try {
             SocketClient client = new SocketClient();
             Session session = ContainerProvider.getWebSocketContainer().connectToServer(
                 client,
-                URI.create("ws://localhost:8081/course/" + courseId + "/quiz/form/" + formId + "/subscribe/" + Helper.createMockUser("Prof2").getId() + "/" + Helper.createMockUser("Prof2").getJwt())
+                URI.create("ws://localhost:8081/course/" + courseId + "/quiz/form/" + formId + "/subscribe/" + prof2.getId() + "/" + prof2.getJwt())
             );
+            Thread.sleep(100);
+            Assertions.assertFalse(session.isOpen());
             client.sendMessage("""
                 {
                     "action": "CHANGE_FORM_STATUS",
@@ -125,14 +135,30 @@ public class LiveQuizSocketTest {
         String courseId = course.getId().toString();
         String formId = course.getQuizForms().get(0).getId().toString();
 
+        // create user and sync the course-user relation
+        MockUser student = Helper.createMockUser("Student");
+        given().header("Authorization", "Bearer " + student.getJwt()).get("/course").then().statusCode(200);
+
+        // participate in the quiz form
+        given()
+            .header("Authorization", "Bearer " + student.getJwt())
+            .pathParam("courseId", courseId)
+            .pathParam("formId", formId)
+            .body("alias-student")
+            .when()
+            .post("/course/{courseId}/quiz/form/{formId}/participate")
+            .then()
+            .statusCode(200);
+
         // create a websocket client
-        // (@ServerEndpoint("/course/{courseId}/quiz/form/{formId}/subscribe/{userId}/{jwt}")
         try {
             SocketClient client = new SocketClient();
             Session session = ContainerProvider.getWebSocketContainer().connectToServer(
                 client,
-                URI.create("ws://localhost:8081/course/" + courseId + "/quiz/form/" + formId + "/subscribe/" + Helper.createMockUser("Student").getId() + "/" + Helper.createMockUser("Student").getJwt())
+                URI.create("ws://localhost:8081/course/" + courseId + "/quiz/form/" + formId + "/subscribe/" + student.getId() + "/" + student.getJwt())
             );
+            Thread.sleep(100);
+            Assertions.assertTrue(session.isOpen());
             client.sendMessage("""
                 {
                     "action": "CHANGE_FORM_STATUS",
@@ -190,12 +216,16 @@ public class LiveQuizSocketTest {
         String courseId = courses.getFirst().getId().toString();
         String formId = courses.getFirst().getQuizForms().get(0).getId().toString();
         String questionId = courses.getFirst().quizForms.get(0).questions.get(0).getId().toString();
+
+        // create user and sync the course-user relation
+        MockUser prof = Helper.createMockUser("Prof");
+        given().header("Authorization", "Bearer " + prof.getJwt()).get("/course").then().statusCode(200);
         
         // add a result & get quiz forms
         addResult(courseId, formId, questionId);
         addResult(courseId, formId, questionId);
         Response response = given()
-                                .header("Authorization", "Bearer " + Helper.createMockUser("Prof").getJwt())
+                                .header("Authorization", "Bearer " + prof.getJwt())
                                 .pathParam("courseId", courseId)
                                 .pathParam("formId", formId)
                                 .queryParam("results", true)
@@ -227,14 +257,19 @@ public class LiveQuizSocketTest {
         String courseId = course.getId().toString();
         String formId = course.getQuizForms().get(0).getId().toString();
 
+        // create user and sync the course-user relation
+        MockUser prof = Helper.createMockUser("Prof");
+        given().header("Authorization", "Bearer " + prof.getJwt()).get("/course").then().statusCode(200);
+
         // create a websocket client
-        // (@ServerEndpoint("/course/{courseId}/quiz/form/{formId}/subscribe/{userId}/{jwt}")
         try {
             SocketClient client = new SocketClient();
             Session session = ContainerProvider.getWebSocketContainer().connectToServer(
                 client,
-                URI.create("ws://localhost:8081/course/" + courseId + "/quiz/form/" + formId + "/subscribe/" + Helper.createMockUser("Prof").getId() + "/" + Helper.createMockUser("Prof").getJwt())
+                URI.create("ws://localhost:8081/course/" + courseId + "/quiz/form/" + formId + "/subscribe/" + prof.getId() + "/" + prof.getJwt())
             );
+            Thread.sleep(100);
+            Assertions.assertTrue(session.isOpen());
             client.sendMessage("""
                 {
                     "action": "CHANGE_FORM_STATUS",
@@ -271,18 +306,28 @@ public class LiveQuizSocketTest {
         String courseId = course.getId().toString();
         String formId = course.getQuizForms().get(0).getId().toString();
 
+        // create user and sync the course-user relation
+        MockUser prof = Helper.createMockUser("Prof");
+        given().header("Authorization", "Bearer " + prof.getJwt()).get("/course").then().statusCode(200);
+        MockUser prof2 = Helper.createMockUser("Prof2");
+        given().header("Authorization", "Bearer " + prof2.getJwt()).get("/course").then().statusCode(200);
+
         // create a websocket client
-        // (@ServerEndpoint("/course/{courseId}/quiz/form/{formId}/subscribe/{userId}/{jwt}")
         try {
             SocketClient client = new SocketClient();
             SocketClient client2 = new SocketClient();
             Session session = ContainerProvider.getWebSocketContainer().connectToServer(
                 client,
-                URI.create("ws://localhost:8081/course/" + courseId + "/quiz/form/" + formId + "/subscribe/" + Helper.createMockUser("Prof").getId() + "/" + Helper.createMockUser("Prof").getJwt())
-            );Session session2 = ContainerProvider.getWebSocketContainer().connectToServer(
-                client2,
-                URI.create("ws://localhost:8081/course/" + courseId + "/quiz/form/" + formId + "/subscribe/" + Helper.createMockUser("Prof2").getId() + "/" + Helper.createMockUser("Prof2").getJwt())
+                URI.create("ws://localhost:8081/course/" + courseId + "/quiz/form/" + formId + "/subscribe/" + prof.getId() + "/" + prof.getJwt())
             );
+            Thread.sleep(100);
+            Assertions.assertTrue(session.isOpen());
+            Session session2 = ContainerProvider.getWebSocketContainer().connectToServer(
+                client2,
+                URI.create("ws://localhost:8081/course/" + courseId + "/quiz/form/" + formId + "/subscribe/" + prof2.getId() + "/" + prof2.getJwt())
+            );
+            Thread.sleep(100);
+            Assertions.assertFalse(session2.isOpen());
             client.sendMessage("""
                 {
                     "action": "CHANGE_FORM_STATUS",
@@ -320,19 +365,39 @@ public class LiveQuizSocketTest {
         String courseId = course.getId().toString();
         String formId = course.getQuizForms().get(0).getId().toString();
 
+        // create user and sync the course-user relation
+        MockUser prof = Helper.createMockUser("Prof");
+        given().header("Authorization", "Bearer " + prof.getJwt()).get("/course").then().statusCode(200);
+        MockUser student = Helper.createMockUser("Student");
+        given().header("Authorization", "Bearer " + student.getJwt()).get("/course").then().statusCode(200);
+
+        // participate in the quiz form
+        given()
+            .header("Authorization", "Bearer " + student.getJwt())
+            .pathParam("courseId", courseId)
+            .pathParam("formId", formId)
+            .body("alias-student")
+            .when()
+            .post("/course/{courseId}/quiz/form/{formId}/participate")
+            .then()
+            .statusCode(200);
+
         // create a websocket client
-        // (@ServerEndpoint("/course/{courseId}/quiz/form/{formId}/subscribe/{userId}/{jwt}")
         try {
             SocketClient client = new SocketClient();
             Session session = ContainerProvider.getWebSocketContainer().connectToServer(
                 client,
-                URI.create("ws://localhost:8081/course/" + courseId + "/quiz/form/" + formId + "/subscribe/" + Helper.createMockUser("Prof").getId() + "/" + Helper.createMockUser("Prof").getJwt())
+                URI.create("ws://localhost:8081/course/" + courseId + "/quiz/form/" + formId + "/subscribe/" + prof.getId() + "/" + prof.getJwt())
             );
+            Thread.sleep(100);
+            Assertions.assertTrue(session.isOpen());
             SocketClient client2 = new SocketClient();
             Session session2 = ContainerProvider.getWebSocketContainer().connectToServer(
                 client2,
-                URI.create("ws://localhost:8081/course/" + courseId + "/quiz/form/" + formId + "/subscribe/" + Helper.createMockUser("Student").getId() + "/" + Helper.createMockUser("Student").getJwt())
+                URI.create("ws://localhost:8081/course/" + courseId + "/quiz/form/" + formId + "/subscribe/" + student.getId() + "/" + student.getJwt())
             );
+            Thread.sleep(100);
+            Assertions.assertTrue(session2.isOpen());
             client.sendMessage("""
                 {
                     "action": "CHANGE_FORM_STATUS",
@@ -371,14 +436,19 @@ public class LiveQuizSocketTest {
         String formId = course.getQuizForms().get(0).getId().toString();
         String questionId = courses.getFirst().quizForms.get(0).questions.get(0).getId().toString();
 
+        // create user and sync the course-user relation
+        MockUser prof = Helper.createMockUser("Prof");
+        given().header("Authorization", "Bearer " + prof.getJwt()).get("/course").then().statusCode(200);
+
         // create a websocket client
-        // (@ServerEndpoint("/course/{courseId}/quiz/form/{formId}/subscribe/{userId}/{jwt}")
         try {
             SocketClient client = new SocketClient();
             Session session = ContainerProvider.getWebSocketContainer().connectToServer(
                 client,
-                URI.create("ws://localhost:8081/course/" + courseId + "/quiz/form/" + formId + "/subscribe/" + Helper.createMockUser("Prof").getId() + "/" + Helper.createMockUser("Prof").getJwt())
+                URI.create("ws://localhost:8081/course/" + courseId + "/quiz/form/" + formId + "/subscribe/" + prof.getId() + "/" + prof.getJwt())
             );
+            Thread.sleep(100);
+            Assertions.assertTrue(session.isOpen());
             client.sendMessage("""
                 {
                     "action": "CHANGE_FORM_STATUS",
@@ -396,7 +466,7 @@ public class LiveQuizSocketTest {
             """, questionId));
             Thread.sleep(100);
             Response response = given()
-                                    .header("Authorization", "Bearer " + Helper.createMockUser("Prof").getJwt())
+                                    .header("Authorization", "Bearer " + prof.getJwt())
                                     .pathParam("courseId", courseId)
                                     .pathParam("formId", formId)
                                     .queryParam("results", true)
@@ -427,7 +497,7 @@ public class LiveQuizSocketTest {
             Thread.sleep(100);
             session.close();
             Response responseCleared = given()
-                                            .header("Authorization", "Bearer " + Helper.createMockUser("Prof").getJwt())
+                                            .header("Authorization", "Bearer " + prof.getJwt())
                                             .pathParam("courseId", courseId)
                                             .pathParam("formId", formId)
                                             .queryParam("results", true)
@@ -451,7 +521,6 @@ public class LiveQuizSocketTest {
     public void nextQuestion() {
         // create & get courses
         List<Course> courses = Helper.createCourse();
-        ObjectMapper mapper = new ObjectMapper();
         Assertions.assertEquals(courses.size(), 1);
         Course course = courses.get(0);
         Assertions.assertEquals(course.getQuizForms().size(), 1);
@@ -460,14 +529,19 @@ public class LiveQuizSocketTest {
         String courseId = course.getId().toString();
         String formId = course.getQuizForms().get(0).getId().toString();
 
+        // create user and sync the course-user relation
+        MockUser prof = Helper.createMockUser("Prof");
+        given().header("Authorization", "Bearer " + prof.getJwt()).get("/course").then().statusCode(200);
+
         // create a websocket client
-        // (@ServerEndpoint("/course/{courseId}/quiz/form/{formId}/subscribe/{userId}/{jwt}")
         try {
             SocketClient client = new SocketClient();
             Session session = ContainerProvider.getWebSocketContainer().connectToServer(
                 client,
-                URI.create("ws://localhost:8081/course/" + courseId + "/quiz/form/" + formId + "/subscribe/" + Helper.createMockUser("Prof").getId() + "/" + Helper.createMockUser("Prof").getJwt())
+                URI.create("ws://localhost:8081/course/" + courseId + "/quiz/form/" + formId + "/subscribe/" + prof.getId() + "/" + prof.getJwt())
             );
+            Thread.sleep(100);
+            Assertions.assertTrue(session.isOpen());
             client.sendMessage("""
                 {
                     "action": "CHANGE_FORM_STATUS",
@@ -548,20 +622,29 @@ public class LiveQuizSocketTest {
         String courseId = course.getId().toString();
         String formId = course.getQuizForms().get(0).getId().toString();
 
+        // create user and sync the course-user relation
+        MockUser prof = Helper.createMockUser("Prof");
+        given().header("Authorization", "Bearer " + prof.getJwt()).get("/course").then().statusCode(200);
+        MockUser prof2 = Helper.createMockUser("Prof2");
+        given().header("Authorization", "Bearer " + prof2.getJwt()).get("/course").then().statusCode(200);
+
         // create a websocket client
-        // (@ServerEndpoint("/course/{courseId}/quiz/form/{formId}/subscribe/{userId}/{jwt}")
         try {
             // Owner stats feedback & 2nd prof (not owner) tries to change question
             SocketClient client = new SocketClient();
             SocketClient client2 = new SocketClient();
             Session session = ContainerProvider.getWebSocketContainer().connectToServer(
                 client,
-                URI.create("ws://localhost:8081/course/" + courseId + "/quiz/form/" + formId + "/subscribe/" + Helper.createMockUser("Prof").getId() + "/" + Helper.createMockUser("Prof").getJwt())
-            );            
+                URI.create("ws://localhost:8081/course/" + courseId + "/quiz/form/" + formId + "/subscribe/" + prof.getId() + "/" + prof.getJwt())
+            );      
+            Thread.sleep(100);
+            Assertions.assertTrue(session.isOpen());      
             Session session2 = ContainerProvider.getWebSocketContainer().connectToServer(
                 client2,
-                URI.create("ws://localhost:8081/course/" + courseId + "/quiz/form/" + formId + "/subscribe/" + Helper.createMockUser("Prof2").getId() + "/" + Helper.createMockUser("Prof2").getJwt())
+                URI.create("ws://localhost:8081/course/" + courseId + "/quiz/form/" + formId + "/subscribe/" + prof2.getId() + "/" + prof2.getJwt())
             );
+            Thread.sleep(100);
+            Assertions.assertFalse(session2.isOpen());
             client.sendMessage("""
                 {
                     "action": "CHANGE_FORM_STATUS",
@@ -599,20 +682,40 @@ public class LiveQuizSocketTest {
         String courseId = course.getId().toString();
         String formId = course.getQuizForms().get(0).getId().toString();
 
+        // create user and sync the course-user relation
+        MockUser prof = Helper.createMockUser("Prof");
+        given().header("Authorization", "Bearer " + prof.getJwt()).get("/course").then().statusCode(200);
+        MockUser student = Helper.createMockUser("Student");
+        given().header("Authorization", "Bearer " + student.getJwt()).get("/course").then().statusCode(200);
+
+        // participate in the quiz form
+        given()
+            .header("Authorization", "Bearer " + student.getJwt())
+            .pathParam("courseId", courseId)
+            .pathParam("formId", formId)
+            .body("alias-student")
+            .when()
+            .post("/course/{courseId}/quiz/form/{formId}/participate")
+            .then()
+            .statusCode(200);
+
         // create a websocket client
-        // (@ServerEndpoint("/course/{courseId}/quiz/form/{formId}/subscribe/{userId}/{jwt}")
         try {
             // Owner stats feedback & 2nd prof (with student role) tries to change question
             SocketClient client = new SocketClient();
             SocketClient client2 = new SocketClient();
             Session session = ContainerProvider.getWebSocketContainer().connectToServer(
                 client,
-                URI.create("ws://localhost:8081/course/" + courseId + "/quiz/form/" + formId + "/subscribe/" + Helper.createMockUser("Prof").getId() + "/" + Helper.createMockUser("Prof").getJwt())
-            );            
+                URI.create("ws://localhost:8081/course/" + courseId + "/quiz/form/" + formId + "/subscribe/" + prof.getId() + "/" + prof.getJwt())
+            );
+            Thread.sleep(100);
+            Assertions.assertTrue(session.isOpen());       
             Session session2 = ContainerProvider.getWebSocketContainer().connectToServer(
                 client2,
-                URI.create("ws://localhost:8081/course/" + courseId + "/quiz/form/" + formId + "/subscribe/" + Helper.createMockUser("Student").getId() + "/" + Helper.createMockUser("Student").getJwt())
+                URI.create("ws://localhost:8081/course/" + courseId + "/quiz/form/" + formId + "/subscribe/" + student.getId() + "/" + student.getJwt())
             );
+            Thread.sleep(100);
+            Assertions.assertTrue(session2.isOpen());
             client.sendMessage("""
                 {
                     "action": "CHANGE_FORM_STATUS",
@@ -626,7 +729,7 @@ public class LiveQuizSocketTest {
                 }
             """); 
             Thread.sleep(500);
-            Assertions.assertEquals(0 , client2.getMessageQueue().size());
+            Assertions.assertEquals(1, client2.getMessageQueue().size());
             session.close();    
             session2.close();    
 
@@ -640,13 +743,19 @@ public class LiveQuizSocketTest {
 
     private void addResult(String courseId, String formId, String questionId) {
         // create a websocket client
-        // (@ServerEndpoint("/course/{courseId}/quiz/form/{formId}/subscribe/{userId}/{jwt}")
+
+        // create user and sync the course-user relation
+        MockUser prof = Helper.createMockUser("Prof");
+        given().header("Authorization", "Bearer " + prof.getJwt()).get("/course").then().statusCode(200);
+
         try {
             SocketClient client = new SocketClient();
             Session session = ContainerProvider.getWebSocketContainer().connectToServer(
                 client,
-                URI.create("ws://localhost:8081/course/" + courseId + "/quiz/form/" + formId + "/subscribe/" + Helper.createMockUser("Prof").getId() + "/" + Helper.createMockUser("Prof").getJwt())
+                URI.create("ws://localhost:8081/course/" + courseId + "/quiz/form/" + formId + "/subscribe/" + prof.getId() + "/" + prof.getJwt())
             );
+            Thread.sleep(100);
+            Assertions.assertTrue(session.isOpen());
             // starts quiz session
             client.sendMessage("""
                 {
@@ -712,6 +821,8 @@ public class LiveQuizSocketTest {
                 profClient,
                 URI.create("ws://localhost:8081/course/" + courseId + "/quiz/form/" + formId + "/subscribe/" + prof.getId() + "/" + prof.getJwt())
             );
+            Thread.sleep(100);
+            Assertions.assertTrue(profSession.isOpen());
 
             // set the form status to "WAITING" and check if it was set
             profClient.sendMessage("""
@@ -738,6 +849,7 @@ public class LiveQuizSocketTest {
                 URI.create("ws://localhost:8081/course/" + courseId + "/quiz/form/" + formId + "/subscribe/" + student1.getId() + "/" + student1.getJwt())
             );
             Thread.sleep(100);
+            Assertions.assertTrue(studentSession1.isOpen());
 
             Response response2 = given()
                                     .header("Authorization", "Bearer " + student2.getJwt())
@@ -753,6 +865,7 @@ public class LiveQuizSocketTest {
                 URI.create("ws://localhost:8081/course/" + courseId + "/quiz/form/" + formId + "/subscribe/" + student2.getId() + "/" + student2.getJwt())
             );
             Thread.sleep(100);
+            Assertions.assertTrue(studentSession2.isOpen());
 
             Response response3 = given()
                                     .header("Authorization", "Bearer " + student3.getJwt())
@@ -768,6 +881,7 @@ public class LiveQuizSocketTest {
                 URI.create("ws://localhost:8081/course/" + courseId + "/quiz/form/" + formId + "/subscribe/" + student3.getId() + "/" + student3.getJwt())
             );
             Thread.sleep(100);
+            Assertions.assertTrue(studentSession3.isOpen());
 
             // check if the quiz has now participants
             Assertions.assertEquals(3, courseService.getCourse(courseId).getQuizForms().get(0).getParticipants().size());

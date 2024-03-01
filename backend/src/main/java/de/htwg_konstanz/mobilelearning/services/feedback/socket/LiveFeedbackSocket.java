@@ -95,6 +95,13 @@ public class LiveFeedbackSocket {
             return;
         }
 
+        // check if user is student or owner of the course
+        if (!course.isStudent(userId) && !course.isOwner(userId)) {
+            System.out.println("User is not a student of the course");
+            session.close(new CloseReason(CloseReason.CloseCodes.VIOLATED_POLICY, "User is not a student of the course"));
+            return;
+        }
+
         // register the user (participate)
         Boolean isOwner = course.isOwner(userId);
         Boolean isParticipant = false;
@@ -104,13 +111,6 @@ public class LiveFeedbackSocket {
         if (!isOwner && !isParticipant) {
             System.out.println("User could not be added as participant");
             session.close(new CloseReason(CloseReason.CloseCodes.VIOLATED_POLICY, "User could not be added as participant"));
-            return;
-        }
-
-        // check if user is student of the course
-        if (!course.isStudent(userId) && !course.isOwner(userId)) {
-            System.out.println("User is not a student of the course");
-            session.close(new CloseReason(CloseReason.CloseCodes.VIOLATED_POLICY, "User is not a student of the course"));
             return;
         }
 

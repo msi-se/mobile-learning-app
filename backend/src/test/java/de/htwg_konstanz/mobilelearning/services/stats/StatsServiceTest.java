@@ -105,8 +105,6 @@ public class StatsServiceTest {
                             + "/subscribe/"
                             + prof.getId() + "/" + prof.getJwt()));
             Thread.sleep(100);
-            Assertions.assertNotNull(profSession);
-            Thread.sleep(100);
             Assertions.assertTrue(profSession.isOpen());
             Session student1Session = ContainerProvider.getWebSocketContainer().connectToServer(
                     student1Client,
@@ -114,16 +112,12 @@ public class StatsServiceTest {
                             + "/subscribe/"
                             + student1.getId() + "/" + student1.getJwt()));
             Thread.sleep(100);
-            Assertions.assertNotNull(student1Session);
-            Thread.sleep(100);
             Assertions.assertTrue(student1Session.isOpen());
             Session student2Session = ContainerProvider.getWebSocketContainer().connectToServer(
                     student2Client,
                     URI.create("ws://localhost:8081/course/" + courseId + "/quiz/form/" + formId
                             + "/subscribe/"
                             + student2.getId() + "/" + student2.getJwt()));
-            Thread.sleep(100);
-            Assertions.assertNotNull(student2Session);
             Thread.sleep(100);
             Assertions.assertTrue(student2Session.isOpen());
             Thread.sleep(100);
@@ -255,7 +249,6 @@ public class StatsServiceTest {
                     URI.create("ws://localhost:8081/course/" + courseId + "/quiz/form/" + formId
                             + "/subscribe/"
                             + prof.getId() + "/" + prof.getJwt()));
-            Assertions.assertNotNull(profSession);
             Thread.sleep(100);
             Assertions.assertTrue(profSession.isOpen());
             Thread.sleep(100);
@@ -264,8 +257,6 @@ public class StatsServiceTest {
                     URI.create("ws://localhost:8081/course/" + courseId + "/quiz/form/" + formId
                             + "/subscribe/"
                             + student1.getId() + "/" + student1.getJwt()));
-            Assertions.assertNotNull(student1Session);
-            Thread.sleep(100);
             Assertions.assertTrue(student1Session.isOpen());
             Thread.sleep(100);
             Session student2Session = ContainerProvider.getWebSocketContainer().connectToServer(
@@ -273,7 +264,6 @@ public class StatsServiceTest {
                     URI.create("ws://localhost:8081/course/" + courseId + "/quiz/form/" + formId
                             + "/subscribe/"
                             + student2.getId() + "/" + student2.getJwt()));
-            Assertions.assertNotNull(student2Session);
             Thread.sleep(100);
             Assertions.assertTrue(student2Session.isOpen());
 
@@ -406,7 +396,6 @@ public class StatsServiceTest {
                     URI.create("ws://localhost:8081/course/" + courseId + "/quiz/form/" + formId
                             + "/subscribe/"
                             + prof.getId() + "/" + prof.getJwt()));
-            Assertions.assertNotNull(profSession);
             Thread.sleep(100);
             Assertions.assertTrue(profSession.isOpen());
             Thread.sleep(100);
@@ -415,8 +404,6 @@ public class StatsServiceTest {
                     URI.create("ws://localhost:8081/course/" + courseId + "/quiz/form/" + formId
                             + "/subscribe/"
                             + student1.getId() + "/" + student1.getJwt()));
-            Assertions.assertNotNull(student1Session);
-            Thread.sleep(100);
             Assertions.assertTrue(student1Session.isOpen());
             Thread.sleep(100);
             Session student2Session = ContainerProvider.getWebSocketContainer().connectToServer(
@@ -424,7 +411,6 @@ public class StatsServiceTest {
                     URI.create("ws://localhost:8081/course/" + courseId + "/quiz/form/" + formId
                             + "/subscribe/"
                             + student2.getId() + "/" + student2.getJwt()));
-            Assertions.assertNotNull(student2Session);
             Thread.sleep(100);
             Assertions.assertTrue(student2Session.isOpen());
             Thread.sleep(100);
@@ -564,7 +550,6 @@ public class StatsServiceTest {
                     URI.create("ws://localhost:8081/course/" + courseId + "/feedback/form/" + formId
                             + "/subscribe/"
                             + prof.getId() + "/" + prof.getJwt()));
-            Assertions.assertNotNull(profSession);
             Thread.sleep(100);
             Assertions.assertTrue(profSession.isOpen());
             Thread.sleep(100);
@@ -573,8 +558,6 @@ public class StatsServiceTest {
                     URI.create("ws://localhost:8081/course/" + courseId + "/feedback/form/" + formId
                             + "/subscribe/"
                             + student1.getId() + "/" + student1.getJwt()));
-            Assertions.assertNotNull(student1Session);
-            Thread.sleep(100);
             Assertions.assertTrue(student1Session.isOpen());
             Thread.sleep(100);
             Session student2Session = ContainerProvider.getWebSocketContainer().connectToServer(
@@ -582,7 +565,6 @@ public class StatsServiceTest {
                     URI.create("ws://localhost:8081/course/" + courseId + "/feedback/form/" + formId
                             + "/subscribe/"
                             + student2.getId() + "/" + student2.getJwt()));
-            Assertions.assertNotNull(student2Session);
             Thread.sleep(100);
             Assertions.assertTrue(student2Session.isOpen());
             Thread.sleep(100);

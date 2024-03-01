@@ -215,7 +215,8 @@ public class FeedbackFormServiceTest {
                 client,
                 URI.create("ws://localhost:8081/course/" + courseId + "/feedback/form/" + formId + "/subscribe/" + Helper.createMockUser("Prof").getId() + "/" + Helper.createMockUser("Prof").getJwt())
             );
-            // starts feedbacksession
+            Thread.sleep(100);
+            Assertions.assertTrue(session.isOpen());
             client.sendMessage("""
                 {
                     "action": "CHANGE_FORM_STATUS",

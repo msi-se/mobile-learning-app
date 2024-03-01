@@ -104,19 +104,19 @@ public class LiveQuizSocket {
             return;
         }
 
+        // check if user is student of the course
+        if (!course.isStudent(userId) && !course.isOwner(userId)) {
+            System.out.println("User is not a student of the course");
+            session.close(new CloseReason(CloseReason.CloseCodes.VIOLATED_POLICY, "User is not a student of the course"));
+            return;
+        }
+
         // check if the user is owner or a participant of the form (is registered)
         Boolean isParticipant = form.isParticipant(userId);
         Boolean isOwner = course.isOwner(userId);
         if (!isParticipant && !isOwner) {
             System.out.println(String.format("User %s is not a participant or owner of the form", user.getUsername()));
             session.close(new CloseReason(CloseReason.CloseCodes.VIOLATED_POLICY, String.format("User %s is not a participant or owner of the form", user.getUsername())));
-            return;
-        }
-
-        // check if user is student of the course
-        if (!course.isStudent(userId) && !course.isOwner(userId)) {
-            System.out.println("User is not a student of the course");
-            session.close(new CloseReason(CloseReason.CloseCodes.VIOLATED_POLICY, "User is not a student of the course"));
             return;
         }
 
