@@ -7,12 +7,10 @@ services:
     container_name: mobile-learning-mongo
     environment:
       - MONGO_INITDB=mobilelearning
-    ports:
-      - 27017:27017
-    expose:
-      - 27017
     volumes:
       - ./mongo-data:/data/db
+    networks:
+      - proxy
 
   # java quarkus backend
   mobile-learning-backend:
@@ -37,10 +35,7 @@ services:
       - "traefik.http.routers.backend.tls.certresolver=prod"
       - "traefik.docker.network=proxy"
     environment:
-    # TODO: Make this working
-      - MONGODB_HOST=mobile-learning-mongo
-      - MONGODB_PORT=27017
-      - MONGODB_DATABASE=mobilelearning
+      - QUARKUS_MONGODB_CONNECTION_STRING=mongodb://mobile-learning-mongo:27017
     volumes:
       - ./backend/src/main/resources/privateKey.pem:/deployments/privateKey.pem
       - ./backend/src/main/resources/publicKey.pem:/deployments/publicKey.pem
