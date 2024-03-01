@@ -48,3 +48,6 @@ nb-configuration.xml
 
 # Metals
 .metals/
+
+# line counts
+.VSCodeCounter/
