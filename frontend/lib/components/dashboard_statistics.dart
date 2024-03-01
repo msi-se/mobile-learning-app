@@ -111,7 +111,7 @@ class _DashboardStatisticsWidgetState extends State<DashboardStatisticsWidget>
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                'Deine Statistiken',
+                                'Statistiken',
                                 style: TextStyle(
                                   color: Color(0xFF14181B),
                                   fontSize: 24,
@@ -149,7 +149,7 @@ class _DashboardStatisticsWidgetState extends State<DashboardStatisticsWidget>
                                 padding:
                                     EdgeInsetsDirectional.fromSTEB(0, 4, 0, 0),
                                 child: Text(
-                                  'Absolvierte Feedbacks',
+                                  'Von dir absolvierte Feedbacks',
                                   style: TextStyle(
                                     color: Color(0xFF57636C),
                                     fontSize: 12,
@@ -215,7 +215,7 @@ class _DashboardStatisticsWidgetState extends State<DashboardStatisticsWidget>
                                 padding:
                                     EdgeInsetsDirectional.fromSTEB(0, 4, 0, 0),
                                 child: Text(
-                                  'Absolvierte Quizze',
+                                  'Von dir absolvierte Quizze',
                                   style: TextStyle(
                                     color: Color(0xFF57636C),
                                     fontSize: 12,
@@ -243,7 +243,75 @@ class _DashboardStatisticsWidgetState extends State<DashboardStatisticsWidget>
                                 padding:
                                     EdgeInsetsDirectional.fromSTEB(0, 4, 0, 0),
                                 child: Text(
-                                  '⌀-Quiz-Position',
+                                  'Deine ⌀-Quiz-Position',
+                                  style: TextStyle(
+                                    color: Color(0xFF57636C),
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Padding(
+                    padding:
+                        const EdgeInsetsDirectional.fromSTEB(16, 12, 16, 12),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.max,
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Expanded(
+                          child: Column(
+                            mainAxisSize: MainAxisSize.max,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              Text(
+                                _stats.globalStats.completedQuizForms
+                                    .toString(),
+                                style: const TextStyle(
+                                  color: Color(0xFF14181B),
+                                  fontSize: 36,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                              const Padding(
+                                padding:
+                                    EdgeInsetsDirectional.fromSTEB(0, 4, 0, 0),
+                                child: Text(
+                                  'An der HTWG absolvierte Quizze',
+                                  style: TextStyle(
+                                    color: Color(0xFF57636C),
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        Expanded(
+                          child: Column(
+                            mainAxisSize: MainAxisSize.max,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              Text(
+                                _stats.globalStats.completedFeedbackForms
+                                    .toString(),
+                                style: const TextStyle(
+                                  color: Color(0xFF14181B),
+                                  fontSize: 36,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                              const Padding(
+                                padding:
+                                    EdgeInsetsDirectional.fromSTEB(0, 4, 0, 0),
+                                child: Text(
+                                  'An der HTWG absolvierte Feedbacks',
                                   style: TextStyle(
                                     color: Color(0xFF57636C),
                                     fontSize: 12,
