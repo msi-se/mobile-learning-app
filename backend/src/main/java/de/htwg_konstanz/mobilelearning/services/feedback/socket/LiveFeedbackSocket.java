@@ -23,6 +23,7 @@ import de.htwg_konstanz.mobilelearning.repositories.CourseRepository;
 import de.htwg_konstanz.mobilelearning.repositories.UserRepository;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
+import jakarta.websocket.CloseReason;
 import jakarta.websocket.OnClose;
 import jakarta.websocket.OnError;
 import jakarta.websocket.OnMessage;
@@ -56,7 +57,6 @@ public class LiveFeedbackSocket {
     /**
      * Method called when a new connection is opened.
      * User has to either student or owner of the course to connect.
-     * TODO: instead of just returning send a REFUSED message to the client (response.getHeaders().put(HandshakeResponse.SEC_WEBSOCKET_ACCEPT,finalEmpty);)
      * 
      * @param session  Session that is created for the connection.
      * @param courseId
@@ -69,60 +69,65 @@ public class LiveFeedbackSocket {
     public void onOpen(Session session, @PathParam("courseId") String courseId, @PathParam("formId") String formId,
             @PathParam("userId") String userId, @PathParam("jwt") String jwt) throws Exception {
         // userId from Jwt has to match userId from path
-        if (jwtService.getJwtClaims(jwt).getSubject().equals(userId)) {
-
-            // check if course, form and user exist
-            Course course = courseRepository.findById(new ObjectId(courseId));
-            if (course == null) {
-                System.out.println("Course not found");
-                return;
-            }
-            FeedbackForm form = course.getFeedbackFormById(new ObjectId(formId));
-            if (form == null) {
-                System.out.println("Form not found");
-                return;
-            }
-            User user = userRepository.findById(new ObjectId(userId));
-            if (user == null) {
-                System.out.println("User not found");
-                return;
-            }
-
-            // register the user (participate)
-            Boolean isOwner = course.isOwner(userId);
-            Boolean isParticipant = false;
-            if (!isOwner) {
-                isParticipant = form.addParticipant(new ObjectId(userId));
-            }
-            if (!isOwner && !isParticipant) {
-                System.out.println("User could not be added as participant");
-                return;
-            }
-
-            // check if user is student of the course
-            if (!course.isStudent(userId) && !course.isOwner(userId)) {
-                System.out.println("User is not a student of the course");
-                return;
-            }
-
-            // check if the user is a participant or a owner (by checking if the user is
-            // owner of the course)
-            SocketConnectionType type = isOwner ? SocketConnectionType.OWNER : SocketConnectionType.PARTICIPANT;
-
-            // add the connection to the list
-            SocketConnection socketMember = new SocketConnection(session, courseId, formId, userId, type);
-            connections.put(session.getId(), socketMember);
-
-            // send a message to the owner to notify that a new participant has joined
-            if (isParticipant) {
-                courseRepository.update(course);
-                LiveFeedbackSocketMessage message = new LiveFeedbackSocketMessage("PARTICIPANT_JOINED", null, null, null,
-                        form);
-                this.broadcast(message, courseId, formId);
-            }
-
-        } else {
+        if (!jwtService.getJwtClaims(jwt).getSubject().equals(userId)) {
             connections.remove(session.getId());
+            session.close(new CloseReason(CloseReason.CloseCodes.VIOLATED_POLICY, "User not authorized"));
+            return;
+        }
+
+        // check if course, form and user exist
+        Course course = courseRepository.findById(new ObjectId(courseId));
+        if (course == null) {
+            System.out.println("Course not found");
+            session.close(new CloseReason(CloseReason.CloseCodes.VIOLATED_POLICY, "Course not found"));
+            return;
+        }
+        FeedbackForm form = course.getFeedbackFormById(new ObjectId(formId));
+        if (form == null) {
+            System.out.println("Form not found");
+            session.close(new CloseReason(CloseReason.CloseCodes.VIOLATED_POLICY, "Form not found"));
+            return;
+        }
+        User user = userRepository.findById(new ObjectId(userId));
+        if (user == null) {
+            System.out.println("User not found");
+            session.close(new CloseReason(CloseReason.CloseCodes.VIOLATED_POLICY, "User not found"));
+            return;
+        }
+
+        // check if user is student or owner of the course
+        if (!course.isStudent(userId) && !course.isOwner(userId)) {
+            System.out.println("User is not a student of the course");
+            session.close(new CloseReason(CloseReason.CloseCodes.VIOLATED_POLICY, "User is not a student of the course"));
+            return;
+        }
+
+        // register the user (participate)
+        Boolean isOwner = course.isOwner(userId);
+        Boolean isParticipant = false;
+        if (!isOwner) {
+            isParticipant = form.addParticipant(new ObjectId(userId));
+        }
+        if (!isOwner && !isParticipant) {
+            System.out.println("User could not be added as participant");
+            session.close(new CloseReason(CloseReason.CloseCodes.VIOLATED_POLICY, "User could not be added as participant"));
+            return;
+        }
+
+        // check if the user is a participant or a owner (by checking if the user is
+        // owner of the course)
+        SocketConnectionType type = isOwner ? SocketConnectionType.OWNER : SocketConnectionType.PARTICIPANT;
+
+        // add the connection to the list
+        SocketConnection socketMember = new SocketConnection(session, courseId, formId, userId, type);
+        connections.put(session.getId(), socketMember);
+
+        // send a message to the owner to notify that a new participant has joined
+        if (isParticipant) {
+            courseRepository.update(course);
+            LiveFeedbackSocketMessage message = new LiveFeedbackSocketMessage("PARTICIPANT_JOINED", null, null, null,
+                    form);
+            this.broadcast(message, courseId, formId);
         }
     }
 
@@ -216,8 +221,7 @@ public class LiveFeedbackSocket {
         });
     }
 
-    private Boolean evaluateMessage(LiveFeedbackSocketMessage feedbackSocketMessage, String courseId, String formId,
-            String userId) {
+    private Boolean evaluateMessage(LiveFeedbackSocketMessage feedbackSocketMessage, String courseId, String formId, String userId) {
 
         // evaluate action
         if (feedbackSocketMessage.action == null || feedbackSocketMessage.action.equals("")) {
@@ -225,28 +229,29 @@ public class LiveFeedbackSocket {
             return false;
         }
 
+        // if the user is not an owner or participant, return
+        User user = userRepository.findById(new ObjectId(userId));
+        if (user == null) { return false; }
+        Course course = courseRepository.findById(new ObjectId(courseId));
+        if (course == null) { return false; }
+        if (!course.isOwner(userId) && !course.isStudent(userId)) { return false; }
+
         if (feedbackSocketMessage.action.equals("CHANGE_FORM_STATUS")) {
-            return this.changeFormStatus(feedbackSocketMessage, courseId, formId, userId);
+            return this.changeFormStatus(feedbackSocketMessage, course, formId, user);
         }
 
         if (feedbackSocketMessage.action.equals("ADD_RESULT")) {
-            return this.addResult(feedbackSocketMessage, courseId, formId, userId);
+            return this.addResult(feedbackSocketMessage, course, formId, user);
         }
 
         return false;
     };
 
-    private Boolean changeFormStatus(LiveFeedbackSocketMessage feedbackSocketMessage, String courseId, String formId,
-            String userId) {
-
+    private Boolean changeFormStatus(LiveFeedbackSocketMessage feedbackSocketMessage, Course course, String formId,
+            User user) {
 
         // check if the user is an owner of the course
-        Course course = courseRepository.findById(new ObjectId(courseId));
-        if (course == null) {
-            System.out.println("Course not found");
-            return false;
-        }
-        if (!course.isOwner(userId)) {
+        if (!course.isOwner(user.getId())) {
             System.out.println("Not an owner of the course");
             return false;
         }
@@ -281,13 +286,13 @@ public class LiveFeedbackSocket {
             // send the event to all receivers
             LiveFeedbackSocketMessage outgoingMessage = new LiveFeedbackSocketMessage("RESULT_ADDED",
                     form.status.toString(), null, null, form);
-            this.broadcast(outgoingMessage, courseId, formId);
+            this.broadcast(outgoingMessage, course.getId().toHexString(), formId);
         }
 
         // send the updated form to all receivers (stringify the form)
         LiveFeedbackSocketMessage outgoingMessage = new LiveFeedbackSocketMessage("FORM_STATUS_CHANGED",
                 form.status.toString(), null, null, form);
-        this.broadcast(outgoingMessage, courseId, formId);
+        this.broadcast(outgoingMessage, course.getId().toHexString(), formId);
 
         // update the userstats of the participants and the global stats
         if (formStatusEnum == FormStatus.FINISHED) {
@@ -302,8 +307,8 @@ public class LiveFeedbackSocket {
         return true;
     };
 
-    private Boolean addResult(LiveFeedbackSocketMessage feedbackSocketMessage, String courseId, String formId,
-            String userId) {
+    private Boolean addResult(LiveFeedbackSocketMessage feedbackSocketMessage, Course course, String formId,
+            User user) {
 
         System.out.println("Add result");
 
@@ -321,11 +326,6 @@ public class LiveFeedbackSocket {
         }
 
         // get the form
-        Course course = courseRepository.findById(new ObjectId(courseId));
-        if (course == null) {
-            System.out.println("Course not found");
-            return false;
-        }
         FeedbackForm form = course.getFeedbackFormById(new ObjectId(formId));
         if (form == null) {
             System.out.println("Form not found");
@@ -340,7 +340,7 @@ public class LiveFeedbackSocket {
         }
 
         // add the result
-        String hashedUserId = Hasher.hash(userId);
+        String hashedUserId = Hasher.hash(user.getId().toHexString());
         Result result = new Result(hashedUserId, feedbackSocketMessage.resultValues);
         Boolean wasResultAdded = element.addResult(result);
         if (!wasResultAdded) {
@@ -355,7 +355,7 @@ public class LiveFeedbackSocket {
         LiveFeedbackSocketMessage outgoingMessage = new LiveFeedbackSocketMessage("RESULT_ADDED", null,
                 feedbackSocketMessage.resultElementId, feedbackSocketMessage.resultValues,
                 form);
-        this.broadcast(outgoingMessage, courseId, formId);
+        this.broadcast(outgoingMessage, course.getId().toHexString(), formId);
         return true;
     };
 

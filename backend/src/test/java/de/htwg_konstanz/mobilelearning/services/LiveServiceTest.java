@@ -101,6 +101,8 @@ public class LiveServiceTest {
                 profClient,
                 URI.create("ws://localhost:8081/course/" + courseId + "/feedback/form/" + feedbackFormId + "/subscribe/" + mockProf.getId() + "/" + mockProf.getJwt())
             );
+            Thread.sleep(100);
+            Assertions.assertTrue(profSession.isOpen());
 
             // set the form status to "WAITING" and check if it was set
             profClient.sendMessage("""
@@ -136,6 +138,8 @@ public class LiveServiceTest {
                 profClient,
                 URI.create("ws://localhost:8081/course/" + courseId + "/quiz/form/" + quizFormId + "/subscribe/" + mockProf.getId() + "/" + mockProf.getJwt())
             );
+            Thread.sleep(100);
+            Assertions.assertTrue(profSession.isOpen());
 
             // set the form status to "WAITING" and check if it was set
             profClient.sendMessage("""
