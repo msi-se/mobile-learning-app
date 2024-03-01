@@ -215,7 +215,7 @@ public class QuizFormServiceTest {
                         "resultValues": ["1"]
                     }
                     """, questionId));
-            Thread.sleep(1000);
+            Thread.sleep(100);
             session.close();
 
             // check if the form status has changed

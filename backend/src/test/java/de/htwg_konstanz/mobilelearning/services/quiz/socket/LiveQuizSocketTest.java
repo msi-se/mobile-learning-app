@@ -67,7 +67,7 @@ public class LiveQuizSocketTest {
                     "formStatus": "STARTED"
                 }
             """);
-            Thread.sleep(1000);
+            Thread.sleep(100);
             session.close();
 
             // check if the form status has changed
@@ -102,7 +102,7 @@ public class LiveQuizSocketTest {
                     "formStatus": "STARTED"
                 }
             """);
-            Thread.sleep(1000);
+            Thread.sleep(100);
             session.close();
 
             // check if the form status has not changed
@@ -139,7 +139,7 @@ public class LiveQuizSocketTest {
                     "formStatus": "STARTED"
                 }
             """);
-            Thread.sleep(1000);
+            Thread.sleep(100);
             session.close();
 
             // check if the form status has not changed
@@ -248,7 +248,7 @@ public class LiveQuizSocketTest {
                     "formStatus": "FINISHED"
                 }
             """);
-            Thread.sleep(1000);
+            Thread.sleep(100);
             session.close();
 
             // check if the form status has changed
@@ -296,7 +296,7 @@ public class LiveQuizSocketTest {
                     "formStatus": "FINISHED"
                 }
             """);
-            Thread.sleep(1000);
+            Thread.sleep(100);
             session.close();
             session2.close();
 
@@ -346,7 +346,7 @@ public class LiveQuizSocketTest {
                     "formStatus": "FINISHED"
                 }
             """);
-            Thread.sleep(1000);
+            Thread.sleep(100);
             session.close();
             session2.close();
 
@@ -424,7 +424,7 @@ public class LiveQuizSocketTest {
                     "formStatus": "NOT_STARTED"
                 }
             """);
-            Thread.sleep(1000);
+            Thread.sleep(100);
             session.close();
             Response responseCleared = given()
                                             .header("Authorization", "Bearer " + Helper.createMockUser("Prof").getJwt())
@@ -525,7 +525,7 @@ public class LiveQuizSocketTest {
             Assertions.assertEquals("FORM_STATUS_CHANGED", message.action);
             Assertions.assertEquals("FINISHED", message.formStatus);
 
-            Thread.sleep(1000);
+            Thread.sleep(100);
             session.close();
 
             // check if the form status has changed
@@ -662,7 +662,7 @@ public class LiveQuizSocketTest {
                     "resultValues": ["1"]
                 }
             """, questionId));
-            Thread.sleep(1000);
+            Thread.sleep(100);
             session.close();
 
             // check if the form status has changed
@@ -767,7 +767,7 @@ public class LiveQuizSocketTest {
                 studentClient,
                 URI.create("ws://localhost:8081/course/" + courseId + "/quiz/form/" + formId + "/subscribe/" + student3.getId() + "/" + student3.getJwt())
             );
-            Thread.sleep(1000);
+            Thread.sleep(100);
 
             // check if the quiz has now participants
             Assertions.assertEquals(3, courseService.getCourse(courseId).getQuizForms().get(0).getParticipants().size());
