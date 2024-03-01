@@ -75,50 +75,53 @@ class _SingleChoiceFeedbackResultState
 
     // create a simple bar chart
     var bars = <Widget>[];
-    for (var optionDerivation in _optionDerivations) {
+    for (final (_, optionDerivation) in _optionDerivations.indexed) {
       bars.add(
-        SizedBox(
-          height: 20,
-          child: Row(
-            children: [
-              SizedBox(
-                width: 150,
-                child: Align(
-                  alignment: Alignment.centerRight,
+        Column(
+          children: [
+            const SizedBox(height: 5),
+            Align(
+              alignment: Alignment.center,
+              child: Text(
+                optionDerivation.option,
+                style: TextStyle(
+                  color: colors.onBackground,
+                  fontWeight: FontWeight.normal,
+                  fontSize: 20,
+                ),
+              ),
+            ),
+            Row(
+              children: [
+                SizedBox(
+                  width: 20,
                   child: Text(
-                    optionDerivation.option,
+                    "${optionDerivation.count}",
                     style: TextStyle(
                       color: colors.onBackground,
+                      fontWeight: FontWeight.normal,
                     ),
                   ),
                 ),
-              ),
-              Expanded(
-                child: Padding(
-                  padding: const EdgeInsets.all(4),
-                  child: SizedBox(
-                    height: 20,
-                    child: LinearProgressIndicator(
-                      value: optionDerivation.normalizedPercentage,
-                      backgroundColor: colors.background,
-                      valueColor: AlwaysStoppedAnimation<Color>(
-                        colors.primary,
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.all(2),
+                    child: SizedBox(
+                      height: 20,
+                      child: LinearProgressIndicator(
+                        value: optionDerivation.normalizedPercentage,
+                        backgroundColor: colors.secondary.withOpacity(0.1),
+                        valueColor: AlwaysStoppedAnimation<Color>(
+                          colors.primary
+                        ),
                       ),
                     ),
                   ),
                 ),
-              ),
-              SizedBox(
-                width: 50,
-                child: Text(
-                  "${optionDerivation.count}",
-                  style: TextStyle(
-                    color: colors.onBackground,
-                  ),
-                ),
-              ),
-            ],
-          ),
+              ],
+            ),
+            const SizedBox(height: 5),
+          ],
         ),
       );
     }

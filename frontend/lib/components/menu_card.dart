@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-class MenuCard extends StatelessWidget {
+class MenuCard extends StatefulWidget {
   final String title;
   final String description;
   final List<RowData> rowData;
@@ -13,47 +13,78 @@ class MenuCard extends StatelessWidget {
   }) : super(key: key);
 
   @override
+  State<MenuCard> createState() => _MenuCardState();
+}
+
+class _MenuCardState extends State<MenuCard> with SingleTickerProviderStateMixin {
+  late AnimationController _animationController;
+  late Animation<double> _opacityAnimation;
+
+  @override
+  void initState() {
+    super.initState();
+    _animationController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 500),
+    );
+    _opacityAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(CurvedAnimation(
+      parent: _animationController,
+      curve: Curves.easeIn,
+    ));
+    _animationController.forward();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(10),
-      child: Container(
-        decoration: BoxDecoration(
-          color: const Color(0xFFD9E5EC),
-          borderRadius: BorderRadius.circular(20),
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Padding(
-              padding: const EdgeInsets.all(10),
-              child: Text(
-                title,
-                style: const TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
+    return FadeTransition(
+      opacity: _opacityAnimation,
+      child: Padding(
+        padding: const EdgeInsets.all(10),
+        child: Container(
+          decoration: BoxDecoration(
+            color: const Color(0xFFD9E5EC),
+            borderRadius: BorderRadius.circular(20),
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(10),
+                child: Text(
+                  widget.title,
+                  style: const TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
               ),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(10),
-              child: Text(
-                description,
-                textAlign: TextAlign.center,
-                style: const TextStyle(fontSize: 16),
+              Padding(
+                padding: const EdgeInsets.all(10),
+                child: Text(
+                  widget.description,
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(fontSize: 16),
+                ),
               ),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(10),
-              child: Row(
-                mainAxisSize: MainAxisSize.max,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: rowData.map((data) => data.build()).toList(),
+              Padding(
+                padding: const EdgeInsets.all(10),
+                child: Row(
+                  mainAxisSize: MainAxisSize.max,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: widget.rowData.map((data) => data.build()).toList(),
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    _animationController.dispose();
+    super.dispose();
   }
 }
 
@@ -67,27 +98,18 @@ class RowData {
   });
 
   Widget build() {
-    return Row(
-      mainAxisSize: MainAxisSize.max,
-      children: [
-        Padding(
-          padding: const EdgeInsets.all(2),
-          child: Text(
-            label,
-            style: const TextStyle(
-              fontSize: 12,
-              fontWeight: FontWeight.w300,
-            ),
+    return Flexible(
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 4.0),
+        child: Text(
+          '$label $value',
+          style: const TextStyle(
+            fontSize: 12,
+            fontWeight: FontWeight.w300,
           ),
+          overflow: TextOverflow.ellipsis,
         ),
-        Padding(
-          padding: const EdgeInsets.all(2),
-          child: Text(
-            value,
-            style: const TextStyle(fontSize: 12),
-          ),
-        ),
-      ],
+      ),
     );
   }
 }
