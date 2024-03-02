@@ -1,0 +1,93 @@
+version: "3.1"
+services:
+  
+  # mongo db
+  mobile-learning-mongo:
+    image: mongo
+    container_name: mobile-learning-mongo
+    environment:
+      - MONGO_INITDB=mobilelearning
+    volumes:
+      - ./mongo-data:/data/db
+    networks:
+      - proxy
+
+  # java quarkus backend
+  mobile-learning-backend:
+    container_name: mobile-learning-backend
+    build:
+      context: ./backend
+      dockerfile: src/main/docker/Dockerfile.jvm
+      # dockerfile: Dockerfile
+    restart: always
+    ports:
+      - 8080:8080
+    depends_on:
+      - mobile-learning-mongo
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.backend.entrypoints=websecure"
+      - "traefik.http.routers.backend.rule=Host(`loco.in.htwg-konstanz.de`) && PathPrefix(`/api`)"
+      - "traefik.http.routers.backend.middlewares=api-stripprefix"
+      - "traefik.http.middlewares.api-stripprefix.stripprefix.prefixes=/api"
+      - "traefik.http.middlewares.api-stripprefix.stripprefix.forceSlash=false"
+      - "traefik.http.routers.backend.tls=true"
+      - "traefik.http.routers.backend.tls.certresolver=prod"
+      - "traefik.docker.network=proxy"
+    environment:
+      - QUARKUS_MONGODB_CONNECTION_STRING=mongodb://mobile-learning-mongo:27017
+    volumes:
+      - ./backend/src/main/resources/privateKey.pem:/deployments/privateKey.pem
+      - ./backend/src/main/resources/publicKey.pem:/deployments/publicKey.pem
+      - ./backend/src/main/resources/application.properties:/deployments/application.properties
+    networks:
+      - proxy
+
+  # flutter frontend
+  mobile-learning-frontend:
+    restart: always
+    container_name: mobile-learning-frontend
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - "5000:80"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.frontend.entrypoints=websecure"
+      - "traefik.http.routers.frontend.rule=Host(`loco.in.htwg-konstanz.de`)"
+      - "traefik.http.routers.frontend.tls=true"
+      - "traefik.http.routers.frontend.tls.certresolver=prod"
+      - "traefik.docker.network=proxy"
+    networks:
+      - proxy
+
+  traefik-proxy:
+    container_name: traefik-proxy
+    image: traefik:v2.11
+    restart: always
+    command:
+      - "--log.level=DEBUG"
+      - "--api.insecure=true"
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+      - "--entrypoints.websecure.address=:443"
+      - "--certificatesresolvers.prod.acme.tlschallenge=true"
+      - "--certificatesresolvers.prod.acme.email=fabian.klimpel@htwg-konstanz.de"
+      - "--certificatesresolvers.prod.acme.storage=/letsencrypt/acme.json"
+    ports:
+      # http ports
+      - "81:80"
+      - "443:443"
+      # web ui (enabled by --api.insecure=true)
+      - "8380:8080"
+    volumes:
+      - "./letsencrypt:/letsencrypt"
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    networks:
+      - proxy
+
+networks:
+  proxy:
+    name: proxy
+    driver: bridge
