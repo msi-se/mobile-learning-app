@@ -128,19 +128,6 @@ class _QuizControlPageState extends State<QuizControlPage> {
     });
   }
 
-  void addUserName() {
-    setState(() {
-      _userNames.add(
-          'Neuer fffffffffffffffffffffffffffffffffffffffName ${_userNames.length + 1}');
-    });
-  }
-
-  void addUserName2() {
-    setState(() {
-      _userNames.add('Neuer andres ${_userNames.length + 1}');
-    });
-  }
-
   void startWebsocket() {
     _socketChannel = WebSocketChannel.connect(
       Uri.parse(
@@ -353,10 +340,11 @@ class _QuizControlPageState extends State<QuizControlPage> {
                           children: List.generate(_userNames.length, (index) {
                             return Center(
                               child: Container(
-                                padding: EdgeInsets.symmetric(
+                                padding: const EdgeInsets.symmetric(
                                     horizontal: 10, vertical: 3),
                                 decoration: BoxDecoration(
-                                  color: Color.fromARGB(255, 165, 224, 211),
+                                  color:
+                                      const Color.fromARGB(255, 165, 224, 211),
                                   borderRadius: BorderRadius.circular(20.0),
                                 ),
                                 child: Text(
@@ -385,9 +373,6 @@ class _QuizControlPageState extends State<QuizControlPage> {
                       ),
                     ),
                   ),
-                  ElevatedButton(onPressed: addUserName, child: Text('bing')),
-                  ElevatedButton(
-                      onPressed: addUserName2, child: Text('chilling')),
                   const SizedBox(height: 50)
                 ]));
       }
