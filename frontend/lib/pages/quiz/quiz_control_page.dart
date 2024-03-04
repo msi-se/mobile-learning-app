@@ -133,11 +133,19 @@ class _QuizControlPageState extends State<QuizControlPage> {
       Uri.parse(
           "${getBackendUrl(protocol: "ws")}/course/$_courseId/quiz/form/$_formId/subscribe/$_userId/${getSession()!.jwt}"),
     );
-    print('New Socket Conn. established.');
+    if (_socketChannel != null) {
+      _socketChannel!.sink.add(jsonEncode({
+        "action": "CHANGE_FORM_STATUS",
+        "formStatus": "WAITING",
+        "roles": _roles,
+        "userId": _userId,
+      }));
+    }
 
     _socketChannel!.stream.listen((event) {
       print(event);
       var data = jsonDecode(event);
+
       if (data["action"] == "FORM_STATUS_CHANGED") {
         var form = QuizForm.fromJson(data["form"]);
         setState(() {
@@ -210,6 +218,10 @@ class _QuizControlPageState extends State<QuizControlPage> {
         "userId": _userId,
       }));
     }
+    setState(() {
+      _participantCounter = 0;
+      _userNames = _userNames = [];
+    });
   }
 
   void next() {
@@ -281,7 +293,7 @@ class _QuizControlPageState extends State<QuizControlPage> {
         backgroundColor: colors.primary,
       );
 
-      if (_form.status == "NOT_STARTED") {
+      if (_form.status == "NOT_STARTED" || _form.status == "WAITING") {
         var code = _form.connectCode;
         code = "${code.substring(0, 3)} ${code.substring(3, 6)}";
 

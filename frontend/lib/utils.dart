@@ -14,6 +14,6 @@ String getBackendUrl({String protocol = 'http'}) {
 
     // if the domain is not localhost, use the deployed backend
   } else {
-    return '$protocol://$domain/api';
+    return '${protocol}s://$domain/api';
   }
 }

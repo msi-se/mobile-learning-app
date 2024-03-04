@@ -2,7 +2,4 @@
 personal-playground/
 .DS_Store
 mongo-data
-
-
-# line counts
-.VSCodeCounter/
+letsencrypt/

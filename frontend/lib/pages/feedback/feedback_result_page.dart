@@ -137,9 +137,18 @@ class _FeedbackResultPageState extends State<FeedbackResultPage> {
       Uri.parse(
           "${getBackendUrl(protocol: "ws")}/course/$_courseId/feedback/form/$_formId/subscribe/$_userId/${getSession()!.jwt}"),
     );
+    if (_socketChannel != null) {
+      _socketChannel!.sink.add(jsonEncode({
+        "action": "CHANGE_FORM_STATUS",
+        "formStatus": "WAITING",
+        "roles": _roles,
+        "userId": _userId,
+      }));
+    }
 
     _socketChannel!.stream.listen((event) {
       var data = jsonDecode(event);
+
       if (data["action"] == "FORM_STATUS_CHANGED") {
         setState(() {
           _form.status = data["formStatus"];
@@ -194,6 +203,9 @@ class _FeedbackResultPageState extends State<FeedbackResultPage> {
         "userId": _userId,
       }));
     }
+    setState(() {
+      _participantCounter = 0;
+    });
   }
 
   List<Map<String, dynamic>> getResults(Map<String, dynamic> json) {
@@ -240,7 +252,7 @@ class _FeedbackResultPageState extends State<FeedbackResultPage> {
         backgroundColor: colors.primary,
       );
 
-      if (_form.status == "NOT_STARTED") {
+      if (_form.status == "WAITING" || _form.status == "NOT_STARTED") {
         var code = _form.connectCode;
         code = "${code.substring(0, 3)} ${code.substring(3, 6)}";
 

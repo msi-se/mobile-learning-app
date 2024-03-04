@@ -54,9 +54,11 @@ class _FeedbackPreviewPageState extends State<FeedbackPreviewPage> {
           "AUTHORIZATION": "Bearer ${getSession()!.jwt}",
         },
       );
+
       if (response.statusCode == 200) {
         setState(() {
           _form = FeedbackForm.fromJson(json.decode(response.body));
+
           _loading = false;
           _fetchResult = 'success';
         });
@@ -148,7 +150,8 @@ class _FeedbackPreviewPageState extends State<FeedbackPreviewPage> {
                                 });
                             fetchForm();
                           },
-                          child: _form!.status == "NOT_STARTED"
+                          child: _form?.status == "NOT_STARTED" ||
+                                  _form?.status == "WAITING"
                               ? const Text('Starten')
                               : const Text('Ergebnisse'),
                         ),
@@ -159,7 +162,7 @@ class _FeedbackPreviewPageState extends State<FeedbackPreviewPage> {
                           onPressed: () async {
                             final _ = await Navigator.pushNamed(
                                 context, '/attend-feedback',
-                                arguments: _form!.connectCode);
+                                arguments: _form?.connectCode);
                             fetchForm();
                           },
                           child: const Text('Beitreten'),
@@ -176,7 +179,7 @@ class _FeedbackPreviewPageState extends State<FeedbackPreviewPage> {
             child: ListView.builder(
               shrinkWrap: true,
               physics: const NeverScrollableScrollPhysics(),
-              itemCount: _form!.questions.length,
+              itemCount: _form?.questions.length,
               itemBuilder: (context, index) {
                 var element = _form!.questions[index];
                 return Card(
