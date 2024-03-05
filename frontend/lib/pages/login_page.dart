@@ -25,8 +25,6 @@ class _LoginPageState extends State<LoginPage> {
   bool _isLoading = false;
   bool _isCheckingLoggedIn = true;
 
-  final GlobalKey _sizedBoxKey = GlobalKey();
-
   @override
   void initState() {
     super.initState();
@@ -143,7 +141,6 @@ class _LoginPageState extends State<LoginPage> {
           if (constraints.maxWidth > 600) {
             return Center(
               child: SizedBox(
-                key: _sizedBoxKey,
                 width: 480,
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,

@@ -5,6 +5,8 @@ import java.util.List;
 
 import org.bson.types.ObjectId;
 
+import de.htwg_konstanz.mobilelearning.models.stats.UserStats;
+
 public class User {
     public ObjectId id;
 	public String email;
@@ -13,6 +15,7 @@ public class User {
     public String password;
     public List<String> roles;
     public List<ObjectId> courses;
+    public UserStats stats;
 
     public User() {
     }
@@ -34,6 +37,7 @@ public class User {
         this.password = password;
         this.roles = new ArrayList<String>();
         this.courses = new ArrayList<ObjectId>();
+        this.stats = new UserStats();
 
         // check if email, name and username have ": " in it and if so, only take the part after it
         if (this.email.contains(": ")) {
@@ -187,5 +191,12 @@ public class User {
         this.courses.clear();
     }
 
+    public UserStats getStats() {
+        return this.stats;
+    }
+
+    public void setStats(UserStats stats) {
+        this.stats = stats;
+    }
 
 }

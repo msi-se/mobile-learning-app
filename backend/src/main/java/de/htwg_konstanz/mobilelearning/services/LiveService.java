@@ -8,6 +8,7 @@ import org.eclipse.microprofile.jwt.JsonWebToken;
 import de.htwg_konstanz.mobilelearning.enums.FormStatus;
 import de.htwg_konstanz.mobilelearning.models.Course;
 import de.htwg_konstanz.mobilelearning.models.Form;
+import de.htwg_konstanz.mobilelearning.models.FormShell;
 import de.htwg_konstanz.mobilelearning.models.auth.User;
 import de.htwg_konstanz.mobilelearning.models.auth.UserRole;
 import de.htwg_konstanz.mobilelearning.repositories.CourseRepository;
@@ -45,7 +46,7 @@ public class LiveService {
     @Produces(MediaType.APPLICATION_JSON)
     @Path("")
     @RolesAllowed({ UserRole.PROF, UserRole.STUDENT })
-    public List<Form> getLiveForms(@QueryParam("password") String password) {
+    public List<FormShell> getLiveForms(@QueryParam("password") String password) {
         
         // update the courses linked to the user
         User user = userRepository.findByUsername(jwt.getName());
@@ -55,20 +56,22 @@ public class LiveService {
         courseService.updateCourseLinkedToUser(user, password);
 
         // collect all forms which are started
-        List<Form> forms = new ArrayList<Form>();
+        List<FormShell> forms = new ArrayList<FormShell>();
         List<Course> courses = courseRepository.listAllForOwnerAndStudent(user);
         for (Course course : courses) {
             for (Form form : course.getFeedbackForms()) {
-                if (form.getStatus() == FormStatus.STARTED) {
-                    forms.add(form);
+                if (form.getStatus() == FormStatus.STARTED || form.getStatus() == FormStatus.WAITING) {
+                    // convert the forms to form shells to not have all the data in them (e.g. the questions)
+                    forms.add(new FormShell(form.getId(), form.getCourseId(), form.getName(), form.getDescription(), form.getStatus(), form.getConnectCode(), form.getKey(), "feedback", course.getName()));
                 }
             }
             for (Form form : course.getQuizForms()) {
-                if (form.getStatus() == FormStatus.STARTED) {
-                    forms.add(form);
+                if (form.getStatus() == FormStatus.STARTED || form.getStatus() == FormStatus.WAITING) {
+                    forms.add(new FormShell(form.getId(), form.getCourseId(), form.getName(), form.getDescription(), form.getStatus(), form.getConnectCode(), form.getKey(), "quiz", course.getName()));
                 }
             }
         }
+
         return forms;
     }
 
@@ -95,7 +98,7 @@ public class LiveService {
         List<Course> courses = courseRepository.listAllForOwnerAndStudent(user);
         for (Course course : courses) {
             for (Form form : course.getFeedbackForms()) {
-                if (form.getStatus() == FormStatus.STARTED) {
+                if (form.getStatus() == FormStatus.STARTED || form.getStatus() == FormStatus.WAITING) {
                     forms.add(form);
                 }
             }
@@ -126,7 +129,7 @@ public class LiveService {
         List<Course> courses = courseRepository.listAllForOwnerAndStudent(user);
         for (Course course : courses) {
             for (Form form : course.getQuizForms()) {
-                if (form.getStatus() == FormStatus.STARTED) {
+                if (form.getStatus() == FormStatus.STARTED || form.getStatus() == FormStatus.WAITING) {
                     forms.add(form);
                 }
             }

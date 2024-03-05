@@ -15,10 +15,19 @@ class ChooseForm extends StatefulWidget {
 
 class _ChooseFormState extends State<ChooseForm> {
   String feedbackOrQuiz = "Feedback";
+  Map<String, Color> statusColors = {};
+
 
   @override
   void initState() {
     super.initState();
+    // STARTED, FINISHED, NOT_STARTED
+    statusColors = {
+      "WAITING": Colors.green,
+      "STARTED": Colors.orange,
+      "FINISHED": Colors.red,
+      "NOT_STARTED": Colors.grey,
+    };
   }
 
   @override
@@ -71,7 +80,6 @@ class _ChooseFormState extends State<ChooseForm> {
           ),
         ),
       ),
-
       body: Column(
         children: [
           Row(
@@ -162,6 +170,8 @@ class _ChooseFormState extends State<ChooseForm> {
                   surfaceTintColor: Colors.white,
                   clipBehavior: Clip.antiAlias,
                   child: ListTile(
+                    trailing: Icon(Icons.circle,
+                        color: statusColors[forms[index].status], size: 20.0),
                     title: Text(forms[index].name),
                     subtitle: Text(forms[index].description),
                     // trailing: const Icon(Icons.arrow_forward_ios),

@@ -45,3 +45,9 @@ nb-configuration.xml
 
 # Plugin directory
 /.quarkus/cli/plugins/
+
+# Metals
+.metals/
+
+# line counts
+.VSCodeCounter/

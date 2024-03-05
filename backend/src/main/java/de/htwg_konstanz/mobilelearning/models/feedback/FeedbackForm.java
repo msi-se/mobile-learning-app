@@ -14,12 +14,16 @@ import de.htwg_konstanz.mobilelearning.services.api.models.ApiFeedbackForm;
 import de.htwg_konstanz.mobilelearning.services.api.models.ApiFeedbackForm.ApiFeedbackQuestion;
 
 public class FeedbackForm extends Form {
+
+    public List<FeedbackParticipant> participants;
+
     public FeedbackForm() {
     }
 
     public FeedbackForm(ObjectId courseId, String name, String description, List<QuestionWrapper> questions,
             FormStatus status) {
         super(courseId, name, description, questions, status);
+        this.participants = new ArrayList<FeedbackParticipant>();
     }
 
     public void fillQuestionContents(Course course) {
@@ -57,6 +61,45 @@ public class FeedbackForm extends Form {
         FeedbackForm copy = this.copy();
         copy.fillQuestionContents(course);
         return copy;
+    }
+
+    public List<FeedbackParticipant> getParticipants() {
+        return this.participants;
+    }
+
+    public Boolean addParticipant(ObjectId userId) {
+        if (this.participants == null) {
+            this.participants = new java.util.ArrayList<FeedbackParticipant>();
+        }
+
+        // if user is already participating, just return true
+        for (FeedbackParticipant participant : this.participants) {
+            if (participant.getUserId().toHexString().equals(userId.toHexString())) {
+                return true;
+            }
+        }
+
+        // otherwise add a new participant
+        this.participants.add(new FeedbackParticipant(userId));
+        return true;
+    }
+
+    public void clearParticipants() {
+        if (this.participants == null) { this.participants = new ArrayList<FeedbackParticipant>(); }
+        this.participants.clear();
+    }
+
+    public Boolean isParticipant(String userId) {
+        if (this.participants == null) {
+            this.participants = new ArrayList<FeedbackParticipant>();
+            return false;
+        }
+        for (FeedbackParticipant participant : this.participants) {
+            if (participant.getUserId().toHexString().equals(userId)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public static FeedbackForm fromApiFeedbackForm(ApiFeedbackForm apiFeedbackForm, Course course)
@@ -147,8 +190,7 @@ public class FeedbackForm extends Form {
                     apiFeedbackQuestion.getOptions(),
                     apiFeedbackQuestion.getKey(),
                     apiFeedbackQuestion.getRangeLow(),
-                    apiFeedbackQuestion.getRangeHigh()
-                    );
+                    apiFeedbackQuestion.getRangeHigh());
 
             course.addFeedbackQuestion(feedbackQuestion);
             feedbackQuestionIds.add(feedbackQuestion.getId());
@@ -188,5 +230,9 @@ public class FeedbackForm extends Form {
         this.setName(apiFeedbackForm.getName());
         this.setDescription(apiFeedbackForm.getDescription());
 
+    }
+
+    public void setParticipants(List<FeedbackParticipant> participants) {
+        this.participants = participants;
     }
 }

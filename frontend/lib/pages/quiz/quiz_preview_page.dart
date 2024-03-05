@@ -149,7 +149,8 @@ class _QuizPreviewPageState extends State<QuizPreviewPage> {
                                 });
                             fetchForm();
                           },
-                          child: _form!.status == "NOT_STARTED"
+                          child: _form!.status == "NOT_STARTED" ||
+                                  _form?.status == "WAITING"
                               ? const Text('Starten')
                               : const Text('Ergebnisse'),
                         ),

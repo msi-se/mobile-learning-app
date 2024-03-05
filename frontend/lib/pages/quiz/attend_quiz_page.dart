@@ -31,7 +31,7 @@ class _AttendQuizPageState extends State<AttendQuizPage> {
   late String _alias;
   String _aliasError = '';
 
-  late QuizForm _form;
+  QuizForm? _form;
   WebSocketChannel? _socketChannel;
 
   dynamic _value;
@@ -67,7 +67,11 @@ class _AttendQuizPageState extends State<AttendQuizPage> {
         var data = jsonDecode(response.body);
         _courseId = data["courseId"];
         _formId = data["formId"];
-        await fetchForm();
+        setState(() {
+          _loading = false;
+          _fetchResult = 'success';
+        });
+        //await fetchForm();
       }
     } on http.ClientException {
       setState(() {
@@ -202,11 +206,11 @@ class _AttendQuizPageState extends State<AttendQuizPage> {
       if (data["action"] == "FORM_STATUS_CHANGED") {
         var form = QuizForm.fromJson(data["form"]);
         setState(() {
-          _form.status = data["formStatus"];
+          _form?.status = data["formStatus"];
           _value = null;
           _voted = false;
-          _form.currentQuestionIndex = form.currentQuestionIndex;
-          _form.currentQuestionFinished = form.currentQuestionFinished;
+          _form?.currentQuestionIndex = form.currentQuestionIndex;
+          _form?.currentQuestionFinished = form.currentQuestionFinished;
         });
       }
       if (data["action"] == "CLOSED_QUESTION" ||
@@ -215,14 +219,14 @@ class _AttendQuizPageState extends State<AttendQuizPage> {
         setState(() {
           _value = null;
           _voted = false;
-          _form.currentQuestionIndex = form.currentQuestionIndex;
-          _form.currentQuestionFinished = form.currentQuestionFinished;
+          _form?.currentQuestionIndex = form.currentQuestionIndex;
+          _form?.currentQuestionFinished = form.currentQuestionFinished;
         });
       }
     }, onError: (error) {
       //TODO: Should there be another error handling for this?
       setState(() {
-        _form.status = "ERROR";
+        _form?.status = "ERROR";
       });
     });
   }
@@ -235,6 +239,7 @@ class _AttendQuizPageState extends State<AttendQuizPage> {
 
   @override
   Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
     if (_loading) {
       return const Scaffold(
         body: Center(
@@ -242,10 +247,9 @@ class _AttendQuizPageState extends State<AttendQuizPage> {
         ),
       );
     } else if (_fetchResult == 'success') {
-      final colors = Theme.of(context).colorScheme;
-
       final appbar = AppBar(
-        title: Text(_form.name,
+        title: Text(
+            'Einem Quiz beitreten', //_form.name, TODO: find better solution
             style: const TextStyle(
                 color: Colors.white, fontWeight: FontWeight.bold)),
         backgroundColor: colors.primary,
@@ -264,13 +268,15 @@ class _AttendQuizPageState extends State<AttendQuizPage> {
                 ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                     content: Text(_aliasError),
                     backgroundColor: Colors.redAccent));
+              } else {
+                await fetchForm();
               }
             },
           ),
         );
       }
 
-      if (_form.status != "STARTED" || _voted) {
+      if (_form?.status != "STARTED" || _voted) {
         return Scaffold(
           appBar: appbar,
           body: Center(
@@ -279,7 +285,7 @@ class _AttendQuizPageState extends State<AttendQuizPage> {
               children: <Widget>[
                 Padding(
                   padding: const EdgeInsets.only(left: 20.0, right: 20.0),
-                  child: _form.status != "STARTED"
+                  child: _form?.status != "STARTED"
                       ? const Text(
                           "Bitte warten Sie bis das Quiz gestartet wird")
                       : const Text(
@@ -298,7 +304,7 @@ class _AttendQuizPageState extends State<AttendQuizPage> {
         );
       }
 
-      if (_form.currentQuestionFinished) {
+      if (_form!.currentQuestionFinished) {
         return Scaffold(
           appBar: appbar,
           body: Center(
@@ -323,7 +329,7 @@ class _AttendQuizPageState extends State<AttendQuizPage> {
         );
       }
 
-      final element = _form.questions[_form.currentQuestionIndex];
+      final element = _form?.questions[_form!.currentQuestionIndex];
 
       return Scaffold(
         appBar: appbar,
@@ -336,7 +342,7 @@ class _AttendQuizPageState extends State<AttendQuizPage> {
                 child: Column(
                   children: <Widget>[
                     const SizedBox(height: 16),
-                    Text(element.name,
+                    Text(element!.name,
                         style: const TextStyle(
                             fontSize: 24, fontWeight: FontWeight.bold)),
                     Text(element.description,

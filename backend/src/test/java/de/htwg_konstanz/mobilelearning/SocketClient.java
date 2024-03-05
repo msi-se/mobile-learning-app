@@ -11,12 +11,12 @@ import jakarta.websocket.OnOpen;
 import jakarta.websocket.Session;
 
 @ClientEndpoint
-public class LiveFeedbackSocketClient {
+public class SocketClient {
     
     private List<String> messageQueue;
     private Session session;
 
-    public LiveFeedbackSocketClient() {
+    public SocketClient() {
         this.messageQueue = new ArrayList<String>();
     }
 

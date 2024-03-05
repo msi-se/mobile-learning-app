@@ -45,6 +45,8 @@ class _FeedbackResultPageState extends State<FeedbackResultPage> {
   late String _userId;
   late List<String> _roles;
 
+  int _participantCounter = 0;
+
   late FeedbackForm _form;
   WebSocketChannel? _socketChannel;
 
@@ -135,9 +137,18 @@ class _FeedbackResultPageState extends State<FeedbackResultPage> {
       Uri.parse(
           "${getBackendUrl(protocol: "ws")}/course/$_courseId/feedback/form/$_formId/subscribe/$_userId/${getSession()!.jwt}"),
     );
+    if (_socketChannel != null) {
+      _socketChannel!.sink.add(jsonEncode({
+        "action": "CHANGE_FORM_STATUS",
+        "formStatus": "WAITING",
+        "roles": _roles,
+        "userId": _userId,
+      }));
+    }
 
     _socketChannel!.stream.listen((event) {
       var data = jsonDecode(event);
+
       if (data["action"] == "FORM_STATUS_CHANGED") {
         setState(() {
           _form.status = data["formStatus"];
@@ -146,6 +157,11 @@ class _FeedbackResultPageState extends State<FeedbackResultPage> {
       if (data["action"] == "RESULT_ADDED") {
         setState(() {
           _results = getResults(data["form"]);
+        });
+      }
+      if (data["action"] == "PARTICIPANT_JOINED") {
+        setState(() {
+          _participantCounter = data["form"]["participants"].length;
         });
       }
     }, onError: (error) {
@@ -187,6 +203,9 @@ class _FeedbackResultPageState extends State<FeedbackResultPage> {
         "userId": _userId,
       }));
     }
+    setState(() {
+      _participantCounter = 0;
+    });
   }
 
   List<Map<String, dynamic>> getResults(Map<String, dynamic> json) {
@@ -233,7 +252,7 @@ class _FeedbackResultPageState extends State<FeedbackResultPage> {
         backgroundColor: colors.primary,
       );
 
-      if (_form.status == "NOT_STARTED") {
+      if (_form.status == "WAITING" || _form.status == "NOT_STARTED") {
         var code = _form.connectCode;
         code = "${code.substring(0, 3)} ${code.substring(3, 6)}";
 
@@ -243,15 +262,48 @@ class _FeedbackResultPageState extends State<FeedbackResultPage> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
-                Text(
-                  code,
-                  style: Theme.of(context).textTheme.headlineMedium,
+                const SizedBox(height: 50),
+                Card(
+                  surfaceTintColor: Colors.white,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10.0),
+                  ),
+                  elevation: 3,
+                  child: Padding(
+                    padding: const EdgeInsets.only(
+                        top: 10, bottom: 10, left: 60, right: 60),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: <Widget>[
+                        const Text(
+                          'Beitritt zum Feedback',
+                        ),
+                        const SizedBox(height: 10),
+                        Text(
+                          code,
+                          style: const TextStyle(
+                              fontSize: 35, fontWeight: FontWeight.bold),
+                        ),
+                      ],
+                    ),
+                  ),
                 ),
-                const SizedBox(height: 16),
+                const SizedBox(height: 20),
+                Text('Teilnehmer: $_participantCounter'),
+                const SizedBox(height: 30),
                 ElevatedButton(
                   onPressed: startForm,
-                  child: const Text('Feedback starten'),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: colors.surfaceTint,
+                  ),
+                  child: const Text(
+                    'Start',
+                    style: TextStyle(
+                      color: Colors.white,
+                    ),
+                  ),
                 ),
+                const SizedBox(height: 50)
               ],
             ),
           ),
