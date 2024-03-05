@@ -1,5 +1,6 @@
 package de.htwg_konstanz.mobilelearning.services.auth;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -8,6 +9,11 @@ import org.jboss.resteasy.reactive.RestHeader;
 import de.htwg_konstanz.mobilelearning.models.Course;
 import de.htwg_konstanz.mobilelearning.models.auth.User;
 import de.htwg_konstanz.mobilelearning.models.auth.UserRole;
+import de.htwg_konstanz.mobilelearning.models.feedback.FeedbackForm;
+import de.htwg_konstanz.mobilelearning.models.feedback.FeedbackParticipant;
+import de.htwg_konstanz.mobilelearning.models.quiz.QuizForm;
+import de.htwg_konstanz.mobilelearning.models.quiz.QuizParticipant;
+import de.htwg_konstanz.mobilelearning.models.stats.UserStats;
 import de.htwg_konstanz.mobilelearning.repositories.CourseRepository;
 import de.htwg_konstanz.mobilelearning.repositories.UserRepository;
 import jakarta.annotation.security.PermitAll;
@@ -60,7 +66,7 @@ public class UserService {
 
         // TEMP: bypass ldap (student, prof, admin as username)
         List<String> demoUsernames = Arrays.asList("Student", "Prof", "Prof2", "Admin", "Brande", "Tobi", "Marvin", "Leon", "Fabi", "Schimkat", "Landwehr" );
-        if (demoUsernames.contains(username)) {
+        if (demoUsernames.stream().anyMatch(username::startsWith)) {
 
             // check if user exists in db
             User existingUser = userRepository.findByUsername(username);
@@ -81,26 +87,17 @@ public class UserService {
                 password
             );
 
-            if (username.equals("Student")) {
+            if (username.startsWith("Student")) {
                 newUser.addRole(UserRole.STUDENT);
-            } else if (username.equals("Prof")) {
+            } else if (username.startsWith("Prof")) {
                 newUser.addRole(UserRole.PROF);
-            } else if (username.equals("Admin")) {
+            } else if (username.startsWith("Admin")) {
                 newUser.addRole(UserRole.ADMIN);
             } else {
                 newUser.addRole(UserRole.STUDENT);
             }
 
             userRepository.persist(newUser);
-
-            // add course "Diskrete Mathematik" to prof
-            if (username.equals("Prof")) {
-                Course course = courseRepository.findByName("Diskrete Mathematik");
-                if (course != null) {
-                    course.addOwner(newUser.getId());
-                    courseRepository.update(course);
-                }
-            }
 
             String json = JwtService.getToken(newUser);
             if (json == null) {
@@ -162,5 +159,57 @@ public class UserService {
     // for testing
     public void deleteAllUsers() {
         userRepository.deleteAll();
+    }
+
+    public void updateUserStatsByFeedbackForm(FeedbackForm form) {
+        for (FeedbackParticipant participant : form.getParticipants()) {
+            User user = userRepository.findById(participant.getUserId());
+            if (user == null) {
+                continue;
+            }
+            UserStats stats = user.getStats();
+            if (stats == null) { stats = new UserStats(); }
+            stats.incrementCompletedFeedbackForms();
+            user.setStats(stats);
+            userRepository.update(user);
+        }
+    }
+
+    public void updateUserStatsByQuizForm(QuizForm form) {
+
+        // order participants by score
+        List<QuizParticipant> participants = form.getParticipants();
+        participants.sort((p1, p2) -> p2.getScore().compareTo(p1.getScore()));
+        List<List<QuizParticipant>> groups = new ArrayList<>();
+        List<QuizParticipant> group = new ArrayList<>();
+        Integer lastScore = null;
+        for (QuizParticipant participant : participants) {
+            if (lastScore == null) {
+                lastScore = participant.getScore();
+            }
+            if (lastScore.equals(participant.getScore())) {
+                group.add(participant);
+            } else {
+                groups.add(group);
+                group = new ArrayList<>();
+                group.add(participant);
+                lastScore = participant.getScore();
+            }
+        }
+
+        // update stats for each participant
+        for (QuizParticipant participant : participants) {
+            User user = userRepository.findById(participant.getUserId());
+            if (user == null) {
+                continue;
+            }
+            UserStats stats = user.getStats();
+            if (stats == null) { stats = new UserStats(); }
+
+            stats.doneQuiz(participants.indexOf(participant) + 1, participant.getScore());
+
+            user.setStats(stats);
+            userRepository.update(user);
+        }
     }
 }

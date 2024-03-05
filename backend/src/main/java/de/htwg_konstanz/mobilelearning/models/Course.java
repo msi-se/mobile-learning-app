@@ -30,6 +30,7 @@ public class Course implements Serializable {
     public List<ObjectId> students;
     public String key;
     public String moodleCourseId;
+    public Boolean isLinkedToMoodle;
 
     // feedback
     public List<FeedbackForm> feedbackForms;
@@ -55,6 +56,7 @@ public class Course implements Serializable {
         this.quizQuestions = new ArrayList<QuizQuestion>();
         this.key = "";
         this.moodleCourseId = "";
+        this.isLinkedToMoodle = false;
     }
 
     // id
@@ -338,7 +340,15 @@ public class Course implements Serializable {
     }
 
     public void setMoodleCourseId(String moodleCourseId) {
+
+        if (moodleCourseId == null || moodleCourseId.isEmpty()) {
+            this.moodleCourseId = "";
+            this.isLinkedToMoodle = false;
+            return;
+        }
+
         this.moodleCourseId = moodleCourseId;
+        this.isLinkedToMoodle = true;
     }
 
     public String getMoodleCourseId() {
@@ -437,6 +447,31 @@ public class Course implements Serializable {
         }
         Course course = (Course) obj;
         return course.getId().equals(this.getId());
+    }
+
+    public Boolean getIsLinkedToMoodle() {
+        return this.isLinkedToMoodle;
+    }
+
+    /**
+     * Clears the content of all forms to not send to much data to the client.
+     * - clears the questions
+     * - clears the results
+     * - clears the participants
+     * @return Course
+     */
+    public Course clearFormsContent() {
+        this.feedbackForms.forEach(form -> {
+            form.questions = new ArrayList<QuestionWrapper>();
+            form.clearResults();
+            form.clearParticipants();
+        });
+        this.quizForms.forEach(form -> {
+            form.questions = new ArrayList<QuestionWrapper>();
+            form.clearResults();
+            form.clearParticipants();
+        });
+        return this;
     }
 
 

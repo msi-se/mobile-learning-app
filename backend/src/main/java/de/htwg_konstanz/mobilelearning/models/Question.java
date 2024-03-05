@@ -5,11 +5,25 @@ import java.util.List;
 
 import org.bson.types.ObjectId;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonSubTypes;
+
+import de.htwg_konstanz.mobilelearning.models.feedback.FeedbackQuestion;
+import de.htwg_konstanz.mobilelearning.models.quiz.QuizQuestion;
+
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
+
 /**
  * Contains name & description of a question.
  * Options are the possible answers to the question.
  */
-public abstract class Question {
+@JsonIgnoreProperties(ignoreUnknown = true)
+@JsonTypeInfo(use = JsonTypeInfo.Id.DEDUCTION)
+@JsonSubTypes({ 
+    @JsonSubTypes.Type(QuizQuestion.class),
+    @JsonSubTypes.Type(FeedbackQuestion.class)
+})
+public class Question {
     
     public ObjectId id;
     public String name;
@@ -68,6 +82,8 @@ public abstract class Question {
         this.key = key;
     }
 
-    public abstract Question copy();
+    public Question copy() {
+        return new Question(this.name, this.description, this.options, this.key);
+    }
 
 }

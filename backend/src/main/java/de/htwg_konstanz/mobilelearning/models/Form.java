@@ -38,6 +38,14 @@ public abstract class Form {
         return this.id;
     }
 
+    public void setId(ObjectId id) {
+        this.id = id;
+    }
+
+    public ObjectId getCourseId() {
+        return this.courseId;
+    }
+
     public String getName() {
         return this.name;
     }

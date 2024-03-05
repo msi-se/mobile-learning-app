@@ -81,7 +81,7 @@ public class MoodleInterface {
     public List<MoodleCourse> getCourses() {
 
         // TEMP: mock the special users (Prof, Student, Admin)
-        if (this.username.equals("Prof") || this.username.equals("Student") || this.username.equals("Admin")) {
+        if (this.username.startsWith("Prof") || this.username.startsWith("Student") || this.username.startsWith("Admin")) {
             return List.of(new MoodleCourse("1"), new MoodleCourse("2"), new MoodleCourse("3"), new MoodleCourse("940"));
         }
 

@@ -1,7 +1,9 @@
 import 'dart:convert';
 import 'dart:io';
+import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:frontend/theme/assets.dart';
 import 'package:frontend/components/elements/quiz/single_choice_quiz_result.dart';
 import 'package:frontend/components/error/general_error_widget.dart';
 import 'package:frontend/components/error/network_error_widget.dart';
@@ -35,6 +37,11 @@ class _QuizControlPageState extends State<QuizControlPage> {
 
   late List<Map<String, dynamic>> _results;
   late List<dynamic> _scoreboard;
+
+  int _participantCounter = 0;
+  List<dynamic> _userNames = [];
+
+  bool _isPhone = false;
 
   bool _loading = false;
   String _fetchResult = '';
@@ -126,10 +133,19 @@ class _QuizControlPageState extends State<QuizControlPage> {
       Uri.parse(
           "${getBackendUrl(protocol: "ws")}/course/$_courseId/quiz/form/$_formId/subscribe/$_userId/${getSession()!.jwt}"),
     );
+    if (_socketChannel != null) {
+      _socketChannel!.sink.add(jsonEncode({
+        "action": "CHANGE_FORM_STATUS",
+        "formStatus": "WAITING",
+        "roles": _roles,
+        "userId": _userId,
+      }));
+    }
 
     _socketChannel!.stream.listen((event) {
       print(event);
       var data = jsonDecode(event);
+
       if (data["action"] == "FORM_STATUS_CHANGED") {
         var form = QuizForm.fromJson(data["form"]);
         setState(() {
@@ -152,6 +168,15 @@ class _QuizControlPageState extends State<QuizControlPage> {
         setState(() {
           _form.currentQuestionIndex = form.currentQuestionIndex;
           _form.currentQuestionFinished = form.currentQuestionFinished;
+        });
+      }
+      if (data["action"] == "PARTICIPANT_JOINED") {
+        List<dynamic> participants = data["form"]["participants"];
+        setState(() {
+          _participantCounter = participants.length;
+          _userNames = participants
+              .map((participant) => participant["userAlias"])
+              .toList();
         });
       }
     }, onError: (error) {
@@ -193,6 +218,10 @@ class _QuizControlPageState extends State<QuizControlPage> {
         "userId": _userId,
       }));
     }
+    setState(() {
+      _participantCounter = 0;
+      _userNames = _userNames = [];
+    });
   }
 
   void next() {
@@ -242,6 +271,12 @@ class _QuizControlPageState extends State<QuizControlPage> {
 
   @override
   Widget build(BuildContext context) {
+    double screenWidth = MediaQuery.of(context).size.width;
+    int crossAxisCount = screenWidth > 600 ? 2 : 1;
+    double childAspectRatio = screenWidth > 600 ? 16 : 12;
+    if (screenWidth < 600) {
+      _isPhone = true;
+    }
     if (_loading) {
       return const Scaffold(
         body: Center(
@@ -258,29 +293,100 @@ class _QuizControlPageState extends State<QuizControlPage> {
         backgroundColor: colors.primary,
       );
 
-      if (_form.status == "NOT_STARTED") {
+      if (_form.status == "NOT_STARTED" || _form.status == "WAITING") {
         var code = _form.connectCode;
         code = "${code.substring(0, 3)} ${code.substring(3, 6)}";
 
         return Scaffold(
-          appBar: appBar,
-          body: Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                Text(
-                  code,
-                  style: Theme.of(context).textTheme.headlineMedium,
-                ),
-                const SizedBox(height: 16),
-                ElevatedButton(
-                  onPressed: startForm,
-                  child: const Text('Quiz starten'),
-                ),
-              ],
-            ),
-          ),
-        );
+            appBar: appBar,
+            body: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  const SizedBox(height: 50),
+                  Card(
+                    surfaceTintColor: Colors.white,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10.0),
+                    ),
+                    elevation: 3,
+                    child: Padding(
+                      padding: const EdgeInsets.only(
+                          top: 10, bottom: 10, left: 60, right: 60),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: <Widget>[
+                          const Text(
+                            'Beitritt zum Quiz',
+                          ),
+                          const SizedBox(height: 10),
+                          Text(
+                            code,
+                            style: const TextStyle(
+                                fontSize: 35, fontWeight: FontWeight.bold),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+                  Text('Teilnehmer: $_participantCounter'),
+                  const SizedBox(height: 20),
+                  Expanded(
+                    child: Padding(
+                      padding: EdgeInsets.symmetric(
+                          horizontal: _isPhone ? 20 : screenWidth * 0.2),
+                      child: Container(
+                        decoration: BoxDecoration(
+                          borderRadius:
+                              const BorderRadius.all(Radius.circular(20)),
+                          border: Border.all(
+                            color: colors.outlineVariant,
+                            width: 0.5,
+                          ),
+                        ),
+                        child: GridView.count(
+                          crossAxisCount: crossAxisCount,
+                          mainAxisSpacing: 5.0,
+                          crossAxisSpacing: 5.0,
+                          childAspectRatio: childAspectRatio,
+                          children: List.generate(_userNames.length, (index) {
+                            return Center(
+                              child: Container(
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 10, vertical: 3),
+                                decoration: BoxDecoration(
+                                  color:
+                                      const Color.fromARGB(255, 165, 224, 211),
+                                  borderRadius: BorderRadius.circular(20.0),
+                                ),
+                                child: Text(
+                                  _userNames[index],
+                                  style: const TextStyle(
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.bold),
+                                ),
+                              ),
+                            );
+                          }),
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 30),
+                  ElevatedButton(
+                    onPressed: startForm,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: colors.surfaceTint,
+                    ),
+                    child: const Text(
+                      'Start',
+                      style: TextStyle(
+                        color: Colors.white,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 50)
+                ]));
       }
 
       if (_form.status == "FINISHED") {

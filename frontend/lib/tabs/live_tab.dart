@@ -22,10 +22,14 @@ class LiveTab extends StatefulWidget {
 class FormShell {
   final String connectCode;
   final String name;
-  FormShell(this.connectCode, this.name);
+  final String course;
+  final String type;
+  final String status;
+  FormShell(this.connectCode, this.name, this.course, this.type, this.status);
 
   factory FormShell.fromJson(Map<String, dynamic> json) {
-    return FormShell((json['connectCode'] as int).toString(), json['name']);
+    return FormShell((json['connectCode'] as int).toString(), json['name'],
+        json['course'], json['type'], json['status']);
   }
 }
 
@@ -35,6 +39,7 @@ List<FormShell> getFormShellsFromJson(List<dynamic> json) {
 
 class _LiveTabState extends State<LiveTab> {
   final TextEditingController _joinCodeController = TextEditingController();
+  Map<String, Color> statusColors = {};
 
   late List<FormShell> _forms;
 
@@ -48,6 +53,10 @@ class _LiveTabState extends State<LiveTab> {
     _forms = [];
 
     fetchForms();
+    statusColors = {
+      "WAITING": Colors.green,
+      "STARTED": Colors.orange,
+    };
   }
 
   Future fetchForms() async {
