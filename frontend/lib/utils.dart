@@ -3,8 +3,13 @@ import 'package:flutter/foundation.dart';
 String getBackendUrl({String protocol = 'http'}) {
   // final String? backendUrl = Platform.environment['BACKEND_URL']; // later maybe
 
+  if (!kDebugMode) {
+    return 'https://loco.in.htwg-konstanz.de/api';
+  }
+
   // get the current domain (when running in a browser)
   final String domain = Uri.base.host;
+
   // if the domain is localhost, use the local backend
   if (domain == '' || domain == 'localhost') {
     if (defaultTargetPlatform == TargetPlatform.android) {
