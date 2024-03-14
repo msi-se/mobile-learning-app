@@ -38,21 +38,6 @@ public class FeedbackFormService {
     private JsonWebToken jwt;
 
     /**
-     * Returns all feedback forms of a course.
-     * 
-     * @param courseId
-     * @return List of feedback forms
-     */
-    @GET
-    @Produces(MediaType.APPLICATION_JSON)
-    @RolesAllowed({ UserRole.PROF, UserRole.STUDENT })
-    public List<FeedbackForm> getFeedbackForms(@RestPath String courseId) {
-        ObjectId courseObjectId = new ObjectId(courseId);
-        Course course = courseRepository.findById(courseObjectId);
-        return course.getFeedbackForms();
-    }
-
-    /**
      * Returns a single feedback form of a course.
      * 
      * @param courseId
