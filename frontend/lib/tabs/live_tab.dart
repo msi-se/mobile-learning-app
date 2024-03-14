@@ -372,6 +372,11 @@ class _LiveTabState extends State<LiveTab> {
                       shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(10.0)),
                       child: ListTile(
+                        leading: form.type == "feedback"
+                          ? const Icon(Icons.feedback)
+                          : const Icon(Icons.quiz),
+                        trailing: Icon(Icons.circle,
+                            color: statusColors[form.status], size: 20),
                         title: Text(form.name),
                         onTap: () => joinCourse(form.connectCode),
                       ),
