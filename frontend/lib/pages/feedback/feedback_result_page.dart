@@ -87,12 +87,14 @@ class _FeedbackResultPageState extends State<FeedbackResultPage> {
       if (response.statusCode == 200) {
         var data = jsonDecode(response.body);
         var form = FeedbackForm.fromJson(data);
-
+        
+        _form = form;
+        _participantCounter = data["participants"].length;
+        _results = getResults(data);
+        
         startWebsocket();
 
         setState(() {
-          _form = form;
-          _results = getResults(data);
           _loading = false;
           _fetchResult = 'success';
         });
@@ -137,14 +139,6 @@ class _FeedbackResultPageState extends State<FeedbackResultPage> {
       Uri.parse(
           "${getBackendUrl(protocol: "ws")}/course/$_courseId/feedback/form/$_formId/subscribe/$_userId/${getSession()!.jwt}"),
     );
-    if (_socketChannel != null) {
-      _socketChannel!.sink.add(jsonEncode({
-        "action": "CHANGE_FORM_STATUS",
-        "formStatus": "WAITING",
-        "roles": _roles,
-        "userId": _userId,
-      }));
-    }
 
     _socketChannel!.stream.listen((event) {
       var data = jsonDecode(event);
@@ -170,6 +164,21 @@ class _FeedbackResultPageState extends State<FeedbackResultPage> {
         _form.status = "ERROR";
       });
     });
+
+    if (_form.status == "NOT_STARTED") {
+      openWaitingRoom();
+    }
+  }
+
+  void openWaitingRoom() {
+    if (_socketChannel != null) {
+      _socketChannel!.sink.add(jsonEncode({
+        "action": "CHANGE_FORM_STATUS",
+        "formStatus": "WAITING",
+        "roles": _roles,
+        "userId": _userId,
+      }));
+    }
   }
 
   void startForm() {
@@ -203,9 +212,7 @@ class _FeedbackResultPageState extends State<FeedbackResultPage> {
         "userId": _userId,
       }));
     }
-    setState(() {
-      _participantCounter = 0;
-    });
+    Navigator.pop(context);
   }
 
   List<Map<String, dynamic>> getResults(Map<String, dynamic> json) {

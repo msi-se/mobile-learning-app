@@ -77,20 +77,23 @@ class _QuizControlPageState extends State<QuizControlPage> {
       );
       if (response.statusCode == 200) {
         var data = jsonDecode(response.body);
-        //TODO: Print in production code not good:
-        print(data);
         var form = QuizForm.fromJson(data);
+
+        _form = form;
+        _results = getResults(data);
+        _participantCounter = data["participants"].length;
+        _userNames = data["participants"]
+            .map((participant) => participant["userAlias"])
+            .toList();
+        if (_form.status == "FINISHED") {
+          _scoreboard = getScoreboard(data);
+        }
 
         startWebsocket();
 
         setState(() {
           _loading = false;
           _fetchResult = 'success';
-          _form = form;
-          _results = getResults(data);
-          if (_form.status == "FINISHED") {
-            _scoreboard = getScoreboard(data);
-          }
         });
       }
     } on http.ClientException {
@@ -133,17 +136,8 @@ class _QuizControlPageState extends State<QuizControlPage> {
       Uri.parse(
           "${getBackendUrl(protocol: "ws")}/course/$_courseId/quiz/form/$_formId/subscribe/$_userId/${getSession()!.jwt}"),
     );
-    if (_socketChannel != null) {
-      _socketChannel!.sink.add(jsonEncode({
-        "action": "CHANGE_FORM_STATUS",
-        "formStatus": "WAITING",
-        "roles": _roles,
-        "userId": _userId,
-      }));
-    }
 
     _socketChannel!.stream.listen((event) {
-      print(event);
       var data = jsonDecode(event);
 
       if (data["action"] == "FORM_STATUS_CHANGED") {
@@ -185,6 +179,21 @@ class _QuizControlPageState extends State<QuizControlPage> {
         _form.status = "ERROR";
       });
     });
+
+    if (_form.status == "NOT_STARTED") {
+      openWaitingRoom();
+    }
+  }
+
+  void openWaitingRoom() {
+    if (_socketChannel != null) {
+      _socketChannel!.sink.add(jsonEncode({
+        "action": "CHANGE_FORM_STATUS",
+        "formStatus": "WAITING",
+        "roles": _roles,
+        "userId": _userId,
+      }));
+    }
   }
 
   void startForm() {
@@ -218,10 +227,7 @@ class _QuizControlPageState extends State<QuizControlPage> {
         "userId": _userId,
       }));
     }
-    setState(() {
-      _participantCounter = 0;
-      _userNames = _userNames = [];
-    });
+    Navigator.pop(context);
   }
 
   void next() {
