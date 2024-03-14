@@ -3,16 +3,12 @@ package de.htwg_konstanz.mobilelearning.services.quiz.socket;
 import static io.restassured.RestAssured.given;
 
 import java.net.URI;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
-
+import java.util.Date;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInfo;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 import de.htwg_konstanz.mobilelearning.Helper;
 import de.htwg_konstanz.mobilelearning.SocketClient;
@@ -57,6 +53,9 @@ public class LiveQuizSocketTest {
         MockUser prof = Helper.createMockUser("Prof");
         given().header("Authorization", "Bearer " + prof.getJwt()).get("/course").then().statusCode(200);
 
+        // store a timestamp to check if the form's startTimestamp has been set
+        Date startTimestamp = new Date();
+
         // create a websocket client
         try {
             SocketClient client = new SocketClient();
@@ -81,6 +80,11 @@ public class LiveQuizSocketTest {
             System.out.println(e);
             Assertions.fail(e.getMessage());
         }
+
+        // check if the startTimestamp has been set and is less than 1 minute ago
+        Date formStartTimestamp = courseService.getCourse(courseId).getQuizForms().get(0).getStartTimestamp();
+        Assertions.assertNotNull(formStartTimestamp);
+        Assertions.assertTrue(formStartTimestamp.after(startTimestamp));
     }
 
     @Test

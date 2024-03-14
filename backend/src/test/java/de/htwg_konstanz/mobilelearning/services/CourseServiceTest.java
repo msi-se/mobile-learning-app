@@ -1,9 +1,6 @@
 package de.htwg_konstanz.mobilelearning.services;
 
 import static io.restassured.RestAssured.given;
-import static org.hamcrest.CoreMatchers.is;
-
-import java.net.URI;
 import java.util.List;
 
 import org.bson.types.ObjectId;
@@ -13,22 +10,17 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInfo;
 
 import de.htwg_konstanz.mobilelearning.Helper;
-import de.htwg_konstanz.mobilelearning.SocketClient;
 import de.htwg_konstanz.mobilelearning.MockMongoTestProfile;
 import de.htwg_konstanz.mobilelearning.MockUser;
 import de.htwg_konstanz.mobilelearning.models.Course;
 import de.htwg_konstanz.mobilelearning.models.auth.User;
-import de.htwg_konstanz.mobilelearning.models.quiz.QuizForm;
 import de.htwg_konstanz.mobilelearning.repositories.CourseRepository;
 import de.htwg_konstanz.mobilelearning.repositories.UserRepository;
-import de.htwg_konstanz.mobilelearning.services.CourseService;
 import de.htwg_konstanz.mobilelearning.services.auth.UserService;
 import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.junit.TestProfile;
 import io.restassured.response.Response;
 import jakarta.inject.Inject;
-import jakarta.websocket.ContainerProvider;
-import jakarta.websocket.Session;
 
 @QuarkusTest
 @TestProfile(MockMongoTestProfile.class)

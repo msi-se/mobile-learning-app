@@ -17,7 +17,6 @@ import de.htwg_konstanz.mobilelearning.models.Course;
 import de.htwg_konstanz.mobilelearning.models.QuestionWrapper;
 import de.htwg_konstanz.mobilelearning.models.Result;
 import de.htwg_konstanz.mobilelearning.models.auth.User;
-import de.htwg_konstanz.mobilelearning.models.auth.UserRole;
 import de.htwg_konstanz.mobilelearning.models.feedback.FeedbackForm;
 import de.htwg_konstanz.mobilelearning.repositories.CourseRepository;
 import de.htwg_konstanz.mobilelearning.repositories.UserRepository;
@@ -287,6 +286,11 @@ public class LiveFeedbackSocket {
             LiveFeedbackSocketMessage outgoingMessage = new LiveFeedbackSocketMessage("RESULT_ADDED",
                     form.status.toString(), null, null, form);
             this.broadcast(outgoingMessage, course.getId().toHexString(), formId);
+        }
+
+        // if it is set to STARTED set the timestamp
+        if (formStatusEnum == FormStatus.STARTED) {
+            form.setStartTimestamp();
         }
 
         // send the updated form to all receivers (stringify the form)
