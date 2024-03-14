@@ -42,6 +42,7 @@ public class FeedbackForm extends Form {
         FeedbackForm copy = new FeedbackForm(this.courseId, this.name, this.description, this.questions, this.status);
         copy.id = new ObjectId(this.id.toHexString());
         copy.connectCode = this.connectCode;
+        copy.participants = this.participants;
         return copy;
     }
 
