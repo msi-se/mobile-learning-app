@@ -55,7 +55,17 @@ public class QuestionWrapper {
         }
 
         this.results.add(result);
+
+        // update analytics
+        List<String> values = new ArrayList<String>();
+        this.results.forEach(r -> { if (r.values != null) { values.addAll(r.values); } });
+        this.analytics.update(values);
+
         return true;
+    }
+
+    public Analytics getAnalytics() {
+        return analytics;
     }
 
     public void setQuestionContent(Question question) {
