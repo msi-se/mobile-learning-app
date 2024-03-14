@@ -432,6 +432,28 @@ public class Course implements Serializable {
                 quizForm.updateFromApiQuizForm(apiQuizForm, this);
             }
         }
+
+        // all forms for the user which are not in the list will be deleted
+        List<String> keysInApiRequest = apiCourse.getFeedbackForms().stream().map(ApiFeedbackForm::getKey).toList();
+        List<FeedbackForm> feedbackFormsToDelete = new ArrayList<>();
+        for (FeedbackForm feedbackForm : this.getFeedbackForms()) {
+            if (!keysInApiRequest.contains(feedbackForm.getKey())) {
+                feedbackFormsToDelete.add(feedbackForm);
+            }
+        }
+        for (FeedbackForm feedbackForm : feedbackFormsToDelete) {
+            this.removeFeedbackForm(feedbackForm);
+        }
+        keysInApiRequest = apiCourse.getQuizForms().stream().map(ApiQuizForm::getKey).toList();
+        List<QuizForm> quizFormsToDelete = new ArrayList<>();
+        for (QuizForm quizForm : this.getQuizForms()) {
+            if (!keysInApiRequest.contains(quizForm.getKey())) {
+                quizFormsToDelete.add(quizForm);
+            }
+        }
+        for (QuizForm quizForm : quizFormsToDelete) {
+            this.removeQuizForm(quizForm);
+        }
     }
 
     @Override
