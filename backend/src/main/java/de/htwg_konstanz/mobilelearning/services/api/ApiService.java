@@ -1,5 +1,6 @@
 package de.htwg_konstanz.mobilelearning.services.api;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.microprofile.jwt.JsonWebToken;
@@ -64,6 +65,18 @@ public class ApiService {
                 newCourse.addOwner(user.getId());
                 courseRepository.persist(newCourse);
             }
+        }
+
+        // all courses for the user which are not in the list will be deleted
+        List<String> keysInApiRequest = courses.stream().map(ApiCourse::getKey).toList();
+        List<Course> coursesToDelete = new ArrayList<>();
+        for (Course course : courseRepository.listAllForOwner(user)) {
+            if (!keysInApiRequest.contains(course.getKey())) {
+                coursesToDelete.add(course);
+            }
+        }
+        for (Course course : coursesToDelete) {
+            courseRepository.delete(course);
         }
 
         return courseRepository.listAllForOwner(user);

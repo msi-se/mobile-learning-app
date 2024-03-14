@@ -235,7 +235,6 @@ public class FeedbackFormServiceTest {
             session.close();
 
             // check if the form status has changed
-
             Assertions.assertTrue(courseService.getCourse(courseId).getFeedbackForms().get(0).getStatus().toString().equals("STARTED"));
         } catch (Exception e) {
             System.out.println(e);
