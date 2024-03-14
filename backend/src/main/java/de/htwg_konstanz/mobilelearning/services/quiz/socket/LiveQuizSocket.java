@@ -293,6 +293,11 @@ public class LiveQuizSocket {
             this.broadcast(outgoingMessage, course.getId().toHexString(), formId);
         }
 
+        // if it is set to STARTED set the timestamp
+        if (formStatusEnum == FormStatus.STARTED) {
+            form.setStartTimestamp();
+        }
+
         // send the updated form to all receivers (stringify the form)
         LiveQuizSocketMessage outgoingMessage = new LiveQuizSocketMessage("FORM_STATUS_CHANGED", form.status.toString(), null, null, form);
         this.broadcast(outgoingMessage, course.getId().toHexString(), formId);

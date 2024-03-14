@@ -10,19 +10,13 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInfo;
 
-import com.google.gson.Gson;
-
 import de.htwg_konstanz.mobilelearning.Helper;
 import de.htwg_konstanz.mobilelearning.SocketClient;
 import de.htwg_konstanz.mobilelearning.MockMongoTestProfile;
 import de.htwg_konstanz.mobilelearning.MockUser;
 import de.htwg_konstanz.mobilelearning.models.Course;
 import de.htwg_konstanz.mobilelearning.models.FormShell;
-import de.htwg_konstanz.mobilelearning.models.feedback.FeedbackForm;
-import de.htwg_konstanz.mobilelearning.repositories.UserRepository;
-import de.htwg_konstanz.mobilelearning.services.CourseService;
 import de.htwg_konstanz.mobilelearning.services.auth.UserService;
-import de.htwg_konstanz.mobilelearning.services.quiz.socket.LiveQuizSocket;
 import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.junit.TestProfile;
 import io.restassured.response.Response;

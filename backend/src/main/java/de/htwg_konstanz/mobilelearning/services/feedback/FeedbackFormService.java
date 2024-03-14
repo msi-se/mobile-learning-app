@@ -213,6 +213,11 @@ public class FeedbackFormService {
         if (course == null) { throw new NotFoundException("Course not found"); }
         FeedbackForm feedbackForm = course.getFeedbackFormById(formObjectId);
         if (feedbackForm == null) { throw new NotFoundException("FeedbackForm not found"); }
+        
+        // check if user is student of the course
+        if (!course.isStudent(userId)) {
+            return RestResponse.status(Response.Status.FORBIDDEN, "User is not student of the course");
+        }
 
         // add the participant
         Boolean successfullyAdded = feedbackForm.addParticipant(new ObjectId(userId));

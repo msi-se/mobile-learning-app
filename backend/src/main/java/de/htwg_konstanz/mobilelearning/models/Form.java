@@ -1,13 +1,14 @@
 package de.htwg_konstanz.mobilelearning.models;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import org.bson.types.ObjectId;
 
 import de.htwg_konstanz.mobilelearning.enums.FormStatus;
 
-public abstract class Form {
+public class Form {
     public ObjectId id;
     public ObjectId courseId;
     public String name;
@@ -16,6 +17,7 @@ public abstract class Form {
     public FormStatus status;
     public Integer connectCode;
     public String key;
+    public Date startTimestamp;
 
     public Form() {
     }
@@ -27,7 +29,7 @@ public abstract class Form {
         this.description = description;
         this.questions = questions != null ? questions : new ArrayList<QuestionWrapper>();
         this.status = status;
-
+        this.startTimestamp = null;
         this.key = "";
 
         // generate 6-digit connect code (100000 - 999999)
@@ -112,5 +114,18 @@ public abstract class Form {
     public void setDescription(String description) {
         this.description = description;
     }
+
+    public void setStartTimestamp(Date startTimestamp) {
+        this.startTimestamp = startTimestamp;
+    }
+
+    public void setStartTimestamp() {
+        this.startTimestamp = new Date();
+    }
+
+    public Date getStartTimestamp() {
+        return this.startTimestamp;
+    }
+
 
 }

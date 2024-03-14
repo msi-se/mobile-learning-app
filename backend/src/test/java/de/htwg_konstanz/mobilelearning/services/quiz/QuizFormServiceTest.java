@@ -156,8 +156,14 @@ public class QuizFormServiceTest {
         String courseId = courses.getFirst().getId().toString();
         String formId = courses.getFirst().getQuizForms().get(0).getId().toString();
 
+        // create 2 students and sync the courses to
+        MockUser student1 = Helper.createMockUser("Student-1");
+        given().header("Authorization", "Bearer " + student1.getJwt()).when().get("/course").then().statusCode(200);
+        MockUser student2 = Helper.createMockUser("Student-2");
+        given().header("Authorization", "Bearer " + student2.getJwt()).when().get("/course").then().statusCode(200);
+
         // Check successful RestResponse
-        given().header("Authorization", "Bearer " + Helper.createMockUser("Student1").getJwt())
+        given().header("Authorization", "Bearer " + student1.getJwt())
                 .pathParam("courseId", courseId)
                 .pathParam("formId", formId)
                 .body("alias")
@@ -168,7 +174,7 @@ public class QuizFormServiceTest {
                 .body(is("Successfully added"));
 
         // 200 if alias already taken by the same user
-        given().header("Authorization", "Bearer " + Helper.createMockUser("Student1").getJwt())
+        given().header("Authorization", "Bearer " + student1.getJwt())
                 .pathParam("courseId", courseId)
                 .pathParam("formId", formId)
                 .body("alias")
@@ -179,7 +185,7 @@ public class QuizFormServiceTest {
                 .body(is("Successfully added"));
 
         // 409 if alias already taken by another user
-        given().header("Authorization", "Bearer " + Helper.createMockUser("Student2").getJwt())
+        given().header("Authorization", "Bearer " + student2.getJwt())
                 .pathParam("courseId", courseId)
                 .pathParam("formId", formId)
                 .body("alias")
