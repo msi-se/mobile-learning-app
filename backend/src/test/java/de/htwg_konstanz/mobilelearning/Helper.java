@@ -66,7 +66,7 @@ public class Helper {
                                                         "Pizza bestellen für jedes Daily"),
                                                 true,
                                                 List.of("2"),
-                                                "Q-Q-PDRODUCTOWNER"),
+                                                "Q-Q-PRODUCTOWNER"),
                                                 
                                         new ApiQuizQuestion(
                                                 "Product Owner",
@@ -78,7 +78,7 @@ public class Helper {
                                                         "Antwort 3"),
                                                 true,
                                                 List.of("2"),
-                                                "Q-Q-PDRODUCTOWNER")),                                        
+                                                "Q-Q-PRODUCTOWNER")),                                        
                                 "Q-ROLES")),
                 "AUME23",
                 moodleCourseId);

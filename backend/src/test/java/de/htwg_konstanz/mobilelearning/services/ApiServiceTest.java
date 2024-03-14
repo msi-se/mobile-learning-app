@@ -187,7 +187,7 @@ public class ApiServiceTest {
                             "description": "Ein Quiz zum Rollenverständnis und Teamaufbau bei Scrum",
                             "questions": [
                                 {
-                                    "key": "Q-Q-PDRODUCTOWNER",
+                                    "key": "Q-Q-PRODUCTOWNER",
                                     "name": "Product Owner",
                                     "description": "Welche der folgenden Aufgaben ist nicht Teil der Rolle des Product Owners?",
                                     "type": "SINGLE_CHOICE",
@@ -251,6 +251,111 @@ public class ApiServiceTest {
         Assertions.assertEquals(1, quizFormFromGet.getQuestions().size());
         Assertions.assertEquals("Product Owner", quizFormFromGet.getQuestions().get(0).questionContent.getName());
 
+
+        // update the forms via json api
+        json = """
+            [
+                {
+                    "key": "AUME23",
+                    "name": "AUME 23/24",
+                    "description": "Agile Vorgehensmodelle und Mobile Kommunikation",
+                    "moodleCourseId": "940",
+                    "feedbackForms": [
+                        {
+                            "key": "F-ERSTERSPRINT",
+                            "name": "Feedback zum ersten Sprint",
+                            "description": "Hier wollen wir Ihr Feedback zum ersten Sprint einholen",
+                            "questions": [
+                                {
+                                    "key": "F-Q-INHALTE",
+                                    "name": "Inhalte NEU",
+                                    "description": "Wie zufrieden sind Sie mit den Inhalten der Vorlesung bisher? NEU",
+                                    "type": "SLIDER",
+                                    "rangeLow": "Nicht zufrieden",
+                                    "rangeHigh": "Sehr zufrieden"
+                                },
+                                {
+                                    "key": "F-Q-INHALTE-3",
+                                    "name": "Inhalte (gefehlt) NEU",
+                                    "description": "Welche Inhalte haben Ihnen gefehlt? NEU",
+                                    "type": "FULLTEXT"
+                                }
+                            ]
+                        }
+                    ],
+                    "quizForms": [
+                        {
+                            "key": "Q-ROLES",
+                            "name": "Rollenverständnis bei Scrum",
+                            "description": "Ein Quiz zum Rollenverständnis und Teamaufbau bei Scrum",
+                            "questions": [
+                                {
+                                    "key": "Q-Q-PRODUCTOWNER",
+                                    "name": "Product Owner NEU",
+                                    "description": "Welche der folgenden Aufgaben ist nicht Teil der Rolle des Product Owners? NEU",
+                                    "type": "SINGLE_CHOICE",
+                                    "options": [
+                                        "Erstellung des Product Backlogs",
+                                        "Priorisierung des Product Backlogs NEU",
+                                        "Pizza bestellen für jedes Daily"
+                                    ],
+                                    "hasCorrectAnswers": true,
+                                    "correctAnswers": [ "2" ]
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+            """;
+
+        response = given()
+            .header("Authorization", "Bearer " + prof.getJwt())
+            .contentType("application/json")
+            .body(json)
+            .patch("/public/courses");
+        response.then().statusCode(200);
+
+        // check that the course was updated
+        courses = given().header("Authorization", "Bearer " + prof.getJwt()).get("/course").then().statusCode(200).extract().body().jsonPath().getList(".", Course.class);
+        Assertions.assertEquals(1, courses.size());
+        course = courses.get(0);
+        Assertions.assertEquals("AUME 23/24", course.getName());
+        Assertions.assertEquals("AUME23", course.getKey());
+        Assertions.assertEquals("Agile Vorgehensmodelle und Mobile Kommunikation", course.getDescription());
+        Assertions.assertEquals("940", course.getMoodleCourseId());
+        Assertions.assertEquals(prof.getId(), course.getOwners().get(0).toString());
+        Assertions.assertEquals(1, course.getOwners().size());
+        Assertions.assertEquals(1, course.getFeedbackForms().size());
+        Assertions.assertEquals(1, course.getQuizForms().size());
+        Assertions.assertEquals("Feedback zum ersten Sprint", course.getFeedbackForms().get(0).getName());
+        Assertions.assertEquals("Rollenverständnis bei Scrum", course.getQuizForms().get(0).getName());
+
+        // check the feedback form
+        feedbackForm = course.getFeedbackForms().get(0);
+        Assertions.assertEquals("F-ERSTERSPRINT", feedbackForm.getKey());
+        Assertions.assertEquals("Feedback zum ersten Sprint", feedbackForm.getName());
+        Assertions.assertEquals("Hier wollen wir Ihr Feedback zum ersten Sprint einholen", feedbackForm.getDescription());
+
+        // for the questions we have to fetch the feedback form directly
+        feedbackFormFromGet = given().header("Authorization", "Bearer " + prof.getJwt()).get("/course/" + course.getId().toHexString() + "/feedback/form/" + feedbackForm.getId().toHexString()).then().statusCode(200).extract().body().as(FeedbackForm.class);
+        Assertions.assertEquals(2, feedbackFormFromGet.getQuestions().size());
+        Assertions.assertEquals("Inhalte NEU", feedbackFormFromGet.getQuestions().get(0).questionContent.getName());
+        Assertions.assertEquals("Inhalte (gefehlt) NEU", feedbackFormFromGet.getQuestions().get(1).questionContent.getName());
+        Assertions.assertEquals("Wie zufrieden sind Sie mit den Inhalten der Vorlesung bisher? NEU", feedbackFormFromGet.getQuestions().get(0).questionContent.getDescription());
+        Assertions.assertEquals("Welche Inhalte haben Ihnen gefehlt? NEU", feedbackFormFromGet.getQuestions().get(1).questionContent.getDescription());
+
+        // check the quiz form
+        quizForm = course.getQuizForms().get(0);
+        Assertions.assertEquals("Q-ROLES", quizForm.getKey());
+        Assertions.assertEquals("Rollenverständnis bei Scrum", quizForm.getName());
+        Assertions.assertEquals("Ein Quiz zum Rollenverständnis und Teamaufbau bei Scrum", quizForm.getDescription());
+
+        // for the questions we have to fetch the quiz form directly
+        quizFormFromGet = given().header("Authorization", "Bearer " + prof.getJwt()).get("/course/" + course.getId().toHexString() + "/quiz/form/" + quizForm.getId().toHexString()).then().statusCode(200).extract().body().as(QuizForm.class);
+        Assertions.assertEquals(1, quizFormFromGet.getQuestions().size());
+        Assertions.assertEquals("Product Owner NEU", quizFormFromGet.getQuestions().get(0).questionContent.getName());
+        Assertions.assertEquals("Welche der folgenden Aufgaben ist nicht Teil der Rolle des Product Owners? NEU", quizFormFromGet.getQuestions().get(0).questionContent.getDescription());
     }
 
 
