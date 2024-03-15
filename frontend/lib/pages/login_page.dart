@@ -71,7 +71,6 @@ class _LoginPageState extends State<LoginPage> {
             userId: userId,
             username: username,
             fullName: fullName,
-            password: password,
             roles: roles));
         if (!context.mounted) return;
         Navigator.pushReplacementNamed(context, '/main');

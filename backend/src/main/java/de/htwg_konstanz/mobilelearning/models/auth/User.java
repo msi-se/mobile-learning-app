@@ -196,8 +196,11 @@ public class User {
         this.stats = stats;
     }
 
+    public String encryptPassword(String password) {
+        return Crypto.encrypt(password, Crypto.stringToKey(this.passEncrKey));
+    }
+
     public String decryptPassword(String encrPassword) {
         return Crypto.decrypt(encrPassword, Crypto.stringToKey(this.passEncrKey));
     }
-
 }

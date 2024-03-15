@@ -66,7 +66,7 @@ class _LiveTabState extends State<LiveTab> {
     });
     try {
       final response = await http.get(
-        Uri.parse("${getBackendUrl()}/live?password=${getSession()!.password}"),
+        Uri.parse("${getBackendUrl()}/live"),
         headers: {
           "Content-Type": "application/json",
           "AUTHORIZATION": "Bearer ${getSession()!.jwt}",

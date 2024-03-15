@@ -77,8 +77,7 @@ public class UserService {
             // check if user exists in db
             User existingUser = userRepository.findByUsername(username);
             if (existingUser != null) {
-                passEncrKey = Crypto.stringToKey(existingUser.getPassEncrKey());
-                encrPassword = Crypto.encrypt(password, passEncrKey);
+                encrPassword = existingUser.encryptPassword(password);
                 // return jwt token
                 String json = JwtService.getToken(existingUser, encrPassword);
                 if (json == null) {
@@ -89,7 +88,6 @@ public class UserService {
             }
 
             passEncrKey = Crypto.generateKey();
-            encrPassword = Crypto.encrypt(password, passEncrKey);
 
             User newUser = new User(
                 username + "@htwg-konstanz.de",
@@ -97,6 +95,8 @@ public class UserService {
                 username,
                 Crypto.keyToString(passEncrKey)
             );
+
+            encrPassword = newUser.encryptPassword(password);
 
             if (username.startsWith("Student")) {
                 newUser.addRole(UserRole.STUDENT);
@@ -156,7 +156,7 @@ public class UserService {
             userRepository.update(user);
         }
 
-        encrPassword = Crypto.encrypt(password, passEncrKey);
+        encrPassword = user.encryptPassword(password);
 
         // return jwt token
         String json = JwtService.getToken(user, encrPassword);
