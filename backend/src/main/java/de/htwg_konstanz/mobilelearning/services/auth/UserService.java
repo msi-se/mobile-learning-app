@@ -4,8 +4,11 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import javax.crypto.SecretKey;
+
 import org.jboss.resteasy.reactive.RestHeader;
 
+import de.htwg_konstanz.mobilelearning.helper.Crypto;
 import de.htwg_konstanz.mobilelearning.models.Course;
 import de.htwg_konstanz.mobilelearning.models.auth.User;
 import de.htwg_konstanz.mobilelearning.models.auth.UserRole;
@@ -64,6 +67,9 @@ public class UserService {
         try { password = decodedString.split(":")[1]; } catch (Exception e) {}
         User userFromLdap = null;
 
+        SecretKey passEncrKey = null;
+        String encrPassword = "";
+
         // TEMP: bypass ldap (student, prof, admin as username)
         List<String> demoUsernames = Arrays.asList("Student", "Prof", "Prof2", "Admin", "Brande", "Tobi", "Marvin", "Leon", "Fabi", "Schimkat", "Landwehr" );
         if (demoUsernames.stream().anyMatch(username::startsWith)) {
@@ -71,8 +77,10 @@ public class UserService {
             // check if user exists in db
             User existingUser = userRepository.findByUsername(username);
             if (existingUser != null) {
+                passEncrKey = Crypto.stringToKey(existingUser.getPassEncrKey());
+                encrPassword = Crypto.encrypt(password, passEncrKey);
                 // return jwt token
-                String json = JwtService.getToken(existingUser);
+                String json = JwtService.getToken(existingUser, encrPassword);
                 if (json == null) {
                     return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
                 }
@@ -80,11 +88,14 @@ public class UserService {
                 return Response.ok(json).build();
             }
 
+            passEncrKey = Crypto.generateKey();
+            encrPassword = Crypto.encrypt(password, passEncrKey);
+
             User newUser = new User(
                 username + "@htwg-konstanz.de",
                 "Testuser: " + username,
                 username,
-                password
+                Crypto.keyToString(passEncrKey)
             );
 
             if (username.startsWith("Student")) {
@@ -99,7 +110,7 @@ public class UserService {
 
             userRepository.persist(newUser);
 
-            String json = JwtService.getToken(newUser);
+            String json = JwtService.getToken(newUser, encrPassword);
             if (json == null) {
                 return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
             }
@@ -129,22 +140,26 @@ public class UserService {
 
         // if not, create new user
         if (existingUser == null) {
+            passEncrKey = Crypto.generateKey();
             User newUser = new User(
                 userFromLdap.getEmail(),
                 userFromLdap.getName(),
                 userFromLdap.getUsername(),
-                ""
+                Crypto.keyToString(passEncrKey)
             );
             newUser.setRoles(userFromLdap.getRoles());
             userRepository.persist(newUser);
             user = newUser;
         } else {
             user = existingUser;
+            passEncrKey = Crypto.stringToKey(user.getPassEncrKey());
             userRepository.update(user);
         }
 
+        encrPassword = Crypto.encrypt(password, passEncrKey);
+
         // return jwt token
-        String json = JwtService.getToken(user);
+        String json = JwtService.getToken(user, encrPassword);
         if (json == null) {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
         }

@@ -44,7 +44,7 @@ public class JwtService {
          * @param user
          * @return JWT token
          */
-        public String getToken(User user) {
+        public String getToken(User user, String encrPassword) {
 
 
             // evaluate the needed fields for the token
@@ -70,6 +70,7 @@ public class JwtService {
                     .claim(Claims.sub.name(), user.getId().toHexString())
                     .claim(Claims.email.name(), user.getEmail())
                     .claim(Claims.preferred_username.name(), user.getUsername())
+                    .claim("encrPassword", encrPassword)
                     .groups(new HashSet<String>(user.getRoles()))
                     .expiresAt((System.currentTimeMillis() + 31536000000L)/1000L)
                     .sign();

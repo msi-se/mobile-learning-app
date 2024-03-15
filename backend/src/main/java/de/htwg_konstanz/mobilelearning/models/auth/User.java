@@ -12,7 +12,7 @@ public class User {
 	public String email;
     public String name;
     public String username;
-    public String password;
+    public String passEncrKey;
     public List<String> roles;
     public List<ObjectId> courses;
     public UserStats stats;
@@ -27,14 +27,14 @@ public class User {
      * @param email
      * @param name
      * @param username
-     * @param password
+     * @param passEncrKey
      */
-    public User(String email, String name, String username, String password) {
+    public User(String email, String name, String username, String passEncrKey) {
         this.id = new ObjectId();
         this.email = email;
         this.name = name;
         this.username = username;
-        this.password = password;
+        this.passEncrKey = passEncrKey;
         this.roles = new ArrayList<String>();
         this.courses = new ArrayList<ObjectId>();
         this.stats = new UserStats();
@@ -63,6 +63,10 @@ public class User {
     public String getUsername() {
         return this.username;
     }
+    
+    public String getPassEncrKey() {
+        return this.passEncrKey;
+    }
 
     public void setEmail(String email) {
         this.email = email;
@@ -74,6 +78,10 @@ public class User {
 
     public void setUsername(String username) {
         this.username = username;
+    }
+
+    public void setPassEncrKey(String passEncrKey) {
+        this.passEncrKey = passEncrKey;
     }
 
     /**
@@ -112,23 +120,11 @@ public class User {
         return this.roles != null ? this.roles.contains(UserRole.ADMIN) : false;
     }
 
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
     @Override
 	public String toString() {
-        return "User [id=" + this.id.toHexString() + ", email=" + this.email + ", name=" + this.name + ", username=" + this.username + ", password="
-                + this.password + ", roles=" + this.roles + "]";
+        return "User [id=" + this.id.toHexString() + ", email=" + this.email + ", name=" + this.name + ", username=" + this.username + ", passEncrKey="
+                + this.passEncrKey + ", roles=" + this.roles + "]";
 	}
-
-    public boolean authenticate(String password) {
-        return this.password.equals(password);
-    }
-
-    public String getPassword() {
-        return this.password;
-    }
 
     public ObjectId getId() {
         return this.id;
