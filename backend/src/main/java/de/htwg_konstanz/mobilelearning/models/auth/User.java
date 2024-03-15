@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.bson.types.ObjectId;
 
+import de.htwg_konstanz.mobilelearning.helper.Crypto;
 import de.htwg_konstanz.mobilelearning.models.stats.UserStats;
 
 public class User {
@@ -193,6 +194,10 @@ public class User {
 
     public void setStats(UserStats stats) {
         this.stats = stats;
+    }
+
+    public String decryptPassword(String encrPassword) {
+        return Crypto.decrypt(encrPassword, Crypto.stringToKey(this.passEncrKey));
     }
 
 }

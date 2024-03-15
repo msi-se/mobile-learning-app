@@ -66,13 +66,18 @@ public class CourseService {
     @Path("")
     @Produces(MediaType.APPLICATION_JSON)
     @RolesAllowed({ UserRole.PROF, UserRole.STUDENT })
-    public List<Course> getCourses(@QueryParam("password") String password) {
+    public List<Course> getCourses() {
         
         // update the courses linked to the user
         User user = userRepository.findByUsername(jwt.getName());
         if (user == null) {
             throw new NotFoundException("User not found.");
         }
+
+        // decrypt the password from the jwt
+        String encrPassword = jwt.getClaim("encrPassword");
+        String password = user.decryptPassword(encrPassword);
+
         updateCourseLinkedToUser(user, password);
 
         // don't return the results and participants (for security and data load reasons)
