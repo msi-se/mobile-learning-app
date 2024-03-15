@@ -528,10 +528,35 @@ class _QuizControlPageState extends State<QuizControlPage> {
               right: 0,
               child: Container(
                 color: colors.surfaceVariant,
-                child: Text(
-                  "${_form.connectCode.substring(0, 3)} ${_form.connectCode.substring(3, 6)}",
-                  style: Theme.of(context).textTheme.headlineSmall,
-                  textAlign: TextAlign.center,
+                child: Row(
+                  children: <Widget>[
+                    Expanded(
+                      child: Container(), // Empty container to take up space
+                    ),
+                    Expanded(
+                      child: Text(
+                        "${_form.connectCode.substring(0, 3)} ${_form.connectCode.substring(3, 6)}",
+                        style: Theme.of(context).textTheme.headlineSmall,
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                    Expanded(
+                      child: Padding(
+                        padding: const EdgeInsets.only(right: 8.0),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          children: <Widget>[
+                            const Icon(Icons.person),
+                            Text(
+                              "${values.length}/$_participantCounter",
+                              style: Theme.of(context).textTheme.headlineSmall,
+                              textAlign: TextAlign.right,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ),
             )
