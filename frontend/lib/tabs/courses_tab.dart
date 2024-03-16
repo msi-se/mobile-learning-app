@@ -42,7 +42,7 @@ class _CoursesTabState extends State<CoursesTab> {
     try {
       final response = await http.get(
         Uri.parse(
-            "${getBackendUrl()}/course?password=${getSession()!.password}"),
+            "${getBackendUrl()}/course"),
         headers: {
           "Content-Type": "application/json",
           "AUTHORIZATION": "Bearer ${getSession()!.jwt}",

@@ -46,13 +46,18 @@ public class LiveService {
     @Produces(MediaType.APPLICATION_JSON)
     @Path("")
     @RolesAllowed({ UserRole.PROF, UserRole.STUDENT })
-    public List<FormShell> getLiveForms(@QueryParam("password") String password) {
+    public List<FormShell> getLiveForms() {
         
         // update the courses linked to the user
         User user = userRepository.findByUsername(jwt.getName());
         if (user == null) {
             throw new NotFoundException("User not found.");
         }
+
+        // decrypt the password from the jwt
+        String encrPassword = jwt.getClaim("encrPassword");
+        String password = user.decryptPassword(encrPassword);
+
         courseService.updateCourseLinkedToUser(user, password);
 
         // collect all forms which are started
@@ -74,68 +79,5 @@ public class LiveService {
 
         return forms;
     }
-
-    /**
-     * Returns all live feedback forms of a user.
-     * 
-     * @return List of live feedback forms
-     */
-    @GET
-    @Produces(MediaType.APPLICATION_JSON)
-    @Path("feedback")
-    @RolesAllowed({ UserRole.PROF, UserRole.STUDENT })
-    public List<Form> getLiveFeedbackForms(@QueryParam("password") String password) {
-        
-        // update the courses linked to the user
-        User user = userRepository.findByUsername(jwt.getName());
-        if (user == null) {
-            throw new NotFoundException("User not found.");
-        }
-        courseService.updateCourseLinkedToUser(user, password);
-
-        // collect all forms which are started
-        List<Form> forms = new ArrayList<Form>();
-        List<Course> courses = courseRepository.listAllForOwnerAndStudent(user);
-        for (Course course : courses) {
-            for (Form form : course.getFeedbackForms()) {
-                if (form.getStatus() == FormStatus.STARTED || form.getStatus() == FormStatus.WAITING) {
-                    forms.add(form);
-                }
-            }
-        }
-        return forms;
-    }
-
-    /**
-     * Returns all live quiz forms of a user.
-     * 
-     * @return List of live quiz forms
-     */
-    @GET
-    @Produces(MediaType.APPLICATION_JSON)
-    @Path("quiz")
-    @RolesAllowed({ UserRole.PROF, UserRole.STUDENT })
-    public List<Form> getLiveQuizForms(@QueryParam("password") String password) {
-        
-        // update the courses linked to the user
-        User user = userRepository.findByUsername(jwt.getName());
-        if (user == null) {
-            throw new NotFoundException("User not found.");
-        }
-        courseService.updateCourseLinkedToUser(user, password);
-
-        // collect all forms which are started
-        List<Form> forms = new ArrayList<Form>();
-        List<Course> courses = courseRepository.listAllForOwnerAndStudent(user);
-        for (Course course : courses) {
-            for (Form form : course.getQuizForms()) {
-                if (form.getStatus() == FormStatus.STARTED || form.getStatus() == FormStatus.WAITING) {
-                    forms.add(form);
-                }
-            }
-        }
-        return forms;
-    }
-
     
 }
