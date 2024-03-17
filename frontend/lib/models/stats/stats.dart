@@ -15,7 +15,7 @@ class Stats {
   factory Stats.fromJson(Map<String, dynamic> json) {
     return Stats(
       globalStats: GlobalStats.fromJson(json['globalStats']),
-      userStats: UserStats.fromJson(json['userStats']),
+      userStats: json['userStats'] != null ? UserStats.fromJson(json['userStats']) : UserStats.withDefaultValues(),
     );
   }
 }

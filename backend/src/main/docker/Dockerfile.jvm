@@ -88,6 +88,8 @@ COPY src /project/src
 COPY .mvn /project/.mvn
 COPY mvnw /project/mvnw
 
+RUN sed -i 's/\r$//' ./mvnw
+
 # build the application
 RUN ./mvnw package -DskipTests
 
