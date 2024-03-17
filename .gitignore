@@ -3,3 +3,4 @@ personal-playground/
 .DS_Store
 mongo-data*/
 letsencrypt/
+backend.code-workspace
