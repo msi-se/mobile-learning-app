@@ -7,6 +7,8 @@ import 'package:frontend/components/choose/choose_form.dart';
 import 'package:frontend/components/error/general_error_widget.dart';
 import 'package:frontend/components/error/network_error_widget.dart';
 import 'package:frontend/models/course.dart';
+import 'package:frontend/models/feedback/feedback_form.dart';
+import 'package:frontend/models/quiz/quiz_form.dart';
 import 'package:frontend/utils.dart';
 import 'package:http/http.dart' as http;
 import 'package:frontend/global.dart';
@@ -65,11 +67,6 @@ class _CoursesTabState extends State<CoursesTab> {
       setState(() {
         _loading = false;
         _fetchResult = 'network_error';
-      });
-    } catch (e) {
-      setState(() {
-        _loading = false;
-        _fetchResult = 'general_error';
       });
     }
   }
@@ -134,15 +131,29 @@ class _CoursesTabState extends State<CoursesTab> {
                 course: _selectedCourse!,
                 choose: (id, feedbackOrQuiz) {
                   if (feedbackOrQuiz == "Feedback") {
-                    Navigator.pushNamed(context, '/feedback-info', arguments: {
-                      "courseId": _selectedCourse!.id,
-                      "formId": id,
-                    });
+                    if (_selectedCourse!.isOwner) {
+                      Navigator.pushNamed(context, '/feedback-info', arguments: {
+                        "courseId": _selectedCourse!.id,
+                        "formId": id,
+                      });
+                    } else {
+                      FeedbackForm form = _selectedCourse!.feedbackForms
+                          .firstWhere((element) => element.id == id);
+                      Navigator.pushNamed(context, '/attend-feedback',
+                          arguments: form.connectCode);
+                    }
                   } else if (feedbackOrQuiz == "Quiz") {
-                    Navigator.pushNamed(context, '/quiz-info', arguments: {
-                      "courseId": _selectedCourse!.id,
-                      "formId": id,
-                    });
+                    if (_selectedCourse!.isOwner) {
+                      Navigator.pushNamed(context, '/quiz-info', arguments: {
+                        "courseId": _selectedCourse!.id,
+                        "formId": id,
+                      });
+                    } else {
+                      QuizForm form = _selectedCourse!.quizForms
+                          .firstWhere((element) => element.id == id);
+                      Navigator.pushNamed(context, '/attend-quiz',
+                          arguments: form.connectCode);
+                    }
                   }
                 },
               ),

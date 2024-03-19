@@ -1,3 +1,4 @@
+import 'package:frontend/global.dart';
 import 'package:frontend/models/question.dart';
 
 class Form {
@@ -7,6 +8,7 @@ class Form {
   final String description;
   final String connectCode;
   final List<Question> questions;
+  final bool isOwner;
   String status;
 
   Form({
@@ -16,10 +18,11 @@ class Form {
     required this.description,
     required this.connectCode,
     required this.questions,
+    required this.isOwner,
     required this.status,
   });
 
-  factory Form.fromJson(Map<String, dynamic> json) {
+  factory Form.fromJson(Map<String, dynamic> json, {bool isOwner = false}) {
     return Form(
       id: json['id'],
       courseId: json['courseId'],
@@ -31,6 +34,7 @@ class Form {
           : (json['questions'] as List<dynamic>)
               .map((e) => Question.fromJson(e['questionContent']))
               .toList(),
+      isOwner: isOwner,
       status: json['status'],
     );
   }

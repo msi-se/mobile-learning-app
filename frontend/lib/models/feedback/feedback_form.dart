@@ -10,10 +10,11 @@ class FeedbackForm extends Form {
     required super.description,
     required super.connectCode,
     required super.questions,
+    required super.isOwner,
     required super.status,
   });
 
-  factory FeedbackForm.fromJson(Map<String, dynamic> json) {
+  factory FeedbackForm.fromJson(Map<String, dynamic> json, {bool isOwner = false}) {
     return FeedbackForm(
       id: json['id'],
       courseId: json['courseId'],
@@ -25,6 +26,7 @@ class FeedbackForm extends Form {
           : (json['questions'] as List<dynamic>)
               .map((e) => FeedbackQuestion.fromJson(e['questionContent']))
               .toList(),
+      isOwner: isOwner,
       status: json['status'],
     );
   }
