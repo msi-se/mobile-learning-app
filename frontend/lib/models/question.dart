@@ -1,8 +1,10 @@
+import 'package:frontend/enums/question_type.dart';
+
 class Question {
   final String id;
   final String name;
   final String description;
-  final String type;
+  final QuestionType type;
   final List<String> options;
 
   Question({
@@ -18,7 +20,7 @@ class Question {
       id: json['id'],
       name: json['name'],
       description: json['description'],
-      type: json['type'],
+      type: QuestionType.fromString(json['type']),
       options: json['options'].cast<String>(),
     );
   }

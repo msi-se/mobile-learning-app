@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/components/layout/sliver_layout.dart';
+import 'package:frontend/enums/form_status.dart';
 import 'package:frontend/models/course.dart';
 import 'package:frontend/theme/assets.dart';
-import 'package:frontend/types/form_type.dart';
+import 'package:frontend/enums/form_type.dart';
 
 class ChooseForm extends StatefulWidget {
   final Course course;
@@ -25,10 +26,10 @@ class _ChooseFormState extends State<ChooseForm> {
     super.initState();
     // STARTED, FINISHED, NOT_STARTED
     statusColors = {
-      "WAITING": Colors.green,
-      "STARTED": Colors.orange,
-      "FINISHED": Colors.red,
-      "NOT_STARTED": Colors.grey,
+      FormStatus.waiting.toString(): Colors.green,
+      FormStatus.started.toString(): Colors.orange,
+      FormStatus.finished.toString(): Colors.red,
+      FormStatus.not_started.toString(): Colors.grey,
     };
   }
 
@@ -173,7 +174,7 @@ class _ChooseFormState extends State<ChooseForm> {
                   clipBehavior: Clip.antiAlias,
                   child: ListTile(
                     trailing: Icon(Icons.circle,
-                        color: statusColors[forms[index].status], size: 20.0),
+                        color: statusColors[forms[index].status.toString()], size: 20.0),
                     title: Text(forms[index].name),
                     subtitle: Text(forms[index].description),
                     // trailing: const Icon(Icons.arrow_forward_ios),

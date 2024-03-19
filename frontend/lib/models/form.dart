@@ -1,3 +1,4 @@
+import 'package:frontend/enums/form_status.dart';
 import 'package:frontend/global.dart';
 import 'package:frontend/models/question.dart';
 
@@ -9,7 +10,7 @@ class Form {
   final String connectCode;
   final List<Question> questions;
   final bool isOwner;
-  String status;
+  FormStatus status;
 
   Form({
     required this.id,
@@ -35,7 +36,7 @@ class Form {
               .map((e) => Question.fromJson(e['questionContent']))
               .toList(),
       isOwner: isOwner,
-      status: json['status'],
+      status: FormStatus.fromString(json['status']),
     );
   }
 }

@@ -3,6 +3,8 @@ import 'dart:io';
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:frontend/enums/form_status.dart';
+import 'package:frontend/enums/question_type.dart';
 import 'package:frontend/theme/assets.dart';
 import 'package:frontend/components/elements/quiz/single_choice_quiz_result.dart';
 import 'package:frontend/components/error/general_error_widget.dart';
@@ -85,7 +87,7 @@ class _QuizControlPageState extends State<QuizControlPage> {
         _userNames = data["participants"]
             .map((participant) => participant["userAlias"])
             .toList();
-        if (_form.status == "FINISHED") {
+        if (_form.status == FormStatus.finished) {
           _scoreboard = getScoreboard(data);
         }
 
@@ -143,10 +145,10 @@ class _QuizControlPageState extends State<QuizControlPage> {
       if (data["action"] == "FORM_STATUS_CHANGED") {
         var form = QuizForm.fromJson(data["form"]);
         setState(() {
-          _form.status = data["formStatus"];
+          _form.status = FormStatus.fromString(data["formStatus"]);
           _form.currentQuestionIndex = form.currentQuestionIndex;
           _form.currentQuestionFinished = form.currentQuestionFinished;
-          if (_form.status == "FINISHED") {
+          if (_form.status == FormStatus.finished) {
             _scoreboard = getScoreboard(data["form"]);
           }
         });
@@ -176,11 +178,11 @@ class _QuizControlPageState extends State<QuizControlPage> {
     }, onError: (error) {
       //TODO: Should there be another error handling for this?
       setState(() {
-        _form.status = "ERROR";
+        _form.status = FormStatus.error;
       });
     });
 
-    if (_form.status == "NOT_STARTED") {
+    if (_form.status == FormStatus.not_started) {
       openWaitingRoom();
     }
   }
@@ -299,7 +301,8 @@ class _QuizControlPageState extends State<QuizControlPage> {
         backgroundColor: colors.primary,
       );
 
-      if (_form.status == "NOT_STARTED" || _form.status == "WAITING") {
+      if (_form.status == FormStatus.not_started ||
+          _form.status == FormStatus.waiting) {
         var code = _form.connectCode;
         code = "${code.substring(0, 3)} ${code.substring(3, 6)}";
 
@@ -395,7 +398,7 @@ class _QuizControlPageState extends State<QuizControlPage> {
                 ]));
       }
 
-      if (_form.status == "FINISHED") {
+      if (_form.status == FormStatus.finished) {
         return Scaffold(
           appBar: appBar,
           body: Padding(
@@ -459,7 +462,8 @@ class _QuizControlPageState extends State<QuizControlPage> {
                             Card(
                               child: Padding(
                                 padding: const EdgeInsets.all(16),
-                                child: element.type == 'SINGLE_CHOICE'
+                                child: element.type ==
+                                        QuestionType.single_choice
                                     ? SingleChoiceQuizResult(
                                         results: values
                                             .map((e) => int.parse(e))
@@ -469,7 +473,7 @@ class _QuizControlPageState extends State<QuizControlPage> {
                                         correctAnswer:
                                             element.correctAnswers[0],
                                       )
-                                    : element.type == 'YES_NO'
+                                    : element.type == QuestionType.yes_no
                                         ? SingleChoiceQuizResult(
                                             results: values
                                                 .map((e) => e == "yes" ? 0 : 1)
@@ -482,14 +486,14 @@ class _QuizControlPageState extends State<QuizControlPage> {
                                                     ? "0"
                                                     : "1",
                                           )
-                                        : Text(element.type),
+                                        : Text(element.type.toString()),
                               ),
                             )
                         ],
                       ),
                     ),
                   ),
-                  if (_form.status == "STARTED")
+                  if (_form.status == FormStatus.started)
                     Column(
                       children: [
                         ElevatedButton(
@@ -503,7 +507,7 @@ class _QuizControlPageState extends State<QuizControlPage> {
                         ),
                       ],
                     ),
-                  if (_form.status == "FINISHED")
+                  if (_form.status == FormStatus.finished)
                     Column(
                       children: [
                         ElevatedButton(

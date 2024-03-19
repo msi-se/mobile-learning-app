@@ -1,3 +1,4 @@
+import 'package:frontend/enums/question_type.dart';
 import 'package:frontend/models/question.dart';
 
 class FeedbackQuestion extends Question {
@@ -19,7 +20,7 @@ class FeedbackQuestion extends Question {
       id: json['id'],
       name: json['name'],
       description: json['description'],
-      type: json['type'],
+      type: QuestionType.fromString(json['type']),
       options: json['options'].cast<String>(),
       rangeLow: json['rangeLow'] ?? "0",
       rangeHigh: json['rangeHigh'] ?? "10",

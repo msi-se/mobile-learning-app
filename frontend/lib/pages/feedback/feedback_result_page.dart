@@ -8,6 +8,8 @@ import 'package:frontend/components/elements/feedback/slider_feedback_result.dar
 import 'package:frontend/components/elements/feedback/star_feedback_result.dart';
 import 'package:frontend/components/error/general_error_widget.dart';
 import 'package:frontend/components/error/network_error_widget.dart';
+import 'package:frontend/enums/form_status.dart';
+import 'package:frontend/enums/question_type.dart';
 import 'package:frontend/global.dart';
 import 'package:frontend/models/feedback/feedback_form.dart';
 import 'package:frontend/models/feedback/feedback_question.dart';
@@ -87,11 +89,11 @@ class _FeedbackResultPageState extends State<FeedbackResultPage> {
       if (response.statusCode == 200) {
         var data = jsonDecode(response.body);
         var form = FeedbackForm.fromJson(data);
-        
+
         _form = form;
         _participantCounter = data["participants"].length;
         _results = getResults(data);
-        
+
         startWebsocket();
 
         setState(() {
@@ -145,7 +147,7 @@ class _FeedbackResultPageState extends State<FeedbackResultPage> {
 
       if (data["action"] == "FORM_STATUS_CHANGED") {
         setState(() {
-          _form.status = data["formStatus"];
+          _form.status = FormStatus.fromString(data["formStatus"]);
         });
       }
       if (data["action"] == "RESULT_ADDED") {
@@ -161,11 +163,11 @@ class _FeedbackResultPageState extends State<FeedbackResultPage> {
     }, onError: (error) {
       //TODO: Should there be another error handling for this?
       setState(() {
-        _form.status = "ERROR";
+        _form.status = FormStatus.error;
       });
     });
 
-    if (_form.status == "NOT_STARTED") {
+    if (_form.status == FormStatus.not_started) {
       openWaitingRoom();
     }
   }
@@ -259,7 +261,8 @@ class _FeedbackResultPageState extends State<FeedbackResultPage> {
         backgroundColor: colors.primary,
       );
 
-      if (_form.status == "WAITING" || _form.status == "NOT_STARTED") {
+      if (_form.status == FormStatus.waiting ||
+          _form.status == FormStatus.not_started) {
         var code = _form.connectCode;
         code = "${code.substring(0, 3)} ${code.substring(3, 6)}";
 
@@ -366,9 +369,10 @@ class _FeedbackResultPageState extends State<FeedbackResultPage> {
                                                 const TextStyle(fontSize: 15),
                                             textAlign: TextAlign.center),
                                         const SizedBox(height: 16),
-                                        if (element.type == 'STARS')
+                                        if (element.type == QuestionType.stars)
                                           StarFeedbackResult(average: average)
-                                        else if (element.type == 'SLIDER')
+                                        else if (element.type ==
+                                            QuestionType.slider)
                                           SliderFeedbackResult(
                                             results: convertStringListToIntList(
                                                 values),
@@ -379,20 +383,22 @@ class _FeedbackResultPageState extends State<FeedbackResultPage> {
                                             max: 10,
                                           )
                                         else if (element.type ==
-                                            'SINGLE_CHOICE')
+                                            QuestionType.single_choice)
                                           SingleChoiceFeedbackResult(
                                             results: convertStringListToIntList(
                                                 values),
                                             options: element.options,
                                           )
-                                        else if (element.type == 'FULLTEXT')
+                                        else if (element.type ==
+                                            QuestionType.fulltext)
                                           FulltextFeedbackResult(
                                               results: values)
                                         else
                                           const Text('Unknown element type',
                                               textAlign: TextAlign.center),
-                                        if (element.type == 'STARS' ||
-                                            element.type == 'SLIDER')
+                                        if (element.type ==
+                                                QuestionType.stars ||
+                                            element.type == QuestionType.slider)
                                           Text("$roundAverage",
                                               style:
                                                   const TextStyle(fontSize: 20),
@@ -406,12 +412,12 @@ class _FeedbackResultPageState extends State<FeedbackResultPage> {
                           ),
                         ),
                       ),
-                      if (_form.status == "STARTED")
+                      if (_form.status == FormStatus.started)
                         ElevatedButton(
                           onPressed: stopForm,
                           child: const Text('Feedback beenden'),
                         ),
-                      if (_form.status == "FINISHED")
+                      if (_form.status == FormStatus.finished)
                         Column(
                           children: [
                             ElevatedButton(

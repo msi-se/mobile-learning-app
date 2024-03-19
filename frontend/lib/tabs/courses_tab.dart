@@ -9,7 +9,7 @@ import 'package:frontend/components/error/network_error_widget.dart';
 import 'package:frontend/models/course.dart';
 import 'package:frontend/models/feedback/feedback_form.dart';
 import 'package:frontend/models/quiz/quiz_form.dart';
-import 'package:frontend/types/form_type.dart';
+import 'package:frontend/enums/form_type.dart';
 import 'package:frontend/utils.dart';
 import 'package:http/http.dart' as http;
 import 'package:frontend/global.dart';

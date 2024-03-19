@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:frontend/components/error/general_error_widget.dart';
 import 'package:frontend/components/error/network_error_widget.dart';
 import 'package:frontend/components/layout/sliver_layout.dart';
+import 'package:frontend/enums/form_status.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
@@ -149,8 +150,8 @@ class _QuizPreviewPageState extends State<QuizPreviewPage> {
                                 });
                             fetchForm();
                           },
-                          child: _form!.status == "NOT_STARTED" ||
-                                  _form?.status == "WAITING"
+                          child: _form!.status == FormStatus.not_started ||
+                                  _form?.status == FormStatus.waiting
                               ? const Text('Starten')
                               : const Text('Ergebnisse'),
                         ),

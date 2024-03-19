@@ -1,3 +1,4 @@
+import 'package:frontend/enums/question_type.dart';
 import 'package:frontend/models/question.dart';
 
 class QuizQuestion extends Question {
@@ -16,7 +17,7 @@ class QuizQuestion extends Question {
       id: json['id'],
       name: json['name'],
       description: json['description'],
-      type: json['type'],
+      type: QuestionType.fromString(json['type']),
       options: json['options'].cast<String>(),
       correctAnswers: json['correctAnswers'] == null
           ? []

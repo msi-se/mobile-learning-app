@@ -1,3 +1,4 @@
+import 'package:frontend/enums/form_status.dart';
 import 'package:frontend/models/feedback/feedback_question.dart';
 import 'package:frontend/models/form.dart';
 
@@ -27,7 +28,7 @@ class FeedbackForm extends Form {
               .map((e) => FeedbackQuestion.fromJson(e['questionContent']))
               .toList(),
       isOwner: isOwner,
-      status: json['status'],
+      status: FormStatus.fromString(json['status']),
     );
   }
 }

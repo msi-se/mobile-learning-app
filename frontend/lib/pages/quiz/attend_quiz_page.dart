@@ -7,6 +7,8 @@ import 'package:frontend/components/elements/quiz/yes_no_quiz.dart';
 import 'package:frontend/components/error/general_error_widget.dart';
 import 'package:frontend/components/error/network_error_widget.dart';
 import 'package:frontend/components/general/quiz/choose_alias.dart';
+import 'package:frontend/enums/form_status.dart';
+import 'package:frontend/enums/question_type.dart';
 import 'package:frontend/global.dart';
 import 'package:frontend/models/quiz/quiz_form.dart';
 import 'package:frontend/utils.dart';
@@ -206,7 +208,7 @@ class _AttendQuizPageState extends State<AttendQuizPage> {
       if (data["action"] == "FORM_STATUS_CHANGED") {
         var form = QuizForm.fromJson(data["form"]);
         setState(() {
-          _form?.status = data["formStatus"];
+          _form?.status = FormStatus.fromString(data["formStatus"]);
           _value = null;
           _voted = false;
           _form?.currentQuestionIndex = form.currentQuestionIndex;
@@ -226,7 +228,7 @@ class _AttendQuizPageState extends State<AttendQuizPage> {
     }, onError: (error) {
       //TODO: Should there be another error handling for this?
       setState(() {
-        _form?.status = "ERROR";
+        _form?.status = FormStatus.error;
       });
     });
   }
@@ -276,7 +278,7 @@ class _AttendQuizPageState extends State<AttendQuizPage> {
         );
       }
 
-      if (_form?.status != "STARTED" || _voted) {
+      if (_form?.status != FormStatus.started || _voted) {
         return Scaffold(
           appBar: appbar,
           body: Center(
@@ -285,7 +287,7 @@ class _AttendQuizPageState extends State<AttendQuizPage> {
               children: <Widget>[
                 Padding(
                   padding: const EdgeInsets.only(left: 20.0, right: 20.0),
-                  child: _form?.status != "STARTED"
+                  child: _form?.status != FormStatus.started
                       ? const Text(
                           "Bitte warten Sie bis das Quiz gestartet wird")
                       : const Text(
@@ -352,7 +354,7 @@ class _AttendQuizPageState extends State<AttendQuizPage> {
                     Card(
                       child: Padding(
                         padding: const EdgeInsets.all(16),
-                        child: element.type == 'SINGLE_CHOICE'
+                        child: element.type == QuestionType.single_choice
                             ? SingleChoiceQuiz(
                                 options: element.options,
                                 onSelectionChanged: (newValue) {
@@ -361,7 +363,7 @@ class _AttendQuizPageState extends State<AttendQuizPage> {
                                   });
                                 },
                               )
-                            : element.type == 'YES_NO'
+                            : element.type == QuestionType.yes_no
                                 ? YesNoQuiz(
                                     onSelectionChanged: (newValue) {
                                       setState(() {
@@ -369,7 +371,7 @@ class _AttendQuizPageState extends State<AttendQuizPage> {
                                       });
                                     },
                                   )
-                                : Text(element.type),
+                                : Text(element.type.toString()),
                       ),
                     ),
                   ],

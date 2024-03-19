@@ -1,3 +1,4 @@
+import 'package:frontend/enums/form_status.dart';
 import 'package:frontend/models/form.dart';
 import 'package:frontend/models/quiz/quiz_question.dart';
 
@@ -32,7 +33,7 @@ class QuizForm extends Form {
               .map((e) => QuizQuestion.fromJson(e['questionContent']))
               .toList(),
       isOwner: isOwner,
-      status: json['status'],
+      status: FormStatus.fromString(json['status']),
       currentQuestionIndex: json['currentQuestionIndex'] ?? 0,
       currentQuestionFinished: json['currentQuestionFinished'] ?? false,
     );

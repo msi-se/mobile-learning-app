@@ -6,9 +6,10 @@ import 'package:flutter_svg/svg.dart';
 import 'package:frontend/components/code_input.dart';
 import 'package:frontend/components/error/general_error_widget.dart';
 import 'package:frontend/components/error/network_error_widget.dart';
+import 'package:frontend/enums/form_status.dart';
 import 'package:frontend/global.dart';
 import 'package:frontend/theme/assets.dart';
-import 'package:frontend/types/form_type.dart';
+import 'package:frontend/enums/form_type.dart';
 import 'package:frontend/utils.dart';
 import 'package:http/http.dart' as http;
 // import 'package:mobile_scanner/mobile_scanner.dart';
@@ -25,12 +26,16 @@ class FormShell {
   final String name;
   final String course;
   final FormType type;
-  final String status;
+  final FormStatus status;
   FormShell(this.connectCode, this.name, this.course, this.type, this.status);
 
   factory FormShell.fromJson(Map<String, dynamic> json) {
-    return FormShell((json['connectCode'] as int).toString(), json['name'],
-        json['course'], FormType.values.byName(json['type']), json['status']);
+    return FormShell(
+        (json['connectCode'] as int).toString(),
+        json['name'],
+        json['course'],
+        FormType.fromString(json['type']),
+        FormStatus.fromString(json['status']));
   }
 }
 
@@ -52,12 +57,12 @@ class _LiveTabState extends State<LiveTab> {
     super.initState();
 
     _forms = [];
+    statusColors = {
+      FormStatus.waiting.toString(): Colors.green,
+      FormStatus.started.toString(): Colors.orange,
+    };
 
     fetchForms();
-    statusColors = {
-      "WAITING": Colors.green,
-      "STARTED": Colors.orange,
-    };
   }
 
   Future fetchForms() async {
@@ -368,21 +373,22 @@ class _LiveTabState extends State<LiveTab> {
                 style: TextStyle(fontSize: 24.0, fontWeight: FontWeight.bold),
               ),
             ),
-            ..._forms
-                .map((form) => Card(
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10.0)),
-                      child: ListTile(
-                        leading: form.type == FormType.feedback
-                          ? const Icon(Icons.feedback)
-                          : const Icon(Icons.quiz),
-                        trailing: Icon(Icons.circle,
-                            color: statusColors[form.status], size: 20),
-                        title: Text(form.name),
-                        onTap: () => joinCourse(form.connectCode),
-                      ),
-                    ))
-                .toList(),
+            ..._forms.map((form) {
+              print(form.status.toString());
+              return Card(
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10.0)),
+                child: ListTile(
+                  leading: form.type == FormType.feedback
+                      ? const Icon(Icons.feedback)
+                      : const Icon(Icons.quiz),
+                  trailing: Icon(Icons.circle,
+                      color: statusColors[form.status.toString()], size: 20),
+                  title: Text(form.name),
+                  onTap: () => joinCourse(form.connectCode),
+                ),
+              );
+            }).toList(),
           ],
         ),
       );

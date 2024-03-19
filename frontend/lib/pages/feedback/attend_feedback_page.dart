@@ -7,6 +7,8 @@ import 'package:frontend/components/elements/feedback/slider_feedback.dart';
 import 'package:frontend/components/elements/feedback/star_feedback.dart';
 import 'package:frontend/components/error/general_error_widget.dart';
 import 'package:frontend/components/error/network_error_widget.dart';
+import 'package:frontend/enums/form_status.dart';
+import 'package:frontend/enums/question_type.dart';
 import 'package:frontend/global.dart';
 import 'package:frontend/models/feedback/feedback_form.dart';
 import 'package:frontend/models/feedback/feedback_question.dart';
@@ -84,7 +86,6 @@ class _AttendFeedbackPageState extends State<AttendFeedbackPage> {
       });
     }
 
-    //TODO: Is this necessary?
     if (!mounted) return;
     Navigator.pop(context);
   }
@@ -110,12 +111,19 @@ class _AttendFeedbackPageState extends State<AttendFeedbackPage> {
         startWebsocket();
 
         for (var element in form.questions) {
-          if (element.type == "STARS") {
-            _feedbackValues[element.id] = 3;
-          } else if (element.type == "SLIDER") {
-            _feedbackValues[element.id] = 5;
-          } else if (element.type == "SINGLE_CHOICE") {
-            _feedbackValues[element.id] = 0;
+          switch (element.type) {
+            case QuestionType.stars:
+              _feedbackValues[element.id] = 3;
+              break;
+            case QuestionType.slider:
+              _feedbackValues[element.id] = 5;
+              break;
+            case QuestionType.single_choice:
+              _feedbackValues[element.id] = 0;
+              break;
+            default:
+              _feedbackValues[element.id] = 0;
+              break;
           }
         }
 
@@ -170,14 +178,14 @@ class _AttendFeedbackPageState extends State<AttendFeedbackPage> {
       var data = jsonDecode(event);
       if (data["action"] == "FORM_STATUS_CHANGED") {
         setState(() {
-          _form.status = data["formStatus"];
+          _form.status = FormStatus.fromString(data["formStatus"]);
           _voted = false;
         });
       }
     }, onError: (error) {
       //TODO: Should there be another error handling for this?
       setState(() {
-        _form.status = "ERROR";
+        _form.status = FormStatus.error;
       });
     });
   }
@@ -214,7 +222,7 @@ class _AttendFeedbackPageState extends State<AttendFeedbackPage> {
         ],
       );
 
-      if (_form.status != "STARTED") {
+      if (_form.status != FormStatus.started) {
         return Scaffold(
           appBar: appbar,
           body: Center(
@@ -291,7 +299,7 @@ class _AttendFeedbackPageState extends State<AttendFeedbackPage> {
                                   style: const TextStyle(fontSize: 15),
                                   textAlign: TextAlign.center),
                               const SizedBox(height: 16),
-                              if (element.type == 'STARS')
+                              if (element.type == QuestionType.stars)
                                 StarFeedback(
                                   initialRating: _feedbackValues[element.id],
                                   onRatingChanged: (newRating) {
@@ -300,7 +308,7 @@ class _AttendFeedbackPageState extends State<AttendFeedbackPage> {
                                     });
                                   },
                                 )
-                              else if (element.type == 'SLIDER')
+                              else if (element.type == QuestionType.slider)
                                 SliderFeedback(
                                   initialFeedback: _feedbackValues[element.id],
                                   rangeLow: element.rangeLow,
@@ -311,7 +319,7 @@ class _AttendFeedbackPageState extends State<AttendFeedbackPage> {
                                     });
                                   },
                                 )
-                              else if (element.type == 'SINGLE_CHOICE')
+                              else if (element.type == QuestionType.single_choice)
                                 SingleChoiceFeedback(
                                   options: element.options,
                                   initialFeedback: _feedbackValues[element.id],
@@ -321,7 +329,7 @@ class _AttendFeedbackPageState extends State<AttendFeedbackPage> {
                                     });
                                   },
                                 )
-                              else if (element.type == 'FULLTEXT')
+                              else if (element.type == QuestionType.fulltext)
                                 TextField(
                                   onChanged: (newFeedback) {
                                     setState(() {
