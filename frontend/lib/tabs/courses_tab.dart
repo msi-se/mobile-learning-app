@@ -9,6 +9,7 @@ import 'package:frontend/components/error/network_error_widget.dart';
 import 'package:frontend/models/course.dart';
 import 'package:frontend/models/feedback/feedback_form.dart';
 import 'package:frontend/models/quiz/quiz_form.dart';
+import 'package:frontend/types/form_type.dart';
 import 'package:frontend/utils.dart';
 import 'package:http/http.dart' as http;
 import 'package:frontend/global.dart';
@@ -129,8 +130,8 @@ class _CoursesTabState extends State<CoursesTab> {
               )
             : ChooseForm(
                 course: _selectedCourse!,
-                choose: (id, feedbackOrQuiz) {
-                  if (feedbackOrQuiz == "Feedback") {
+                choose: (id, formType) {
+                  if (formType == FormType.feedback) {
                     if (_selectedCourse!.isOwner) {
                       Navigator.pushNamed(context, '/feedback-info', arguments: {
                         "courseId": _selectedCourse!.id,
@@ -142,7 +143,7 @@ class _CoursesTabState extends State<CoursesTab> {
                       Navigator.pushNamed(context, '/attend-feedback',
                           arguments: form.connectCode);
                     }
-                  } else if (feedbackOrQuiz == "Quiz") {
+                  } else if (formType == FormType.quiz) {
                     if (_selectedCourse!.isOwner) {
                       Navigator.pushNamed(context, '/quiz-info', arguments: {
                         "courseId": _selectedCourse!.id,

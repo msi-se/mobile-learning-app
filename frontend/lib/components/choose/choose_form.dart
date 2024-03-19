@@ -2,10 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:frontend/components/layout/sliver_layout.dart';
 import 'package:frontend/models/course.dart';
 import 'package:frontend/theme/assets.dart';
+import 'package:frontend/types/form_type.dart';
 
 class ChooseForm extends StatefulWidget {
   final Course course;
-  final Function(String id, String type) choose;
+  final Function(String id, FormType type) choose;
 
   const ChooseForm({super.key, required this.course, required this.choose});
 
@@ -13,8 +14,9 @@ class ChooseForm extends StatefulWidget {
   State<ChooseForm> createState() => _ChooseFormState();
 }
 
+
 class _ChooseFormState extends State<ChooseForm> {
-  String feedbackOrQuiz = "Feedback";
+  FormType formType = FormType.feedback;
   Map<String, Color> statusColors = {};
 
 
@@ -33,7 +35,7 @@ class _ChooseFormState extends State<ChooseForm> {
   @override
   Widget build(BuildContext context) {
     final colors = Theme.of(context).colorScheme;
-    var forms = feedbackOrQuiz == "Feedback"
+    var forms = formType == FormType.feedback
         ? widget.course.feedbackForms
         : widget.course.quizForms;
 
@@ -88,7 +90,7 @@ class _ChooseFormState extends State<ChooseForm> {
                 child: TextButton(
                   onPressed: () {
                     setState(() {
-                      feedbackOrQuiz = "Feedback";
+                      formType = FormType.feedback;
                     });
                   },
                   child: Row(
@@ -96,14 +98,14 @@ class _ChooseFormState extends State<ChooseForm> {
                     children: [
                       Icon(
                         Icons.feedback,
-                        color: feedbackOrQuiz == "Feedback"
+                        color: formType == FormType.feedback
                             ? colors.primary
                             : colors.tertiary,
                       ),
                       const SizedBox(width: 10),
                       Text(
                         "Feedback",
-                        style: feedbackOrQuiz == "Feedback"
+                        style: formType == FormType.feedback
                             ? TextStyle(
                                 color: colors.primary,
                                 fontWeight: FontWeight.bold,
@@ -121,7 +123,7 @@ class _ChooseFormState extends State<ChooseForm> {
                 child: TextButton(
                   onPressed: () {
                     setState(() {
-                      feedbackOrQuiz = "Quiz";
+                      formType = FormType.quiz;
                     });
                   },
                   child: Row(
@@ -129,14 +131,14 @@ class _ChooseFormState extends State<ChooseForm> {
                     children: [
                       Icon(
                         Icons.quiz,
-                        color: feedbackOrQuiz == "Quiz"
+                        color: formType == FormType.quiz
                             ? colors.primary
                             : colors.tertiary,
                       ),
                       const SizedBox(width: 10),
                       Text(
                         "Quiz",
-                        style: feedbackOrQuiz == "Quiz"
+                        style: formType == FormType.quiz
                             ? TextStyle(
                                 color: colors.primary,
                                 fontWeight: FontWeight.bold,
@@ -177,7 +179,7 @@ class _ChooseFormState extends State<ChooseForm> {
                     // trailing: const Icon(Icons.arrow_forward_ios),
                     // TODO: display status of form
                     onTap: () {
-                      widget.choose(forms[index].id, feedbackOrQuiz);
+                      widget.choose(forms[index].id, formType);
                     },
                   ),
                 );

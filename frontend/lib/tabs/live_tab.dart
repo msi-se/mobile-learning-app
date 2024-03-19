@@ -8,6 +8,7 @@ import 'package:frontend/components/error/general_error_widget.dart';
 import 'package:frontend/components/error/network_error_widget.dart';
 import 'package:frontend/global.dart';
 import 'package:frontend/theme/assets.dart';
+import 'package:frontend/types/form_type.dart';
 import 'package:frontend/utils.dart';
 import 'package:http/http.dart' as http;
 // import 'package:mobile_scanner/mobile_scanner.dart';
@@ -23,13 +24,13 @@ class FormShell {
   final String connectCode;
   final String name;
   final String course;
-  final String type;
+  final FormType type;
   final String status;
   FormShell(this.connectCode, this.name, this.course, this.type, this.status);
 
   factory FormShell.fromJson(Map<String, dynamic> json) {
     return FormShell((json['connectCode'] as int).toString(), json['name'],
-        json['course'], json['type'], json['status']);
+        json['course'], FormType.values.byName(json['type']), json['status']);
   }
 }
 
@@ -372,7 +373,7 @@ class _LiveTabState extends State<LiveTab> {
                       shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(10.0)),
                       child: ListTile(
-                        leading: form.type == "feedback"
+                        leading: form.type == FormType.feedback
                           ? const Icon(Icons.feedback)
                           : const Icon(Icons.quiz),
                         trailing: Icon(Icons.circle,
