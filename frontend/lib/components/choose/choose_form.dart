@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart'; 
 import 'package:frontend/components/layout/sliver_layout.dart';
 import 'package:frontend/enums/form_status.dart';
 import 'package:frontend/models/course.dart';
@@ -33,6 +34,45 @@ class _ChooseFormState extends State<ChooseForm> {
     };
   }
 
+  void _showInfoDialog() {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Text(widget.course.name),
+          content: Row(
+            children: [
+              Expanded(
+                child: Text("Kurs ID: ${widget.course.id}"),
+              ),
+              IconButton(
+                icon: const Icon(Icons.copy),
+                onPressed: () {
+                  Clipboard.setData(ClipboardData(text: widget.course.id));
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('Kurs ID in die Abblage kopiert!'),
+                      duration: Duration(seconds: 1),
+                    ),
+                  );
+                },
+              ),
+            ],
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('Schließen'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+
   @override
   Widget build(BuildContext context) {
     final colors = Theme.of(context).colorScheme;
@@ -54,15 +94,21 @@ class _ChooseFormState extends State<ChooseForm> {
                   left: 16,
                   right: percentage < 0.2 || isNarrow ? 0 : 120,
                 ),
-                child: Text(
-                  widget.course.name,
-                  style: TextStyle(
-                    color: colors.onSurface,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 16,
+                child: Row(children: [
+                  Text(
+                    widget.course.name,
+                    style: TextStyle(
+                      color: colors.onSurface,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16,
+                    ),
+                    overflow: TextOverflow.ellipsis,
                   ),
-                  overflow: TextOverflow.ellipsis,
-                ),
+                  IconButton(
+                    icon: Icon(Icons.info_outline, color: colors.onSurface),
+                    onPressed: _showInfoDialog,
+                  ),
+                ],) 
               ),
             );
           },

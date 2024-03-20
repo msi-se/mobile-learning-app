@@ -1,6 +1,5 @@
 import 'dart:convert';
 import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:frontend/components/choose/choose_course.dart';
 import 'package:frontend/components/choose/choose_form.dart';
@@ -72,6 +71,48 @@ class _CoursesTabState extends State<CoursesTab> {
     }
   }
 
+    Future<void> joinCourse(String courseId) async {
+    setState(() {
+      _loading = true;
+    });
+
+    try {
+      final response = await http.post(
+        Uri.parse("${getBackendUrl()}/course/$courseId/join"),
+        headers: {
+          "Content-Type": "application/json",
+          "AUTHORIZATION": "Bearer ${getSession()!.jwt}",
+        },
+      );
+
+      if (response.statusCode == 200) {
+        await fetchCourses();
+
+      } else {
+        // TODO: Handle different status codes other than 200
+        setState(() {
+          _loading = false;
+
+        });
+      }
+    } on http.ClientException {
+      setState(() {
+        _loading = false;
+        _fetchResult = 'network_error';
+      });
+    } on SocketException {
+      setState(() {
+        _loading = false;
+        _fetchResult = 'network_error';
+      });
+    } catch (e) {
+      setState(() {
+        _loading = false;
+        _fetchResult = 'general_error';
+      });
+    }
+  }
+
   void _showErrorDialog(String errorType) {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       showDialog(
@@ -127,6 +168,7 @@ class _CoursesTabState extends State<CoursesTab> {
                   });
                   widget.setPopFunction(pop);
                 },
+                joinCourse: joinCourse,
               )
             : ChooseForm(
                 course: _selectedCourse!,
