@@ -39,6 +39,10 @@ public class Result {
         return this.userId;
     }
 
+    public String getHashedUserId() {
+        return this.hashedUserId;
+    }
+
     public List<String> getValues() {
         return this.values;
     }

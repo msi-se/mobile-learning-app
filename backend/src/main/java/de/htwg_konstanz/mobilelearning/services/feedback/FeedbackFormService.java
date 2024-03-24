@@ -214,4 +214,14 @@ public class FeedbackFormService {
         return RestResponse.ok("Successfully added");
     }
 
+    @Path("/{formId}/downloadresults")
+    @GET
+    @Produces(MediaType.APPLICATION_OCTET_STREAM)
+    @RolesAllowed({ UserRole.STUDENT, UserRole.PROF })
+    public Response downloadResults(@RestPath String courseId, @RestPath String formId) {
+        Course course = courseRepository.findById(new ObjectId(courseId));
+        FeedbackForm feedbackForm = course.getFeedbackFormById(new ObjectId(formId));
+        return Response.ok(feedbackForm.getResultsAsCsv(course)).header("Content-Disposition", "attachment; filename=results_" + feedbackForm.name + ".csv").build();
+    }
+
 }

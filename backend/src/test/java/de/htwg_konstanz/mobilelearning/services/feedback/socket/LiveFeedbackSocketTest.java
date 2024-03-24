@@ -15,6 +15,7 @@ import de.htwg_konstanz.mobilelearning.SocketClient;
 import de.htwg_konstanz.mobilelearning.MockMongoTestProfile;
 import de.htwg_konstanz.mobilelearning.MockUser;
 import de.htwg_konstanz.mobilelearning.models.Course;
+import de.htwg_konstanz.mobilelearning.models.Result;
 import de.htwg_konstanz.mobilelearning.models.feedback.FeedbackForm;
 import de.htwg_konstanz.mobilelearning.services.CourseService;
 import io.quarkus.test.junit.QuarkusTest;
@@ -632,6 +633,16 @@ public class LiveFeedbackSocketTest {
             Assertions.assertTrue(studentSession4.isOpen());
             Assertions.assertEquals(4, courseService.getCourse(courseId).getFeedbackForms().get(0).getParticipants().size());
 
+            // change the form status to "STARTED" and check if it was set
+            profClient.sendMessage("""
+                {
+                    "action": "CHANGE_FORM_STATUS",
+                    "formStatus": "STARTED"
+                }
+            """);
+            Thread.sleep(100);
+            Assertions.assertEquals("STARTED", courseService.getCourse(courseId).getFeedbackForms().get(0).getStatus().toString());
+                        
             // send results to the feedback form (1, 2, 3, 3)
             String questionId = course.getFeedbackForms().get(0).getQuestions().get(0).getId().toString();
             studentClient1.sendMessage(String.format("""
@@ -667,17 +678,6 @@ public class LiveFeedbackSocketTest {
             """, questionId));
             Thread.sleep(100);
 
-
-            // change the form status to "STARTED" and check if it was set
-            profClient.sendMessage("""
-                {
-                    "action": "CHANGE_FORM_STATUS",
-                    "formStatus": "STARTED"
-                }
-            """);
-            Thread.sleep(100);
-            Assertions.assertEquals("STARTED", courseService.getCourse(courseId).getFeedbackForms().get(0).getStatus().toString());
-
             // close the websocket connections
             profSession.close();
             studentSession1.close();
@@ -711,4 +711,191 @@ public class LiveFeedbackSocketTest {
             Assertions.fail(e.getMessage());
         }
     }
+
+    @Test
+    public void testResultDownload() {
+
+
+        /**
+            @Path("/{formId}/downloadresults")
+            @GET
+            @Produces(MediaType.APPLICATION_OCTET_STREAM)
+            @RolesAllowed({ UserRole.STUDENT, UserRole.PROF })
+            public Response downloadResults(@RestPath String courseId, @RestPath String formId) {
+                Course course = courseRepository.findById(new ObjectId(courseId));
+                FeedbackForm feedbackForm = course.getFeedbackFormById(new ObjectId(formId));
+                return Response.ok(feedbackForm.getResultsAsCsv(course)).header("Content-Disposition", "attachment; filename=results_" + feedbackForm.name + ".csv").build();
+            }
+         */
+        // create & get courses
+        List<Course> courses = Helper.createCourse("Prof-1");
+        Course course = courses.get(0);
+
+        // make 1 prof and 3 students
+        MockUser prof = Helper.createMockUser("Prof-1");
+        MockUser student1 = Helper.createMockUser("Student-1");
+        MockUser student2 = Helper.createMockUser("Student-2");
+        MockUser student3 = Helper.createMockUser("Student-3");
+        MockUser student4 = Helper.createMockUser("Student-4");
+
+        // call the get courses endpoint for each user to update the course-user relation
+        given().header("Authorization", "Bearer " + prof.getJwt()).when().get("/course").then().statusCode(200);
+        given().header("Authorization", "Bearer " + student1.getJwt()).when().get("/course").then().statusCode(200);
+        given().header("Authorization", "Bearer " + student2.getJwt()).when().get("/course").then().statusCode(200);
+        given().header("Authorization", "Bearer " + student3.getJwt()).when().get("/course").then().statusCode(200);
+        given().header("Authorization", "Bearer " + student4.getJwt()).when().get("/course").then().statusCode(200);
+
+        // get course and feedback form id
+        String courseId = course.getId().toString();
+        String formId = course.getFeedbackForms().get(0).getId().toString();
+
+        // try catch block to handle exceptions of websocket connection
+        try {
+
+            // create websocket clients
+            SocketClient profClient = new SocketClient();
+            SocketClient studentClient1 = new SocketClient();
+            SocketClient studentClient2 = new SocketClient();
+            SocketClient studentClient3 = new SocketClient();
+            SocketClient studentClient4 = new SocketClient();
+
+            // connect the prof to the feedback form
+            Session profSession = ContainerProvider.getWebSocketContainer().connectToServer(
+                profClient,
+                URI.create("ws://localhost:8081/course/" + courseId + "/feedback/form/" + formId + "/subscribe/" + prof.getId() + "/" + prof.getJwt())
+            );
+            Thread.sleep(100);
+            Assertions.assertTrue(profSession.isOpen());
+
+            // set the form status to "WAITING" and check if it was set
+            profClient.sendMessage("""
+                {
+                    "action": "CHANGE_FORM_STATUS",
+                    "formStatus": "WAITING"
+                }
+            """);
+            Thread.sleep(100);
+            Assertions.assertEquals("WAITING", courseService.getCourse(courseId).getFeedbackForms().get(0).getStatus().toString());
+            Assertions.assertEquals(0, courseService.getCourse(courseId).getFeedbackForms().get(0).getParticipants().size());
+
+            // connect the students to the feedback form
+            Session studentSession1 = ContainerProvider.getWebSocketContainer().connectToServer(
+                studentClient1,
+                URI.create("ws://localhost:8081/course/" + courseId + "/feedback/form/" + formId + "/subscribe/" + student1.getId() + "/" + student1.getJwt())
+            );
+            Thread.sleep(100);
+            Assertions.assertTrue(studentSession1.isOpen());
+            Assertions.assertEquals(1, courseService.getCourse(courseId).getFeedbackForms().get(0).getParticipants().size());
+
+            Session studentSession2 = ContainerProvider.getWebSocketContainer().connectToServer(
+                studentClient2,
+                URI.create("ws://localhost:8081/course/" + courseId + "/feedback/form/" + formId + "/subscribe/" + student2.getId() + "/" + student2.getJwt())
+            );
+            Thread.sleep(100);
+            Assertions.assertTrue(studentSession2.isOpen());
+            Assertions.assertEquals(2, courseService.getCourse(courseId).getFeedbackForms().get(0).getParticipants().size());
+            Session studentSession3 = ContainerProvider.getWebSocketContainer().connectToServer(
+                studentClient3,
+                URI.create("ws://localhost:8081/course/" + courseId + "/feedback/form/" + formId + "/subscribe/" + student3.getId() + "/" + student3.getJwt())
+            );
+            Thread.sleep(100);
+            Assertions.assertTrue(studentSession3.isOpen());
+            Assertions.assertEquals(3, courseService.getCourse(courseId).getFeedbackForms().get(0).getParticipants().size());   
+            Thread.sleep(100);
+            Session studentSession4 = ContainerProvider.getWebSocketContainer().connectToServer(
+                studentClient4,
+                URI.create("ws://localhost:8081/course/" + courseId + "/feedback/form/" + formId + "/subscribe/" + student4.getId() + "/" + student4.getJwt())
+            );
+            Thread.sleep(100);
+            Assertions.assertTrue(studentSession4.isOpen());
+            Assertions.assertEquals(4, courseService.getCourse(courseId).getFeedbackForms().get(0).getParticipants().size());
+
+            // change the form status to "STARTED" and check if it was set
+            profClient.sendMessage("""
+                {
+                    "action": "CHANGE_FORM_STATUS",
+                    "formStatus": "STARTED"
+                }
+            """);
+            Thread.sleep(100);
+            Assertions.assertEquals("STARTED", courseService.getCourse(courseId).getFeedbackForms().get(0).getStatus().toString());
+                        
+            // send results to the feedback form (1, 2, 3, 3)
+            String questionId = course.getFeedbackForms().get(0).getQuestions().get(0).getId().toString();
+            studentClient1.sendMessage(String.format("""
+                {
+                    "action": "ADD_RESULT",
+                    "resultElementId": %s,
+                    "resultValues": [1]
+                }
+            """, questionId));
+            Thread.sleep(100);
+            studentClient2.sendMessage(String.format("""
+                {
+                    "action": "ADD_RESULT",
+                    "resultElementId": %s,
+                    "resultValues": [2]
+                }
+            """, questionId));
+            Thread.sleep(100);
+            studentClient3.sendMessage(String.format("""
+                {
+                    "action": "ADD_RESULT",
+                    "resultElementId": %s,
+                    "resultValues": [3]
+                }
+            """, questionId));
+            Thread.sleep(100);
+            studentClient4.sendMessage(String.format("""
+                {
+                    "action": "ADD_RESULT",
+                    "resultElementId": %s,
+                    "resultValues": [3]
+                }
+            """, questionId));
+            Thread.sleep(100);
+
+            // close the websocket connections
+            profSession.close();
+            studentSession1.close();
+            studentSession2.close();
+            studentSession3.close();
+
+            // check manually if the results are correct
+            Course updatedCourse = courseService.getCourse(courseId);
+            List<Result> results = updatedCourse.getFeedbackForms().get(0).getQuestions().get(0).getResults();
+            Assertions.assertEquals(4, results.size());
+            Assertions.assertEquals("1", results.get(0).values.get(0));
+            Assertions.assertEquals("2", results.get(1).values.get(0));
+            Assertions.assertEquals("3", results.get(2).values.get(0));
+            Assertions.assertEquals("3", results.get(3).values.get(0));
+
+            // fetch the download link
+            Response response = given()
+                .header("Authorization", "Bearer " + prof.getJwt())
+                .pathParam("courseId", courseId)
+                .pathParam("formId", formId)
+                .when()
+                .get("/course/{courseId}/feedback/form/{formId}/downloadresults");
+            response.then().statusCode(200);
+
+            // check if the response is a csv file
+            Assertions.assertEquals("attachment; filename=results_Erster Sprint.csv", response.getHeader("Content-Disposition"));
+            Assertions.assertEquals("application/octet-stream", response.getHeader("Content-Type"));
+
+            // check if the csv file contains the right data
+            String csv = response.getBody().asString();
+            String[] lines = csv.split("\n");
+            Assertions.assertEquals(5, lines.length);
+            Assertions.assertEquals("[1]", lines[1].split(",")[1]);
+            Assertions.assertEquals("[2]", lines[2].split(",")[1]);
+            Assertions.assertEquals("[3]", lines[3].split(",")[1]);
+            Assertions.assertEquals("[3]", lines[4].split(",")[1]);
+
+        } catch (Exception e) {
+            System.out.println(e);
+            Assertions.fail(e.getMessage());
+        }
+    }
+
 }

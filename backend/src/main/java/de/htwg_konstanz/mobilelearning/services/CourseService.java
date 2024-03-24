@@ -47,9 +47,6 @@ public class CourseService {
      * @param courseId
      * @return Course
      */
-    @GET
-    @Produces(MediaType.APPLICATION_JSON)
-    @Path("/{courseId}")
     public Course getCourse(@RestPath String courseId) {
         ObjectId courseObjectId = new ObjectId(courseId);
         Course course = courseRepository.findById(courseObjectId);

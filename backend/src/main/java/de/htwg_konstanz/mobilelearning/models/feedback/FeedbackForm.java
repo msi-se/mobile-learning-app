@@ -1,15 +1,21 @@
 package de.htwg_konstanz.mobilelearning.models.feedback;
 
+import java.io.IOException;
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.csv.CSVFormat;
+import org.apache.commons.csv.CSVPrinter;
 import org.bson.types.ObjectId;
 
 import de.htwg_konstanz.mobilelearning.enums.FeedbackQuestionType;
 import de.htwg_konstanz.mobilelearning.enums.FormStatus;
+import de.htwg_konstanz.mobilelearning.helper.Hasher;
 import de.htwg_konstanz.mobilelearning.models.Course;
 import de.htwg_konstanz.mobilelearning.models.Form;
 import de.htwg_konstanz.mobilelearning.models.QuestionWrapper;
+import de.htwg_konstanz.mobilelearning.models.Result;
 import de.htwg_konstanz.mobilelearning.services.api.models.ApiFeedbackForm;
 import de.htwg_konstanz.mobilelearning.services.api.models.ApiFeedbackForm.ApiFeedbackQuestion;
 
@@ -235,5 +241,57 @@ public class FeedbackForm extends Form {
 
     public void setParticipants(List<FeedbackParticipant> participants) {
         this.participants = participants;
+    }
+
+    public Object getResultsAsCsv(Course course) {
+
+        /*
+        
+        userId; question1; question2; question3; ...
+        userX; 1; 2; 3; ...
+        userY; 2; 3; 4; ...
+        */
+
+        List<String> headers = new ArrayList<String>();
+        headers.add("user");
+
+        // add question headers
+        for (QuestionWrapper questionWrapper : this.questions) {
+            FeedbackQuestion question = course.getFeedbackQuestionById(questionWrapper.getQuestionId());
+            headers.add(question.getKey() + " | " + question.getName() + " | " + question.getDescription());
+        }
+        String[] HEADERS = headers.toArray(new String[headers.size()]);
+
+        StringWriter sw = new StringWriter();
+        CSVFormat csvFormat = CSVFormat.DEFAULT.builder()
+            .setHeader(HEADERS)
+            .build();
+
+        // iterate over participants and questions
+        try (final CSVPrinter printer = new CSVPrinter(sw, csvFormat)) {
+            Integer userIndex = 0;
+            for (FeedbackParticipant participant : this.participants) {
+                List<String> record = new ArrayList<String>();
+                record.add("participant-" + userIndex);
+                String hashedUserId = Hasher.hash(participant.getUserId().toHexString());
+                for (QuestionWrapper questionWrapper : this.questions) {
+                    
+                    // find the result for this question and this participant
+                    List<Result> results = questionWrapper.getResults();
+                    String result = results.stream()
+                        .filter(r -> r.getHashedUserId().equals(hashedUserId))
+                        .findFirst()
+                        .map(r -> r.getValues().toString())
+                        .orElse("");
+                    userIndex++;
+                    record.add(result);
+                }
+                printer.printRecord(record);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return sw.toString();
     }
 }
