@@ -20,6 +20,7 @@ import de.htwg_konstanz.mobilelearning.models.feedback.FeedbackForm;
 import de.htwg_konstanz.mobilelearning.services.CourseService;
 import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.junit.TestProfile;
+import io.restassured.http.ContentType;
 import io.restassured.response.Response;
 import jakarta.inject.Inject;
 import jakarta.websocket.ContainerProvider;
@@ -728,8 +729,7 @@ public class LiveFeedbackSocketTest {
             }
          */
         // create & get courses
-        List<Course> courses = Helper.createCourse("Prof-1");
-        Course course = courses.get(0);
+        // List<Course> courses = Helper.createCourse("Prof-1");
 
         // make 1 prof and 3 students
         MockUser prof = Helper.createMockUser("Prof-1");
@@ -737,6 +737,12 @@ public class LiveFeedbackSocketTest {
         MockUser student2 = Helper.createMockUser("Student-2");
         MockUser student3 = Helper.createMockUser("Student-3");
         MockUser student4 = Helper.createMockUser("Student-4");
+        
+        // manually create a course to have more questions
+        String json = "[{\"name\":\"AUME 23/24\",\"description\":\"Agile Vorgehensmodelle und Mobile Kommunikation\",\"feedbackForms\":[{\"name\":\"Erster Sprint\",\"description\":\"Hier wollen wir Ihr Feedback zum ersten Sprint einholen\",\"questions\":[{\"name\":\"Rolle\",\"description\":\"Wie gut hat Ihnen ihre Pizza gefallen?\",\"type\":\"SLIDER\",\"options\":[],\"key\":\"F-Q-ROLLE\",\"rangeLow\":\"gut\",\"rangeHigh\":\"schlecht\"},{\"name\":\"Test\",\"description\":\"Wie gut hat Ihnen ihre Pizza gefallen?\",\"type\":\"SLIDER\",\"options\":[],\"key\":\"F-Q-TEST\",\"rangeLow\":\"gut\",\"rangeHigh\":\"schlecht\"},{\"name\":\"Test2\",\"description\":\"Wie gut hat Ihnen ihre Tests gefallen?\",\"type\":\"SLIDER\",\"options\":[],\"key\":\"F-Q-TEST2\",\"rangeLow\":\"gut\",\"rangeHigh\":\"schlecht\"}],\"key\":\"F-ERSTERSPRINT\"}],\"quizForms\":[{\"name\":\"Rollenverständnis bei Scrum\",\"description\":\"Ein Quiz zum Rollenverständnis und Teamaufbau bei Scrum\",\"questions\":[{\"name\":\"Product Owner\",\"description\":\"Welche der folgenden Aufgaben ist nicht Teil der Rolle des Product Owners?\",\"type\":\"SINGLE_CHOICE\",\"options\":[\"Erstellung des Product Backlogs\",\"Priorisierung des Product Backlogs\",\"Pizza bestellen für jedes Daily\"],\"hasCorrectAnswers\":true,\"correctAnswers\":[\"2\"],\"key\":\"Q-Q-PRODUCTOWNER\"},{\"name\":\"Product Owner\",\"description\":\"Test Frage?\",\"type\":\"SINGLE_CHOICE\",\"options\":[\"Antwort 1\",\"Antwort 2\",\"Antwort 3\"],\"hasCorrectAnswers\":true,\"correctAnswers\":[\"2\"],\"key\":\"Q-Q-PRODUCTOWNER\"}],\"key\":\"Q-ROLES\"}],\"key\":\"AUME23\",\"moodleCourseId\":\"1\"}]";
+        Response response = given().accept(ContentType.JSON).contentType(ContentType.JSON).header("Authorization", "Bearer " + prof.getJwt()).body(json).patch("/public/courses/");
+        List<Course> courses = response.then().statusCode(200).extract().body().jsonPath().getList(".", Course.class);
+        Course course = courses.get(0);
 
         // call the get courses endpoint for each user to update the course-user relation
         given().header("Authorization", "Bearer " + prof.getJwt()).when().get("/course").then().statusCode(200);
@@ -822,6 +828,7 @@ public class LiveFeedbackSocketTest {
                         
             // send results to the feedback form (1, 2, 3, 3)
             String questionId = course.getFeedbackForms().get(0).getQuestions().get(0).getId().toString();
+            String questionId3 = course.getFeedbackForms().get(0).getQuestions().get(2).getId().toString();
             studentClient1.sendMessage(String.format("""
                 {
                     "action": "ADD_RESULT",
@@ -850,9 +857,17 @@ public class LiveFeedbackSocketTest {
                 {
                     "action": "ADD_RESULT",
                     "resultElementId": %s,
-                    "resultValues": [3]
+                    "resultValues": [3, 5]
                 }
             """, questionId));
+            Thread.sleep(100);
+            studentClient4.sendMessage(String.format("""
+                {
+                    "action": "ADD_RESULT",
+                    "resultElementId": %s,
+                    "resultValues": [3, 5]
+                }
+            """, questionId3));
             Thread.sleep(100);
 
             // close the websocket connections
@@ -871,27 +886,31 @@ public class LiveFeedbackSocketTest {
             Assertions.assertEquals("3", results.get(3).values.get(0));
 
             // fetch the download link
-            Response response = given()
+            Response downloadResponse = given()
                 .header("Authorization", "Bearer " + prof.getJwt())
                 .pathParam("courseId", courseId)
                 .pathParam("formId", formId)
                 .when()
                 .get("/course/{courseId}/feedback/form/{formId}/downloadresults");
-            response.then().statusCode(200);
+            downloadResponse.then().statusCode(200);
 
-            // check if the response is a csv file
-            Assertions.assertEquals("attachment; filename=results_Erster Sprint.csv", response.getHeader("Content-Disposition"));
-            Assertions.assertEquals("application/octet-stream", response.getHeader("Content-Type"));
+            // check if the downloadResponse is a csv file
+            Assertions.assertEquals("attachment; filename=results_Erster Sprint.csv", downloadResponse.getHeader("Content-Disposition"));
+            Assertions.assertEquals("application/octet-stream", downloadResponse.getHeader("Content-Type"));
 
             // check if the csv file contains the right data
-            String csv = response.getBody().asString();
+            String csv = downloadResponse.getBody().asString();
             String[] lines = csv.split("\n");
-            Assertions.assertEquals(5, lines.length);
-            Assertions.assertEquals("[1]", lines[1].split(",")[1]);
-            Assertions.assertEquals("[2]", lines[2].split(",")[1]);
-            Assertions.assertEquals("[3]", lines[3].split(",")[1]);
-            Assertions.assertEquals("[3]", lines[4].split(",")[1]);
-
+            Assertions.assertEquals(6, lines.length);
+            Assertions.assertEquals("1", lines[1].split(",")[1].trim());
+            Assertions.assertEquals("2", lines[2].split(",")[1].trim());
+            Assertions.assertEquals("3", lines[3].split(",")[1].trim());
+            Assertions.assertEquals("3", lines[4].split(",")[1].trim());
+            Assertions.assertEquals("5", lines[5].split(",")[1].trim());
+            Assertions.assertEquals("", lines[5].split(",")[2].trim());
+            Assertions.assertEquals("5", lines[5].split(",")[3].trim());
+            Assertions.assertEquals("participant-3", lines[4].split(",")[0]);
+            Assertions.assertEquals("participant-3", lines[5].split(",")[0]);
         } catch (Exception e) {
             System.out.println(e);
             Assertions.fail(e.getMessage());

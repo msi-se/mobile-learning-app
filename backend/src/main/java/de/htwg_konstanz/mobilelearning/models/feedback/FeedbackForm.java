@@ -1,6 +1,5 @@
 package de.htwg_konstanz.mobilelearning.models.feedback;
 
-import java.io.IOException;
 import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.List;
@@ -250,6 +249,8 @@ public class FeedbackForm extends Form {
         userId; question1; question2; question3; ...
         userX; 1; 2; 3; ...
         userY; 2; 3; 4; ...
+        userY; ""; ""; 3; ... (important: if a user adds more than one result for a question, add a new row for each result (the rest of the row is empty)
+        userZ; 7; 8; 9; ...
         */
 
         List<String> headers = new ArrayList<String>();
@@ -267,26 +268,61 @@ public class FeedbackForm extends Form {
             .setHeader(HEADERS)
             .build();
 
+        class ResultWithQuestion {
+            public Result result;
+            public ObjectId questionId;
+
+            public ResultWithQuestion(Result result, ObjectId questionId) {
+                this.result = result;
+                this.questionId = questionId;
+            }
+        }
+
         // iterate over participants and questions
         try (final CSVPrinter printer = new CSVPrinter(sw, csvFormat)) {
             Integer userIndex = 0;
             for (FeedbackParticipant participant : this.participants) {
-                List<String> record = new ArrayList<String>();
-                record.add("participant-" + userIndex);
+                
                 String hashedUserId = Hasher.hash(participant.getUserId().toHexString());
+
+                // find the results for this question and this participant
+                List<ResultWithQuestion> userResults = new ArrayList<ResultWithQuestion>();
+
                 for (QuestionWrapper questionWrapper : this.questions) {
-                    
-                    // find the result for this question and this participant
                     List<Result> results = questionWrapper.getResults();
-                    String result = results.stream()
-                        .filter(r -> r.getHashedUserId().equals(hashedUserId))
-                        .findFirst()
-                        .map(r -> r.getValues().toString())
-                        .orElse("");
-                    userIndex++;
-                    record.add(result);
+                    for (Result result : results) {
+                        if (result.getHashedUserId().equals(hashedUserId)) {
+                            userResults.add(new ResultWithQuestion(result, questionWrapper.getId()));
+                        }
+                    }
+                    
                 }
-                printer.printRecord(record);
+
+                // max amount of results for a question
+                Integer maxResults = 0;
+                for (ResultWithQuestion result : userResults) {
+                    if (result.result.getValues().size() > maxResults) {
+                        maxResults = result.result.getValues().size();
+                    }
+                }
+
+                // add maxResults rows for this participant
+                for (Integer i = 0; i < maxResults; i++) {
+                    List<String> record = new ArrayList<String>();
+                    record.add("participant-" + userIndex);
+                    for (QuestionWrapper questionWrapper : this.questions) {
+                        String value = "";
+                        for (ResultWithQuestion result : userResults) {
+                            if (result.questionId.equals(questionWrapper.getId()) && result.result.getValues().size() > i) {
+                                value = result.result.getValues().get(i);
+                            }
+                        }
+                        record.add(value);
+                    }
+                    printer.printRecord(record);
+                }
+
+                userIndex++;
             }
         } catch (Exception e) {
             e.printStackTrace();
