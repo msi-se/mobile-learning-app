@@ -6,6 +6,7 @@ import java.util.List;
 
 import javax.crypto.SecretKey;
 
+import org.eclipse.microprofile.jwt.JsonWebToken;
 import org.jboss.resteasy.reactive.RestHeader;
 
 import de.htwg_konstanz.mobilelearning.helper.Crypto;
@@ -21,6 +22,7 @@ import de.htwg_konstanz.mobilelearning.repositories.CourseRepository;
 import de.htwg_konstanz.mobilelearning.repositories.UserRepository;
 import jakarta.annotation.security.PermitAll;
 import jakarta.inject.Inject;
+import jakarta.ws.rs.GET;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
@@ -42,6 +44,9 @@ public class UserService {
 
     @Inject
     JwtService JwtService;
+
+    @Inject
+    JsonWebToken jwt;
     
     /**
      * Login user.
@@ -164,6 +169,18 @@ public class UserService {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
         }
         return Response.ok(json).build();
+    }
+
+    // endpoint to verify jwt token
+    @GET
+    @PermitAll
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path("/verify")
+    public Response verify() {
+        if (jwt.getSubject() != null) {
+            return Response.ok().build();
+        }
+        return Response.status(Response.Status.UNAUTHORIZED).build();
     }
 
     // for testing
