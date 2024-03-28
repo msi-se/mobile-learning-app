@@ -34,9 +34,19 @@ class _LoginPageState extends State<LoginPage> {
   Future checkLoggedIn() async {
     await initPreferences();
     if (getSession() != null) {
-      if (!JwtDecoder.isExpired(getSession()!.jwt) && mounted) {
-        Navigator.pushReplacementNamed(context, '/main');
-        return;
+      if (!JwtDecoder.isExpired(getSession()!.jwt)) {
+        // check http /verify route 200 status code
+        final response = await http.get(
+          Uri.parse("${getBackendUrl()}/user/verify"),
+          headers: {
+            "Content-Type": "application/json",
+            "AUTHORIZATION": "Bearer ${getSession()!.jwt}"
+          },
+        );
+        if (response.statusCode == 200 && mounted) {
+          Navigator.pushReplacementNamed(context, '/main');
+          return;
+        }
       }
     }
     clearSession();
