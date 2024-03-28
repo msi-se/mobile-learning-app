@@ -56,7 +56,7 @@ class _DashboardStatisticsWidgetState extends State<DashboardStatisticsWidget>
           avgQuizPosition: 0,
           completedFeedbackForms: 0,
           completedQuizForms: 0,
-          qainedQuizPoints: 0,
+          gainedQuizPoints: 0,
         ));
 
     fetchStats();
@@ -166,7 +166,7 @@ class _DashboardStatisticsWidgetState extends State<DashboardStatisticsWidget>
                             crossAxisAlignment: CrossAxisAlignment.center,
                             children: [
                               Text(
-                                _stats.userStats.qainedQuizPoints.toString(),
+                                _stats.userStats.gainedQuizPoints.toString(),
                                 style: const TextStyle(
                                   color: Color(0xFF14181B),
                                   fontSize: 36,

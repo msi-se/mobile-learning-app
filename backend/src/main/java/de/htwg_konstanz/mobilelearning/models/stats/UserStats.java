@@ -4,20 +4,20 @@ public class UserStats {
 
     public Integer completedFeedbackForms = 0;
     public Integer completedQuizForms = 0;
-    public Integer qainedQuizPoints = 0;
+    public Integer gainedQuizPoints = 0;
     public Double avgQuizPosition = 0.0;
 
     public UserStats() {
         this.completedFeedbackForms = 0;
         this.completedQuizForms = 0;
-        this.qainedQuizPoints = 0;
+        this.gainedQuizPoints = 0;
         this.avgQuizPosition = 0.0;
     }
 
-    public UserStats(Integer completedFeedbackForms, Integer completedQuizForms, Integer qainedQuizPoints, Double avgQuizPosition) {
+    public UserStats(Integer completedFeedbackForms, Integer completedQuizForms, Integer gainedQuizPoints, Double avgQuizPosition) {
         this.completedFeedbackForms = completedFeedbackForms;
         this.completedQuizForms = completedQuizForms;
-        this.qainedQuizPoints = qainedQuizPoints;
+        this.gainedQuizPoints = gainedQuizPoints;
         this.avgQuizPosition = avgQuizPosition;
     }
 
@@ -45,16 +45,16 @@ public class UserStats {
         return this.completedQuizForms++;
     }
 
-    public Integer getQainedQuizPoints() {
-        return this.qainedQuizPoints;
+    public Integer getGainedQuizPoints() {
+        return this.gainedQuizPoints;
     }
 
-    public void setQainedQuizPoints(Integer qainedQuizPoints) {
-        this.qainedQuizPoints = qainedQuizPoints;
+    public void setGainedQuizPoints(Integer gainedQuizPoints) {
+        this.gainedQuizPoints = gainedQuizPoints;
     }
 
-    public Number incrementQainedQuizPoints(Integer qainedQuizPoints) {
-        return this.qainedQuizPoints += qainedQuizPoints;
+    public Number incrementGainedQuizPoints(Integer gainedQuizPoints) {
+        return this.gainedQuizPoints += gainedQuizPoints;
     }
 
     public Double getAvgQuizPosition() {
@@ -81,7 +81,7 @@ public class UserStats {
 
         this.updateAvgQuizPosition(quizPosition);
         this.incrementCompletedQuizForms();
-        this.incrementQainedQuizPoints(score);
+        this.incrementGainedQuizPoints(score);
 
     }
 }
