@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:frontend/auth_state.dart';
 import 'package:frontend/components/elements/quiz/single_choice_quiz.dart';
 import 'package:frontend/components/elements/quiz/yes_no_quiz.dart';
 import 'package:frontend/components/error/general_error_widget.dart';
@@ -24,7 +25,7 @@ class AttendQuizPage extends StatefulWidget {
   State<AttendQuizPage> createState() => _AttendQuizPageState();
 }
 
-class _AttendQuizPageState extends State<AttendQuizPage> {
+class _AttendQuizPageState extends AuthState<AttendQuizPage> {
   bool _aliasChosen = false;
 
   late String _courseId;

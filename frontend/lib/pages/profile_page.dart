@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/auth_state.dart';
 import 'package:frontend/global.dart';
 
 class ProfilePage extends StatefulWidget {
@@ -8,7 +9,7 @@ class ProfilePage extends StatefulWidget {
   State<ProfilePage> createState() => _ProfilePage();
 }
 
-class _ProfilePage extends State<ProfilePage> {
+class _ProfilePage extends AuthState<ProfilePage> {
   @override
   void initState() {
     super.initState();

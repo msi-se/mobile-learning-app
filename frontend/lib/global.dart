@@ -18,6 +18,9 @@ class Session {
 SharedPreferences? _preferences;
 
 Future initPreferences() async {
+  if (_preferences != null) {
+    return;
+  }
   _preferences = await SharedPreferences.getInstance();
 }
 

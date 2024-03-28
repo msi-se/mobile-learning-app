@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/auth_state.dart';
 
 class HistoryFeedbackPage extends StatefulWidget {
   const HistoryFeedbackPage({super.key});
@@ -7,7 +8,7 @@ class HistoryFeedbackPage extends StatefulWidget {
   _HistoryFeedbackPageState createState() => _HistoryFeedbackPageState();
 }
 
-class _HistoryFeedbackPageState extends State<HistoryFeedbackPage> {
+class _HistoryFeedbackPageState extends AuthState<HistoryFeedbackPage> {
   final List<FeedbackItem> _feedbackItems = [
     FeedbackItem(text: 'Feedback AUME 23/24', label: '200'),
     FeedbackItem(text: 'Feedback DIMA 23/24', label: '15'),

@@ -37,10 +37,9 @@ class _LoginPageState extends State<LoginPage> {
       if (!JwtDecoder.isExpired(getSession()!.jwt) && mounted) {
         Navigator.pushReplacementNamed(context, '/main');
         return;
-      } else {
-        clearSession();
       }
     }
+    clearSession();
     if (!mounted) return;
     setState(() {
       _isCheckingLoggedIn = false;

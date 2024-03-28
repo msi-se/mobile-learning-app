@@ -4,6 +4,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:frontend/auth_state.dart';
 import 'package:frontend/enums/form_status.dart';
 import 'package:frontend/enums/question_type.dart';
 import 'package:frontend/components/elements/quiz/single_choice_quiz_result.dart';
@@ -28,7 +29,7 @@ class QuizControlPage extends StatefulWidget {
   State<QuizControlPage> createState() => _QuizControlPageState();
 }
 
-class _QuizControlPageState extends State<QuizControlPage> {
+class _QuizControlPageState extends AuthState<QuizControlPage> {
   late String _courseId;
   late String _formId;
   late String _userId;

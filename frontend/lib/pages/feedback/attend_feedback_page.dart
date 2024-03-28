@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:frontend/auth_state.dart';
 import 'package:frontend/components/elements/feedback/single_choice_feedback.dart';
 import 'package:frontend/components/elements/feedback/slider_feedback.dart';
 import 'package:frontend/components/elements/feedback/star_feedback.dart';
@@ -26,7 +27,7 @@ class AttendFeedbackPage extends StatefulWidget {
   State<AttendFeedbackPage> createState() => _AttendFeedbackPageState();
 }
 
-class _AttendFeedbackPageState extends State<AttendFeedbackPage> {
+class _AttendFeedbackPageState extends AuthState<AttendFeedbackPage> {
   late String _courseId;
   late String _formId;
   late String _userId;

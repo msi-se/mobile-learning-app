@@ -336,8 +336,9 @@ class _DashboardStatisticsWidgetState extends State<DashboardStatisticsWidget>
 
   Future fetchStats() async {
     try {
+      await initPreferences();
       if (getSession() == null) {
-        await initPreferences();
+        return;
       }
       final response = await http.get(
         Uri.parse("${getBackendUrl()}/stats"),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/auth_state.dart';
 import 'package:frontend/tabs/courses_tab.dart';
 import 'package:frontend/tabs/live_tab.dart';
 import 'package:frontend/tabs/home_tab.dart';
@@ -11,7 +12,7 @@ class MainPage extends StatefulWidget {
   State<MainPage> createState() => _MainPageState();
 }
 
-class _MainPageState extends State<MainPage> {
+class _MainPageState extends AuthState<MainPage> {
   int _tabIndex = 0;
   Function? popFunction;
 
