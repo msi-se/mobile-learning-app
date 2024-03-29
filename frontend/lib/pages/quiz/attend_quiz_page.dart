@@ -299,9 +299,9 @@ class _AttendQuizPageState extends AuthState<AttendQuizPage> {
                   width: 500,
                   height: 500,
                   child: RiveAnimation.asset(
-                    'assets/animations/rive/waiting.riv',
+                    'assets/animations/rive/waiting2.riv',
                     fit: BoxFit.cover,
-                    artboard: 'Waiting',
+                    artboard: 'Waiting 2',
                     stateMachines: ['Waiting State Machine'],
                   ),
                 ),
