@@ -296,8 +296,8 @@ class _AttendQuizPageState extends AuthState<AttendQuizPage> {
                           "Bitte warten Sie bis die nächste Frage gestellt wird"),
                 ),
                 Container(
-                  width: 500,
-                  height: 500,
+                  width: 400,
+                  height: 400,
                   child: RiveAnimation.asset(
                     'animations/rive/waiting.riv',
                     fit: BoxFit.cover,

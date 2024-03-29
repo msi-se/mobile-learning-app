@@ -75,6 +75,7 @@ flutter:
     - assets/images/
     - assets/titles/
     - assets/logo/
+    - assets/animations/rive/waiting.riv
 
   fonts:
     - family: NunitoSans
