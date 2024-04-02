@@ -26,7 +26,7 @@ class MyApp extends StatelessWidget {
 
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'Flutter Demo',
+      title: 'HTWG Connect',
       theme: getTheme(lightColorScheme),
       initialRoute: '/login',
       routes: <String, WidgetBuilder>{

@@ -295,7 +295,7 @@ class _AttendQuizPageState extends AuthState<AttendQuizPage> {
                           "Bitte warten Sie bis die nächste Frage gestellt wird"),
                 ),
                 Padding(
-                  padding: const EdgeInsets.all(20.0),
+                  padding: const EdgeInsets.all(10.0),
                   child: LinearProgressIndicator(
                     valueColor: AlwaysStoppedAnimation<Color>(colors.primary),
                     backgroundColor: colors.secondary.withAlpha(32),
