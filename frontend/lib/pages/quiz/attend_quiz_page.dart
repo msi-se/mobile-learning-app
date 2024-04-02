@@ -15,7 +15,6 @@ import 'package:frontend/models/quiz/quiz_form.dart';
 import 'package:frontend/utils.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 import 'package:http/http.dart' as http;
-import 'package:rive/rive.dart';
 
 class AttendQuizPage extends StatefulWidget {
   final String code;
@@ -294,16 +293,6 @@ class _AttendQuizPageState extends AuthState<AttendQuizPage> {
                           "Bitte warten Sie bis das Quiz gestartet wird")
                       : const Text(
                           "Bitte warten Sie bis die nächste Frage gestellt wird"),
-                ),
-                Container(
-                  width: 500,
-                  height: 500,
-                  child: RiveAnimation.asset(
-                    'assets/animations/rive/waiting2.riv',
-                    fit: BoxFit.cover,
-                    artboard: 'Waiting 2',
-                    stateMachines: ['Waiting State Machine'],
-                  ),
                 ),
                 Padding(
                   padding: const EdgeInsets.all(10.0),
