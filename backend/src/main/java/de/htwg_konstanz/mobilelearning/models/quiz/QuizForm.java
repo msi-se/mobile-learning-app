@@ -1,16 +1,22 @@
 package de.htwg_konstanz.mobilelearning.models.quiz;
 
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
+import org.apache.commons.csv.CSVFormat;
+import org.apache.commons.csv.CSVPrinter;
 import org.bson.types.ObjectId;
 
 import de.htwg_konstanz.mobilelearning.enums.FormStatus;
 import de.htwg_konstanz.mobilelearning.enums.QuizQuestionType;
+import de.htwg_konstanz.mobilelearning.helper.Hasher;
 import de.htwg_konstanz.mobilelearning.models.Course;
 import de.htwg_konstanz.mobilelearning.models.Form;
 import de.htwg_konstanz.mobilelearning.models.QuestionWrapper;
+import de.htwg_konstanz.mobilelearning.models.Result;
 import de.htwg_konstanz.mobilelearning.services.api.models.ApiQuizForm;
 
 /**
@@ -334,4 +340,85 @@ public class QuizForm extends Form {
     public void setParticipants(List<QuizParticipant> participants) {
         this.participants = participants;
     }
+
+        public Object getResultsAsCsv(Course course) {
+
+        /*
+        
+        userId; question1; question2; question3; ...
+        userX; 1; 2; 3; ...
+        userY; 2; 3; 4; ...
+        userY; ""; ""; 3; ... (important: if a user adds more than one result for a question, add a new row for each result (the rest of the row is empty)
+        userZ; 7; 8; 9; ...
+        */
+
+        List<String> headers = new ArrayList<String>();
+        headers.add("user");
+
+        // add question headers
+        for (QuestionWrapper questionWrapper : this.questions) {
+            QuizQuestion question = course.getQuizQuestionById(questionWrapper.getQuestionId());
+            headers.add(question.getKey() + " | " + question.getName() + " | " + question.getDescription());
+        }
+        String[] HEADERS = headers.toArray(new String[headers.size()]);
+
+        StringWriter sw = new StringWriter();
+        CSVFormat csvFormat = CSVFormat.DEFAULT.builder()
+            .setHeader(HEADERS)
+            .build();
+
+        class ResultWithQuestion {
+            public Result result;
+            public ObjectId questionId;
+
+            public ResultWithQuestion(Result result, ObjectId questionId) {
+                this.result = result;
+                this.questionId = questionId;
+            }
+        }
+
+        // iterate over participants
+        try (final CSVPrinter printer = new CSVPrinter(sw, csvFormat)) {
+            Integer userIndex = 0;
+            for (QuizParticipant participant : this.participants) {
+                String hashedUserId = Hasher.hash(participant.getUserId().toHexString());
+
+                // get all results for this user
+                List<ResultWithQuestion> userResults = this.questions.stream()
+                    .flatMap(questionWrapper -> questionWrapper.getResults().stream()
+                        .filter(result -> result.getHashedUserId().equals(hashedUserId))
+                        .map(result -> new ResultWithQuestion(result, questionWrapper.getId())))
+                    .collect(Collectors.toList());
+
+                // check how many rows we need for this user
+                Integer maxResults = userResults.stream()
+                    .map(result -> result.result.getValues().size())
+                    .max(Integer::compareTo)
+                    .orElse(0);
+
+                // add rows
+                for (Integer rowIndex = 0; rowIndex < maxResults; rowIndex++) {
+                    final Integer finalRowIndex = rowIndex;
+                    List<String> record = new ArrayList<>();
+                    record.add("participant-" + userIndex);
+
+                    // add question results
+                    this.questions.stream()
+                        .map(questionWrapper -> userResults.stream()
+                            .filter(result -> result.questionId.equals(questionWrapper.getId()) && result.result.getValues().size() > finalRowIndex)
+                            .map(result -> result.result.getValues().get(finalRowIndex))
+                            .findFirst()
+                            .orElse(""))
+                        .forEach(record::add);
+                    printer.printRecord(record);
+                }
+                userIndex++;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return sw.toString();
+    }
+
 }
