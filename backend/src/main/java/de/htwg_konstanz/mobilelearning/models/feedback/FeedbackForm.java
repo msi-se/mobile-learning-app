@@ -3,6 +3,7 @@ package de.htwg_konstanz.mobilelearning.models.feedback;
 import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
@@ -278,50 +279,41 @@ public class FeedbackForm extends Form {
             }
         }
 
-        // iterate over participants and questions
+        // iterate over participants
         try (final CSVPrinter printer = new CSVPrinter(sw, csvFormat)) {
             Integer userIndex = 0;
             for (FeedbackParticipant participant : this.participants) {
-                
                 String hashedUserId = Hasher.hash(participant.getUserId().toHexString());
 
-                // find the results for this question and this participant
-                List<ResultWithQuestion> userResults = new ArrayList<ResultWithQuestion>();
+                // get all results for this user
+                List<ResultWithQuestion> userResults = this.questions.stream()
+                    .flatMap(questionWrapper -> questionWrapper.getResults().stream()
+                        .filter(result -> result.getHashedUserId().equals(hashedUserId))
+                        .map(result -> new ResultWithQuestion(result, questionWrapper.getId())))
+                    .collect(Collectors.toList());
 
-                for (QuestionWrapper questionWrapper : this.questions) {
-                    List<Result> results = questionWrapper.getResults();
-                    for (Result result : results) {
-                        if (result.getHashedUserId().equals(hashedUserId)) {
-                            userResults.add(new ResultWithQuestion(result, questionWrapper.getId()));
-                        }
-                    }
-                    
-                }
+                // check how many rows we need for this user
+                Integer maxResults = userResults.stream()
+                    .map(result -> result.result.getValues().size())
+                    .max(Integer::compareTo)
+                    .orElse(0);
 
-                // max amount of results for a question
-                Integer maxResults = 0;
-                for (ResultWithQuestion result : userResults) {
-                    if (result.result.getValues().size() > maxResults) {
-                        maxResults = result.result.getValues().size();
-                    }
-                }
-
-                // add maxResults rows for this participant
-                for (Integer i = 0; i < maxResults; i++) {
-                    List<String> record = new ArrayList<String>();
+                // add rows
+                for (Integer rowIndex = 0; rowIndex < maxResults; rowIndex++) {
+                    final Integer finalRowIndex = rowIndex;
+                    List<String> record = new ArrayList<>();
                     record.add("participant-" + userIndex);
-                    for (QuestionWrapper questionWrapper : this.questions) {
-                        String value = "";
-                        for (ResultWithQuestion result : userResults) {
-                            if (result.questionId.equals(questionWrapper.getId()) && result.result.getValues().size() > i) {
-                                value = result.result.getValues().get(i);
-                            }
-                        }
-                        record.add(value);
-                    }
+
+                    // add question results
+                    this.questions.stream()
+                        .map(questionWrapper -> userResults.stream()
+                            .filter(result -> result.questionId.equals(questionWrapper.getId()) && result.result.getValues().size() > finalRowIndex)
+                            .map(result -> result.result.getValues().get(finalRowIndex))
+                            .findFirst()
+                            .orElse(""))
+                        .forEach(record::add);
                     printer.printRecord(record);
                 }
-
                 userIndex++;
             }
         } catch (Exception e) {

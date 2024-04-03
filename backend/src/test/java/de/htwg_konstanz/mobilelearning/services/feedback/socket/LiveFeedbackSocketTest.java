@@ -716,18 +716,6 @@ public class LiveFeedbackSocketTest {
     @Test
     public void testResultDownload() {
 
-
-        /**
-            @Path("/{formId}/downloadresults")
-            @GET
-            @Produces(MediaType.APPLICATION_OCTET_STREAM)
-            @RolesAllowed({ UserRole.STUDENT, UserRole.PROF })
-            public Response downloadResults(@RestPath String courseId, @RestPath String formId) {
-                Course course = courseRepository.findById(new ObjectId(courseId));
-                FeedbackForm feedbackForm = course.getFeedbackFormById(new ObjectId(formId));
-                return Response.ok(feedbackForm.getResultsAsCsv(course)).header("Content-Disposition", "attachment; filename=results_" + feedbackForm.name + ".csv").build();
-            }
-         */
         // create & get courses
         // List<Course> courses = Helper.createCourse("Prof-1");
 
@@ -739,7 +727,7 @@ public class LiveFeedbackSocketTest {
         MockUser student4 = Helper.createMockUser("Student-4");
         
         // manually create a course to have more questions
-        String json = "[{\"name\":\"AUME 23/24\",\"description\":\"Agile Vorgehensmodelle und Mobile Kommunikation\",\"feedbackForms\":[{\"name\":\"Erster Sprint\",\"description\":\"Hier wollen wir Ihr Feedback zum ersten Sprint einholen\",\"questions\":[{\"name\":\"Rolle\",\"description\":\"Wie gut hat Ihnen ihre Pizza gefallen?\",\"type\":\"SLIDER\",\"options\":[],\"key\":\"F-Q-ROLLE\",\"rangeLow\":\"gut\",\"rangeHigh\":\"schlecht\"},{\"name\":\"Test\",\"description\":\"Wie gut hat Ihnen ihre Pizza gefallen?\",\"type\":\"SLIDER\",\"options\":[],\"key\":\"F-Q-TEST\",\"rangeLow\":\"gut\",\"rangeHigh\":\"schlecht\"},{\"name\":\"Test2\",\"description\":\"Wie gut hat Ihnen ihre Tests gefallen?\",\"type\":\"SLIDER\",\"options\":[],\"key\":\"F-Q-TEST2\",\"rangeLow\":\"gut\",\"rangeHigh\":\"schlecht\"}],\"key\":\"F-ERSTERSPRINT\"}],\"quizForms\":[{\"name\":\"Rollenverständnis bei Scrum\",\"description\":\"Ein Quiz zum Rollenverständnis und Teamaufbau bei Scrum\",\"questions\":[{\"name\":\"Product Owner\",\"description\":\"Welche der folgenden Aufgaben ist nicht Teil der Rolle des Product Owners?\",\"type\":\"SINGLE_CHOICE\",\"options\":[\"Erstellung des Product Backlogs\",\"Priorisierung des Product Backlogs\",\"Pizza bestellen für jedes Daily\"],\"hasCorrectAnswers\":true,\"correctAnswers\":[\"2\"],\"key\":\"Q-Q-PRODUCTOWNER\"},{\"name\":\"Product Owner\",\"description\":\"Test Frage?\",\"type\":\"SINGLE_CHOICE\",\"options\":[\"Antwort 1\",\"Antwort 2\",\"Antwort 3\"],\"hasCorrectAnswers\":true,\"correctAnswers\":[\"2\"],\"key\":\"Q-Q-PRODUCTOWNER\"}],\"key\":\"Q-ROLES\"}],\"key\":\"AUME23\",\"moodleCourseId\":\"1\"}]";
+        String json = "[{\"name\":\"AUME 23/24\",\"description\":\"Agile Vorgehensmodelle und Mobile Kommunikation\",\"feedbackForms\":[{\"name\":\"Erster Sprint\",\"description\":\"Hier wollen wir Ihr Feedback zum ersten Sprint einholen\",\"questions\":[{\"name\":\"Rolle\",\"description\":\"Wie gut hat Ihnen ihre Pizza gefallen?\",\"type\":\"SLIDER\",\"options\":[],\"key\":\"F-Q-ROLLE\",\"rangeLow\":\"gut\",\"rangeHigh\":\"schlecht\"},{\"name\":\"Test\",\"description\":\"Wie gut hat Ihnen ihre Pizza gefallen?\",\"type\":\"SLIDER\",\"options\":[],\"key\":\"F-Q-TEST\",\"rangeLow\":\"gut\",\"rangeHigh\":\"schlecht\"},{\"name\":\"Test2\",\"description\":\"Wie gut hat Ihnen ihre Tests gefallen?\",\"type\":\"SLIDER\",\"options\":[],\"key\":\"F-Q-TEST2\",\"rangeLow\":\"gut\",\"rangeHigh\":\"schlecht\"},{\"name\":\"Fulltext\",\"description\":\"Etwas mit Fulltext?\",\"type\":\"FULLTEXT\",\"options\":[],\"key\":\"F-Q-TEST4\"}],\"key\":\"F-ERSTERSPRINT\"}],\"quizForms\":[{\"name\":\"Rollenverständnis bei Scrum\",\"description\":\"Ein Quiz zum Rollenverständnis und Teamaufbau bei Scrum\",\"questions\":[{\"name\":\"Product Owner\",\"description\":\"Welche der folgenden Aufgaben ist nicht Teil der Rolle des Product Owners?\",\"type\":\"SINGLE_CHOICE\",\"options\":[\"Erstellung des Product Backlogs\",\"Priorisierung des Product Backlogs\",\"Pizza bestellen für jedes Daily\"],\"hasCorrectAnswers\":true,\"correctAnswers\":[\"2\"],\"key\":\"Q-Q-PRODUCTOWNER\"},{\"name\":\"Product Owner\",\"description\":\"Test Frage?\",\"type\":\"SINGLE_CHOICE\",\"options\":[\"Antwort 1\",\"Antwort 2\",\"Antwort 3\"],\"hasCorrectAnswers\":true,\"correctAnswers\":[\"2\"],\"key\":\"Q-Q-PRODUCTOWNER\"}],\"key\":\"Q-ROLES\"}],\"key\":\"AUME23\",\"moodleCourseId\":\"1\"}]";
         Response response = given().accept(ContentType.JSON).contentType(ContentType.JSON).header("Authorization", "Bearer " + prof.getJwt()).body(json).patch("/public/courses/");
         List<Course> courses = response.then().statusCode(200).extract().body().jsonPath().getList(".", Course.class);
         Course course = courses.get(0);
@@ -829,6 +817,7 @@ public class LiveFeedbackSocketTest {
             // send results to the feedback form (1, 2, 3, 3)
             String questionId = course.getFeedbackForms().get(0).getQuestions().get(0).getId().toString();
             String questionId3 = course.getFeedbackForms().get(0).getQuestions().get(2).getId().toString();
+            String questionIdFulltext = course.getFeedbackForms().get(0).getQuestions().get(3).getId().toString();
             studentClient1.sendMessage(String.format("""
                 {
                     "action": "ADD_RESULT",
@@ -869,6 +858,22 @@ public class LiveFeedbackSocketTest {
                 }
             """, questionId3));
             Thread.sleep(100);
+            studentClient3.sendMessage(String.format("""
+                {
+                    "action": "ADD_RESULT",
+                    "resultElementId": %s,
+                    "resultValues": ["This is a fulltext response"]
+                }
+            """, questionIdFulltext));
+            Thread.sleep(100);
+            studentClient4.sendMessage(String.format("""
+                {
+                    "action": "ADD_RESULT",
+                    "resultElementId": %s,
+                    "resultValues": ["This is a 2", "part fulltext response"]
+                }
+            """, questionIdFulltext));
+            Thread.sleep(100);
 
             // close the websocket connections
             profSession.close();
@@ -879,12 +884,18 @@ public class LiveFeedbackSocketTest {
             // check manually if the results are correct
             Course updatedCourse = courseService.getCourse(courseId);
             List<Result> results = updatedCourse.getFeedbackForms().get(0).getQuestions().get(0).getResults();
+            List<Result> results3 = updatedCourse.getFeedbackForms().get(0).getQuestions().get(2).getResults();
+            List<Result> resultsFulltext = updatedCourse.getFeedbackForms().get(0).getQuestions().get(3).getResults();
             Assertions.assertEquals(4, results.size());
             Assertions.assertEquals("1", results.get(0).values.get(0));
             Assertions.assertEquals("2", results.get(1).values.get(0));
             Assertions.assertEquals("3", results.get(2).values.get(0));
             Assertions.assertEquals("3", results.get(3).values.get(0));
+            Assertions.assertEquals("This is a fulltext response", resultsFulltext.get(0).values.get(0));
+            Assertions.assertEquals("This is a 2", resultsFulltext.get(1).values.get(0));
+            Assertions.assertEquals("part fulltext response", resultsFulltext.get(1).values.get(1));
 
+            
             // fetch the download link
             Response downloadResponse = given()
                 .header("Authorization", "Bearer " + prof.getJwt())

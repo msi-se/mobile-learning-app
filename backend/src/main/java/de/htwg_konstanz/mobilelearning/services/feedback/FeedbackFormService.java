@@ -68,51 +68,6 @@ public class FeedbackFormService {
     }
 
     /**
-     * Updates a feedback form.
-     * User has to be owner to update the form.
-     * 
-     * @param courseId
-     * @param formId
-     * @param feedbackForm
-     * @return Updated feedback form
-     */
-    @PUT
-    @Produces(MediaType.APPLICATION_JSON)
-    @Path("/{formId}")
-    @RolesAllowed({ UserRole.PROF })
-    public FeedbackForm updateFeedbackForm(@RestPath String courseId, @RestPath String formId, FeedbackForm feedbackForm) {
-        ObjectId courseObjectId = new ObjectId(courseId);
-        ObjectId formObjectId = new ObjectId(formId);
-        Course course = courseRepository.findById(courseObjectId);
-        FeedbackForm feedbackFormToUpdate = course.getFeedbackFormById(formObjectId);
-        
-        if (feedbackFormToUpdate == null) {
-            throw new NotFoundException("Feedbackcourse not found");
-        }
-        if(!course.isOwner(jwt.getSubject())){
-            return null;
-        }
-        if (feedbackForm.description != null) {
-            feedbackFormToUpdate.description = feedbackForm.description;
-        }
-        if (feedbackForm.name != null) {
-            feedbackFormToUpdate.name = feedbackForm.name;
-        }
-        if (feedbackForm.questions != null) {
-            feedbackFormToUpdate.questions = feedbackForm.questions;
-        }
-        if (feedbackForm.connectCode != null) {
-            feedbackFormToUpdate.connectCode = feedbackForm.connectCode;
-        }
-        if (feedbackForm.status != null) {
-            feedbackFormToUpdate.status = feedbackForm.status;
-        }
-
-        courseRepository.update(course);
-        return feedbackFormToUpdate;
-    }
-
-    /**
      * Creates a new feedback form.
      * 
      * @param courseId
