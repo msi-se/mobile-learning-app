@@ -299,17 +299,10 @@ class _AttendQuizPageState extends AuthState<AttendQuizPage> {
                   width: 500,
                   height: 500,
                   child: RiveAnimation.asset(
-                    'assets/animations/rive/waiting2.riv',
+                    'assets/animations/rive/animations.riv',
                     fit: BoxFit.cover,
-                    artboard: 'Waiting 2',
+                    artboard: 'Waiting with coffee shorter arm',
                     stateMachines: ['Waiting State Machine'],
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(10.0),
-                  child: LinearProgressIndicator(
-                    valueColor: AlwaysStoppedAnimation<Color>(colors.primary),
-                    backgroundColor: colors.secondary.withAlpha(32),
                   ),
                 ),
               ],
@@ -330,13 +323,15 @@ class _AttendQuizPageState extends AuthState<AttendQuizPage> {
                   child: Text(
                       "Bitte warten Sie bis die nächste Frage gestellt wird"),
                 ),
-                Padding(
-                  padding: const EdgeInsets.all(20.0),
-                  child: LinearProgressIndicator(
-                    valueColor: AlwaysStoppedAnimation<Color>(colors.primary),
-                    backgroundColor: colors.secondary.withAlpha(32),
-                  ),
-                ),
+                Container(
+                    width: 500,
+                    height: 500,
+                    child: RiveAnimation.asset(
+                      'assets/animations/rive/animations.riv',
+                      fit: BoxFit.cover,
+                      artboard: 'Waiting with coffee shorter arm',
+                      stateMachines: ['Waiting State Machine'],
+                    )),
               ],
             ),
           ),
