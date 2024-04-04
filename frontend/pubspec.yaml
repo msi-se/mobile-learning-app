@@ -41,6 +41,7 @@ dependencies:
   shared_preferences: ^2.2.2
   jwt_decoder: ^2.0.1
   intl: ^0.19.0
+  flutter_native_splash: ^2.3.11
   # mobile_scanner: ^3.5.7
 
 dev_dependencies:
@@ -74,12 +75,20 @@ flutter:
     - assets/images/
     - assets/titles/
     - assets/logo/
+    - assets/splash/
 
   fonts:
     - family: NunitoSans
       fonts: 
       - asset: assets/fonts/NunitoSans-Regular.ttf
       - asset: assets/fonts/NunitoSans-Bold.ttf
+
+flutter_native_splash:
+  color: "#009b91"
+  image: assets/splash/icon_teal_bigger_mascot.png
+  android_12:
+    image: assets/splash/icon_teal_bigger_mascot.png
+    color: "#009b91"
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware
