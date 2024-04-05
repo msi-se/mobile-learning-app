@@ -17,6 +17,7 @@ import 'package:frontend/models/quiz/quiz_question.dart';
 import 'package:frontend/utils.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 import 'package:http/http.dart' as http;
+import 'package:rive/rive.dart';
 
 class QuizControlPage extends StatefulWidget {
   final String courseId;
@@ -409,6 +410,17 @@ class _QuizControlPageState extends AuthState<QuizControlPage> {
                 Text(
                   "Quiz beendet",
                   style: Theme.of(context).textTheme.headlineMedium,
+                ),
+                Container(
+                  margin: const EdgeInsets.only(top: 30.0, bottom: 10.0),
+                  width: 250,
+                  height: 250,
+                  child: RiveAnimation.asset(
+                    'assets/animations/rive/animations.riv',
+                    fit: BoxFit.cover,
+                    artboard: 'rigged without bodyparts darker firework',
+                    stateMachines: ['State Machine Winner'],
+                  ),
                 ),
                 const SizedBox(height: 16),
                 Center(

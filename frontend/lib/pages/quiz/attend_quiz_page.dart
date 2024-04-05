@@ -15,6 +15,7 @@ import 'package:frontend/models/quiz/quiz_form.dart';
 import 'package:frontend/utils.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 import 'package:http/http.dart' as http;
+import 'package:rive/rive.dart';
 
 class AttendQuizPage extends StatefulWidget {
   final String code;
@@ -294,11 +295,15 @@ class _AttendQuizPageState extends AuthState<AttendQuizPage> {
                       : const Text(
                           "Bitte warten Sie bis die nächste Frage gestellt wird"),
                 ),
-                Padding(
-                  padding: const EdgeInsets.all(10.0),
-                  child: LinearProgressIndicator(
-                    valueColor: AlwaysStoppedAnimation<Color>(colors.primary),
-                    backgroundColor: colors.secondary.withAlpha(32),
+                Container(
+                  margin: const EdgeInsets.only(top: 100.0, bottom: 100.0),
+                  width: 150,
+                  height: 150,
+                  child: RiveAnimation.asset(
+                    'assets/animations/rive/animations.riv',
+                    fit: BoxFit.cover,
+                    artboard: 'Waiting with coffee shorter arm',
+                    stateMachines: ['Waiting State Machine'],
                   ),
                 ),
               ],
@@ -319,13 +324,19 @@ class _AttendQuizPageState extends AuthState<AttendQuizPage> {
                   child: Text(
                       "Bitte warten Sie bis die nächste Frage gestellt wird"),
                 ),
-                Padding(
-                  padding: const EdgeInsets.all(20.0),
-                  child: LinearProgressIndicator(
-                    valueColor: AlwaysStoppedAnimation<Color>(colors.primary),
-                    backgroundColor: colors.secondary.withAlpha(32),
-                  ),
-                ),
+                Container(
+                    margin: const EdgeInsets.only(
+                        top: 100.0,
+                        bottom: 100.0), // specify the top and bottom margin
+
+                    width: 150,
+                    height: 150,
+                    child: RiveAnimation.asset(
+                      'assets/animations/rive/animations.riv',
+                      fit: BoxFit.cover,
+                      artboard: 'Waiting with coffee shorter arm',
+                      stateMachines: ['Waiting State Machine'],
+                    )),
               ],
             ),
           ),
