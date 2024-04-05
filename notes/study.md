@@ -1,21 +1,25 @@
+Hallo @ralf.schimkat,
+
+wir haben uns mal Gedanken über die Studie gemacht. Die Evaluationsfragen sind bisher erstmal ein Vorschlag, die können wir gerne zusammen in einem extra Termin final ausarbeiten.
+
 # Konzept der ersten Studie der "HTWG Connect" App
 
-## Umfang
+## Allgemeines
 
-- in Prof. Schimkat's Vorlesung SWEN2
-- Bachelor, 2. Semester
-- 2,5 Wochen → 2 Test-Feedbacks + 2 Test-Quizze + Feedback über App (zu viel?)
+- in Prof. Schimkat's Vorlesung SWEN 2 6. Semester Gesundheitsinformatik Bachelor
+- Dauer: 3 Wochen (1 Woche Feiertag)
+- Umfang: 2 Test-Feedbacks + 2 Test-Quizze + Feedback über App (zu viel?)
 
 ## Zeitlicher Ablauf
 
 | Aktivität                                      | Datum      |
 |------------------------------------------------|------------|
 | Fertigstellen der App (Stand für Studie)       | 18.04.2024 |
-| Ankündung in Vorlesung*                        | 22.04.2024 |
+| Ankündung in Vorlesung                         | 25.04.2024 |
 | Puffer (Infrastruktur, ...)                    |            |
-| Start der Studie im Vorlesungsbetrieb          | 29.04.2024 |
-| Dauer der Studie                               | 2,5 Wochen |
-| Rückmeldung der Studierenden (Ende)            | 14.05.2024 |
+| 1. Test in Vorlesung (Start der Studie)        | 02.05.2024 |
+| 2. Test in Vorlesung                           | 16.05.2024 |
+| 3. Test in Vorlesung + Rückmeldung (Ende)      | 23.05.2024 |
 
 * Ankündigung in Vorlesung
   - kurze Erklärung des Projekts
@@ -27,7 +31,7 @@
 - wer TestFlight nutzen kann, bekommt eine Einladung
 - Fallback: Web-App (als PWA installierbar)
 
-## Fragen an die Studierenden
+## Evaluationsfragen an die Studierenden (Rückmeldung)
 
 (wird als Feedback-Fragebogen in der App verfügbar sein)
 
