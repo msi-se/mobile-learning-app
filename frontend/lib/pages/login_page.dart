@@ -139,7 +139,7 @@ class _LoginPageState extends State<LoginPage> {
 
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: colors.surface,
+        backgroundColor: colors.onError,
         toolbarHeight: 0,
       ),
       body: SafeArea(
@@ -216,8 +216,8 @@ class _LoginPageState extends State<LoginPage> {
                         children: [
                           // Username TextField
                           Container(
-                            padding: const EdgeInsets.only(top: 20),
-                            margin: const EdgeInsets.symmetric(horizontal: 20),
+                            padding: const EdgeInsets.only(top: 30),
+                            margin: const EdgeInsets.symmetric(horizontal: 40),
                             child: const Row(
                               mainAxisAlignment: MainAxisAlignment.start,
                               children: [
@@ -238,7 +238,7 @@ class _LoginPageState extends State<LoginPage> {
                           // Password TextField
                           Container(
                             padding: const EdgeInsets.only(top: 10),
-                            margin: const EdgeInsets.symmetric(horizontal: 20),
+                            margin: const EdgeInsets.symmetric(horizontal: 40),
                             child: const Row(
                               mainAxisAlignment: MainAxisAlignment.start,
                               children: [
@@ -285,7 +285,7 @@ class _LoginPageState extends State<LoginPage> {
             return Column(
               children: [
                 Container(
-                  color: colors.outlineVariant,
+                  color: colors.surface,
                   child: Column(
                     children: [
                       Container(
@@ -297,7 +297,7 @@ class _LoginPageState extends State<LoginPage> {
                       ),
                       // Login Text
                       Container(
-                        margin: const EdgeInsets.all(18.0),
+                        margin: const EdgeInsets.symmetric(horizontal: 40),
                         child: const Row(
                           mainAxisAlignment: MainAxisAlignment.start,
                           children: [
@@ -310,22 +310,27 @@ class _LoginPageState extends State<LoginPage> {
                           ],
                         ),
                       ),
+                      const SizedBox(height: 20),
                     ],
                   ),
                 ),
                 // Bottom Half of the Login Screen
                 Container(
                   decoration: BoxDecoration(
-                      color: colors.surface,
-                      borderRadius: const BorderRadius.only(
-                          topLeft: Radius.circular(20),
-                          topRight: Radius.circular(20))),
+                    color: colors.surface,
+                    border: Border(
+                        top: BorderSide(
+                            color: colors.outlineVariant, width: 0.5)),
+                    // borderRadius: const BorderRadius.only(
+                    //     topLeft: Radius.circular(20),
+                    //     topRight: Radius.circular(20))
+                  ),
                   child: Column(
                     children: [
                       // Username TextField
                       Container(
-                        padding: const EdgeInsets.only(top: 10),
-                        margin: const EdgeInsets.symmetric(horizontal: 20),
+                        padding: const EdgeInsets.only(top: 40),
+                        margin: const EdgeInsets.symmetric(horizontal: 40),
                         child: const Row(
                           mainAxisAlignment: MainAxisAlignment.start,
                           children: [
@@ -345,8 +350,8 @@ class _LoginPageState extends State<LoginPage> {
 
                       // Password TextField
                       Container(
-                        padding: const EdgeInsets.only(top: 10),
-                        margin: const EdgeInsets.symmetric(horizontal: 20),
+                        padding: const EdgeInsets.only(top: 15),
+                        margin: const EdgeInsets.symmetric(horizontal: 40),
                         child: const Row(
                           mainAxisAlignment: MainAxisAlignment.start,
                           children: [
