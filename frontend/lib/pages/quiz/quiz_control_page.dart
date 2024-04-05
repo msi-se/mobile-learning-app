@@ -412,20 +412,14 @@ class _QuizControlPageState extends AuthState<QuizControlPage> {
                   style: Theme.of(context).textTheme.headlineMedium,
                 ),
                 Container(
-                  margin: const EdgeInsets.only(
-                      top: 30.0), // specify the top margin
-                  child: Container(
-                    margin: const EdgeInsets.only(bottom: 20.0),
-                    child: Container(
-                      width: 400,
-                      height: 400,
-                      child: RiveAnimation.asset(
-                        'assets/animations/rive/animations.riv',
-                        fit: BoxFit.cover,
-                        artboard: 'rigged without bodyparts darker firework',
-                        stateMachines: ['State Machine Winner'],
-                      ),
-                    ),
+                  margin: const EdgeInsets.only(top: 30.0, bottom: 10.0),
+                  width: 250,
+                  height: 250,
+                  child: RiveAnimation.asset(
+                    'assets/animations/rive/animations.riv',
+                    fit: BoxFit.cover,
+                    artboard: 'rigged without bodyparts darker firework',
+                    stateMachines: ['State Machine Winner'],
                   ),
                 ),
                 const SizedBox(height: 16),

@@ -296,8 +296,9 @@ class _AttendQuizPageState extends AuthState<AttendQuizPage> {
                           "Bitte warten Sie bis die nächste Frage gestellt wird"),
                 ),
                 Container(
-                  width: 500,
-                  height: 500,
+                  margin: const EdgeInsets.only(top: 100.0, bottom: 100.0),
+                  width: 150,
+                  height: 150,
                   child: RiveAnimation.asset(
                     'assets/animations/rive/animations.riv',
                     fit: BoxFit.cover,
@@ -324,8 +325,12 @@ class _AttendQuizPageState extends AuthState<AttendQuizPage> {
                       "Bitte warten Sie bis die nächste Frage gestellt wird"),
                 ),
                 Container(
-                    width: 500,
-                    height: 500,
+                    margin: const EdgeInsets.only(
+                        top: 100.0,
+                        bottom: 100.0), // specify the top and bottom margin
+
+                    width: 150,
+                    height: 150,
                     child: RiveAnimation.asset(
                       'assets/animations/rive/animations.riv',
                       fit: BoxFit.cover,
