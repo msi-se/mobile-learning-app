@@ -366,29 +366,33 @@ class _LiveTabState extends State<LiveTab> {
               ),
             ),
             const Padding(padding: EdgeInsets.all(8.0), child: Divider()),
-            const Padding(
-              padding: EdgeInsets.fromLTRB(16.0, 0.0, 16.0, 0.0),
-              child: Text(
-                "Aktive Umfragen",
-                style: TextStyle(fontSize: 24.0, fontWeight: FontWeight.bold),
-              ),
+            const Text(
+              "Aktive Umfragen",
+              style: TextStyle(fontSize: 24.0, fontWeight: FontWeight.bold),
             ),
-            ..._forms.map((form) {
-              print(form.status.toString());
-              return Card(
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10.0)),
-                child: ListTile(
-                  leading: form.type == FormType.feedback
-                      ? const Icon(Icons.feedback)
-                      : const Icon(Icons.quiz),
-                  trailing: Icon(Icons.circle,
-                      color: statusColors[form.status.toString()], size: 20),
-                  title: Text(form.name),
-                  onTap: () => joinCourse(form.connectCode),
-                ),
-              );
-            }).toList(),
+            Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  children: [
+                    ..._forms.map((form) {
+                      return Card(
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10.0)),
+                        child: ListTile(
+                          leading: form.type == FormType.feedback
+                              ? const Icon(Icons.feedback)
+                              : const Icon(Icons.quiz),
+                          trailing: Icon(Icons.circle,
+                              color: statusColors[form.status.toString()],
+                              size: 20),
+                          title: Text(form.name),
+                          subtitle: Text(form.course),
+                          onTap: () => joinCourse(form.connectCode),
+                        ),
+                      );
+                    }).toList(),
+                  ],
+                )),
           ],
         ),
       );
