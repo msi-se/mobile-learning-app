@@ -38,8 +38,12 @@ class _AttendQuizPageState extends AuthState<AttendQuizPage> {
   QuizForm? _form;
   WebSocketChannel? _socketChannel;
 
+  SMITrigger? _bump;
+  SMIInput<bool>? _boolInput;
+
   dynamic _value;
   bool _voted = false;
+  bool _correctAnswer = true;
 
   bool _loading = false;
   String _fetchResult = '';
@@ -241,6 +245,20 @@ class _AttendQuizPageState extends AuthState<AttendQuizPage> {
     super.dispose();
   }
 
+  void _onRiveInit(Artboard artboard) {
+    final controller =
+        StateMachineController.fromArtboard(artboard, 'tf state machine');
+    artboard.addController(controller!);
+    // Get a reference to the "bump" state machine input
+    _bump = controller.findInput<bool>('tf trigger') as SMITrigger;
+    _boolInput = controller.findInput<bool>('answer') as SMIInput<bool>;
+  }
+
+  void _hitBump() {
+    _boolInput?.value = false;
+    _bump?.fire();
+  }
+
   @override
   Widget build(BuildContext context) {
     final colors = Theme.of(context).colorScheme;
@@ -280,7 +298,7 @@ class _AttendQuizPageState extends AuthState<AttendQuizPage> {
         );
       }
 
-      if (_form?.status != FormStatus.started || _voted) {
+      if (_form?.status != FormStatus.started) {
         return Scaffold(
           appBar: appbar,
           body: Center(
@@ -288,13 +306,9 @@ class _AttendQuizPageState extends AuthState<AttendQuizPage> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
                 Padding(
-                  padding: const EdgeInsets.only(left: 20.0, right: 20.0),
-                  child: _form?.status != FormStatus.started
-                      ? const Text(
-                          "Bitte warten Sie bis das Quiz gestartet wird")
-                      : const Text(
-                          "Bitte warten Sie bis die nächste Frage gestellt wird"),
-                ),
+                    padding: const EdgeInsets.only(left: 20.0, right: 20.0),
+                    child: const Text(
+                        "Bitte warten Sie bis das Quiz gestartet wird")),
                 Container(
                   margin: const EdgeInsets.only(top: 100.0, bottom: 100.0),
                   width: 150,
@@ -312,7 +326,10 @@ class _AttendQuizPageState extends AuthState<AttendQuizPage> {
         );
       }
 
-      if (_form!.currentQuestionFinished) {
+      if (_form!.currentQuestionFinished || _voted) {
+        if (_form!.currentQuestionFinished) {
+          _hitBump();
+        }
         return Scaffold(
           appBar: appbar,
           body: Center(
@@ -326,7 +343,7 @@ class _AttendQuizPageState extends AuthState<AttendQuizPage> {
                 ),
                 Container(
                     margin: const EdgeInsets.only(
-                        top: 100.0,
+                        top: 50.0,
                         bottom: 100.0), // specify the top and bottom margin
 
                     width: 150,
@@ -334,8 +351,9 @@ class _AttendQuizPageState extends AuthState<AttendQuizPage> {
                     child: RiveAnimation.asset(
                       'assets/animations/rive/animations.riv',
                       fit: BoxFit.cover,
-                      artboard: 'Waiting with coffee shorter arm',
-                      stateMachines: ['Waiting State Machine'],
+                      artboard: 'true & false',
+                      stateMachines: ['tf State Machine'],
+                      onInit: _onRiveInit,
                     )),
               ],
             ),
