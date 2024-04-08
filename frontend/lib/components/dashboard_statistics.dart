@@ -336,7 +336,6 @@ class _DashboardStatisticsWidgetState extends State<DashboardStatisticsWidget>
 
   Future fetchStats() async {
     try {
-      await initPreferences();
       if (getSession() == null) {
         return;
       }
