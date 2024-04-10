@@ -1044,7 +1044,43 @@ public class LiveQuizSocketTest {
         Assertions.assertEquals("CLOSED_QUESTION", LiveQuizSocketMessage.getByJsonWithForm(studentClient.getMessageQueue().get(studentClient.getMessageQueue().size() - 1)).action);
         Assertions.assertTrue(LiveQuizSocketMessage.getByJsonWithForm(studentClient.getMessageQueue().get(studentClient.getMessageQueue().size() - 1)).userHasAnsweredCorrectly);
 
+        // let the prof start the next question
+        profClient.sendMessage("""
+            {
+                "action": "NEXT"
+            }
+        """);
+        Thread.sleep(100);
+
+        // add a wrong result to the quiz form
+        studentClient.sendMessage("""
+            {
+                "action": "ADD_RESULT",
+                "resultElementId": %s,
+                "resultValues": ["1"]
+            }
+        """.formatted(course.getQuizForms().get(0).questions.get(1).getId().toString()));
+        Thread.sleep(100);
+
+        // check that the result was added
+        Assertions.assertEquals(1, courseService.getCourse(courseId).getQuizForms().get(0).questions.get(1).results.size());
+        Assertions.assertEquals("1", courseService.getCourse(courseId).getQuizForms().get(0).questions.get(1).results.get(0).values.get(0));
         
+        // check that the score was updated
+        Assertions.assertEquals(1, courseService.getCourse(courseId).getQuizForms().get(0).getParticipants().get(0).getScore());
+
+        // let the prof stop the question
+        profClient.sendMessage("""
+            {
+                "action": "NEXT"
+            }
+        """);
+        Thread.sleep(100);
+
+        // check that the user got the opened and closed question message and that it contains the correct result
+        Assertions.assertEquals("OPENED_NEXT_QUESTION", LiveQuizSocketMessage.getByJsonWithForm(studentClient.getMessageQueue().get(studentClient.getMessageQueue().size() - 2)).action);
+        Assertions.assertEquals("CLOSED_QUESTION", LiveQuizSocketMessage.getByJsonWithForm(studentClient.getMessageQueue().get(studentClient.getMessageQueue().size() - 1)).action);
+        Assertions.assertFalse(LiveQuizSocketMessage.getByJsonWithForm(studentClient.getMessageQueue().get(studentClient.getMessageQueue().size() - 1)).userHasAnsweredCorrectly);
 
         // close the websocket connections
         profSession.close();
