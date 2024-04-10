@@ -334,4 +334,13 @@ public class QuizForm extends Form {
     public void setParticipants(List<QuizParticipant> participants) {
         this.participants = participants;
     }
+
+    public List<String> getResultsOfParticipant(ObjectId userId, ObjectId questionId) {
+        for (QuestionWrapper questionWrapper : this.questions) {
+            if (questionWrapper.getQuestionId().equals(questionId)) {
+                return questionWrapper.getResultsByUserId(userId);
+            }
+        }
+        return null;
+    }
 }

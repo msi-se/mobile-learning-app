@@ -184,6 +184,9 @@ public class LiveQuizSocket {
         // copy the message to not change the original 
         LiveQuizSocketMessage messageToSend = new LiveQuizSocketMessage(message.action, message.formStatus, message.resultElementId, message.resultValues, null);
 
+        // fetch the course once
+        Course course = courseRepository.findById(new ObjectId(courseId));
+
         connections.values().forEach(connection -> {
 
             // check if the course ID and form ID match
@@ -199,6 +202,17 @@ public class LiveQuizSocket {
             if ((messageToSend.action.equals("RESULT_ADDED") || messageToSend.action.equals("PARTICIPANT_JOINED"))
                     && connection.getType().equals(SocketConnectionType.PARTICIPANT)) {
                 return;
+            }
+
+            // if the action is "CLOSED_QUESTION" all participants should have filled the userHasAnsweredCorrectly field
+            if (messageToSend.action.equals("CLOSED_QUESTION") && connection.getType().equals(SocketConnectionType.PARTICIPANT)) {
+                
+                // check if user has answered correctly (TODO: maybe do this differntly later)
+                Integer currentQuestionIndex = message.form.currentQuestionIndex;
+                QuestionWrapper questionWrapper = message.form.getQuestionById(message.form.questions.get(currentQuestionIndex).getId());
+                QuizQuestion question = course.getQuizQuestionById(questionWrapper.getQuestionId());
+                Boolean userHasAnsweredCorrectly = question.checkAnswer(message.form.getResultsOfParticipant(connection.getUserId(), questionWrapper.getId())) > 0;
+                messageToSend.userHasAnsweredCorrectly = userHasAnsweredCorrectly;
             }
 
             // fill the form with the question contents

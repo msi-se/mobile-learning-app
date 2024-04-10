@@ -80,4 +80,18 @@ public class QuestionWrapper {
     public ObjectId getQuestionId() {
         return questionId;
     }
+
+    public List<Result> getResults() {
+        return results;
+    }
+
+    public List<String> getResultsByUserId(ObjectId userId) {
+        List<String> userResults = new ArrayList<String>();
+        for (Result result : this.results) {
+            if (result.userId != null && result.userId.equals(userId)) {
+                userResults.addAll(result.values);
+            }
+        }
+        return userResults;
+    }
 }
