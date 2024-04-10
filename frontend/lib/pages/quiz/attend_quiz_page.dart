@@ -43,7 +43,7 @@ class _AttendQuizPageState extends AuthState<AttendQuizPage> {
 
   dynamic _value;
   bool _voted = false;
-  bool _correctAnswer = true;
+  dynamic _userHasAnsweredCorrectly = false;
 
   bool _loading = false;
   String _fetchResult = '';
@@ -203,6 +203,11 @@ class _AttendQuizPageState extends AuthState<AttendQuizPage> {
     });
   }
 
+  void _hitBump() {
+    _boolInput?.value = _userHasAnsweredCorrectly;
+    _bump?.fire();
+  }
+
   void startWebsocket() {
     _socketChannel = WebSocketChannel.connect(
       Uri.parse(
@@ -225,11 +230,15 @@ class _AttendQuizPageState extends AuthState<AttendQuizPage> {
           data["action"] == "OPENED_NEXT_QUESTION") {
         var form = QuizForm.fromJson(data["form"]);
         setState(() {
+          _userHasAnsweredCorrectly = data["userHasAnsweredCorrectly"];
           _value = null;
           _voted = false;
           _form?.currentQuestionIndex = form.currentQuestionIndex;
           _form?.currentQuestionFinished = form.currentQuestionFinished;
         });
+        if (data["action"] == "CLOSED_QUESTION") {
+          _hitBump();
+        }
       }
     }, onError: (error) {
       //TODO: Should there be another error handling for this?
@@ -252,11 +261,6 @@ class _AttendQuizPageState extends AuthState<AttendQuizPage> {
     // Get a reference to the "bump" state machine input
     _bump = controller.findInput<bool>('tf trigger') as SMITrigger;
     _boolInput = controller.findInput<bool>('answer') as SMIInput<bool>;
-  }
-
-  void _hitBump() {
-    _boolInput?.value = false;
-    _bump?.fire();
   }
 
   @override
@@ -326,41 +330,6 @@ class _AttendQuizPageState extends AuthState<AttendQuizPage> {
         );
       }
 
-      if (_form!.currentQuestionFinished || _voted) {
-        if (_form!.currentQuestionFinished) {
-          _hitBump();
-        }
-        return Scaffold(
-          appBar: appbar,
-          body: Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                const Padding(
-                  padding: EdgeInsets.only(left: 20.0, right: 20.0),
-                  child: Text(
-                      "Bitte warten Sie bis die nächste Frage gestellt wird"),
-                ),
-                Container(
-                    margin: const EdgeInsets.only(
-                        top: 50.0,
-                        bottom: 100.0), // specify the top and bottom margin
-
-                    width: 150,
-                    height: 150,
-                    child: RiveAnimation.asset(
-                      'assets/animations/rive/animations.riv',
-                      fit: BoxFit.cover,
-                      artboard: 'true & false',
-                      stateMachines: ['tf State Machine'],
-                      onInit: _onRiveInit,
-                    )),
-              ],
-            ),
-          ),
-        );
-      }
-
       final element = _form?.questions[_form!.currentQuestionIndex];
 
       return Scaffold(
@@ -407,25 +376,41 @@ class _AttendQuizPageState extends AuthState<AttendQuizPage> {
                   ],
                 ),
               ),
-              ElevatedButton(
-                child: const Text('Senden'),
-                onPressed: () {
-                  if (_value == null) {
-                    return;
-                  }
-                  var message = {
-                    "action": "ADD_RESULT",
-                    "resultElementId": element.id,
-                    "resultValues": [_value],
-                    "role": "STUDENT"
-                  };
-                  _socketChannel?.sink.add(jsonEncode(message));
-                  setState(() {
-                    _voted = true;
-                  });
-                },
-              ),
+              if (!_form!.currentQuestionFinished && !_voted)
+                ElevatedButton(
+                  child: const Text('Senden'),
+                  onPressed: () {
+                    if (_value == null) {
+                      return;
+                    }
+                    var message = {
+                      "action": "ADD_RESULT",
+                      "resultElementId": element.id,
+                      "resultValues": [_value],
+                      "role": "STUDENT"
+                    };
+                    _socketChannel?.sink.add(jsonEncode(message));
+                    setState(() {
+                      _voted = true;
+                    });
+                  },
+                ),
               const SizedBox(height: 32),
+              if (_form!.currentQuestionFinished || _voted)
+                Container(
+                    margin: const EdgeInsets.only(
+                        top: 0.0,
+                        bottom: 100.0), // specify the top and bottom margin
+
+                    width: 150,
+                    height: 150,
+                    child: RiveAnimation.asset(
+                      'assets/animations/rive/animations.riv',
+                      fit: BoxFit.cover,
+                      artboard: 'true & false',
+                      stateMachines: ['tf State Machine'],
+                      onInit: _onRiveInit,
+                    )),
             ],
           ),
         ),
