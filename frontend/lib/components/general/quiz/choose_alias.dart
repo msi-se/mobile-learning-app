@@ -1,13 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:frontend/utils.dart';
+import 'package:rive/rive.dart';
 
 typedef AliasSubmittedCallback = void Function(String alias);
 
 class ChooseAlias extends StatefulWidget {
   final AliasSubmittedCallback onAliasSubmitted;
 
-  const ChooseAlias({Key? key, required this.onAliasSubmitted}) : super(key: key);
+  const ChooseAlias({Key? key, required this.onAliasSubmitted})
+      : super(key: key);
 
   @override
   State<ChooseAlias> createState() => _ChooseAliasState();
@@ -24,7 +26,8 @@ class _ChooseAliasState extends State<ChooseAlias> {
 
   Future<void> _getRandomAlias() async {
     try {
-      final response = await http.get(Uri.parse('${getBackendUrl()}/funnyalias/'));
+      final response =
+          await http.get(Uri.parse('${getBackendUrl()}/funnyalias/'));
       if (response.statusCode == 200) {
         setState(() {
           _aliasController.text = response.body;
@@ -60,6 +63,16 @@ class _ChooseAliasState extends State<ChooseAlias> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: <Widget>[
+              RiveAnimation.asset(
+                'assets/animationst.riv',
+                animations: const ['Timeline 1'],
+                onInit: (artboard) {
+                  final textRun =
+                      artboard.textRun('Shuffle')!; // find text run named "MyRun"
+                  print('Run text used to be ${textRun.text}');
+                  textRun.text = 'Hi Flutter Runtime!';
+                },
+              ),
               Text(
                 'Wie ist dein Nickname?',
                 style: Theme.of(context).textTheme.titleLarge,
