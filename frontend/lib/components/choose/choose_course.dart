@@ -10,7 +10,12 @@ class ChooseCourse extends StatefulWidget {
   final Function(String id) choose;
   final Function(String courseId) joinCourse;
 
-  const ChooseCourse({super.key, required this.courses, required this.choose, required this.joinCourse,});
+  const ChooseCourse({
+    super.key,
+    required this.courses,
+    required this.choose,
+    required this.joinCourse,
+  });
 
   @override
   State<ChooseCourse> createState() => _ChooseCourseState();
@@ -28,15 +33,18 @@ class _ChooseCourseState extends State<ChooseCourse> {
         SliverLayout(
           collapsable: true,
           title: (percentage) {
-            return Padding(
-              padding: EdgeInsets.only(
-                  // left: 16 + 18.0 * percentage, bottom: 12 + 6.0 * percentage),
-                  left: 16, bottom: 12 + 6.0 * percentage),
-              child: Text(
-                "Kurse",
-                style: TextStyle(
-                  color: colors.onSurface,
-                  fontWeight: FontWeight.bold,
+            return Align(
+              alignment: Alignment.bottomLeft,
+              child: Padding(
+                padding: EdgeInsets.only(
+                    left: 16 + 16.0 * percentage,
+                    bottom: 12 + 6.0 * percentage),
+                child: Text(
+                  "Kurse",
+                  style: TextStyle(
+                    color: colors.onSurface,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
               ),
             );
@@ -89,9 +97,8 @@ class _ChooseCourseState extends State<ChooseCourse> {
                 },
               );
             },
-            child: const Icon(
-              Icons.add,
-              color: Color.fromARGB(255, 255, 255, 255)),
+            child: const Icon(Icons.add,
+                color: Color.fromARGB(255, 255, 255, 255)),
           ),
         ),
       ],

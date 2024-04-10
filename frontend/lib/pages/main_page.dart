@@ -28,31 +28,31 @@ class _MainPageState extends AuthState<MainPage> {
   @override
   Widget build(BuildContext context) {
     final colors = Theme.of(context).colorScheme;
-
     return Scaffold(
       resizeToAvoidBottomInset: false,
       appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.primary,
-        title: Image.asset(htwgWhiteExtendedLogo, height: 50),
-        centerTitle: true,
-        leading: popFunction != null ? IconButton(
-          icon: Icon(Icons.arrow_back, color: colors.onBackground),
-          onPressed: () {
-            popFunction!();
-          },
-        ) : null,
-        actions: [
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: IconButton(
-              icon: const Icon(Icons.person, size: 30, color: Colors.black),
-              onPressed: () {
-                Navigator.pushNamed(context, '/profile');
-              },
-            ),
-          )
-        ]
-      ),
+          backgroundColor: Theme.of(context).colorScheme.primary,
+          title: Image.asset(htwgWhiteExtendedLogo, height: 50),
+          centerTitle: true,
+          leading: popFunction != null
+              ? IconButton(
+                  icon: Icon(Icons.arrow_back, color: colors.onBackground),
+                  onPressed: () {
+                    popFunction!();
+                  },
+                )
+              : null,
+          actions: [
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: IconButton(
+                icon: const Icon(Icons.person, size: 30, color: Colors.black),
+                onPressed: () {
+                  Navigator.pushNamed(context, '/profile');
+                },
+              ),
+            )
+          ]),
       body: SafeArea(
         child: <Widget>[
           const HomeTab(title: "HTWG App"),
