@@ -5,6 +5,10 @@ import 'package:rive/rive.dart';
 
 typedef AliasSubmittedCallback = void Function(String alias);
 
+extension _TextExtension on Artboard {
+  TextValueRun? textRun(String name) => component<TextValueRun>(name);
+}
+
 class ChooseAlias extends StatefulWidget {
   final AliasSubmittedCallback onAliasSubmitted;
 
@@ -17,6 +21,8 @@ class ChooseAlias extends StatefulWidget {
 
 class _ChooseAliasState extends State<ChooseAlias> {
   final TextEditingController _aliasController = TextEditingController();
+
+  String _randomAlias = '';
 
   @override
   void initState() {
@@ -63,15 +69,21 @@ class _ChooseAliasState extends State<ChooseAlias> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: <Widget>[
-              RiveAnimation.asset(
-                'assets/animationst.riv',
-                animations: const ['Timeline 1'],
-                onInit: (artboard) {
-                  final textRun =
-                      artboard.textRun('Shuffle')!; // find text run named "MyRun"
-                  print('Run text used to be ${textRun.text}');
-                  textRun.text = 'Hi Flutter Runtime!';
-                },
+              Container(
+                margin: const EdgeInsets.only(top: 100.0, bottom: 100.0),
+                width: 0,
+                height: 0,
+                child: RiveAnimation.asset(
+                  'assets/animations/rive/animations.riv',
+                  artboard: 'Shuffle',
+                  animations: const ['Timeline 1'],
+                  onInit: (artboard) {
+                    final textRun = artboard
+                        .textRun('Shuffle')!; // find text run named "MyRun"
+                    print('Run text used to be ${textRun.text}');
+                    textRun.text = 'Flutter Runtime!';
+                  },
+                ),
               ),
               Text(
                 'Wie ist dein Nickname?',
