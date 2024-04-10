@@ -24,10 +24,8 @@ class SliverLayout extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final padding = MediaQuery.of(context).padding;
-    double heightWithoutAppBarNavBar = MediaQuery.of(context).size.height -
-        (kBottomNavigationBarHeight + Scaffold.of(context).appBarMaxHeight!)
-        - padding.top - padding.bottom;
+    double heightWithoutappBarNavBar = MediaQuery.of(context).size.height -
+        (kBottomNavigationBarHeight + Scaffold.of(context).appBarMaxHeight!);
 
     final colors = Theme.of(context).colorScheme;
 
@@ -35,7 +33,7 @@ class SliverLayout extends StatelessWidget {
       body: CustomScrollView(
         slivers: [
           sliverHeader(colors),
-          sliverList(heightWithoutAppBarNavBar, colors),
+          sliverList(heightWithoutappBarNavBar, colors),
         ],
       ),
     );
@@ -64,15 +62,17 @@ class SliverLayout extends StatelessWidget {
     );
   }
 
-  SliverList sliverList(double heightWithoutAppBarNavBar, ColorScheme colors) {
+  SliverList sliverList(double heightWithoutappBarNavBar, ColorScheme colors) {
     return SliverList(
       delegate: SliverChildListDelegate([
         ConstrainedBox(
           constraints: BoxConstraints(
             minHeight: collapsable
-                ? heightWithoutAppBarNavBar - navBarHeight
-                : heightWithoutAppBarNavBar - navBarHeight
-                  - headerHeight + kToolbarHeight,
+                ? heightWithoutappBarNavBar - navBarHeight
+                : heightWithoutappBarNavBar -
+                    headerHeight +
+                    kToolbarHeight -
+                    navBarHeight,
           ),
           child: Card(
             shape: const RoundedRectangleBorder(
