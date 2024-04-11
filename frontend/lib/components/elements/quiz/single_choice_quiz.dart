@@ -4,10 +4,15 @@ class SingleChoiceQuiz extends StatefulWidget {
   final ValueChanged<int> onSelectionChanged;
   final List<String> options;
 
+  final bool voted;
+  final dynamic value;
+
   const SingleChoiceQuiz({
     super.key,
     required this.onSelectionChanged,
     required this.options,
+    required this.voted,
+    required this.value,
   });
 
   @override
@@ -27,6 +32,10 @@ class _SingleChoiceQuizState extends State<SingleChoiceQuiz> {
   @override
   Widget build(BuildContext context) {
     final colors = Theme.of(context).colorScheme;
+
+    if (widget.value == null) {
+      _selection = -1;
+    }
 
     return ListView.builder(
       shrinkWrap: true,
@@ -66,10 +75,12 @@ class _SingleChoiceQuizState extends State<SingleChoiceQuiz> {
             ),
             title: Text(_options[index]),
             onTap: () {
-              setState(() {
-                _selection = index;
-              });
-              widget.onSelectionChanged(index);
+              if (!widget.voted) {
+                setState(() {
+                  _selection = index;
+                });
+                widget.onSelectionChanged(index);
+              }
             },
           ),
         );

@@ -12,6 +12,7 @@ import 'package:frontend/enums/form_status.dart';
 import 'package:frontend/enums/question_type.dart';
 import 'package:frontend/global.dart';
 import 'package:frontend/models/quiz/quiz_form.dart';
+import 'package:frontend/theme/assets.dart';
 import 'package:frontend/utils.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 import 'package:http/http.dart' as http;
@@ -230,13 +231,17 @@ class _AttendQuizPageState extends AuthState<AttendQuizPage> {
           data["action"] == "OPENED_NEXT_QUESTION") {
         var form = QuizForm.fromJson(data["form"]);
         setState(() {
-          _userHasAnsweredCorrectly = data["userHasAnsweredCorrectly"];
-          _value = null;
-          _voted = false;
           _form?.currentQuestionIndex = form.currentQuestionIndex;
           _form?.currentQuestionFinished = form.currentQuestionFinished;
         });
+        if (data["action"] == "OPENED_NEXT_QUESTION") {
+          setState(() {
+            _value = null;
+            _voted = false;
+          });
+        }
         if (data["action"] == "CLOSED_QUESTION") {
+          _userHasAnsweredCorrectly = data["userHasAnsweredCorrectly"];
           _hitBump();
         }
       }
@@ -355,6 +360,8 @@ class _AttendQuizPageState extends AuthState<AttendQuizPage> {
                         padding: const EdgeInsets.all(16),
                         child: element.type == QuestionType.single_choice
                             ? SingleChoiceQuiz(
+                                voted: _voted,
+                                value: _value,
                                 options: element.options,
                                 onSelectionChanged: (newValue) {
                                   setState(() {
@@ -364,6 +371,8 @@ class _AttendQuizPageState extends AuthState<AttendQuizPage> {
                               )
                             : element.type == QuestionType.yes_no
                                 ? YesNoQuiz(
+                                    voted: _voted,
+                                    value: _value,
                                     onSelectionChanged: (newValue) {
                                       setState(() {
                                         _value = newValue;

@@ -3,9 +3,14 @@ import 'package:flutter/material.dart';
 class YesNoQuiz extends StatefulWidget {
   final ValueChanged<String> onSelectionChanged;
 
+  final bool voted;
+  final dynamic value;
+
   const YesNoQuiz({
     super.key,
     required this.onSelectionChanged,
+    required this.voted,
+    required this.value,
   });
 
   @override
@@ -24,6 +29,10 @@ class _YesNoQuizState extends State<YesNoQuiz> {
   Widget build(BuildContext context) {
     final colors = Theme.of(context).colorScheme;
 
+    if (widget.value == null) {
+      _selection = -1;
+    }
+
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: [
@@ -40,10 +49,12 @@ class _YesNoQuizState extends State<YesNoQuiz> {
             ),
           ),
           onPressed: () {
-            setState(() {
-              _selection = 1;
-            });
-            widget.onSelectionChanged("yes");
+            if (!widget.voted) {
+              setState(() {
+                _selection = 1;
+              });
+              widget.onSelectionChanged("yes");
+            }
           },
           child: Row(
             children: [
@@ -84,10 +95,12 @@ class _YesNoQuizState extends State<YesNoQuiz> {
             ),
           ),
           onPressed: () {
-            setState(() {
-              _selection = 0;
-            });
-            widget.onSelectionChanged("no");
+            if (!widget.voted) {
+              setState(() {
+                _selection = 0;
+              });
+              widget.onSelectionChanged("no");
+            }
           },
           child: Row(
             children: [
