@@ -11,7 +11,6 @@ class TestPage extends StatefulWidget {
 
 class _TestPageState extends State<TestPage> with TickerProviderStateMixin {
   List<Widget> _animations = [];
-  final riveFileName = 'assets/animations/rive/paper_plane.riv';
 
   @override
   void initState() {

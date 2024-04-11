@@ -182,7 +182,7 @@ public class LiveQuizSocket {
     private void broadcast(LiveQuizSocketMessage message, String courseId, String formId) {
 
         // copy the message to not change the original 
-        LiveQuizSocketMessage messageToSend = new LiveQuizSocketMessage(message.action, message.formStatus, message.resultElementId, message.resultValues, null);
+        LiveQuizSocketMessage messageToSend = new LiveQuizSocketMessage(message.action, message.formStatus, message.resultElementId, message.resultValues, null, message.fun);
 
         connections.values().forEach(connection -> {
 
@@ -246,6 +246,10 @@ public class LiveQuizSocket {
 
         if (quizSocketMessage.action.equals("NEXT")) {
             return this.next(quizSocketMessage, course, formId, user);
+        }
+
+        if (quizSocketMessage.action.equals("FUN")) {
+            return this.fun(quizSocketMessage, course, formId, user);
         }
 
         return false;
@@ -408,4 +412,20 @@ public class LiveQuizSocket {
         return true;
     }
 
+    private Boolean fun(LiveQuizSocketMessage quizSocketMessage, Course course, String formId, User user) {
+
+        System.out.println("Throw paper plane");
+
+        // TODO: useless but error if not there
+        QuizForm form = course.getQuizFormById(new ObjectId(formId));
+        if (form == null) {
+            System.out.println("Form not found");
+            return false;
+        }
+
+        quizSocketMessage.form = form;
+        this.broadcast(quizSocketMessage, course.getId().toHexString(), formId);
+
+        return true;
+    }
 }
