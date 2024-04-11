@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'dart:ui';
+import 'package:flutter/foundation.dart' show kIsWeb;
 
 import 'package:flutter/material.dart';
 
@@ -26,7 +27,7 @@ class SliverLayout extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final bool isIphoneWithHomeBar =
-        Platform.isIOS && MediaQuery.of(context).size.height >= 812.0;
+        !kIsWeb && Platform.isIOS && MediaQuery.of(context).size.height >= 812.0;
     int homeBarHeight = 0;
     if (isIphoneWithHomeBar && navBarHeight > 0) {
       homeBarHeight = 34;
