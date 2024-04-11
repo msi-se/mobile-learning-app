@@ -1,5 +1,3 @@
-import 'dart:html';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:frontend/components/layout/sliver_layout.dart';
@@ -243,8 +241,8 @@ class _ChooseFormState extends State<ChooseForm> {
           if (forms.isEmpty)
             Container(
               margin: const EdgeInsets.only(top: 20.0, bottom: 100.0),
-              width: 300,
-              height: 300,
+              width: 250,
+              height: 250,
               child: RiveAnimation.asset(
                 'assets/animations/rive/animations.riv',
                 fit: BoxFit.cover,

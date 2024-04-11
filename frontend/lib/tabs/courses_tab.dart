@@ -155,8 +155,8 @@ class _CoursesTabState extends State<CoursesTab> {
           Text('Keine Kurse gefunden!'),
           Container(
             margin: EdgeInsets.only(top: 20.0, bottom: 100.0),
-            width: 300,
-            height: 300,
+            width: 250,
+            height: 250,
             child: RiveAnimation.asset(
               'assets/animations/rive/animations.riv',
               fit: BoxFit.cover,
