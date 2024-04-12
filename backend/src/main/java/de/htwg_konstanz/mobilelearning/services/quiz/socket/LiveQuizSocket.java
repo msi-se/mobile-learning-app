@@ -213,6 +213,9 @@ public class LiveQuizSocket {
                 QuizQuestion question = course.getQuizQuestionById(questionWrapper.getQuestionId());
                 Boolean userHasAnsweredCorrectly = question.checkAnswer(message.form.getResultsOfParticipant(connection.getUserId(), questionWrapper.getId())) > 0;
                 messageToSend.userHasAnsweredCorrectly = userHasAnsweredCorrectly;
+
+                // also append the correct answers
+                messageToSend.correctAnswers = question.getCorrectAnswers();
             }
 
             // fill the form with the question contents

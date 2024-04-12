@@ -25,6 +25,7 @@ public class LiveQuizSocketMessage {
     // outgoing message
     public QuizForm form;
     public Boolean userHasAnsweredCorrectly;
+    public List<String> correctAnswers;
 
     public LiveQuizSocketMessage(String message) {
 
@@ -50,6 +51,7 @@ public class LiveQuizSocketMessage {
         this.resultValues = resultValues;
         this.form = form;
         this.userHasAnsweredCorrectly = null;
+        this.correctAnswers = null;
     }
 
     public LiveQuizSocketMessage(String action, String formStatus, String resultElementId, List<String> resultValues, QuizForm form, Boolean userHasAnsweredCorrectly) {
@@ -59,6 +61,17 @@ public class LiveQuizSocketMessage {
         this.resultValues = resultValues;
         this.form = form;
         this.userHasAnsweredCorrectly = userHasAnsweredCorrectly;
+        this.correctAnswers = null;
+    }
+
+    public LiveQuizSocketMessage(String action, String formStatus, String resultElementId, List<String> resultValues, QuizForm form, Boolean userHasAnsweredCorrectly, List<String> correctAnswers) {
+        this.action = action;
+        this.formStatus = formStatus;
+        this.resultElementId = resultElementId;
+        this.resultValues = resultValues;
+        this.form = form;
+        this.userHasAnsweredCorrectly = userHasAnsweredCorrectly;
+        this.correctAnswers = correctAnswers;
     }
 
     public String toJson() {
@@ -67,7 +80,7 @@ public class LiveQuizSocketMessage {
     }
 
     public LiveQuizSocketMessage copy() {
-        return new LiveQuizSocketMessage(this.action, this.formStatus, this.resultElementId, this.resultValues, this.form);
+        return new LiveQuizSocketMessage(this.action, this.formStatus, this.resultElementId, this.resultValues, this.form, this.userHasAnsweredCorrectly, this.correctAnswers);
     }
 
     public static LiveQuizSocketMessage getByJsonWithForm(String message) {
