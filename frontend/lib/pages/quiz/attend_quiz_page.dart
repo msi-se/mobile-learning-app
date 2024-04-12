@@ -45,6 +45,7 @@ class _AttendQuizPageState extends AuthState<AttendQuizPage> {
   dynamic _value;
   bool _voted = false;
   dynamic _userHasAnsweredCorrectly = false;
+  List<dynamic> _correctAnswers = [];
 
   bool _loading = false;
   String _fetchResult = '';
@@ -236,12 +237,14 @@ class _AttendQuizPageState extends AuthState<AttendQuizPage> {
         });
         if (data["action"] == "OPENED_NEXT_QUESTION") {
           setState(() {
+            _correctAnswers = [];
             _value = null;
             _voted = false;
           });
         }
         if (data["action"] == "CLOSED_QUESTION") {
           _userHasAnsweredCorrectly = data["userHasAnsweredCorrectly"];
+          _correctAnswers = data["correctAnswers"];
           _hitBump();
         }
       }
@@ -360,6 +363,7 @@ class _AttendQuizPageState extends AuthState<AttendQuizPage> {
                         padding: const EdgeInsets.all(16),
                         child: element.type == QuestionType.single_choice
                             ? SingleChoiceQuiz(
+                                correctAnswers: _correctAnswers,
                                 voted: _voted,
                                 value: _value,
                                 options: element.options,
@@ -371,6 +375,7 @@ class _AttendQuizPageState extends AuthState<AttendQuizPage> {
                               )
                             : element.type == QuestionType.yes_no
                                 ? YesNoQuiz(
+                                    correctAnswers: _correctAnswers,
                                     voted: _voted,
                                     value: _value,
                                     onSelectionChanged: (newValue) {
