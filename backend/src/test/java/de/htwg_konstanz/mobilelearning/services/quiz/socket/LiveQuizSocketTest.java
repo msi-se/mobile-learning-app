@@ -1089,6 +1089,120 @@ public class LiveQuizSocketTest {
         profSession.close();
         studentSession1.close();
 
+    }
+
+    @Test
+    public void testAlreadySubmitted() throws DeploymentException, IOException, InterruptedException {
+
+        // create & get courses
+        List<Course> courses = Helper.createCourse("Prof-1");
+        Course course = courses.get(0);
+
+        // make 1 prof and 1 student
+        MockUser prof = Helper.createMockUser("Prof-1");
+        MockUser student1 = Helper.createMockUser("Student-1");
+
+        // call the get courses endpoint for each user to update the course-user relation
+        given().header("Authorization", "Bearer " + prof.getJwt()).when().get("/course").then().statusCode(200);
+        given().header("Authorization", "Bearer " + student1.getJwt()).when().get("/course").then().statusCode(200);
+        
+        // get course and feedback form id
+        String courseId = course.getId().toString();
+        String formId = course.getQuizForms().get(0).getId().toString();
+
+        // create websocket clients
+        SocketClient profClient = new SocketClient();
+        SocketClient studentClient = new SocketClient();
+
+        // connect the prof to the quiz form
+        Session profSession = ContainerProvider.getWebSocketContainer().connectToServer(
+            profClient,
+            URI.create("ws://localhost:8081/course/" + courseId + "/quiz/form/" + formId + "/subscribe/" + prof.getId() + "/" + prof.getJwt())
+        );
+        Thread.sleep(100);
+        Assertions.assertTrue(profSession.isOpen());
+
+        // set the form status to "WAITING" and check if it was set
+        profClient.sendMessage("""
+            {
+                "action": "CHANGE_FORM_STATUS",
+                "formStatus": "WAITING"
+            }
+        """);
+        Thread.sleep(100);
+        Assertions.assertEquals("WAITING", courseService.getCourse(courseId).getQuizForms().get(0).getStatus().toString());
+
+        // make the participate requests for the students and connect them to the quiz form
+        Response response1 = given()
+                                .header("Authorization", "Bearer " + student1.getJwt())
+                                .pathParam("courseId", courseId)
+                                .pathParam("formId", formId)
+                                .body("alias-student-1")
+                                .when()
+                                .post("/course/{courseId}/quiz/form/{formId}/participate");
+        Thread.sleep(100);
+        Assertions.assertEquals(200, response1.getStatusCode());
+        Session studentSession1 = ContainerProvider.getWebSocketContainer().connectToServer(
+            studentClient,
+            URI.create("ws://localhost:8081/course/" + courseId + "/quiz/form/" + formId + "/subscribe/" + student1.getId() + "/" + student1.getJwt())
+        );
+        Thread.sleep(100);
+        Assertions.assertTrue(studentSession1.isOpen());
+
+        // check if the quiz has now participants
+        Assertions.assertEquals(1, courseService.getCourse(courseId).getQuizForms().get(0).getParticipants().size());
+
+        // check if the prof received the "PARTICIPANT_JOINED" messages and got the right amount of participants
+        Assertions.assertEquals("PARTICIPANT_JOINED", LiveQuizSocketMessage.getByJsonWithForm(profClient.getMessageQueue().get(profClient.getMessageQueue().size() - 1)).action);
+        Assertions.assertEquals(1, LiveQuizSocketMessage.getByJsonWithForm(profClient.getMessageQueue().get(profClient.getMessageQueue().size() - 1)).form.participants.size());
+        Assertions.assertEquals("FORM_STATUS_CHANGED", LiveQuizSocketMessage.getByJsonWithForm(profClient.getMessageQueue().get(profClient.getMessageQueue().size() - 2)).action);
+        Assertions.assertEquals(0, LiveQuizSocketMessage.getByJsonWithForm(profClient.getMessageQueue().get(profClient.getMessageQueue().size() - 2)).form.participants.size());
+        
+        // change the form status to "STARTED" and check if it was set
+        profClient.sendMessage("""
+            {
+                "action": "CHANGE_FORM_STATUS",
+                "formStatus": "STARTED"
+            }
+        """);
+        Thread.sleep(100);
+        Assertions.assertEquals("STARTED", courseService.getCourse(courseId).getQuizForms().get(0).getStatus().toString());
+
+        // check if the student received the "FORM_STATUS_CHANGED" message
+        Assertions.assertEquals("FORM_STATUS_CHANGED", LiveQuizSocketMessage.getByJsonWithForm(studentClient.getMessageQueue().get(studentClient.getMessageQueue().size() - 1)).action);
+
+        // add a correct result to the quiz form and then a wrong one
+        studentClient.sendMessage("""
+            {
+                "action": "ADD_RESULT",
+                "resultElementId": %s,
+                "resultValues": ["2"]
+            }
+        """.formatted(course.getQuizForms().get(0).questions.get(0).getId().toString()));
+        Thread.sleep(100);
+
+        // check that the result was added
+        Assertions.assertEquals(1, courseService.getCourse(courseId).getQuizForms().get(0).questions.get(0).results.size());
+        Assertions.assertEquals("2", courseService.getCourse(courseId).getQuizForms().get(0).questions.get(0).results.get(0).values.get(0));
+
+        // check that the score was updated
+        Assertions.assertEquals(1, courseService.getCourse(courseId).getQuizForms().get(0).getParticipants().get(0).getScore());
+
+        // disconnect the student and reconnect it
+        studentSession1.close();
+
+        Session studentSession1_2 = ContainerProvider.getWebSocketContainer().connectToServer(
+            studentClient,
+            URI.create("ws://localhost:8081/course/" + courseId + "/quiz/form/" + formId + "/subscribe/" + student1.getId() + "/" + student1.getJwt())
+        );
+        Thread.sleep(100);
+
+        // check that the user got the "ALREADY_SUBMITTED" message
+        Assertions.assertEquals("ALREADY_SUBMITTED", LiveQuizSocketMessage.getByJsonWithForm(studentClient.getMessageQueue().get(studentClient.getMessageQueue().size() - 1)).action);
+
+        // close the websocket connections
+        profSession.close();
+        studentSession1_2.close();
 
     }
 
