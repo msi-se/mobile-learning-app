@@ -1082,6 +1082,9 @@ public class LiveQuizSocketTest {
         Assertions.assertEquals("CLOSED_QUESTION", LiveQuizSocketMessage.getByJsonWithForm(studentClient.getMessageQueue().get(studentClient.getMessageQueue().size() - 1)).action);
         Assertions.assertFalse(LiveQuizSocketMessage.getByJsonWithForm(studentClient.getMessageQueue().get(studentClient.getMessageQueue().size() - 1)).userHasAnsweredCorrectly);
 
+        // check that the correctAnswers are set
+        Assertions.assertEquals(List.of("2"), LiveQuizSocketMessage.getByJsonWithForm(studentClient.getMessageQueue().get(studentClient.getMessageQueue().size() - 1)).correctAnswers);
+
         // close the websocket connections
         profSession.close();
         studentSession1.close();
