@@ -218,6 +218,13 @@ class _AttendQuizPageState extends AuthState<AttendQuizPage> {
 
     _socketChannel!.stream.listen((event) {
       var data = jsonDecode(event);
+      if (data["formStatus"] == "FINISHED") {
+        _form?.status = FormStatus.fromString(data["formStatus"]);
+        _value = null;
+        _voted = false;
+        _userHasAnsweredCorrectly = false;
+        _correctAnswers = [];
+      }
       if (data["action"] == "FORM_STATUS_CHANGED") {
         var form = QuizForm.fromJson(data["form"]);
         setState(() {
