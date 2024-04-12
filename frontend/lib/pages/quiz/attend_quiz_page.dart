@@ -14,6 +14,7 @@ import 'package:frontend/enums/form_status.dart';
 import 'package:frontend/enums/question_type.dart';
 import 'package:frontend/global.dart';
 import 'package:frontend/models/quiz/quiz_form.dart';
+import 'package:frontend/theme/assets.dart';
 import 'package:frontend/utils.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 import 'package:http/http.dart' as http;
@@ -41,9 +42,13 @@ class _AttendQuizPageState extends AuthState<AttendQuizPage> {
   WebSocketChannel? _socketChannel;
 
   late List<dynamic> _scoreboard;
+  SMITrigger? _bump;
+  SMIInput<bool>? _boolInput;
 
   dynamic _value;
   bool _voted = false;
+  dynamic _userHasAnsweredCorrectly = false;
+  List<dynamic> _correctAnswers = [];
 
   bool _loading = false;
   String _fetchResult = '';
@@ -210,6 +215,11 @@ class _AttendQuizPageState extends AuthState<AttendQuizPage> {
     });
   }
 
+  void _hitBump() {
+    _boolInput?.value = _userHasAnsweredCorrectly;
+    _bump?.fire();
+  }
+
   void startWebsocket() {
     _socketChannel = WebSocketChannel.connect(
       Uri.parse(
@@ -218,6 +228,13 @@ class _AttendQuizPageState extends AuthState<AttendQuizPage> {
 
     _socketChannel!.stream.listen((event) {
       var data = jsonDecode(event);
+      if (data["formStatus"] == "FINISHED") {
+        _form?.status = FormStatus.fromString(data["formStatus"]);
+        _value = null;
+        _voted = false;
+        _userHasAnsweredCorrectly = false;
+        _correctAnswers = [];
+      }
       if (data["action"] == "FORM_STATUS_CHANGED") {
         var form = QuizForm.fromJson(data["form"]);
         setState(() {
@@ -235,11 +252,21 @@ class _AttendQuizPageState extends AuthState<AttendQuizPage> {
           data["action"] == "OPENED_NEXT_QUESTION") {
         var form = QuizForm.fromJson(data["form"]);
         setState(() {
-          _value = null;
-          _voted = false;
           _form?.currentQuestionIndex = form.currentQuestionIndex;
           _form?.currentQuestionFinished = form.currentQuestionFinished;
         });
+        if (data["action"] == "OPENED_NEXT_QUESTION") {
+          setState(() {
+            _correctAnswers = [];
+            _value = null;
+            _voted = false;
+          });
+        }
+        if (data["action"] == "CLOSED_QUESTION") {
+          _userHasAnsweredCorrectly = data["userHasAnsweredCorrectly"];
+          _correctAnswers = data["correctAnswers"];
+          _hitBump();
+        }
       }
       if (data["action"] == "FUN") {
         if (data["fun"]["action"] == "THROW_PAPER_PLANE") {
@@ -282,7 +309,16 @@ class _AttendQuizPageState extends AuthState<AttendQuizPage> {
     super.dispose();
   }
 
-    void throwPaperPlane(double percentageX, double percentageY) {
+  void _onRiveInit(Artboard artboard) {
+    final controller =
+        StateMachineController.fromArtboard(artboard, 'tf state machine');
+    artboard.addController(controller!);
+    // Get a reference to the "bump" state machine input
+    _bump = controller.findInput<bool>('tf trigger') as SMITrigger;
+    _boolInput = controller.findInput<bool>('answer') as SMIInput<bool>;
+  }
+
+  void throwPaperPlane(double percentageX, double percentageY) {
     if (_socketChannel != null) {
       _socketChannel!.sink.add(jsonEncode({
         "action": "FUN",
@@ -427,7 +463,7 @@ class _AttendQuizPageState extends AuthState<AttendQuizPage> {
         );
       }
 
-      if (_form?.status != FormStatus.started || _voted) {
+      if (_form?.status != FormStatus.started) {
         return Scaffold(
           appBar: appbar,
           body: Center(
@@ -435,13 +471,9 @@ class _AttendQuizPageState extends AuthState<AttendQuizPage> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
                 Padding(
-                  padding: const EdgeInsets.only(left: 20.0, right: 20.0),
-                  child: _form?.status != FormStatus.started
-                      ? const Text(
-                          "Bitte warten Sie bis das Quiz gestartet wird")
-                      : const Text(
-                          "Bitte warten Sie bis die nächste Frage gestellt wird"),
-                ),
+                    padding: const EdgeInsets.only(left: 20.0, right: 20.0),
+                    child: const Text(
+                        "Bitte warten Sie bis das Quiz gestartet wird")),
                 Container(
                   margin: const EdgeInsets.only(top: 100.0, bottom: 100.0),
                   width: 150,
@@ -453,37 +485,6 @@ class _AttendQuizPageState extends AuthState<AttendQuizPage> {
                     stateMachines: ['Waiting State Machine'],
                   ),
                 ),
-              ],
-            ),
-          ),
-        );
-      }
-
-      if (_form!.currentQuestionFinished) {
-        return Scaffold(
-          appBar: appbar,
-          body: Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                const Padding(
-                  padding: EdgeInsets.only(left: 20.0, right: 20.0),
-                  child: Text(
-                      "Bitte warten Sie bis die nächste Frage gestellt wird"),
-                ),
-                Container(
-                    margin: const EdgeInsets.only(
-                        top: 100.0,
-                        bottom: 100.0), // specify the top and bottom margin
-
-                    width: 150,
-                    height: 150,
-                    child: RiveAnimation.asset(
-                      'assets/animations/rive/animations.riv',
-                      fit: BoxFit.cover,
-                      artboard: 'Waiting with coffee shorter arm',
-                      stateMachines: ['Waiting State Machine'],
-                    )),
               ],
             ),
           ),
@@ -515,6 +516,9 @@ class _AttendQuizPageState extends AuthState<AttendQuizPage> {
                         padding: const EdgeInsets.all(16),
                         child: element.type == QuestionType.single_choice
                             ? SingleChoiceQuiz(
+                                correctAnswers: _correctAnswers,
+                                voted: _voted,
+                                value: _value,
                                 options: element.options,
                                 onSelectionChanged: (newValue) {
                                   setState(() {
@@ -524,6 +528,9 @@ class _AttendQuizPageState extends AuthState<AttendQuizPage> {
                               )
                             : element.type == QuestionType.yes_no
                                 ? YesNoQuiz(
+                                    correctAnswers: _correctAnswers,
+                                    voted: _voted,
+                                    value: _value,
                                     onSelectionChanged: (newValue) {
                                       setState(() {
                                         _value = newValue;
@@ -536,25 +543,40 @@ class _AttendQuizPageState extends AuthState<AttendQuizPage> {
                   ],
                 ),
               ),
-              ElevatedButton(
-                child: const Text('Senden'),
-                onPressed: () {
-                  if (_value == null) {
-                    return;
-                  }
-                  var message = {
-                    "action": "ADD_RESULT",
-                    "resultElementId": element.id,
-                    "resultValues": [_value],
-                    "role": "STUDENT"
-                  };
-                  _socketChannel?.sink.add(jsonEncode(message));
-                  setState(() {
-                    _voted = true;
-                  });
-                },
-              ),
-              const SizedBox(height: 32),
+              if (!_form!.currentQuestionFinished && !_voted)
+                ElevatedButton(
+                  child: const Text('Senden'),
+                  onPressed: () {
+                    if (_value == null) {
+                      return;
+                    }
+                    var message = {
+                      "action": "ADD_RESULT",
+                      "resultElementId": element.id,
+                      "resultValues": [_value],
+                      "role": "STUDENT"
+                    };
+                    _socketChannel?.sink.add(jsonEncode(message));
+                    setState(() {
+                      _voted = true;
+                    });
+                  },
+                ),
+              if (_form!.currentQuestionFinished || _voted)
+                Container(
+                    margin: const EdgeInsets.only(
+                        top: 0.0,
+                        bottom: 100.0), // specify the top and bottom margin
+
+                    width: 130,
+                    height: 130,
+                    child: RiveAnimation.asset(
+                      'assets/animations/rive/animations.riv',
+                      fit: BoxFit.cover,
+                      artboard: 'true & false',
+                      stateMachines: ['tf State Machine'],
+                      onInit: _onRiveInit,
+                    )),
             ],
           ),
         ),

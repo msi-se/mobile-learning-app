@@ -127,7 +127,53 @@ public class LiveFeedbackSocket {
             LiveFeedbackSocketMessage message = new LiveFeedbackSocketMessage("PARTICIPANT_JOINED", null, null, null,
                     form);
             this.broadcast(message, courseId, formId);
+
+            this.tellUserIfAlreadySubmitted(form, user, session);
         }
+    }
+
+    private void tellUserIfAlreadySubmitted(FeedbackForm form, User user, Session session) {
+
+        // check if the user already submitted a result
+        Boolean userAlreadySubmitted = false;
+        String hashedUserId = Hasher.hash(user.getId().toHexString());
+        for (QuestionWrapper element : form.questions) {
+            for (Result result : element.results) {
+                if (result.hashedUserId.equals(hashedUserId)) {
+                    userAlreadySubmitted = true;
+                    break;
+                }
+            }
+        }
+
+        // if the user already submitted a result, send him a message
+        if (userAlreadySubmitted) {
+            LiveFeedbackSocketMessage message = new LiveFeedbackSocketMessage("ALREADY_SUBMITTED", null, null, null, null);
+            this.sendMessageToUser(user, message);
+        }
+    }
+
+    private void sendMessageToUser(User user, LiveFeedbackSocketMessage message) {
+
+        // search the session of the user
+        SocketConnection connection = null;
+        for (SocketConnection c : connections.values()) {
+            if (c.getUserId().equals(user.getId())) {
+                connection = c;
+                break;
+            }
+        }
+        if (connection == null) {
+            return;
+        }
+
+        // send the message
+        String messageString = message.toJson();
+        connection.session.getAsyncRemote().sendObject(messageString, result ->  {
+            if (result.getException() != null) {
+                System.out.println("Unable to send message: " + result.getException());
+            }
+        });
     }
 
     /**
