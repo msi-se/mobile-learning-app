@@ -132,8 +132,54 @@ public class LiveQuizSocket {
             LiveQuizSocketMessage message = new LiveQuizSocketMessage("PARTICIPANT_JOINED", form.status.toString(),
                     null, null, form);
             this.broadcast(message, courseId, formId);
+
+            this.tellUserIfAlreadySubmitted(form, user, session);
         }
     }
+
+    private void tellUserIfAlreadySubmitted(QuizForm form, User user, Session session) {
+
+        // check if the user already submitted a result
+        Boolean userAlreadySubmitted = false;
+        String hashedUserId = Hasher.hash(user.getId().toHexString());
+        QuestionWrapper currentQuestionWrapper = form.questions.get(form.currentQuestionIndex);
+        for (Result result : currentQuestionWrapper.results) {
+            if (result.hashedUserId.equals(hashedUserId)) {
+                userAlreadySubmitted = true;
+                break;
+            }
+        }
+
+        // if the user already submitted a result, send him a message
+        if (userAlreadySubmitted) {
+            LiveQuizSocketMessage message = new LiveQuizSocketMessage("ALREADY_SUBMITTED", null, null, null, null);
+            this.sendMessageToUser(user, message);
+        }
+    }
+
+    private void sendMessageToUser(User user, LiveQuizSocketMessage message) {
+
+        // search the session of the user
+        SocketConnection connection = null;
+        for (SocketConnection c : connections.values()) {
+            if (c.getUserId().equals(user.getId())) {
+                connection = c;
+                break;
+            }
+        }
+        if (connection == null) {
+            return;
+        }
+
+        // send the message
+        String messageString = message.toJson();
+        connection.session.getAsyncRemote().sendObject(messageString, result ->  {
+            if (result.getException() != null) {
+                System.out.println("Unable to send message: " + result.getException());
+            }
+        });
+    }
+
 
     /**
      * Method called when a connection is closed.
