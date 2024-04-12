@@ -270,9 +270,8 @@ public class LiveQuizSocket {
             messageToSend.form.fillQuestionContents(courseRepository.findById(new ObjectId(courseId)));
             if (connection.getType().equals(SocketConnectionType.PARTICIPANT)) {
                 messageToSend.form.clearResults();
-            } else {
-                messageToSend.form.setParticipants(message.form.getParticipants());
             }
+            messageToSend.form.setParticipants(message.form.getParticipants());
 
             // send the message
             String messageString = messageToSend.toJson();
