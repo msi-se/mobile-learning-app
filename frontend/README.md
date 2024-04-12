@@ -1,6 +1,6 @@
 # frontend
 
-A new Flutter project.
+Mobile App for more Interactions in Lectures
 
 ## Getting Started
 

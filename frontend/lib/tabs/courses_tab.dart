@@ -12,6 +12,7 @@ import 'package:frontend/enums/form_type.dart';
 import 'package:frontend/utils.dart';
 import 'package:http/http.dart' as http;
 import 'package:frontend/global.dart';
+import 'package:rive/rive.dart';
 
 class CoursesTab extends StatefulWidget {
   final Function(Function?) setPopFunction;
@@ -43,8 +44,7 @@ class _CoursesTabState extends State<CoursesTab> {
     });
     try {
       final response = await http.get(
-        Uri.parse(
-            "${getBackendUrl()}/course"),
+        Uri.parse("${getBackendUrl()}/course"),
         headers: {
           "Content-Type": "application/json",
           "AUTHORIZATION": "Bearer ${getSession()!.jwt}",
@@ -71,7 +71,7 @@ class _CoursesTabState extends State<CoursesTab> {
     }
   }
 
-    Future<void> joinCourse(String courseId) async {
+  Future<void> joinCourse(String courseId) async {
     setState(() {
       _loading = true;
     });
@@ -87,12 +87,10 @@ class _CoursesTabState extends State<CoursesTab> {
 
       if (response.statusCode == 200) {
         await fetchCourses();
-
       } else {
         // TODO: Handle different status codes other than 200
         setState(() {
           _loading = false;
-
         });
       }
     } on http.ClientException {
@@ -150,57 +148,77 @@ class _CoursesTabState extends State<CoursesTab> {
         child: CircularProgressIndicator(),
       );
     } else if (_fetchResult == 'success') {
-      return PopScope(
-        canPop: _selectedCourse == null,
-        onPopInvoked: (bool didPop) {
-          if (didPop) {
-            return;
-          }
-          pop();
-        },
-        child: _selectedCourse == null
-            ? ChooseCourse(
-                courses: _courses,
-                choose: (id) {
-                  setState(() {
-                    _selectedCourse =
-                        _courses.firstWhere((element) => element.id == id);
-                  });
-                  widget.setPopFunction(pop);
-                },
-                joinCourse: joinCourse,
-              )
-            : ChooseForm(
-                course: _selectedCourse!,
-                choose: (id, formType) {
-                  if (formType == FormType.feedback) {
-                    if (_selectedCourse!.isOwner) {
-                      Navigator.pushNamed(context, '/feedback-info', arguments: {
-                        "courseId": _selectedCourse!.id,
-                        "formId": id,
-                      });
-                    } else {
-                      FeedbackForm form = _selectedCourse!.feedbackForms
-                          .firstWhere((element) => element.id == id);
-                      Navigator.pushNamed(context, '/attend-feedback',
-                          arguments: form.connectCode);
+      if (_courses.isEmpty) {
+        return Center(
+            child:
+                Column(mainAxisAlignment: MainAxisAlignment.center, children: [
+          Text('Keine Kurse gefunden!'),
+          Container(
+            margin: EdgeInsets.only(top: 20.0, bottom: 100.0),
+            width: 250,
+            height: 250,
+            child: RiveAnimation.asset(
+              'assets/animations/rive/animations.riv',
+              fit: BoxFit.cover,
+              artboard: 'Sleeping Mascot',
+              stateMachines: ['Sleeping State Machine'],
+            ),
+          )
+        ]));
+      } else {
+        return PopScope(
+          canPop: _selectedCourse == null,
+          onPopInvoked: (bool didPop) {
+            if (didPop) {
+              return;
+            }
+            pop();
+          },
+          child: _selectedCourse == null
+              ? ChooseCourse(
+                  courses: _courses,
+                  choose: (id) {
+                    setState(() {
+                      _selectedCourse =
+                          _courses.firstWhere((element) => element.id == id);
+                    });
+                    widget.setPopFunction(pop);
+                  },
+                  joinCourse: joinCourse,
+                )
+              : ChooseForm(
+                  course: _selectedCourse!,
+                  choose: (id, formType) {
+                    if (formType == FormType.feedback) {
+                      if (_selectedCourse!.isOwner) {
+                        Navigator.pushNamed(context, '/feedback-info',
+                            arguments: {
+                              "courseId": _selectedCourse!.id,
+                              "formId": id,
+                            });
+                      } else {
+                        FeedbackForm form = _selectedCourse!.feedbackForms
+                            .firstWhere((element) => element.id == id);
+                        Navigator.pushNamed(context, '/attend-feedback',
+                            arguments: form.connectCode);
+                      }
+                    } else if (formType == FormType.quiz) {
+                      if (_selectedCourse!.isOwner) {
+                        Navigator.pushNamed(context, '/quiz-info', arguments: {
+                          "courseId": _selectedCourse!.id,
+                          "formId": id,
+                        });
+                      } else {
+                        QuizForm form = _selectedCourse!.quizForms
+                            .firstWhere((element) => element.id == id);
+                        Navigator.pushNamed(context, '/attend-quiz',
+                            arguments: form.connectCode);
+                      }
                     }
-                  } else if (formType == FormType.quiz) {
-                    if (_selectedCourse!.isOwner) {
-                      Navigator.pushNamed(context, '/quiz-info', arguments: {
-                        "courseId": _selectedCourse!.id,
-                        "formId": id,
-                      });
-                    } else {
-                      QuizForm form = _selectedCourse!.quizForms
-                          .firstWhere((element) => element.id == id);
-                      Navigator.pushNamed(context, '/attend-quiz',
-                          arguments: form.connectCode);
-                    }
-                  }
-                },
-              ),
-      );
+                  },
+                ),
+        );
+      }
     } else {
       _showErrorDialog(_fetchResult);
       return Container();

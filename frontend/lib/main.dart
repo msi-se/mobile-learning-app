@@ -13,7 +13,9 @@ import 'package:frontend/pages/quiz/quiz_control_page.dart';
 import 'package:frontend/pages/quiz/quiz_preview_page.dart';
 import 'package:frontend/theme/themes.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await initPreferences();
   runApp(const MyApp());
 }
 
@@ -22,8 +24,6 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    initPreferences();
-
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'HTWG Connect',

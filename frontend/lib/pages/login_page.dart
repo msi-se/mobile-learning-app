@@ -32,7 +32,6 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   Future checkLoggedIn() async {
-    await initPreferences();
     if (getSession() != null) {
       if (!JwtDecoder.isExpired(getSession()!.jwt)) {
         // check http /verify route 200 status code

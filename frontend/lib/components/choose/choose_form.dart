@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart'; 
+import 'package:flutter/services.dart';
 import 'package:frontend/components/layout/sliver_layout.dart';
 import 'package:frontend/enums/form_status.dart';
 import 'package:frontend/models/course.dart';
 import 'package:frontend/theme/assets.dart';
 import 'package:frontend/enums/form_type.dart';
+import 'package:rive/rive.dart';
 
 class ChooseForm extends StatefulWidget {
   final Course course;
@@ -16,11 +17,9 @@ class ChooseForm extends StatefulWidget {
   State<ChooseForm> createState() => _ChooseFormState();
 }
 
-
 class _ChooseFormState extends State<ChooseForm> {
   FormType formType = FormType.feedback;
   Map<String, Color> statusColors = {};
-
 
   @override
   void initState() {
@@ -72,7 +71,6 @@ class _ChooseFormState extends State<ChooseForm> {
     );
   }
 
-
   @override
   Widget build(BuildContext context) {
     final colors = Theme.of(context).colorScheme;
@@ -90,26 +88,27 @@ class _ChooseFormState extends State<ChooseForm> {
             return Align(
               alignment: Alignment.centerLeft,
               child: Padding(
-                padding: EdgeInsets.only(
-                  left: 16,
-                  right: percentage < 0.2 || isNarrow ? 0 : 120,
-                ),
-                child: Row(children: [
-                  Text(
-                    widget.course.name,
-                    style: TextStyle(
-                      color: colors.onSurface,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 16,
-                    ),
-                    overflow: TextOverflow.ellipsis,
+                  padding: EdgeInsets.only(
+                    left: 16,
+                    right: percentage < 0.2 || isNarrow ? 0 : 120,
                   ),
-                  IconButton(
-                    icon: Icon(Icons.info_outline, color: colors.onSurface),
-                    onPressed: _showInfoDialog,
-                  ),
-                ],) 
-              ),
+                  child: Row(
+                    children: [
+                      Text(
+                        widget.course.name,
+                        style: TextStyle(
+                          color: colors.onSurface,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16,
+                        ),
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      IconButton(
+                        icon: Icon(Icons.info_outline, color: colors.onSurface),
+                        onPressed: _showInfoDialog,
+                      ),
+                    ],
+                  )),
             );
           },
         );
@@ -204,35 +203,53 @@ class _ChooseFormState extends State<ChooseForm> {
           const Divider(
             thickness: 1,
           ),
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: ListView.builder(
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              itemCount: forms.length,
-              itemBuilder: (context, index) {
-                return Card(
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10.0),
-                  ),
-                  elevation: 1.0,
-                  surfaceTintColor: Colors.white,
-                  clipBehavior: Clip.antiAlias,
-                  child: ListTile(
-                    trailing: Icon(Icons.circle,
-                        color: statusColors[forms[index].status.toString()], size: 20.0),
-                    title: Text(forms[index].name),
-                    subtitle: Text(forms[index].description),
-                    // trailing: const Icon(Icons.arrow_forward_ios),
-                    // TODO: display status of form
-                    onTap: () {
-                      widget.choose(forms[index].id, formType);
-                    },
-                  ),
-                );
-              },
+          if (forms.isNotEmpty)
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: ListView.builder(
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                itemCount: forms.length,
+                itemBuilder: (context, index) {
+                  return Card(
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10.0),
+                    ),
+                    elevation: 1.0,
+                    surfaceTintColor: Colors.white,
+                    clipBehavior: Clip.antiAlias,
+                    child: ListTile(
+                      trailing: Icon(Icons.circle,
+                          color: statusColors[forms[index].status.toString()],
+                          size: 20.0),
+                      title: Text(forms[index].name),
+                      subtitle: Text(forms[index].description),
+                      // trailing: const Icon(Icons.arrow_forward_ios),
+                      // TODO: display status of form
+                      onTap: () {
+                        widget.choose(forms[index].id, formType);
+                      },
+                    ),
+                  );
+                },
+              ),
             ),
-          ),
+          if (forms.isEmpty && formType == FormType.feedback)
+            Text("Keine Feedbacks gefunden"),
+          if (forms.isEmpty && formType == FormType.quiz)
+            Text("Keine Quizze gefunden"),
+          if (forms.isEmpty)
+            Container(
+              margin: const EdgeInsets.only(top: 20.0, bottom: 100.0),
+              width: 250,
+              height: 250,
+              child: RiveAnimation.asset(
+                'assets/animations/rive/animations.riv',
+                fit: BoxFit.cover,
+                artboard: 'Sleeping Mascot',
+                stateMachines: ['Sleeping State Machine'],
+              ),
+            ),
         ],
       ),
     );
