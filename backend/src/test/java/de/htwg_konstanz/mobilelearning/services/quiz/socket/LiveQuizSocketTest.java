@@ -47,7 +47,7 @@ public class LiveQuizSocketTest {
         List<Course> courses = Helper.createCourse();
         Course course = courses.get(0);
 
-        // get course and feedback form id
+        // get course and quiz form id
         String courseId = course.getId().toString();
         String formId = course.getQuizForms().get(0).getId().toString();
 
@@ -95,7 +95,7 @@ public class LiveQuizSocketTest {
         List<Course> courses = Helper.createCourse("Prof");
         Course course = courses.get(0);
 
-        // get course and feedback form id
+        // get course and quiz form id
         String courseId = course.getId().toString();
         String formId = course.getQuizForms().get(0).getId().toString();
 
@@ -137,7 +137,7 @@ public class LiveQuizSocketTest {
         Course course = courses.get(0);
         Assertions.assertEquals(course.getQuizForms().size(), 1);
 
-        // get course and feedback form id
+        // get course and quiz form id
         String courseId = course.getId().toString();
         String formId = course.getQuizForms().get(0).getId().toString();
 
@@ -259,7 +259,7 @@ public class LiveQuizSocketTest {
         List<Course> courses = Helper.createCourse();
         Course course = courses.get(0);
 
-        // get course and feedback form id
+        // get course and quiz form id
         String courseId = course.getId().toString();
         String formId = course.getQuizForms().get(0).getId().toString();
 
@@ -308,7 +308,7 @@ public class LiveQuizSocketTest {
         Course course = courses.get(0);
         Assertions.assertEquals(course.getQuizForms().size(), 1);
 
-        // get course and feedback form id
+        // get course and quiz form id
         String courseId = course.getId().toString();
         String formId = course.getQuizForms().get(0).getId().toString();
 
@@ -367,7 +367,7 @@ public class LiveQuizSocketTest {
         Course course = courses.get(0);
         Assertions.assertEquals(course.getQuizForms().size(), 1);
 
-        // get course and feedback form id
+        // get course and quiz form id
         String courseId = course.getId().toString();
         String formId = course.getQuizForms().get(0).getId().toString();
 
@@ -437,7 +437,7 @@ public class LiveQuizSocketTest {
         Course course = courses.get(0);
         Assertions.assertEquals(course.getQuizForms().size(), 1);
 
-        // get course and feedback form id
+        // get course and quiz form id
         String courseId = course.getId().toString();
         String formId = course.getQuizForms().get(0).getId().toString();
         String questionId = courses.getFirst().quizForms.get(0).questions.get(0).getId().toString();
@@ -531,7 +531,7 @@ public class LiveQuizSocketTest {
         Course course = courses.get(0);
         Assertions.assertEquals(course.getQuizForms().size(), 1);
 
-        // get course and feedback form id
+        // get course and quiz form id
         String courseId = course.getId().toString();
         String formId = course.getQuizForms().get(0).getId().toString();
 
@@ -624,7 +624,7 @@ public class LiveQuizSocketTest {
         Course course = courses.get(0);
         Assertions.assertEquals(course.getQuizForms().size(), 1);
 
-        // get course and feedback form id
+        // get course and quiz form id
         String courseId = course.getId().toString();
         String formId = course.getQuizForms().get(0).getId().toString();
 
@@ -636,7 +636,7 @@ public class LiveQuizSocketTest {
 
         // create a websocket client
         try {
-            // Owner stats feedback & 2nd prof (not owner) tries to change question
+            // Owner stats quiz & 2nd prof (not owner) tries to change question
             SocketClient client = new SocketClient();
             SocketClient client2 = new SocketClient();
             Session session = ContainerProvider.getWebSocketContainer().connectToServer(
@@ -684,7 +684,7 @@ public class LiveQuizSocketTest {
         Course course = courses.get(0);
         Assertions.assertEquals(course.getQuizForms().size(), 1);
 
-        // get course and feedback form id
+        // get course and quiz form id
         String courseId = course.getId().toString();
         String formId = course.getQuizForms().get(0).getId().toString();
 
@@ -707,7 +707,7 @@ public class LiveQuizSocketTest {
 
         // create a websocket client
         try {
-            // Owner stats feedback & 2nd prof (with student role) tries to change question
+            // Owner stats quiz & 2nd prof (with student role) tries to change question
             SocketClient client = new SocketClient();
             SocketClient client2 = new SocketClient();
             Session session = ContainerProvider.getWebSocketContainer().connectToServer(
@@ -811,7 +811,7 @@ public class LiveQuizSocketTest {
         given().header("Authorization", "Bearer " + student2.getJwt()).when().get("/course").then().statusCode(200);
         given().header("Authorization", "Bearer " + student3.getJwt()).when().get("/course").then().statusCode(200);
 
-        // get course and feedback form id
+        // get course and quiz form id
         String courseId = course.getId().toString();
         String formId = course.getQuizForms().get(0).getId().toString();
 
@@ -946,7 +946,7 @@ public class LiveQuizSocketTest {
         given().header("Authorization", "Bearer " + prof.getJwt()).when().get("/course").then().statusCode(200);
         given().header("Authorization", "Bearer " + student1.getJwt()).when().get("/course").then().statusCode(200);
         
-        // get course and feedback form id
+        // get course and quiz form id
         String courseId = course.getId().toString();
         String formId = course.getQuizForms().get(0).getId().toString();
 
@@ -1106,7 +1106,7 @@ public class LiveQuizSocketTest {
         given().header("Authorization", "Bearer " + prof.getJwt()).when().get("/course").then().statusCode(200);
         given().header("Authorization", "Bearer " + student1.getJwt()).when().get("/course").then().statusCode(200);
         
-        // get course and feedback form id
+        // get course and quiz form id
         String courseId = course.getId().toString();
         String formId = course.getQuizForms().get(0).getId().toString();
 
