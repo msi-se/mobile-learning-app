@@ -1,5 +1,6 @@
 package de.htwg_konstanz.mobilelearning.models;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.bson.types.ObjectId;
@@ -45,5 +46,14 @@ public class Result {
 
     public void setValues(List<String> values) {
         this.values = values;
+    }
+
+    public Result deepCopy() {
+        Result copy = new Result();
+        copy.id = this.id;
+        copy.userId = this.userId;
+        copy.values = new ArrayList<String>(this.values);
+        copy.hashedUserId = this.hashedUserId;
+        return copy;
     }
 }
