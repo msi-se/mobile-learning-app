@@ -34,9 +34,11 @@ class _AttendQuizPageState extends AuthState<AttendQuizPage> {
   late String _formId;
   late String _userId;
   late String _alias;
+  late QuizForm _form;
+
   String _aliasError = '';
 
-  QuizForm? _form;
+
   WebSocketChannel? _socketChannel;
 
   SMITrigger? _bump;
@@ -81,7 +83,7 @@ class _AttendQuizPageState extends AuthState<AttendQuizPage> {
           _loading = false;
           _fetchResult = 'success';
         });
-        //await fetchForm();
+        await fetchForm();
       }
     } on http.ClientException {
       setState(() {
@@ -219,7 +221,7 @@ class _AttendQuizPageState extends AuthState<AttendQuizPage> {
     _socketChannel!.stream.listen((event) {
       var data = jsonDecode(event);
       if (data["formStatus"] == "FINISHED") {
-        _form?.status = FormStatus.fromString(data["formStatus"]);
+        _form.status = FormStatus.fromString(data["formStatus"]);
         _value = null;
         _voted = false;
         _userHasAnsweredCorrectly = false;
@@ -228,19 +230,19 @@ class _AttendQuizPageState extends AuthState<AttendQuizPage> {
       if (data["action"] == "FORM_STATUS_CHANGED") {
         var form = QuizForm.fromJson(data["form"]);
         setState(() {
-          _form?.status = FormStatus.fromString(data["formStatus"]);
+          _form.status = FormStatus.fromString(data["formStatus"]);
           _value = null;
           _voted = false;
-          _form?.currentQuestionIndex = form.currentQuestionIndex;
-          _form?.currentQuestionFinished = form.currentQuestionFinished;
+          _form.currentQuestionIndex = form.currentQuestionIndex;
+          _form.currentQuestionFinished = form.currentQuestionFinished;
         });
       }
       if (data["action"] == "CLOSED_QUESTION" ||
           data["action"] == "OPENED_NEXT_QUESTION") {
         var form = QuizForm.fromJson(data["form"]);
         setState(() {
-          _form?.currentQuestionIndex = form.currentQuestionIndex;
-          _form?.currentQuestionFinished = form.currentQuestionFinished;
+          _form.currentQuestionIndex = form.currentQuestionIndex;
+          _form.currentQuestionFinished = form.currentQuestionFinished;
         });
         if (data["action"] == "OPENED_NEXT_QUESTION") {
           setState(() {
@@ -258,7 +260,7 @@ class _AttendQuizPageState extends AuthState<AttendQuizPage> {
     }, onError: (error) {
       //TODO: Should there be another error handling for this?
       setState(() {
-        _form?.status = FormStatus.error;
+        _form.status = FormStatus.error;
       });
     });
   }
@@ -280,7 +282,6 @@ class _AttendQuizPageState extends AuthState<AttendQuizPage> {
 
   @override
   Widget build(BuildContext context) {
-    final colors = Theme.of(context).colorScheme;
     if (_loading) {
       return const Scaffold(
         body: Center(
@@ -288,17 +289,38 @@ class _AttendQuizPageState extends AuthState<AttendQuizPage> {
         ),
       );
     } else if (_fetchResult == 'success') {
-      final appbar = AppBar(
-        title: Text(
+
+      final int totalQuestions = _form.questions.length;
+      final double progress = (_form.currentQuestionIndex + 1) / totalQuestions;
+
+      final appBarWithProgress = AppBar(
+        title: Text(_form.name,
+            style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+        backgroundColor: Theme.of(context).colorScheme.primary,
+        bottom: PreferredSize(
+          preferredSize: const Size.fromHeight(10.0),
+          child: SizedBox(
+            height: 10.0,
+            child: LinearProgressIndicator(
+              value: progress,
+              backgroundColor: Colors.grey[300],
+              valueColor: AlwaysStoppedAnimation<Color>(Theme.of(context).colorScheme.secondary),
+            ),
+          ),
+        ),
+      );
+
+      final appBar = AppBar(
+        title: const Text(
             'Einem Quiz beitreten', //_form.name, TODO: find better solution
-            style: const TextStyle(
+            style: TextStyle(
                 color: Colors.white, fontWeight: FontWeight.bold)),
-        backgroundColor: colors.primary,
+        backgroundColor: Theme.of(context).colorScheme.primary,
       );
 
       if (!_aliasChosen) {
         return Scaffold(
-          appBar: appbar,
+          appBar: appBar,
           body: ChooseAlias(
             onAliasSubmitted: (chosenAlias) async {
               setState(() {
@@ -317,16 +339,16 @@ class _AttendQuizPageState extends AuthState<AttendQuizPage> {
         );
       }
 
-      if (_form?.status != FormStatus.started) {
+      if (_form.status != FormStatus.started) {
         return Scaffold(
-          appBar: appbar,
+          appBar: appBar,
           body: Center(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
-                Padding(
-                    padding: const EdgeInsets.only(left: 20.0, right: 20.0),
-                    child: const Text(
+                const Padding(
+                    padding: EdgeInsets.only(left: 20.0, right: 20.0),
+                    child: Text(
                         "Bitte warten Sie bis das Quiz gestartet wird")),
                 Container(
                   margin: const EdgeInsets.only(top: 100.0, bottom: 100.0),
@@ -345,10 +367,10 @@ class _AttendQuizPageState extends AuthState<AttendQuizPage> {
         );
       }
 
-      final element = _form?.questions[_form!.currentQuestionIndex];
+      final element = _form.questions[_form.currentQuestionIndex];
 
       return Scaffold(
-        appBar: appbar,
+        appBar: appBarWithProgress,
         body: SizedBox(
           width: double.infinity,
           child: Column(
@@ -397,7 +419,7 @@ class _AttendQuizPageState extends AuthState<AttendQuizPage> {
                   ],
                 ),
               ),
-              if (!_form!.currentQuestionFinished && !_voted)
+              if (!_form.currentQuestionFinished && !_voted)
                 ElevatedButton(
                   child: const Text('Senden'),
                   onPressed: () {
@@ -416,7 +438,7 @@ class _AttendQuizPageState extends AuthState<AttendQuizPage> {
                     });
                   },
                 ),
-              if (_form!.currentQuestionFinished || _voted)
+              if (_form.currentQuestionFinished || _voted)
                 Container(
                     margin: const EdgeInsets.only(
                         top: 0.0,

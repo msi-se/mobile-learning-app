@@ -316,12 +316,24 @@ class _QuizControlPageState extends AuthState<QuizControlPage> {
       );
     } else if (_fetchResult == 'success') {
       final colors = Theme.of(context).colorScheme;
+      final int totalQuestions = _form.questions.length;
+      final double progress = (_form.currentQuestionIndex + 1) / totalQuestions;
 
       final appBar = AppBar(
         title: Text(_form.name,
-            style: const TextStyle(
-                color: Colors.white, fontWeight: FontWeight.bold)),
-        backgroundColor: colors.primary,
+            style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+        backgroundColor: Theme.of(context).colorScheme.primary,
+        bottom: PreferredSize(
+          preferredSize: const Size.fromHeight(10.0),
+          child: SizedBox(
+            height: 10.0,
+            child: LinearProgressIndicator(
+              value: progress,
+              backgroundColor: Colors.grey[300],
+              valueColor: AlwaysStoppedAnimation<Color>(Theme.of(context).colorScheme.secondary),
+            ),
+          ),
+        ),
       );
 
       if (_form.status == FormStatus.not_started ||
@@ -330,7 +342,12 @@ class _QuizControlPageState extends AuthState<QuizControlPage> {
         code = "${code.substring(0, 3)} ${code.substring(3, 6)}";
 
         return Scaffold(
-            appBar: appBar,
+            appBar: AppBar(
+              title: Text(_form.name,
+                  style: const TextStyle(
+                      color: Colors.white, fontWeight: FontWeight.bold)),
+              backgroundColor: colors.primary,
+            ),
             body: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
