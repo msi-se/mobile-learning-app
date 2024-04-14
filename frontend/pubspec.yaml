@@ -77,6 +77,8 @@ flutter:
     - assets/logo/
     - assets/animations/rive/animations.riv
     - assets/animations/rive/paper_plane.riv
+    - assets/animations/rive/dart.riv
+    - assets/animations/rive/stone.riv
 
   fonts:
     - family: NunitoSans

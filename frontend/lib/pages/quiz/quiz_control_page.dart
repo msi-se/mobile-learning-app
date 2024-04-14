@@ -7,7 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:frontend/auth_state.dart';
-import 'package:frontend/components/animations/paper_plane.dart';
+import 'package:frontend/components/animations/throw.dart';
 import 'package:frontend/enums/form_status.dart';
 import 'package:frontend/enums/question_type.dart';
 import 'package:frontend/components/elements/quiz/single_choice_quiz_result.dart';
@@ -292,9 +292,11 @@ class _QuizControlPageState extends AuthState<QuizControlPage> {
 
     setState(() {
       _animations.insert(
-          0, PaperPlane(key: UniqueKey(), clickX: dX, clickY: dY));
+          0, Throw(key: UniqueKey(), throwType: ThrowType.paperPlane, clickX: dX, clickY: dY));
       print(_animations.length);
     });
+
+    // todo cancel timer in dispose
     Future.delayed(const Duration(milliseconds: 2500), () {
       setState(() {
         _animations.removeLast();

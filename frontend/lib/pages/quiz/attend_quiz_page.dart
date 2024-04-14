@@ -3,7 +3,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:frontend/auth_state.dart';
-import 'package:frontend/components/animations/paper_plane.dart';
+import 'package:frontend/components/animations/throw.dart';
 import 'package:frontend/components/elements/quiz/single_choice_quiz.dart';
 import 'package:frontend/components/elements/quiz/yes_no_quiz.dart';
 import 'package:frontend/components/error/general_error_widget.dart';
@@ -351,7 +351,7 @@ class _AttendQuizPageState extends AuthState<AttendQuizPage> {
 
     setState(() {
       _animations.insert(
-          0, PaperPlane(key: UniqueKey(), clickX: dX, clickY: dY));
+          0, Throw(key: UniqueKey(), throwType: ThrowType.paperPlane, clickX: dX, clickY: dY));
       print(_animations.length);
     });
     Future.delayed(const Duration(milliseconds: 2500), () {

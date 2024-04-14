@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:frontend/components/animations/paper_plane.dart';
+import 'package:frontend/components/animations/throw.dart';
 import 'package:rive/rive.dart';
 
 class TestPage extends StatefulWidget {
@@ -33,8 +33,11 @@ class _TestPageState extends State<TestPage> with TickerProviderStateMixin {
           onTapUp: (details) {
             print("ADD ANIMATION");
             setState(() {
-              _animations.insert(0, PaperPlane(
+              _animations.insert(0, Throw(
                   key: UniqueKey(),
+                  // throwType: ThrowType.paperPlane,
+                  // throwType: ThrowType.stone,
+                  throwType: ThrowType.dart,
                   clickX: details.localPosition.dx,
                   clickY: details.localPosition.dy));
               print(_animations.length);
