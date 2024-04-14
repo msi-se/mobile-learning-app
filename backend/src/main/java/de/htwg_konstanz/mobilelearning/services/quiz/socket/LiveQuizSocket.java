@@ -290,6 +290,10 @@ public class LiveQuizSocket {
             System.out.println("Action is null");
             return false;
         }
+        
+        if (quizSocketMessage.action.equals("FUN")) {
+            return this.fun(quizSocketMessage, formId);
+        }
 
         // if the user is not an owner or participant, return
         User user = userRepository.findById(new ObjectId(userId));
@@ -308,10 +312,6 @@ public class LiveQuizSocket {
 
         if (quizSocketMessage.action.equals("NEXT")) {
             return this.next(quizSocketMessage, course, formId, user);
-        }
-
-        if (quizSocketMessage.action.equals("FUN")) {
-            return this.fun(quizSocketMessage, course, formId, user);
         }
 
         return false;
@@ -474,7 +474,7 @@ public class LiveQuizSocket {
         return true;
     }
 
-    private Boolean fun(LiveQuizSocketMessage quizSocketMessage, Course course, String formId, User user) {
+    private Boolean fun(LiveQuizSocketMessage quizSocketMessage, String formId) {
 
         System.out.println("Throw paper plane");
         
@@ -484,6 +484,11 @@ public class LiveQuizSocket {
         String messageString = quizSocketMessage.toJson();
 
         connections.values().forEach(connection -> {
+            // check if the form ID match
+            if (!connection.getFormId().equals(new ObjectId(formId))) {
+                return;
+            }
+
             connection.session.getAsyncRemote().sendObject(messageString, result ->  {
                 if (result.getException() != null) {
                     System.out.println("Unable to send message: " + result.getException());
