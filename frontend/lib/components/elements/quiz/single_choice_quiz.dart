@@ -105,7 +105,9 @@ class _SingleChoiceQuizState extends State<SingleChoiceQuiz> {
                     ? Colors.green
                     : widget.correctAnswers[0] == _selection.toString()
                         ? Colors.grey
-                        : Colors.red,
+                        : index == _selection
+                            ? Colors.red
+                            : Colors.grey,
                 width: selected ? 3.0 : 1.0,
               ),
             ),
@@ -120,7 +122,9 @@ class _SingleChoiceQuizState extends State<SingleChoiceQuiz> {
                       ? Colors.green
                       : widget.correctAnswers[0] == _selection.toString()
                           ? Colors.grey
-                          : Colors.red,
+                          : index == _selection
+                              ? Colors.red
+                              : Colors.grey,
                   shape: BoxShape.circle,
                 ),
                 child: Center(
