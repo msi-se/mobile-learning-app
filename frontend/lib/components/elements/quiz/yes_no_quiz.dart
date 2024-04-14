@@ -145,7 +145,9 @@ class _YesNoQuizState extends State<YesNoQuiz> {
                 side: BorderSide(
                   color: widget.correctAnswers[0] == "yes"
                       ? Colors.green
-                      : Colors.red,
+                      : widget.correctAnswers[0] == "no" && _selection == 0
+                          ? Colors.grey
+                          : Colors.red,
                   width: _selection == 1 ? 3.0 : 1.0,
                 ),
               ),
@@ -166,7 +168,9 @@ class _YesNoQuizState extends State<YesNoQuiz> {
                   decoration: BoxDecoration(
                     color: widget.correctAnswers[0] == "yes"
                         ? Colors.green
-                        : Colors.red,
+                        : widget.correctAnswers[0] == "no" && _selection == 0
+                            ? Colors.grey
+                            : Colors.red,
                     shape: BoxShape.circle,
                   ),
                   child: const Center(
@@ -195,7 +199,9 @@ class _YesNoQuizState extends State<YesNoQuiz> {
                 side: BorderSide(
                   color: widget.correctAnswers[0] == "no"
                       ? Colors.green
-                      : Colors.red,
+                      : widget.correctAnswers[0] == "yes" && _selection == 1
+                          ? Colors.grey
+                          : Colors.red,
                   width: _selection == 0 ? 3.0 : 1.0,
                 ),
               ),
@@ -216,7 +222,9 @@ class _YesNoQuizState extends State<YesNoQuiz> {
                   decoration: BoxDecoration(
                     color: widget.correctAnswers[0] == "no"
                         ? Colors.green
-                        : Colors.red,
+                        : widget.correctAnswers[0] == "yes" && _selection == 1
+                            ? Colors.grey
+                            : Colors.red,
                     shape: BoxShape.circle,
                   ),
                   child: const Center(
