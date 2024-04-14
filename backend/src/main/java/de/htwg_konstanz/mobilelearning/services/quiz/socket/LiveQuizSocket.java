@@ -270,9 +270,8 @@ public class LiveQuizSocket {
             messageToSend.form.fillQuestionContents(course);
             if (connection.getType().equals(SocketConnectionType.PARTICIPANT)) {
                 messageToSend.form.clearResults();
-            } else {
-                messageToSend.form.setParticipants(message.form.getParticipants());
             }
+            messageToSend.form.setParticipants(message.form.getParticipants());
 
             // send the message
             String messageString = messageToSend.toJson();
@@ -290,6 +289,10 @@ public class LiveQuizSocket {
         if (quizSocketMessage.action == null || quizSocketMessage.action.equals("")) {
             System.out.println("Action is null");
             return false;
+        }
+        
+        if (quizSocketMessage.action.equals("FUN")) {
+            return this.fun(quizSocketMessage, formId);
         }
 
         // if the user is not an owner or participant, return
@@ -471,4 +474,28 @@ public class LiveQuizSocket {
         return true;
     }
 
+    private Boolean fun(LiveQuizSocketMessage quizSocketMessage, String formId) {
+
+        System.out.println("Throw paper plane");
+        
+        quizSocketMessage = new LiveQuizSocketMessage(quizSocketMessage.action, quizSocketMessage.fun);
+
+        // send the message
+        String messageString = quizSocketMessage.toJson();
+
+        connections.values().forEach(connection -> {
+            // check if the form ID match
+            if (!connection.getFormId().equals(new ObjectId(formId))) {
+                return;
+            }
+
+            connection.session.getAsyncRemote().sendObject(messageString, result ->  {
+                if (result.getException() != null) {
+                    System.out.println("Unable to send message: " + result.getException());
+                }
+            });
+        });
+
+        return true;
+    }
 }
