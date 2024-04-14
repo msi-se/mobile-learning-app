@@ -1,5 +1,6 @@
 package de.htwg_konstanz.mobilelearning.services.quiz.socket;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -265,9 +266,8 @@ public class LiveQuizSocket {
             }
 
             // fill the form with the question contents
-            messageToSend.form = new QuizForm(message.form.courseId, message.form.name, message.form.description, message.form.questions, message.form.status, message.form.currentQuestionIndex, message.form.currentQuestionFinished);
-            messageToSend.form.setId(message.form.getId());
-            messageToSend.form.fillQuestionContents(courseRepository.findById(new ObjectId(courseId)));
+            messageToSend.form = message.form.deepCopy();
+            messageToSend.form.fillQuestionContents(course);
             if (connection.getType().equals(SocketConnectionType.PARTICIPANT)) {
                 messageToSend.form.clearResults();
             }

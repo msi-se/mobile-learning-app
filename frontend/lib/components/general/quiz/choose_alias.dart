@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/global.dart';
 import 'package:http/http.dart' as http;
 import 'package:frontend/utils.dart';
 
@@ -7,7 +8,8 @@ typedef AliasSubmittedCallback = void Function(String alias);
 class ChooseAlias extends StatefulWidget {
   final AliasSubmittedCallback onAliasSubmitted;
 
-  const ChooseAlias({Key? key, required this.onAliasSubmitted}) : super(key: key);
+  const ChooseAlias({Key? key, required this.onAliasSubmitted})
+      : super(key: key);
 
   @override
   State<ChooseAlias> createState() => _ChooseAliasState();
@@ -24,7 +26,8 @@ class _ChooseAliasState extends State<ChooseAlias> {
 
   Future<void> _getRandomAlias() async {
     try {
-      final response = await http.get(Uri.parse('${getBackendUrl()}/funnyalias/'));
+      final response =
+          await http.get(Uri.parse('${getBackendUrl()}/funnyalias/'));
       if (response.statusCode == 200) {
         setState(() {
           _aliasController.text = response.body;
@@ -40,6 +43,12 @@ class _ChooseAliasState extends State<ChooseAlias> {
   void _onShufflePressed() {
     // Call the random alias fetching function again
     _getRandomAlias();
+  }
+
+  void _onRealNamePressed() {
+    // get the real name of the user from the session
+    // and set it as the alias
+    _aliasController.text = getSession()!.fullName;
   }
 
   void _onSubmit() {
@@ -105,7 +114,20 @@ class _ChooseAliasState extends State<ChooseAlias> {
               SizedBox(height: 20),
               TextButton(
                 onPressed: _onShufflePressed,
-                child: Text('Shuffle', style: TextStyle(color: colors.primary)),
+                child: Text('Zufälliger Alias',
+                    style: TextStyle(color: colors.primary)),
+                style: TextButton.styleFrom(
+                  backgroundColor: colors.primaryContainer.withOpacity(0.1),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                ),
+              ),
+              SizedBox(height: 20),
+              TextButton(
+                onPressed: _onRealNamePressed,
+                child: Text('Nimm meinen richtigen Namen',
+                    style: TextStyle(color: colors.primary)),
                 style: TextButton.styleFrom(
                   backgroundColor: colors.primaryContainer.withOpacity(0.1),
                   shape: RoundedRectangleBorder(

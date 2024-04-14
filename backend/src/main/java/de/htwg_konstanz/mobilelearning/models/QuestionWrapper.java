@@ -99,4 +99,15 @@ public class QuestionWrapper {
         }
         return userResults;
     }
+
+    public QuestionWrapper deepCopy() {
+        QuestionWrapper copy = new QuestionWrapper();
+        copy.id = this.id;
+        copy.questionId = this.questionId;
+        copy.results = new ArrayList<Result>();
+        this.results.forEach(r -> copy.results.add(r.deepCopy()));
+        copy.analytics = this.analytics.deepCopy();
+        copy.questionContent = this.questionContent != null ? this.questionContent.copy() : null;
+        return copy;
+    }
 }

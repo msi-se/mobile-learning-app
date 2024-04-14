@@ -78,4 +78,14 @@ public class Analytics {
         return this.count;
     }
 
+    public Analytics deepCopy() {
+        Analytics copy = new Analytics();
+        copy.avg = this.avg;
+        copy.min = this.min;
+        copy.max = this.max;
+        copy.median = this.median;
+        copy.count = this.count;
+        return copy;
+    }
+
 }
