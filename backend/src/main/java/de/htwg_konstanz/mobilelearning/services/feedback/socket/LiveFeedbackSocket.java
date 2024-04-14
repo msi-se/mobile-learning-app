@@ -246,15 +246,13 @@ public class LiveFeedbackSocket {
             }
             
             // fill the form with the question contents
-            messageToSend.form = new FeedbackForm(message.form.courseId, message.form.name, message.form.description, message.form.questions, message.form.status);
-            messageToSend.form.setId(message.form.getId());
+            messageToSend.form = message.form.deepCopy();
             messageToSend.form.fillQuestionContents(courseRepository.findById(new ObjectId(courseId)));
             if (connection.getType().equals(SocketConnectionType.PARTICIPANT)) {
                 messageToSend.form.clearResults();
             } else {
                 messageToSend.form.setParticipants(message.form.getParticipants());
             }
-
 
             // send the message
             String messageString = message.toJson();
