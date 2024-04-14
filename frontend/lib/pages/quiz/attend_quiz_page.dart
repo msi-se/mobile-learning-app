@@ -354,7 +354,9 @@ class _AttendQuizPageState extends AuthState<AttendQuizPage> {
           0, Throw(key: UniqueKey(), throwType: ThrowType.paperPlane, clickX: dX, clickY: dY));
       print(_animations.length);
     });
+    
     Future.delayed(const Duration(milliseconds: 2500), () {
+      if (!mounted) return;
       setState(() {
         _animations.removeLast();
       });

@@ -43,6 +43,7 @@ class _TestPageState extends State<TestPage> with TickerProviderStateMixin {
               print(_animations.length);
             });
             Future.delayed(const Duration(milliseconds: 2500), () {
+              if (!mounted) return;
               setState(() {
                 _animations.removeLast();
               });

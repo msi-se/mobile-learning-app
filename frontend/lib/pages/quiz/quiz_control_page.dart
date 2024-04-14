@@ -296,8 +296,8 @@ class _QuizControlPageState extends AuthState<QuizControlPage> {
       print(_animations.length);
     });
 
-    // todo cancel timer in dispose
     Future.delayed(const Duration(milliseconds: 2500), () {
+      if (!mounted) return;
       setState(() {
         _animations.removeLast();
       });
