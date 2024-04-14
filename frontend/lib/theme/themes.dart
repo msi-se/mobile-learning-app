@@ -75,5 +75,6 @@ ThemeData getTheme(ColorScheme colorScheme) {
     useMaterial3: true,
     fontFamily: 'NunitoSans',
     colorScheme: colorScheme,
+    visualDensity: VisualDensity.standard,
   );
 }
