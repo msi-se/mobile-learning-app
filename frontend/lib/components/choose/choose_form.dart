@@ -6,6 +6,7 @@ import 'package:frontend/models/course.dart';
 import 'package:frontend/theme/assets.dart';
 import 'package:frontend/enums/form_type.dart';
 import 'package:rive/rive.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class ChooseForm extends StatefulWidget {
   final Course course;
@@ -71,6 +72,18 @@ class _ChooseFormState extends State<ChooseForm> {
     );
   }
 
+  void _openMoodle() async {
+    final moodleCourseId = widget.course.moodleCourseId;
+    final moodleUrl =
+        "https://moodle.htwg-konstanz.de/moodle/course/view.php?id=$moodleCourseId";
+    final moodleUri = Uri.parse(moodleUrl);
+    if (await canLaunchUrl(moodleUri)) {
+      await launchUrl(moodleUri);
+    } else {
+      throw 'Could not launch $moodleUrl';
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final colors = Theme.of(context).colorScheme;
@@ -117,15 +130,19 @@ class _ChooseFormState extends State<ChooseForm> {
         padding: const EdgeInsets.only(right: 20),
         child: Align(
           alignment: Alignment.centerRight,
-          child: ElevatedButton(
-            onPressed: () {},
-            style: ElevatedButton.styleFrom(
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(20.0),
-              ),
-            ),
-            child: Image.asset(moodleLogo, width: 80),
-          ),
+          child: widget.course.moodleCourseId != ''
+              ? ElevatedButton(
+                  onPressed: () {
+                    _openMoodle();
+                  },
+                  style: ElevatedButton.styleFrom(
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(20.0),
+                    ),
+                  ),
+                  child: Image.asset(moodleLogo, width: 80),
+                )
+              : null,
         ),
       ),
       body: Column(
