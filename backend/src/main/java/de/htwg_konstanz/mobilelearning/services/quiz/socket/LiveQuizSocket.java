@@ -1,6 +1,5 @@
 package de.htwg_konstanz.mobilelearning.services.quiz.socket;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -132,7 +131,7 @@ public class LiveQuizSocket {
         if (isParticipant) {
             LiveQuizSocketMessage message = new LiveQuizSocketMessage("PARTICIPANT_JOINED", form.status.toString(),
                     null, null, form);
-            this.broadcast(message, courseId, formId);
+            this.broadcast(message, courseId, formId, course);
 
             this.tellUserIfAlreadySubmitted(form, user, session);
         }
@@ -226,13 +225,10 @@ public class LiveQuizSocket {
         this.evaluateMessage(quizSocketMessage, courseId, formId, userId);
     }
 
-    private void broadcast(LiveQuizSocketMessage message, String courseId, String formId) {
+    private void broadcast(LiveQuizSocketMessage message, String courseId, String formId, Course course) {
 
         // copy the message to not change the original 
         LiveQuizSocketMessage messageToSend = new LiveQuizSocketMessage(message.action, message.formStatus, message.resultElementId, message.resultValues, null);
-
-        // fetch the course once
-        Course course = courseRepository.findById(new ObjectId(courseId));
 
         connections.values().forEach(connection -> {
 
@@ -356,7 +352,7 @@ public class LiveQuizSocket {
             form.currentQuestionFinished = false;
             // send the event to all receivers
             LiveQuizSocketMessage outgoingMessage = new LiveQuizSocketMessage("RESULT_ADDED", form.status.toString(), null, null, form);
-            this.broadcast(outgoingMessage, course.getId().toHexString(), formId);
+            this.broadcast(outgoingMessage, course.getId().toHexString(), formId, course);
         }
 
         // if it is set to STARTED set the timestamp
@@ -366,7 +362,7 @@ public class LiveQuizSocket {
 
         // send the updated form to all receivers (stringify the form)
         LiveQuizSocketMessage outgoingMessage = new LiveQuizSocketMessage("FORM_STATUS_CHANGED", form.status.toString(), null, null, form);
-        this.broadcast(outgoingMessage, course.getId().toHexString(), formId);
+        this.broadcast(outgoingMessage, course.getId().toHexString(), formId, course);
 
         // update the userstats of the participants and the global stats
         if (formStatusEnum == FormStatus.FINISHED) {
@@ -440,7 +436,7 @@ public class LiveQuizSocket {
 
         // send the updated form to all receivers (stringify the form)
         LiveQuizSocketMessage outgoingMessage = new LiveQuizSocketMessage("RESULT_ADDED", null, quizSocketMessage.resultElementId, quizSocketMessage.resultValues, form);
-        this.broadcast(outgoingMessage, course.getId().toHexString(), formId);
+        this.broadcast(outgoingMessage, course.getId().toHexString(), formId, course);
         return true;
     };
 
@@ -468,7 +464,7 @@ public class LiveQuizSocket {
         // for all events, send a message
         events.forEach(event -> {
             LiveQuizSocketMessage outgoingMessage = new LiveQuizSocketMessage(event, form.status.toString(), null, null, form);
-            this.broadcast(outgoingMessage, course.getId().toHexString(), formId);
+            this.broadcast(outgoingMessage, course.getId().toHexString(), formId, course);
         });
 
         return true;

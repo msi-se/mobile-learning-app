@@ -126,7 +126,7 @@ public class LiveFeedbackSocket {
             courseRepository.update(course);
             LiveFeedbackSocketMessage message = new LiveFeedbackSocketMessage("PARTICIPANT_JOINED", null, null, null,
                     form);
-            this.broadcast(message, courseId, formId);
+            this.broadcast(message, courseId, formId, course);
 
             this.tellUserIfAlreadySubmitted(form, user, session);
         }
@@ -221,7 +221,7 @@ public class LiveFeedbackSocket {
         this.evaluateMessage(feedbackSocketMessage, courseId, formId, userId);
     }
 
-    private void broadcast(LiveFeedbackSocketMessage message, String courseId, String formId) {
+    private void broadcast(LiveFeedbackSocketMessage message, String courseId, String formId, Course course) {
 
         // copy the message to not change the original 
         LiveFeedbackSocketMessage messageToSend = new LiveFeedbackSocketMessage(message.action, message.formStatus,
@@ -329,7 +329,7 @@ public class LiveFeedbackSocket {
             // send the event to all receivers
             LiveFeedbackSocketMessage outgoingMessage = new LiveFeedbackSocketMessage("RESULT_ADDED",
                     form.status.toString(), null, null, form);
-            this.broadcast(outgoingMessage, course.getId().toHexString(), formId);
+            this.broadcast(outgoingMessage, course.getId().toHexString(), formId, course);
         }
 
         // if it is set to STARTED set the timestamp
@@ -340,7 +340,7 @@ public class LiveFeedbackSocket {
         // send the updated form to all receivers (stringify the form)
         LiveFeedbackSocketMessage outgoingMessage = new LiveFeedbackSocketMessage("FORM_STATUS_CHANGED",
                 form.status.toString(), null, null, form);
-        this.broadcast(outgoingMessage, course.getId().toHexString(), formId);
+        this.broadcast(outgoingMessage, course.getId().toHexString(), formId, course);
 
         // update the userstats of the participants and the global stats
         if (formStatusEnum == FormStatus.FINISHED) {
@@ -403,7 +403,7 @@ public class LiveFeedbackSocket {
         LiveFeedbackSocketMessage outgoingMessage = new LiveFeedbackSocketMessage("RESULT_ADDED", null,
                 feedbackSocketMessage.resultElementId, feedbackSocketMessage.resultValues,
                 form);
-        this.broadcast(outgoingMessage, course.getId().toHexString(), formId);
+        this.broadcast(outgoingMessage, course.getId().toHexString(), formId, course);
         return true;
     };
 
