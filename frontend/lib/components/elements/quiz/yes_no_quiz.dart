@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 class YesNoQuiz extends StatefulWidget {
   final ValueChanged<String> onSelectionChanged;
   final List<dynamic> correctAnswers;
+  final bool currentQuestionFinished;
 
   final bool voted;
   final dynamic value;
@@ -13,6 +14,7 @@ class YesNoQuiz extends StatefulWidget {
     required this.voted,
     required this.value,
     required this.correctAnswers,
+    required this.currentQuestionFinished,
   });
 
   @override
@@ -51,7 +53,7 @@ class _YesNoQuizState extends State<YesNoQuiz> {
               ),
             ),
             onPressed: () {
-              if (!widget.voted) {
+              if (!widget.voted && !widget.currentQuestionFinished) {
                 setState(() {
                   _selection = 1;
                 });
@@ -97,7 +99,7 @@ class _YesNoQuizState extends State<YesNoQuiz> {
               ),
             ),
             onPressed: () {
-              if (!widget.voted) {
+              if (!widget.voted && !widget.currentQuestionFinished) {
                 setState(() {
                   _selection = 0;
                 });
@@ -145,7 +147,9 @@ class _YesNoQuizState extends State<YesNoQuiz> {
                 side: BorderSide(
                   color: widget.correctAnswers[0] == "yes"
                       ? Colors.green
-                      : widget.correctAnswers[0] == "no" && _selection == 0
+                      : widget.correctAnswers[0] == "no" && _selection == 0 ||
+                              widget.correctAnswers[0] == "no" &&
+                                  _selection == -1
                           ? Colors.grey
                           : Colors.red,
                   width: _selection == 1 ? 3.0 : 1.0,
@@ -153,7 +157,7 @@ class _YesNoQuizState extends State<YesNoQuiz> {
               ),
             ),
             onPressed: () {
-              if (!widget.voted) {
+              if (!widget.voted && !widget.currentQuestionFinished) {
                 setState(() {
                   _selection = 1;
                 });
@@ -168,7 +172,9 @@ class _YesNoQuizState extends State<YesNoQuiz> {
                   decoration: BoxDecoration(
                     color: widget.correctAnswers[0] == "yes"
                         ? Colors.green
-                        : widget.correctAnswers[0] == "no" && _selection == 0
+                        : widget.correctAnswers[0] == "no" && _selection == 0 ||
+                                widget.correctAnswers[0] == "no" &&
+                                    _selection == -1
                             ? Colors.grey
                             : Colors.red,
                     shape: BoxShape.circle,
@@ -199,7 +205,9 @@ class _YesNoQuizState extends State<YesNoQuiz> {
                 side: BorderSide(
                   color: widget.correctAnswers[0] == "no"
                       ? Colors.green
-                      : widget.correctAnswers[0] == "yes" && _selection == 1
+                      : widget.correctAnswers[0] == "yes" && _selection == 1 ||
+                              widget.correctAnswers[0] == "yes" &&
+                                  _selection == -1
                           ? Colors.grey
                           : Colors.red,
                   width: _selection == 0 ? 3.0 : 1.0,
@@ -207,7 +215,7 @@ class _YesNoQuizState extends State<YesNoQuiz> {
               ),
             ),
             onPressed: () {
-              if (!widget.voted) {
+              if (!widget.voted && !widget.currentQuestionFinished) {
                 setState(() {
                   _selection = 0;
                 });
@@ -222,7 +230,10 @@ class _YesNoQuizState extends State<YesNoQuiz> {
                   decoration: BoxDecoration(
                     color: widget.correctAnswers[0] == "no"
                         ? Colors.green
-                        : widget.correctAnswers[0] == "yes" && _selection == 1
+                        : widget.correctAnswers[0] == "yes" &&
+                                    _selection == 1 ||
+                                widget.correctAnswers[0] == "yes" &&
+                                    _selection == -1
                             ? Colors.grey
                             : Colors.red,
                     shape: BoxShape.circle,
