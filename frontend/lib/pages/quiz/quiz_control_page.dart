@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 import 'dart:async';
+import 'dart:math';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -189,7 +190,12 @@ class _QuizControlPageState extends AuthState<QuizControlPage> {
         if (data["fun"]["action"] == "THROW_PAPER_PLANE") {
           double percentageX = data["fun"]["percentageX"];
           double percentageY = data["fun"]["percentageY"];
-          animatePaperPlane(percentageX, percentageY);
+          animateThrow(ThrowType.paperPlane, percentageX, percentageY);
+        }
+        if (data["fun"]["action"] == "THROW_BALL") {
+          double percentageX = data["fun"]["percentageX"];
+          double percentageY = data["fun"]["percentageY"];
+          animateThrow(ThrowType.ball, percentageX, percentageY);
         }
       }
     }, onError: (error) {
@@ -259,12 +265,15 @@ class _QuizControlPageState extends AuthState<QuizControlPage> {
     }
   }
 
-  void throwPaperPlane(double percentageX, double percentageY) {
+  void throwAtScoreboard(double percentageX, double percentageY) {
     if (_socketChannel != null) {
+      // random between THROW_PAPER_PLANE and THROW_BALL
+      var random = Random().nextInt(2);
+      var action = random == 0 ? "THROW_PAPER_PLANE" : "THROW_BALL";
       _socketChannel!.sink.add(jsonEncode({
         "action": "FUN",
         "fun": {
-          "action": "THROW_PAPER_PLANE",
+          "action": action,
           "percentageX": percentageX,
           "percentageY": percentageY,
         },
@@ -274,7 +283,7 @@ class _QuizControlPageState extends AuthState<QuizControlPage> {
     }
   }
 
-  void animatePaperPlane(double percentageX, double percentageY) {
+  void animateThrow(ThrowType type, double percentageX, double percentageY) {
     print("ADD ANIMATION");
 
     final RenderBox mainStackBox =
@@ -292,7 +301,7 @@ class _QuizControlPageState extends AuthState<QuizControlPage> {
 
     setState(() {
       _animations.insert(
-          0, Throw(key: UniqueKey(), throwType: ThrowType.paperPlane, clickX: dX, clickY: dY));
+          0, Throw(key: UniqueKey(), throwType: type, clickX: dX, clickY: dY));
       print(_animations.length);
     });
 
@@ -497,7 +506,7 @@ class _QuizControlPageState extends AuthState<QuizControlPage> {
                           double percentageX = x / box.size.width;
                           double y = details.localPosition.dy;
                           double percentageY = y / box.size.height;
-                          throwPaperPlane(percentageX, percentageY);
+                          throwAtScoreboard(percentageX, percentageY);
                         },
                         child: Container(
                           constraints: const BoxConstraints(maxWidth: 800),
