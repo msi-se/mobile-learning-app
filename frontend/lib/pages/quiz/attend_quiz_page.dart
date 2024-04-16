@@ -422,6 +422,19 @@ class _AttendQuizPageState extends AuthState<AttendQuizPage> {
           body: Stack(
             key: mainStackKey,
             children: [
+              Center(
+                child: Container(
+                  margin: const EdgeInsets.only(top: 100.0, bottom: 100.0),
+                  width: 400,
+                  height: 400,
+                  child: RiveAnimation.asset(
+                    'assets/animations/rive/animations.riv',
+                    fit: BoxFit.cover,
+                    artboard: 'firework',
+                    stateMachines: ['Firework State Machine'],
+                  ),
+                ),
+              ),
               Padding(
                 padding: const EdgeInsets.all(16.0),
                 child: Column(
@@ -469,11 +482,6 @@ class _AttendQuizPageState extends AuthState<AttendQuizPage> {
                   ],
                 ),
               ),
-              IgnorePointer(
-                child: Stack(
-                  children: _animations,
-                ),
-              )
             ],
           ),
         );
