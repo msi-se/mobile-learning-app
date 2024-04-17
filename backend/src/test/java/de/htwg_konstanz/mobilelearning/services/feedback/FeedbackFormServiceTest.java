@@ -223,6 +223,7 @@ public class FeedbackFormServiceTest {
                     "formStatus": "STARTED"
                 }
             """);
+            Thread.sleep(100);
             // adds result to feedbackform
             client.sendMessage(String.format("""
                 {

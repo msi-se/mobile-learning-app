@@ -9,6 +9,7 @@ class Course {
   final List<FeedbackForm> feedbackForms;
   final List<QuizForm> quizForms;
   final bool isOwner;
+  final String moodleCourseId;
 
   Course({
     required this.id,
@@ -17,6 +18,7 @@ class Course {
     required this.feedbackForms,
     required this.quizForms,
     required this.isOwner,
+    required this.moodleCourseId,
   });
 
   factory Course.fromJson(Map<String, dynamic> json) {
@@ -25,7 +27,7 @@ class Course {
       List<String> owners = json['owners'].cast<String>();
       isOwner = owners.contains(getSession()!.userId);
     }
-    
+
     return Course(
       id: json['id'],
       name: json['name'],
@@ -37,6 +39,7 @@ class Course {
           .map((e) => QuizForm.fromJson(e, isOwner: isOwner))
           .toList(),
       isOwner: isOwner,
+      moodleCourseId: json['moodleCourseId'] ?? '',
     );
   }
 }

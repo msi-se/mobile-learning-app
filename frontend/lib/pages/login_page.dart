@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:frontend/components/button.dart';
 import 'package:frontend/components/error/general_error_widget.dart';
 import 'package:frontend/components/error/network_error_widget.dart';
@@ -25,10 +26,32 @@ class _LoginPageState extends State<LoginPage> {
   bool _isLoading = false;
   bool _isCheckingLoggedIn = true;
 
+
   @override
   void initState() {
     super.initState();
     checkLoggedIn();
+    RawKeyboard.instance.addListener(_keyboardCallback);
+  }
+
+  @override
+  void dispose() {
+    RawKeyboard.instance.removeListener(_keyboardCallback);
+    super.dispose();
+  }
+
+  void _keyboardCallback(RawKeyEvent event) {
+    if (event.logicalKey == LogicalKeyboardKey.enter) {
+      if (_isLoading) return;
+      setState(() {
+        _isLoading = true;
+      });
+      signUserIn(context).then((value) {
+        setState(() {
+          _isLoading = false;
+        });
+      });
+    }
   }
 
   Future checkLoggedIn() async {

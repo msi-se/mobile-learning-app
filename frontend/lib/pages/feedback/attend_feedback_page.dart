@@ -183,6 +183,13 @@ class _AttendFeedbackPageState extends AuthState<AttendFeedbackPage> {
           _voted = false;
         });
       }
+
+      // if action is ALREADY_SUBMITTED, the user has already submitted feedback
+      if (data["action"] == "ALREADY_SUBMITTED") {
+        setState(() {
+          _voted = true;
+        });
+      }
     }, onError: (error) {
       //TODO: Should there be another error handling for this?
       setState(() {
