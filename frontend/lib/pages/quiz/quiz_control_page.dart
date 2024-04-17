@@ -386,7 +386,8 @@ class _QuizControlPageState extends AuthState<QuizControlPage> {
 
       final appBar = AppBar(
         title: Text(_form.name,
-            style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+            style: const TextStyle(
+                color: Colors.white, fontWeight: FontWeight.bold)),
         backgroundColor: Theme.of(context).colorScheme.primary,
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(10.0),
@@ -395,7 +396,8 @@ class _QuizControlPageState extends AuthState<QuizControlPage> {
             child: LinearProgressIndicator(
               value: progress,
               backgroundColor: Colors.grey[300],
-              valueColor: AlwaysStoppedAnimation<Color>(Theme.of(context).colorScheme.secondary),
+              valueColor: AlwaysStoppedAnimation<Color>(
+                  Theme.of(context).colorScheme.secondary),
             ),
           ),
         ),
@@ -601,41 +603,56 @@ class _QuizControlPageState extends AuthState<QuizControlPage> {
                           children: <Widget>[
                             Text(element.name,
                                 style: const TextStyle(
-                                    fontSize: 24, fontWeight: FontWeight.bold)),
+                                    fontSize: 25, fontWeight: FontWeight.w700)),
                             Text(element.description,
-                                style: const TextStyle(fontSize: 15),
+                                style: const TextStyle(
+                                    fontSize: 20, fontWeight: FontWeight.w500),
                                 textAlign: TextAlign.center),
                             const SizedBox(height: 16),
-                            if (_form.currentQuestionFinished == true) 
-                              if(_showLeaderboard)
+                            if (_form.currentQuestionFinished == true)
+                              if (_showLeaderboard)
                                 Center(
-                                  child: Container(
-                                    constraints: const BoxConstraints(maxWidth: 800),
-                                    child: Card(
-                                      child: Padding(
-                                        padding: const EdgeInsets.all(8),
-                                        child: QuizScoreboard(scoreboard: _scoreboard),
-                                      ),
+                                    child: Container(
+                                  constraints:
+                                      const BoxConstraints(maxWidth: 800),
+                                  child: Card(
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(8),
+                                      child: QuizScoreboard(
+                                          scoreboard: _scoreboard),
                                     ),
-                                  )
-                                )
-                              else 
+                                  ),
+                                ))
+                              else
                                 Card(
                                   child: Padding(
                                     padding: const EdgeInsets.all(16),
-                                    child: element.type == QuestionType.single_choice
-                                      ? SingleChoiceQuizResult(
-                                          results: values.map((e) => int.parse(e)).toList().cast<int>(),
-                                          options: element.options,
-                                          correctAnswer: element.correctAnswers[0],
-                                        )
-                                      : element.type == QuestionType.yes_no
-                                      ? SingleChoiceQuizResult(
-                                          results: values.map((e) => e == "yes" ? 0 : 1).toList().cast<int>(),
-                                          options: const ["Ja", "Nein"],
-                                          correctAnswer: element.correctAnswers[0] == "yes" ? "0" : "1",
-                                        )
-                                      : Text(element.type.toString()),
+                                    child: element.type ==
+                                            QuestionType.single_choice
+                                        ? SingleChoiceQuizResult(
+                                            results: values
+                                                .map((e) => int.parse(e))
+                                                .toList()
+                                                .cast<int>(),
+                                            options: element.options,
+                                            correctAnswer:
+                                                element.correctAnswers[0],
+                                          )
+                                        : element.type == QuestionType.yes_no
+                                            ? SingleChoiceQuizResult(
+                                                results: values
+                                                    .map((e) =>
+                                                        e == "yes" ? 0 : 1)
+                                                    .toList()
+                                                    .cast<int>(),
+                                                options: const ["Ja", "Nein"],
+                                                correctAnswer:
+                                                    element.correctAnswers[0] ==
+                                                            "yes"
+                                                        ? "0"
+                                                        : "1",
+                                              )
+                                            : Text(element.type.toString()),
                                   ),
                                 ),
                           ],
@@ -643,19 +660,19 @@ class _QuizControlPageState extends AuthState<QuizControlPage> {
                       ),
                     ),
                     if (_form.status == FormStatus.started)
-                    Column(
-                      children: [
-                        ElevatedButton(
-                          onPressed: next,
-                          child: const Text('Next'),
-                        ),
-                        const SizedBox(height: 8),
-                        ElevatedButton(
-                          onPressed: stopForm,
-                          child: const Text('Quiz beenden'),
-                        ),
-                      ],
-                    ),
+                      Column(
+                        children: [
+                          ElevatedButton(
+                            onPressed: next,
+                            child: const Text('Next'),
+                          ),
+                          const SizedBox(height: 8),
+                          ElevatedButton(
+                            onPressed: stopForm,
+                            child: const Text('Quiz beenden'),
+                          ),
+                        ],
+                      ),
                     if (_form.status == FormStatus.finished)
                       Column(
                         children: [
