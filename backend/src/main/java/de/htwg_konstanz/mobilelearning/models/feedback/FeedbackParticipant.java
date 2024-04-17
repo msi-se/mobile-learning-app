@@ -17,4 +17,10 @@ public class FeedbackParticipant {
         return this.userId;
     }
 
+    public FeedbackParticipant deepCopy() {
+        FeedbackParticipant copy = new FeedbackParticipant();
+        copy.userId = new ObjectId(this.userId.toHexString());
+        return copy;
+    }
+
 }

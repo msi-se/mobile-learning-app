@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:frontend/auth_state.dart';
 import 'package:intl/intl.dart';
 import 'package:frontend/components/menu_card.dart';
 import 'package:frontend/global.dart';
@@ -15,7 +16,7 @@ class MenuPage extends StatefulWidget {
   State<MenuPage> createState() => _MenuPageState();
 }
 
-class _MenuPageState extends State<MenuPage> with TickerProviderStateMixin {
+class _MenuPageState extends AuthState<MenuPage> with TickerProviderStateMixin {
   late Future<MenuState> menuStateFuture;
   TabController? _tabController;
   int? initialTabIndex;

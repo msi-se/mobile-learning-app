@@ -192,11 +192,11 @@ public class StatsServiceTest {
 
             // check the user stats
             Assertions.assertEquals(1, student1Stats.userStats.getCompletedQuizForms());
-            Assertions.assertEquals(1, student1Stats.userStats.getQainedQuizPoints());
+            Assertions.assertEquals(1, student1Stats.userStats.getGainedQuizPoints());
             Assertions.assertEquals(1.0, student1Stats.userStats.getAvgQuizPosition());
 
             Assertions.assertEquals(1, student2Stats.userStats.getCompletedQuizForms());
-            Assertions.assertEquals(0, student2Stats.userStats.getQainedQuizPoints());
+            Assertions.assertEquals(0, student2Stats.userStats.getGainedQuizPoints());
             Assertions.assertEquals(2.0, student2Stats.userStats.getAvgQuizPosition());
 
             // reset the quiz
@@ -339,11 +339,11 @@ public class StatsServiceTest {
 
             // check the user stats
             Assertions.assertEquals(2, student1Stats.userStats.getCompletedQuizForms());
-            Assertions.assertEquals(1, student1Stats.userStats.getQainedQuizPoints());
+            Assertions.assertEquals(1, student1Stats.userStats.getGainedQuizPoints());
             Assertions.assertEquals(1.5, student1Stats.userStats.getAvgQuizPosition());
 
             Assertions.assertEquals(2, student2Stats.userStats.getCompletedQuizForms());
-            Assertions.assertEquals(1, student2Stats.userStats.getQainedQuizPoints());
+            Assertions.assertEquals(1, student2Stats.userStats.getGainedQuizPoints());
             Assertions.assertEquals(1.5, student2Stats.userStats.getAvgQuizPosition());
 
             // reset the quiz
@@ -485,11 +485,11 @@ public class StatsServiceTest {
 
             // check the user stats
             Assertions.assertEquals(3, student1Stats.userStats.getCompletedQuizForms());
-            Assertions.assertEquals(1, student1Stats.userStats.getQainedQuizPoints());
+            Assertions.assertEquals(1, student1Stats.userStats.getGainedQuizPoints());
             Assertions.assertEquals(5.0 / 3.0, student1Stats.userStats.getAvgQuizPosition());
 
             Assertions.assertEquals(3, student2Stats.userStats.getCompletedQuizForms());
-            Assertions.assertEquals(2, student2Stats.userStats.getQainedQuizPoints());
+            Assertions.assertEquals(2, student2Stats.userStats.getGainedQuizPoints());
             Assertions.assertEquals(4.0 / 3.0, student2Stats.userStats.getAvgQuizPosition());
 
             // reset the quiz
@@ -639,12 +639,12 @@ public class StatsServiceTest {
             // check the user stats
             Assertions.assertEquals(1, student1Stats.userStats.getCompletedFeedbackForms());
             Assertions.assertEquals(0, student1Stats.userStats.getCompletedQuizForms());
-            Assertions.assertEquals(0, student1Stats.userStats.getQainedQuizPoints());
+            Assertions.assertEquals(0, student1Stats.userStats.getGainedQuizPoints());
             Assertions.assertEquals(0.0, student1Stats.userStats.getAvgQuizPosition());
 
             Assertions.assertEquals(1, student2Stats.userStats.getCompletedFeedbackForms());
             Assertions.assertEquals(0, student2Stats.userStats.getCompletedQuizForms());
-            Assertions.assertEquals(0, student2Stats.userStats.getQainedQuizPoints());
+            Assertions.assertEquals(0, student2Stats.userStats.getGainedQuizPoints());
             Assertions.assertEquals(0.0, student2Stats.userStats.getAvgQuizPosition());
 
             // reset the feedback

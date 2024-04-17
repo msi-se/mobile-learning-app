@@ -126,8 +126,54 @@ public class LiveFeedbackSocket {
             courseRepository.update(course);
             LiveFeedbackSocketMessage message = new LiveFeedbackSocketMessage("PARTICIPANT_JOINED", null, null, null,
                     form);
-            this.broadcast(message, courseId, formId);
+            this.broadcast(message, courseId, formId, course);
+
+            this.tellUserIfAlreadySubmitted(form, user, session);
         }
+    }
+
+    private void tellUserIfAlreadySubmitted(FeedbackForm form, User user, Session session) {
+
+        // check if the user already submitted a result
+        Boolean userAlreadySubmitted = false;
+        String hashedUserId = Hasher.hash(user.getId().toHexString());
+        for (QuestionWrapper element : form.questions) {
+            for (Result result : element.results) {
+                if (result.hashedUserId.equals(hashedUserId)) {
+                    userAlreadySubmitted = true;
+                    break;
+                }
+            }
+        }
+
+        // if the user already submitted a result, send him a message
+        if (userAlreadySubmitted) {
+            LiveFeedbackSocketMessage message = new LiveFeedbackSocketMessage("ALREADY_SUBMITTED", null, null, null, null);
+            this.sendMessageToUser(user, message);
+        }
+    }
+
+    private void sendMessageToUser(User user, LiveFeedbackSocketMessage message) {
+
+        // search the session of the user
+        SocketConnection connection = null;
+        for (SocketConnection c : connections.values()) {
+            if (c.getUserId().equals(user.getId())) {
+                connection = c;
+                break;
+            }
+        }
+        if (connection == null) {
+            return;
+        }
+
+        // send the message
+        String messageString = message.toJson();
+        connection.session.getAsyncRemote().sendObject(messageString, result ->  {
+            if (result.getException() != null) {
+                System.out.println("Unable to send message: " + result.getException());
+            }
+        });
     }
 
     /**
@@ -175,7 +221,7 @@ public class LiveFeedbackSocket {
         this.evaluateMessage(feedbackSocketMessage, courseId, formId, userId);
     }
 
-    private void broadcast(LiveFeedbackSocketMessage message, String courseId, String formId) {
+    private void broadcast(LiveFeedbackSocketMessage message, String courseId, String formId, Course course) {
 
         // copy the message to not change the original 
         LiveFeedbackSocketMessage messageToSend = new LiveFeedbackSocketMessage(message.action, message.formStatus,
@@ -200,15 +246,13 @@ public class LiveFeedbackSocket {
             }
             
             // fill the form with the question contents
-            messageToSend.form = new FeedbackForm(message.form.courseId, message.form.name, message.form.description, message.form.questions, message.form.status);
-            messageToSend.form.setId(message.form.getId());
+            messageToSend.form = message.form.deepCopy();
             messageToSend.form.fillQuestionContents(courseRepository.findById(new ObjectId(courseId)));
             if (connection.getType().equals(SocketConnectionType.PARTICIPANT)) {
                 messageToSend.form.clearResults();
             } else {
                 messageToSend.form.setParticipants(message.form.getParticipants());
             }
-
 
             // send the message
             String messageString = message.toJson();
@@ -285,7 +329,7 @@ public class LiveFeedbackSocket {
             // send the event to all receivers
             LiveFeedbackSocketMessage outgoingMessage = new LiveFeedbackSocketMessage("RESULT_ADDED",
                     form.status.toString(), null, null, form);
-            this.broadcast(outgoingMessage, course.getId().toHexString(), formId);
+            this.broadcast(outgoingMessage, course.getId().toHexString(), formId, course);
         }
 
         // if it is set to STARTED set the timestamp
@@ -296,7 +340,7 @@ public class LiveFeedbackSocket {
         // send the updated form to all receivers (stringify the form)
         LiveFeedbackSocketMessage outgoingMessage = new LiveFeedbackSocketMessage("FORM_STATUS_CHANGED",
                 form.status.toString(), null, null, form);
-        this.broadcast(outgoingMessage, course.getId().toHexString(), formId);
+        this.broadcast(outgoingMessage, course.getId().toHexString(), formId, course);
 
         // update the userstats of the participants and the global stats
         if (formStatusEnum == FormStatus.FINISHED) {
@@ -359,7 +403,7 @@ public class LiveFeedbackSocket {
         LiveFeedbackSocketMessage outgoingMessage = new LiveFeedbackSocketMessage("RESULT_ADDED", null,
                 feedbackSocketMessage.resultElementId, feedbackSocketMessage.resultValues,
                 form);
-        this.broadcast(outgoingMessage, course.getId().toHexString(), formId);
+        this.broadcast(outgoingMessage, course.getId().toHexString(), formId, course);
         return true;
     };
 

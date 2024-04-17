@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:frontend/auth_state.dart';
 import 'package:frontend/components/elements/feedback/fulltext_feedback_result.dart';
 import 'package:frontend/components/elements/feedback/single_choice_feedback_result.dart';
 import 'package:frontend/components/elements/feedback/slider_feedback_result.dart';
@@ -41,7 +42,7 @@ List<int> convertStringListToIntList(List<String> list) {
   return result;
 }
 
-class _FeedbackResultPageState extends State<FeedbackResultPage> {
+class _FeedbackResultPageState extends AuthState<FeedbackResultPage> {
   late String _courseId;
   late String _formId;
   late String _userId;

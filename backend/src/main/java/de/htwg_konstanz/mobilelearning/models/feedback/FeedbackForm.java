@@ -322,4 +322,23 @@ public class FeedbackForm extends Form {
 
         return sw.toString();
     }
+
+    public FeedbackForm deepCopy() {
+        FeedbackForm copy = new FeedbackForm();
+        copy.id = new ObjectId(this.id.toHexString());
+        copy.courseId = new ObjectId(this.courseId.toHexString());
+        copy.name = this.name;
+        copy.description = this.description;
+        copy.questions = new ArrayList<QuestionWrapper>();
+        this.questions.forEach(questionWrapper -> {
+            copy.questions.add(questionWrapper.deepCopy());
+        });
+        copy.status = this.status;
+        copy.connectCode = this.connectCode;
+        copy.participants = new ArrayList<FeedbackParticipant>();
+        this.participants.forEach(participant -> {
+            copy.participants.add(participant.deepCopy());
+        });
+        return copy;
+    }
 }

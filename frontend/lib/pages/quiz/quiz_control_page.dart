@@ -2,10 +2,14 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:async';
 
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter/widgets.dart';
+import 'package:frontend/auth_state.dart';
+import 'package:frontend/components/animations/throw.dart';
 import 'package:frontend/enums/form_status.dart';
 import 'package:frontend/enums/question_type.dart';
-import 'package:frontend/theme/assets.dart';
 import 'package:frontend/components/elements/quiz/single_choice_quiz_result.dart';
 import 'package:frontend/components/error/general_error_widget.dart';
 import 'package:frontend/components/error/network_error_widget.dart';
@@ -16,6 +20,7 @@ import 'package:frontend/models/quiz/quiz_question.dart';
 import 'package:frontend/utils.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 import 'package:http/http.dart' as http;
+import 'package:rive/rive.dart';
 
 class QuizControlPage extends StatefulWidget {
   final String courseId;
@@ -28,7 +33,7 @@ class QuizControlPage extends StatefulWidget {
   State<QuizControlPage> createState() => _QuizControlPageState();
 }
 
-class _QuizControlPageState extends State<QuizControlPage> {
+class _QuizControlPageState extends AuthState<QuizControlPage> {
   late String _courseId;
   late String _formId;
   late String _userId;
@@ -47,6 +52,11 @@ class _QuizControlPageState extends State<QuizControlPage> {
 
   bool _loading = false;
   String _fetchResult = '';
+
+  // for the paper plane animation
+  final mainStackKey = GlobalKey();
+  final scoreboardKey = GlobalKey();
+  List<Widget> _animations = [];
 
   @override
   void initState() {
@@ -175,6 +185,13 @@ class _QuizControlPageState extends State<QuizControlPage> {
               .toList();
         });
       }
+      if (data["action"] == "FUN") {
+        if (data["fun"]["action"] == "THROW_PAPER_PLANE") {
+          double percentageX = data["fun"]["percentageX"];
+          double percentageY = data["fun"]["percentageY"];
+          animatePaperPlane(percentageX, percentageY);
+        }
+      }
     }, onError: (error) {
       //TODO: Should there be another error handling for this?
       setState(() {
@@ -240,6 +257,51 @@ class _QuizControlPageState extends State<QuizControlPage> {
         "userId": _userId,
       }));
     }
+  }
+
+  void throwPaperPlane(double percentageX, double percentageY) {
+    if (_socketChannel != null) {
+      _socketChannel!.sink.add(jsonEncode({
+        "action": "FUN",
+        "fun": {
+          "action": "THROW_PAPER_PLANE",
+          "percentageX": percentageX,
+          "percentageY": percentageY,
+        },
+        "roles": _roles,
+        "userId": _userId,
+      }));
+    }
+  }
+
+  void animatePaperPlane(double percentageX, double percentageY) {
+    print("ADD ANIMATION");
+
+    final RenderBox mainStackBox =
+        mainStackKey.currentContext!.findRenderObject() as RenderBox;
+    final RenderBox scoreBoardBox =
+        scoreboardKey.currentContext!.findRenderObject() as RenderBox;
+    final mainStackPosition = mainStackBox.localToGlobal(Offset.zero);
+    final scoreboardPosition = scoreBoardBox.localToGlobal(Offset.zero);
+    double dX = scoreboardPosition.dx -
+        mainStackPosition.dx +
+        percentageX * scoreBoardBox.size.width;
+    double dY = scoreboardPosition.dy -
+        mainStackPosition.dy +
+        percentageY * scoreBoardBox.size.height;
+
+    setState(() {
+      _animations.insert(
+          0, Throw(key: UniqueKey(), throwType: ThrowType.paperPlane, clickX: dX, clickY: dY));
+      print(_animations.length);
+    });
+
+    Future.delayed(const Duration(milliseconds: 2500), () {
+      if (!mounted) return;
+      setState(() {
+        _animations.removeLast();
+      });
+    });
   }
 
   List<Map<String, dynamic>> getResults(Map<String, dynamic> form) {
@@ -401,33 +463,67 @@ class _QuizControlPageState extends State<QuizControlPage> {
       if (_form.status == FormStatus.finished) {
         return Scaffold(
           appBar: appBar,
-          body: Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
-              children: <Widget>[
-                Text(
-                  "Quiz beendet",
-                  style: Theme.of(context).textTheme.headlineMedium,
-                ),
-                const SizedBox(height: 16),
-                Center(
-                  child: Container(
-                    constraints: const BoxConstraints(maxWidth: 800),
-                    child: Card(
-                      child: Padding(
-                        padding: const EdgeInsets.all(8),
-                        child: QuizScoreboard(scoreboard: _scoreboard),
+          body: Stack(
+            key: mainStackKey,
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  children: <Widget>[
+                    Text(
+                      "Quiz beendet",
+                      style: Theme.of(context).textTheme.headlineMedium,
+                    ),
+                    Container(
+                      margin: const EdgeInsets.only(top: 30.0, bottom: 10.0),
+                      width: 250,
+                      height: 250,
+                      child: RiveAnimation.asset(
+                        'assets/animations/rive/animations.riv',
+                        fit: BoxFit.cover,
+                        artboard: 'rigged without bodyparts darker firework',
+                        stateMachines: ['State Machine Winner'],
                       ),
                     ),
-                  ),
+                    const SizedBox(height: 16),
+                    Center(
+                      child: GestureDetector(
+                        key: scoreboardKey,
+                        onTapUp: (details) {
+                          // get the position of the tap and convert it to a percentage of the total height
+                          final RenderBox box = scoreboardKey.currentContext!
+                              .findRenderObject() as RenderBox;
+                          double x = details.localPosition.dx;
+                          double percentageX = x / box.size.width;
+                          double y = details.localPosition.dy;
+                          double percentageY = y / box.size.height;
+                          throwPaperPlane(percentageX, percentageY);
+                        },
+                        child: Container(
+                          constraints: const BoxConstraints(maxWidth: 800),
+                          child: Card(
+                            child: Padding(
+                              padding: const EdgeInsets.all(8),
+                              child: QuizScoreboard(scoreboard: _scoreboard),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    ElevatedButton(
+                      onPressed: resetForm,
+                      child: const Text('Quiz zurücksetzen'),
+                    ),
+                  ],
                 ),
-                const SizedBox(height: 16),
-                ElevatedButton(
-                  onPressed: resetForm,
-                  child: const Text('Quiz zurücksetzen'),
+              ),
+              IgnorePointer(
+                child: Stack(
+                  children: _animations,
                 ),
-              ],
-            ),
+              )
+            ],
           ),
         );
       }
@@ -436,135 +532,147 @@ class _QuizControlPageState extends State<QuizControlPage> {
           _form.questions[_form.currentQuestionIndex] as QuizQuestion;
       final values = _results[_form.currentQuestionIndex]["values"];
 
-      return Scaffold(
-        appBar: appBar,
-        body: Stack(
-          children: [
-            SizedBox(
-              width: double.infinity,
-              child: Column(
-                children: <Widget>[
-                  const SizedBox(height: 32),
-                  Padding(
-                    padding: const EdgeInsets.all(16),
-                    child: Container(
-                      constraints: const BoxConstraints(maxWidth: 800),
-                      child: Column(
-                        children: <Widget>[
-                          Text(element.name,
-                              style: const TextStyle(
-                                  fontSize: 24, fontWeight: FontWeight.bold)),
-                          Text(element.description,
-                              style: const TextStyle(fontSize: 15),
-                              textAlign: TextAlign.center),
-                          const SizedBox(height: 16),
-                          if (_form.currentQuestionFinished == true)
-                            Card(
-                              child: Padding(
-                                padding: const EdgeInsets.all(16),
-                                child: element.type ==
-                                        QuestionType.single_choice
-                                    ? SingleChoiceQuizResult(
-                                        results: values
-                                            .map((e) => int.parse(e))
-                                            .toList()
-                                            .cast<int>(),
-                                        options: element.options,
-                                        correctAnswer:
-                                            element.correctAnswers[0],
-                                      )
-                                    : element.type == QuestionType.yes_no
-                                        ? SingleChoiceQuizResult(
-                                            results: values
-                                                .map((e) => e == "yes" ? 0 : 1)
-                                                .toList()
-                                                .cast<int>(),
-                                            options: const ["Ja", "Nein"],
-                                            correctAnswer:
-                                                element.correctAnswers[0] ==
-                                                        "yes"
-                                                    ? "0"
-                                                    : "1",
-                                          )
-                                        : Text(element.type.toString()),
-                              ),
-                            )
-                        ],
-                      ),
-                    ),
-                  ),
-                  if (_form.status == FormStatus.started)
-                    Column(
-                      children: [
-                        ElevatedButton(
-                          onPressed: next,
-                          child: const Text('Next'),
-                        ),
-                        const SizedBox(height: 8),
-                        ElevatedButton(
-                          onPressed: stopForm,
-                          child: const Text('Quiz beenden'),
-                        ),
-                      ],
-                    ),
-                  if (_form.status == FormStatus.finished)
-                    Column(
-                      children: [
-                        ElevatedButton(
-                          onPressed: startForm,
-                          child: const Text('Quiz fortsetzen'),
-                        ),
-                        const SizedBox(height: 8),
-                        ElevatedButton(
-                          onPressed: resetForm,
-                          child: Text('Quiz zurücksetzen',
-                              style: TextStyle(color: colors.error)),
-                        ),
-                      ],
-                    ),
-                  const SizedBox(height: 32),
-                ],
-              ),
-            ),
-            Positioned(
-              top: 0,
-              left: 0,
-              right: 0,
-              child: Container(
-                color: colors.surfaceVariant,
-                child: Row(
+      return RawKeyboardListener(
+        focusNode: FocusNode(),
+        autofocus: true,
+        onKey: (RawKeyEvent event) async {
+          if (event is RawKeyDownEvent &&
+              event.logicalKey == LogicalKeyboardKey.arrowRight) {
+            next();
+          }
+        },
+        child: Scaffold(
+          appBar: appBar,
+          body: Stack(
+            children: [
+              SizedBox(
+                width: double.infinity,
+                child: Column(
                   children: <Widget>[
-                    Expanded(
-                      child: Container(), // Empty container to take up space
-                    ),
-                    Expanded(
-                      child: Text(
-                        "${_form.connectCode.substring(0, 3)} ${_form.connectCode.substring(3, 6)}",
-                        style: Theme.of(context).textTheme.headlineSmall,
-                        textAlign: TextAlign.center,
-                      ),
-                    ),
-                    Expanded(
-                      child: Padding(
-                        padding: const EdgeInsets.only(right: 8.0),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.end,
+                    const SizedBox(height: 32),
+                    Padding(
+                      padding: const EdgeInsets.all(16),
+                      child: Container(
+                        constraints: const BoxConstraints(maxWidth: 800),
+                        child: Column(
                           children: <Widget>[
-                            const Icon(Icons.person),
-                            Text(
-                              "${values.length}/$_participantCounter",
-                              style: Theme.of(context).textTheme.headlineSmall,
-                              textAlign: TextAlign.right,
-                            ),
+                            Text(element.name,
+                                style: const TextStyle(
+                                    fontSize: 24, fontWeight: FontWeight.bold)),
+                            Text(element.description,
+                                style: const TextStyle(fontSize: 15),
+                                textAlign: TextAlign.center),
+                            const SizedBox(height: 16),
+                            if (_form.currentQuestionFinished == true)
+                              Card(
+                                child: Padding(
+                                  padding: const EdgeInsets.all(16),
+                                  child: element.type ==
+                                          QuestionType.single_choice
+                                      ? SingleChoiceQuizResult(
+                                          results: values
+                                              .map((e) => int.parse(e))
+                                              .toList()
+                                              .cast<int>(),
+                                          options: element.options,
+                                          correctAnswer:
+                                              element.correctAnswers[0],
+                                        )
+                                      : element.type == QuestionType.yes_no
+                                          ? SingleChoiceQuizResult(
+                                              results: values
+                                                  .map(
+                                                      (e) => e == "yes" ? 0 : 1)
+                                                  .toList()
+                                                  .cast<int>(),
+                                              options: const ["Ja", "Nein"],
+                                              correctAnswer:
+                                                  element.correctAnswers[0] ==
+                                                          "yes"
+                                                      ? "0"
+                                                      : "1",
+                                            )
+                                          : Text(element.type.toString()),
+                                ),
+                              )
                           ],
                         ),
                       ),
                     ),
+                    if (_form.status == FormStatus.started)
+                      Column(
+                        children: [
+                          ElevatedButton(
+                            onPressed: next,
+                            child: const Text('Next'),
+                          ),
+                          const SizedBox(height: 8),
+                          ElevatedButton(
+                            onPressed: stopForm,
+                            child: const Text('Quiz beenden'),
+                          ),
+                        ],
+                      ),
+                    if (_form.status == FormStatus.finished)
+                      Column(
+                        children: [
+                          ElevatedButton(
+                            onPressed: startForm,
+                            child: const Text('Quiz fortsetzen'),
+                          ),
+                          const SizedBox(height: 8),
+                          ElevatedButton(
+                            onPressed: resetForm,
+                            child: Text('Quiz zurücksetzen',
+                                style: TextStyle(color: colors.error)),
+                          ),
+                        ],
+                      ),
+                    const SizedBox(height: 32),
                   ],
                 ),
               ),
-            )
-          ],
+              Positioned(
+                top: 0,
+                left: 0,
+                right: 0,
+                child: Container(
+                  color: colors.surfaceVariant,
+                  child: Row(
+                    children: <Widget>[
+                      Expanded(
+                        child: Container(), // Empty container to take up space
+                      ),
+                      Expanded(
+                        child: Text(
+                          "${_form.connectCode.substring(0, 3)} ${_form.connectCode.substring(3, 6)}",
+                          style: Theme.of(context).textTheme.headlineSmall,
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
+                      Expanded(
+                        child: Padding(
+                          padding: const EdgeInsets.only(right: 8.0),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            children: <Widget>[
+                              const Icon(Icons.person),
+                              Text(
+                                "${values.length}/$_participantCounter",
+                                style:
+                                    Theme.of(context).textTheme.headlineSmall,
+                                textAlign: TextAlign.right,
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              )
+            ],
+          ),
         ),
       );
     } else {

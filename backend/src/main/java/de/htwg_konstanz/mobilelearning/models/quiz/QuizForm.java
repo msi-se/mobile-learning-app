@@ -341,6 +341,44 @@ public class QuizForm extends Form {
         this.participants = participants;
     }
 
+    public List<String> getResultsOfParticipant(ObjectId userId, ObjectId questionId) {
+        for (QuestionWrapper questionWrapper : this.questions) {
+            if (questionWrapper.getId().equals(questionId)) {
+                return questionWrapper.getResultsByUserId(userId);
+            }
+        }
+        return null;
+    }
+
+    public Integer getCurrentQuestionIndex() {
+        return this.currentQuestionIndex;
+    }
+
+    public Boolean getCurrentQuestionFinished() {
+        return this.currentQuestionFinished;
+    }
+
+    public QuizForm deepCopy() {
+        QuizForm copy = new QuizForm(
+                this.courseId,
+                this.name,
+                this.description,
+                new ArrayList<QuestionWrapper>(),
+                this.status,
+                this.currentQuestionIndex,
+                this.currentQuestionFinished);
+        copy.id = new ObjectId(this.id.toHexString());
+        copy.connectCode = this.connectCode;
+        copy.participants = new ArrayList<QuizParticipant>();
+        for (QuizParticipant participant : this.participants) {
+            copy.participants.add(participant.deepCopy());
+        }
+        for (QuestionWrapper questionWrapper : this.questions) {
+            copy.questions.add(questionWrapper.deepCopy());
+        }
+        return copy;
+    }
+
         public Object getResultsAsCsv(Course course) {
 
         /*

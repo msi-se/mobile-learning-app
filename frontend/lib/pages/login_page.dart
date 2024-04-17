@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:frontend/components/button.dart';
 import 'package:frontend/components/error/general_error_widget.dart';
 import 'package:frontend/components/error/network_error_widget.dart';
@@ -25,22 +26,52 @@ class _LoginPageState extends State<LoginPage> {
   bool _isLoading = false;
   bool _isCheckingLoggedIn = true;
 
+
   @override
   void initState() {
     super.initState();
     checkLoggedIn();
+    RawKeyboard.instance.addListener(_keyboardCallback);
+  }
+
+  @override
+  void dispose() {
+    RawKeyboard.instance.removeListener(_keyboardCallback);
+    super.dispose();
+  }
+
+  void _keyboardCallback(RawKeyEvent event) {
+    if (event.logicalKey == LogicalKeyboardKey.enter) {
+      if (_isLoading) return;
+      setState(() {
+        _isLoading = true;
+      });
+      signUserIn(context).then((value) {
+        setState(() {
+          _isLoading = false;
+        });
+      });
+    }
   }
 
   Future checkLoggedIn() async {
-    await initPreferences();
     if (getSession() != null) {
-      if (!JwtDecoder.isExpired(getSession()!.jwt) && mounted) {
-        Navigator.pushReplacementNamed(context, '/main');
-        return;
-      } else {
-        clearSession();
+      if (!JwtDecoder.isExpired(getSession()!.jwt)) {
+        // check http /verify route 200 status code
+        final response = await http.get(
+          Uri.parse("${getBackendUrl()}/user/verify"),
+          headers: {
+            "Content-Type": "application/json",
+            "AUTHORIZATION": "Bearer ${getSession()!.jwt}"
+          },
+        );
+        if (response.statusCode == 200 && mounted) {
+          Navigator.pushReplacementNamed(context, '/main');
+          return;
+        }
       }
     }
+    clearSession();
     if (!mounted) return;
     setState(() {
       _isCheckingLoggedIn = false;
@@ -130,7 +161,7 @@ class _LoginPageState extends State<LoginPage> {
 
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: colors.surface,
+        backgroundColor: colors.onError,
         toolbarHeight: 0,
       ),
       body: SafeArea(
@@ -207,8 +238,8 @@ class _LoginPageState extends State<LoginPage> {
                         children: [
                           // Username TextField
                           Container(
-                            padding: const EdgeInsets.only(top: 20),
-                            margin: const EdgeInsets.symmetric(horizontal: 20),
+                            padding: const EdgeInsets.only(top: 30),
+                            margin: const EdgeInsets.symmetric(horizontal: 40),
                             child: const Row(
                               mainAxisAlignment: MainAxisAlignment.start,
                               children: [
@@ -229,7 +260,7 @@ class _LoginPageState extends State<LoginPage> {
                           // Password TextField
                           Container(
                             padding: const EdgeInsets.only(top: 10),
-                            margin: const EdgeInsets.symmetric(horizontal: 20),
+                            margin: const EdgeInsets.symmetric(horizontal: 40),
                             child: const Row(
                               mainAxisAlignment: MainAxisAlignment.start,
                               children: [
@@ -276,7 +307,7 @@ class _LoginPageState extends State<LoginPage> {
             return Column(
               children: [
                 Container(
-                  color: colors.outlineVariant,
+                  color: colors.surface,
                   child: Column(
                     children: [
                       Container(
@@ -288,7 +319,7 @@ class _LoginPageState extends State<LoginPage> {
                       ),
                       // Login Text
                       Container(
-                        margin: const EdgeInsets.all(18.0),
+                        margin: const EdgeInsets.symmetric(horizontal: 40),
                         child: const Row(
                           mainAxisAlignment: MainAxisAlignment.start,
                           children: [
@@ -301,22 +332,27 @@ class _LoginPageState extends State<LoginPage> {
                           ],
                         ),
                       ),
+                      const SizedBox(height: 20),
                     ],
                   ),
                 ),
                 // Bottom Half of the Login Screen
                 Container(
                   decoration: BoxDecoration(
-                      color: colors.surface,
-                      borderRadius: const BorderRadius.only(
-                          topLeft: Radius.circular(20),
-                          topRight: Radius.circular(20))),
+                    color: colors.surface,
+                    border: Border(
+                        top: BorderSide(
+                            color: colors.outlineVariant, width: 0.5)),
+                    // borderRadius: const BorderRadius.only(
+                    //     topLeft: Radius.circular(20),
+                    //     topRight: Radius.circular(20))
+                  ),
                   child: Column(
                     children: [
                       // Username TextField
                       Container(
-                        padding: const EdgeInsets.only(top: 10),
-                        margin: const EdgeInsets.symmetric(horizontal: 20),
+                        padding: const EdgeInsets.only(top: 40),
+                        margin: const EdgeInsets.symmetric(horizontal: 40),
                         child: const Row(
                           mainAxisAlignment: MainAxisAlignment.start,
                           children: [
@@ -336,8 +372,8 @@ class _LoginPageState extends State<LoginPage> {
 
                       // Password TextField
                       Container(
-                        padding: const EdgeInsets.only(top: 10),
-                        margin: const EdgeInsets.symmetric(horizontal: 20),
+                        padding: const EdgeInsets.only(top: 15),
+                        margin: const EdgeInsets.symmetric(horizontal: 40),
                         child: const Row(
                           mainAxisAlignment: MainAxisAlignment.start,
                           children: [

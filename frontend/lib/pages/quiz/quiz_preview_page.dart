@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:frontend/auth_state.dart';
 import 'package:frontend/components/error/general_error_widget.dart';
 import 'package:frontend/components/error/network_error_widget.dart';
 import 'package:frontend/components/layout/sliver_layout.dart';
@@ -26,7 +27,7 @@ class QuizPreviewPage extends StatefulWidget {
   State<QuizPreviewPage> createState() => _QuizPreviewPageState();
 }
 
-class _QuizPreviewPageState extends State<QuizPreviewPage> {
+class _QuizPreviewPageState extends AuthState<QuizPreviewPage> {
   QuizForm? _form;
 
   bool _loading = false;

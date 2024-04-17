@@ -88,7 +88,7 @@ class _SingleChoiceQuizResultState extends State<SingleChoiceQuizResult> {
               child: Text(
                 optionDerivation.option,
                 style: TextStyle(
-                  color: correctAnswer ? colors.primary : colors.onBackground,
+                  color: correctAnswer ? Colors.green : colors.onBackground,
                   fontWeight:
                       correctAnswer ? FontWeight.bold : FontWeight.normal,
                   fontSize: 20,
@@ -117,7 +117,7 @@ class _SingleChoiceQuizResultState extends State<SingleChoiceQuizResult> {
                         value: optionDerivation.normalizedPercentage,
                         backgroundColor: colors.secondary.withOpacity(0.1),
                         valueColor: AlwaysStoppedAnimation<Color>(
-                          correctAnswer ? colors.primary : colors.tertiary,
+                          correctAnswer ? Colors.green : colors.tertiary,
                         ),
                       ),
                     ),

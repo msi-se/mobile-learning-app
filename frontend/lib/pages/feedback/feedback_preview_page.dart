@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:frontend/auth_state.dart';
 import 'package:frontend/components/error/general_error_widget.dart';
 import 'package:frontend/components/error/network_error_widget.dart';
 import 'package:frontend/components/layout/sliver_layout.dart';
@@ -26,7 +27,7 @@ class FeedbackPreviewPage extends StatefulWidget {
   State<FeedbackPreviewPage> createState() => _FeedbackPreviewPageState();
 }
 
-class _FeedbackPreviewPageState extends State<FeedbackPreviewPage> {
+class _FeedbackPreviewPageState extends AuthState<FeedbackPreviewPage> {
   FeedbackForm? _form;
 
   bool _loading = false;

@@ -34,4 +34,12 @@ public class QuizParticipant {
         return this.score;
     }
 
+    public QuizParticipant deepCopy() {
+        QuizParticipant copy = new QuizParticipant();
+        copy.userId = this.userId;
+        copy.userAlias = this.userAlias;
+        copy.score = this.score;
+        return copy;
+    }
+
 }

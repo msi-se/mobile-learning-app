@@ -1,4 +1,6 @@
+import 'dart:io';
 import 'dart:ui';
+import 'package:flutter/foundation.dart' show kIsWeb;
 
 import 'package:flutter/material.dart';
 
@@ -24,8 +26,18 @@ class SliverLayout extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    double heightWithoutappBarNavBar = MediaQuery.of(context).size.height -
-        (kBottomNavigationBarHeight + Scaffold.of(context).appBarMaxHeight!);
+    final bool isIphoneWithHomeBar =
+        !kIsWeb && Platform.isIOS && MediaQuery.of(context).size.height >= 812.0;
+    int homeBarHeight = 0;
+    if (isIphoneWithHomeBar && navBarHeight > 0) {
+      homeBarHeight = 34;
+    }
+
+    double heightWithoutAppBarNavBar = MediaQuery.of(context).size.height -
+        Scaffold.of(context).appBarMaxHeight! -
+        (collapsable ? kToolbarHeight : headerHeight) -
+        navBarHeight -
+        homeBarHeight;
 
     final colors = Theme.of(context).colorScheme;
 
@@ -33,7 +45,7 @@ class SliverLayout extends StatelessWidget {
       body: CustomScrollView(
         slivers: [
           sliverHeader(colors),
-          sliverList(heightWithoutappBarNavBar, colors),
+          sliverList(heightWithoutAppBarNavBar, colors),
         ],
       ),
     );
@@ -62,17 +74,14 @@ class SliverLayout extends StatelessWidget {
     );
   }
 
-  SliverList sliverList(double heightWithoutappBarNavBar, ColorScheme colors) {
+  SliverList sliverList(double heightWithoutAppBarNavBar, ColorScheme colors) {
     return SliverList(
       delegate: SliverChildListDelegate([
         ConstrainedBox(
           constraints: BoxConstraints(
             minHeight: collapsable
-                ? heightWithoutappBarNavBar - navBarHeight
-                : heightWithoutappBarNavBar -
-                    headerHeight +
-                    kToolbarHeight -
-                    navBarHeight,
+                ? heightWithoutAppBarNavBar
+                : heightWithoutAppBarNavBar - headerHeight + kToolbarHeight,
           ),
           child: Card(
             shape: const RoundedRectangleBorder(

@@ -1,5 +1,6 @@
 package de.htwg_konstanz.mobilelearning.services.quiz.socket;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -131,9 +132,57 @@ public class LiveQuizSocket {
         if (isParticipant) {
             LiveQuizSocketMessage message = new LiveQuizSocketMessage("PARTICIPANT_JOINED", form.status.toString(),
                     null, null, form);
-            this.broadcast(message, courseId, formId);
+            this.broadcast(message, courseId, formId, course);
+
+            this.tellUserIfAlreadySubmitted(form, user, session);
         }
     }
+
+    private void tellUserIfAlreadySubmitted(QuizForm form, User user, Session session) {
+
+        // check if the user already submitted a result
+        Boolean userAlreadySubmitted = false;
+        String hashedUserId = Hasher.hash(user.getId().toHexString());
+        List<String> userAnswers = new ArrayList<String>();
+        QuestionWrapper currentQuestionWrapper = form.questions.get(form.currentQuestionIndex);
+        for (Result result : currentQuestionWrapper.results) {
+            if (result.hashedUserId.equals(hashedUserId)) {
+                userAlreadySubmitted = true;
+                userAnswers = result.values;
+                break;
+            }
+        }
+
+        // if the user already submitted a result, send him a message
+        if (userAlreadySubmitted) {
+            LiveQuizSocketMessage message = new LiveQuizSocketMessage("ALREADY_SUBMITTED", null, null, null, null, userAnswers);
+            this.sendMessageToUser(user, message);
+        }
+    }
+
+    private void sendMessageToUser(User user, LiveQuizSocketMessage message) {
+
+        // search the session of the user
+        SocketConnection connection = null;
+        for (SocketConnection c : connections.values()) {
+            if (c.getUserId().equals(user.getId())) {
+                connection = c;
+                break;
+            }
+        }
+        if (connection == null) {
+            return;
+        }
+
+        // send the message
+        String messageString = message.toJson();
+        connection.session.getAsyncRemote().sendObject(messageString, result ->  {
+            if (result.getException() != null) {
+                System.out.println("Unable to send message: " + result.getException());
+            }
+        });
+    }
+
 
     /**
      * Method called when a connection is closed.
@@ -179,7 +228,7 @@ public class LiveQuizSocket {
         this.evaluateMessage(quizSocketMessage, courseId, formId, userId);
     }
 
-    private void broadcast(LiveQuizSocketMessage message, String courseId, String formId) {
+    private void broadcast(LiveQuizSocketMessage message, String courseId, String formId, Course course) {
 
         // copy the message to not change the original 
         LiveQuizSocketMessage messageToSend = new LiveQuizSocketMessage(message.action, message.formStatus, message.resultElementId, message.resultValues, null);
@@ -201,15 +250,27 @@ public class LiveQuizSocket {
                 return;
             }
 
+            // if the action is "CLOSED_QUESTION" all participants should have filled the userHasAnsweredCorrectly field
+            if (messageToSend.action.equals("CLOSED_QUESTION") && connection.getType().equals(SocketConnectionType.PARTICIPANT)) {
+                
+                // check if user has answered correctly (TODO: maybe do this differntly later)
+                Integer currentQuestionIndex = message.form.currentQuestionIndex;
+                QuestionWrapper questionWrapper = message.form.getQuestionById(message.form.questions.get(currentQuestionIndex).getId());
+                QuizQuestion question = course.getQuizQuestionById(questionWrapper.getQuestionId());
+                Boolean userHasAnsweredCorrectly = question.checkAnswer(message.form.getResultsOfParticipant(connection.getUserId(), questionWrapper.getId())) > 0;
+                messageToSend.userHasAnsweredCorrectly = userHasAnsweredCorrectly;
+
+                // also append the correct answers
+                messageToSend.correctAnswers = question.getCorrectAnswers();
+            }
+
             // fill the form with the question contents
-            messageToSend.form = new QuizForm(message.form.courseId, message.form.name, message.form.description, message.form.questions, message.form.status, message.form.currentQuestionIndex, message.form.currentQuestionFinished);
-            messageToSend.form.setId(message.form.getId());
-            messageToSend.form.fillQuestionContents(courseRepository.findById(new ObjectId(courseId)));
+            messageToSend.form = message.form.deepCopy();
+            messageToSend.form.fillQuestionContents(course);
             if (connection.getType().equals(SocketConnectionType.PARTICIPANT)) {
                 messageToSend.form.clearResults();
-            } else {
-                messageToSend.form.setParticipants(message.form.getParticipants());
             }
+            messageToSend.form.setParticipants(message.form.getParticipants());
 
             // send the message
             String messageString = messageToSend.toJson();
@@ -227,6 +288,10 @@ public class LiveQuizSocket {
         if (quizSocketMessage.action == null || quizSocketMessage.action.equals("")) {
             System.out.println("Action is null");
             return false;
+        }
+        
+        if (quizSocketMessage.action.equals("FUN")) {
+            return this.fun(quizSocketMessage, formId);
         }
 
         // if the user is not an owner or participant, return
@@ -290,7 +355,7 @@ public class LiveQuizSocket {
             form.currentQuestionFinished = false;
             // send the event to all receivers
             LiveQuizSocketMessage outgoingMessage = new LiveQuizSocketMessage("RESULT_ADDED", form.status.toString(), null, null, form);
-            this.broadcast(outgoingMessage, course.getId().toHexString(), formId);
+            this.broadcast(outgoingMessage, course.getId().toHexString(), formId, course);
         }
 
         // if it is set to STARTED set the timestamp
@@ -300,7 +365,7 @@ public class LiveQuizSocket {
 
         // send the updated form to all receivers (stringify the form)
         LiveQuizSocketMessage outgoingMessage = new LiveQuizSocketMessage("FORM_STATUS_CHANGED", form.status.toString(), null, null, form);
-        this.broadcast(outgoingMessage, course.getId().toHexString(), formId);
+        this.broadcast(outgoingMessage, course.getId().toHexString(), formId, course);
 
         // update the userstats of the participants and the global stats
         if (formStatusEnum == FormStatus.FINISHED) {
@@ -374,7 +439,7 @@ public class LiveQuizSocket {
 
         // send the updated form to all receivers (stringify the form)
         LiveQuizSocketMessage outgoingMessage = new LiveQuizSocketMessage("RESULT_ADDED", null, quizSocketMessage.resultElementId, quizSocketMessage.resultValues, form);
-        this.broadcast(outgoingMessage, course.getId().toHexString(), formId);
+        this.broadcast(outgoingMessage, course.getId().toHexString(), formId, course);
         return true;
     };
 
@@ -402,10 +467,34 @@ public class LiveQuizSocket {
         // for all events, send a message
         events.forEach(event -> {
             LiveQuizSocketMessage outgoingMessage = new LiveQuizSocketMessage(event, form.status.toString(), null, null, form);
-            this.broadcast(outgoingMessage, course.getId().toHexString(), formId);
+            this.broadcast(outgoingMessage, course.getId().toHexString(), formId, course);
         });
 
         return true;
     }
 
+    private Boolean fun(LiveQuizSocketMessage quizSocketMessage, String formId) {
+
+        System.out.println("Throw paper plane");
+        
+        quizSocketMessage = new LiveQuizSocketMessage(quizSocketMessage.action, quizSocketMessage.fun);
+
+        // send the message
+        String messageString = quizSocketMessage.toJson();
+
+        connections.values().forEach(connection -> {
+            // check if the form ID match
+            if (!connection.getFormId().equals(new ObjectId(formId))) {
+                return;
+            }
+
+            connection.session.getAsyncRemote().sendObject(messageString, result ->  {
+                if (result.getException() != null) {
+                    System.out.println("Unable to send message: " + result.getException());
+                }
+            });
+        });
+
+        return true;
+    }
 }
