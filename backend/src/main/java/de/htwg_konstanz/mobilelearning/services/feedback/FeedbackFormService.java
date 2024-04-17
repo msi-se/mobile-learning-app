@@ -1,7 +1,5 @@
 package de.htwg_konstanz.mobilelearning.services.feedback;
 
-import java.util.List;
-
 import org.bson.types.ObjectId;
 import org.eclipse.microprofile.jwt.JsonWebToken;
 import org.jboss.resteasy.reactive.RestPath;
@@ -18,7 +16,6 @@ import jakarta.ws.rs.DefaultValue;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.NotFoundException;
 import jakarta.ws.rs.POST;
-import jakarta.ws.rs.PUT;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.QueryParam;
@@ -65,51 +62,6 @@ public class FeedbackFormService {
 
         FeedbackForm feedbackFormWithQuestionContents = feedbackForm.copyWithoutResultsButWithQuestionContents(course);
         return feedbackFormWithQuestionContents;
-    }
-
-    /**
-     * Updates a feedback form.
-     * User has to be owner to update the form.
-     * 
-     * @param courseId
-     * @param formId
-     * @param feedbackForm
-     * @return Updated feedback form
-     */
-    @PUT
-    @Produces(MediaType.APPLICATION_JSON)
-    @Path("/{formId}")
-    @RolesAllowed({ UserRole.PROF })
-    public FeedbackForm updateFeedbackForm(@RestPath String courseId, @RestPath String formId, FeedbackForm feedbackForm) {
-        ObjectId courseObjectId = new ObjectId(courseId);
-        ObjectId formObjectId = new ObjectId(formId);
-        Course course = courseRepository.findById(courseObjectId);
-        FeedbackForm feedbackFormToUpdate = course.getFeedbackFormById(formObjectId);
-        
-        if (feedbackFormToUpdate == null) {
-            throw new NotFoundException("Feedbackcourse not found");
-        }
-        if(!course.isOwner(jwt.getSubject())){
-            return null;
-        }
-        if (feedbackForm.description != null) {
-            feedbackFormToUpdate.description = feedbackForm.description;
-        }
-        if (feedbackForm.name != null) {
-            feedbackFormToUpdate.name = feedbackForm.name;
-        }
-        if (feedbackForm.questions != null) {
-            feedbackFormToUpdate.questions = feedbackForm.questions;
-        }
-        if (feedbackForm.connectCode != null) {
-            feedbackFormToUpdate.connectCode = feedbackForm.connectCode;
-        }
-        if (feedbackForm.status != null) {
-            feedbackFormToUpdate.status = feedbackForm.status;
-        }
-
-        courseRepository.update(course);
-        return feedbackFormToUpdate;
     }
 
     /**
@@ -212,6 +164,16 @@ public class FeedbackFormService {
         courseRepository.update(course);
 
         return RestResponse.ok("Successfully added");
+    }
+
+    @Path("/{formId}/downloadresults")
+    @GET
+    @Produces(MediaType.APPLICATION_OCTET_STREAM)
+    @RolesAllowed({ UserRole.STUDENT, UserRole.PROF })
+    public Response downloadResults(@RestPath String courseId, @RestPath String formId) {
+        Course course = courseRepository.findById(new ObjectId(courseId));
+        FeedbackForm feedbackForm = course.getFeedbackFormById(new ObjectId(formId));
+        return Response.ok(feedbackForm.getResultsAsCsv(course)).header("Content-Disposition", "attachment; filename=results_" + feedbackForm.name + ".csv").build();
     }
 
 }
