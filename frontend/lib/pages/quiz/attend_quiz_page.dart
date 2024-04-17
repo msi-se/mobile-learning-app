@@ -606,6 +606,21 @@ class _AttendQuizPageState extends AuthState<AttendQuizPage> {
                     });
                   },
                 ),
+              if (!_form!.currentQuestionFinished && _voted)
+                Container(
+                    margin: const EdgeInsets.only(
+                        top: 0.0,
+                        bottom: 100.0), // specify the top and bottom margin
+
+                    width: 130,
+                    height: 130,
+                    child: RiveAnimation.asset(
+                      'assets/animations/rive/animations.riv',
+                      fit: BoxFit.cover,
+                      artboard: 'true & false',
+                      stateMachines: ['tf State Machine'],
+                      onInit: _onRiveInit,
+                    )),
               if (_form!.currentQuestionFinished && _voted)
                 Container(
                     margin: const EdgeInsets.only(
