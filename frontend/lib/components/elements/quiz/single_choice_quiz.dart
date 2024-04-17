@@ -44,7 +44,7 @@ class _SingleChoiceQuizState extends State<SingleChoiceQuiz> {
     // try to parse the value to int
     if (widget.value != null) {
       try {
-        _selection = int.parse(widget.value);
+        _selection = widget.value;
       } catch (e) {
         _selection = -1;
       }
