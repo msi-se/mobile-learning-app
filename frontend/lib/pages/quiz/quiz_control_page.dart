@@ -155,6 +155,7 @@ class _QuizControlPageState extends AuthState<QuizControlPage> {
       if (data["action"] == "FORM_STATUS_CHANGED") {
         var form = QuizForm.fromJson(data["form"]);
         setState(() {
+          _showLeaderboard = false;
           _form.status = FormStatus.fromString(data["formStatus"]);
           _form.currentQuestionIndex = form.currentQuestionIndex;
           _form.currentQuestionFinished = form.currentQuestionFinished;
@@ -264,9 +265,6 @@ class _QuizControlPageState extends AuthState<QuizControlPage> {
             "userId": _userId,
           }));
         }
-        setState(() {
-          _showLeaderboard = false;
-        });
       } else {
         // Show the leaderboard first before moving to the next question
         setState(() {
