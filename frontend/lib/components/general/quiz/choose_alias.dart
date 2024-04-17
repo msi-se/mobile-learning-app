@@ -93,19 +93,23 @@ class _ChooseAliasState extends State<ChooseAlias> {
                         ),
                       ),
                     ),
-                    ElevatedButton(
-                      onPressed: () {
-                        _onSubmit();
-                      },
-                      style: ElevatedButton.styleFrom(
-                        padding: EdgeInsets.zero,
-                        shape: const CircleBorder(),
-                        fixedSize: const Size(50, 50),
-                        backgroundColor: colors.primary,
-                      ),
-                      child: Icon(
-                        Icons.arrow_forward,
-                        color: colors.background,
+                    SizedBox(
+                      width: 50,
+                      height: 50,
+                      child: ElevatedButton(
+                        onPressed: () {
+                          _onSubmit();
+                        },
+                        style: ElevatedButton.styleFrom(
+                          padding: EdgeInsets.zero,
+                          shape: const CircleBorder(),
+                          fixedSize: const Size(50, 50),
+                          backgroundColor: colors.primary,
+                        ),
+                        child: Icon(
+                          Icons.arrow_forward,
+                          color: colors.background,
+                        ),
                       ),
                     ),
                   ],
