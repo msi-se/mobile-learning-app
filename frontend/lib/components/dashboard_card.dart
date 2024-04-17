@@ -19,8 +19,7 @@ class DashboardCard extends StatefulWidget {
   State<DashboardCard> createState() => _DashboardCardState();
 }
 
-class _DashboardCardState extends State<DashboardCard>
-    with SingleTickerProviderStateMixin {
+class _DashboardCardState extends State<DashboardCard> with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<double> _animation;
 
@@ -31,15 +30,13 @@ class _DashboardCardState extends State<DashboardCard>
       duration: const Duration(milliseconds: 400),
       vsync: this,
     );
-
     _animation = CurvedAnimation(
       parent: _controller,
       curve: Curves.easeOut,
     );
-
     _controller.forward();
   }
-
+  
   void _displayDisabledDialog() {
     showDialog(
       context: context,
@@ -60,6 +57,10 @@ class _DashboardCardState extends State<DashboardCard>
 
   @override
   Widget build(BuildContext context) {
+    double screenWidth = MediaQuery.of(context).size.width;
+    double imageSize = screenWidth * 0.25; // 25% der Bildschirmbreite
+    imageSize = imageSize.clamp(80.0, 150.0); // Begrenzung der Größe zwischen 80 und 150 Pixeln
+
     return GestureDetector(
       onTap: widget.enabled ? widget.onTap : _displayDisabledDialog,
       child: ScaleTransition(
@@ -74,8 +75,8 @@ class _DashboardCardState extends State<DashboardCard>
             children: [
               SvgPicture.asset(
                 widget.svgImage,
-                height: 110,
-                width: 110,
+                height: imageSize,
+                width: imageSize,
                 colorFilter: widget.enabled
                     ? null
                     : ColorFilter.mode(Colors.grey[300]!, BlendMode.saturation),
