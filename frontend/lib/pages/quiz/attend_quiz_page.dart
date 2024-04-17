@@ -379,7 +379,7 @@ class _AttendQuizPageState extends AuthState<AttendQuizPage> {
           0,
           Throw(
               key: UniqueKey(),
-              throwType: ThrowType.paperPlane,
+              throwType: type,
               clickX: dX,
               clickY: dY));
       print(_animations.length);
@@ -498,6 +498,11 @@ class _AttendQuizPageState extends AuthState<AttendQuizPage> {
                   ],
                 ),
               ),
+              IgnorePointer(
+                child: Stack(
+                  children: _animations,
+                ),
+              )
             ],
           ),
         );
