@@ -268,6 +268,13 @@ class _AttendQuizPageState extends AuthState<AttendQuizPage> {
           _hitBump();
         }
       }
+      // if action is ALREADY_SUBMITTED, the user has already submitted feedback
+      if (data["action"] == "ALREADY_SUBMITTED") {
+        setState(() {
+          _voted = true;
+          _value = data["userAnswers"][0];
+        });
+      }
       if (data["action"] == "FUN") {
         if (data["fun"]["action"] == "THROW_PAPER_PLANE") {
           double percentageX = data["fun"]["percentageX"];
@@ -351,10 +358,15 @@ class _AttendQuizPageState extends AuthState<AttendQuizPage> {
 
     setState(() {
       _animations.insert(
-          0, Throw(key: UniqueKey(), throwType: ThrowType.paperPlane, clickX: dX, clickY: dY));
+          0,
+          Throw(
+              key: UniqueKey(),
+              throwType: ThrowType.paperPlane,
+              clickX: dX,
+              clickY: dY));
       print(_animations.length);
     });
-    
+
     Future.delayed(const Duration(milliseconds: 2500), () {
       if (!mounted) return;
       setState(() {
