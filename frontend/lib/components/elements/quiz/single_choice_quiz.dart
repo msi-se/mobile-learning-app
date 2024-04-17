@@ -41,6 +41,15 @@ class _SingleChoiceQuizState extends State<SingleChoiceQuiz> {
       _selection = -1;
     }
 
+    // try to parse the value to int
+    if (widget.value != null) {
+      try {
+        _selection = int.parse(widget.value);
+      } catch (e) {
+        _selection = -1;
+      }
+    }
+
     if (widget.correctAnswers.isEmpty) {
       return ListView.builder(
         shrinkWrap: true,

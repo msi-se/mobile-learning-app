@@ -24,8 +24,8 @@ class _LoginPageState extends State<LoginPage> {
   final usernameController = TextEditingController();
   final passwordController = TextEditingController();
   bool _isLoading = false;
+  bool _serverNotResponding = false;
   bool _isCheckingLoggedIn = true;
-
 
   @override
   void initState() {
@@ -58,15 +58,24 @@ class _LoginPageState extends State<LoginPage> {
     if (getSession() != null) {
       if (!JwtDecoder.isExpired(getSession()!.jwt)) {
         // check http /verify route 200 status code
-        final response = await http.get(
-          Uri.parse("${getBackendUrl()}/user/verify"),
-          headers: {
-            "Content-Type": "application/json",
-            "AUTHORIZATION": "Bearer ${getSession()!.jwt}"
-          },
-        );
-        if (response.statusCode == 200 && mounted) {
-          Navigator.pushReplacementNamed(context, '/main');
+        try {
+          final response = await http.get(
+            Uri.parse("${getBackendUrl()}/user/verify"),
+            headers: {
+              "Content-Type": "application/json",
+              "AUTHORIZATION": "Bearer ${getSession()!.jwt}"
+            },
+          ).timeout(const Duration(seconds: 4));
+          if (response.statusCode == 200 && mounted) {
+            Navigator.pushReplacementNamed(context, '/main');
+            return;
+          }
+        } catch (e) {
+          if (!mounted) return;
+          setState(() {
+            _serverNotResponding = true;
+            _isCheckingLoggedIn = false;
+          });
           return;
         }
       }
@@ -155,6 +164,29 @@ class _LoginPageState extends State<LoginPage> {
       return const Scaffold(
         body: Center(
           child: CircularProgressIndicator(),
+        ),
+      );
+    }
+
+    if (_serverNotResponding) {
+      return Scaffold(
+        body: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Text(
+                  'Es scheint, als hättest du keine Internetverbindung.'),
+              TextButton(
+                onPressed: () {
+                  setState(() {
+                    _serverNotResponding = false;
+                  });
+                  checkLoggedIn();
+                },
+                child: const Text('Erneut versuchen'),
+              )
+            ],
+          ),
         ),
       );
     }

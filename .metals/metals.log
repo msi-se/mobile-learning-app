@@ -1,0 +1,1038 @@
+2024.03.24 11:42:50 INFO  Started: Metals version 1.2.2 in folders '/Users/johannes/repos/mobile-learning-app/backend, /Users/johannes/repos/mobile-learning-app' for client Visual Studio Code 1.87.2.
+11:42:50.574 [pool-1-thread-1] INFO org.flywaydb.core.internal.license.VersionPrinter -- Flyway Community Edition 9.22.3 by Redgate
+11:42:50.576 [pool-1-thread-1] INFO org.flywaydb.core.internal.license.VersionPrinter -- See release notes here: https://rd.gt/416ObMi
+11:42:50.576 [pool-1-thread-1] INFO org.flywaydb.core.internal.license.VersionPrinter -- 
+11:42:50.577 [pool-1-thread-1] DEBUG org.flywaydb.core.internal.scanner.classpath.ClassPathScanner -- Scanning for classpath resources at 'classpath:db/callback' ...
+11:42:50.577 [pool-1-thread-1] DEBUG org.flywaydb.core.internal.scanner.classpath.ClassPathScanner -- Determining location urls for classpath:db/callback using ClassLoader jdk.internal.loader.ClassLoaders$AppClassLoader@1cf4f579 ...
+11:42:50.577 [pool-1-thread-1] DEBUG org.flywaydb.core.internal.scanner.classpath.ClassPathScanner -- Unable to resolve location classpath:db/callback.
+11:42:50.577 [pool-1-thread-1] DEBUG org.flywaydb.core.internal.scanner.classpath.ClassPathScanner -- Scanning for classpath resources at 'classpath:db/migration' ...
+11:42:50.577 [pool-1-thread-1] DEBUG org.flywaydb.core.internal.scanner.classpath.ClassPathScanner -- Determining location urls for classpath:db/migration using ClassLoader jdk.internal.loader.ClassLoaders$AppClassLoader@1cf4f579 ...
+11:42:50.578 [pool-1-thread-1] DEBUG org.flywaydb.core.internal.scanner.classpath.ClassPathScanner -- Scanning URL: jar:file:/Users/johannes/Library/Caches/Coursier/v1/https/repo1.maven.org/maven2/org/scalameta/metals_2.13/1.2.2/metals_2.13-1.2.2.jar!/db/migration
+11:42:50.584 [pool-1-thread-1] DEBUG org.flywaydb.core.internal.scanner.classpath.ClassPathScanner -- Found resource: db/migration/
+11:42:50.584 [pool-1-thread-1] DEBUG org.flywaydb.core.internal.scanner.classpath.ClassPathScanner -- Found resource: db/migration/V1__Create_tables.sql
+11:42:50.584 [pool-1-thread-1] DEBUG org.flywaydb.core.internal.scanner.classpath.ClassPathScanner -- Found resource: db/migration/V2__Server_discovery.sql
+11:42:50.584 [pool-1-thread-1] DEBUG org.flywaydb.core.internal.scanner.classpath.ClassPathScanner -- Found resource: db/migration/V3__Jar_symbols.sql
+11:42:50.584 [pool-1-thread-1] DEBUG org.flywaydb.core.internal.scanner.classpath.ClassPathScanner -- Found resource: db/migration/V4__Fingerprints.sql
+11:42:50.584 [pool-1-thread-1] DEBUG org.flywaydb.core.internal.scanner.classpath.ClassPathScanner -- Scanning for classes at classpath:db/migration
+11:42:50.587 [pool-1-thread-1] DEBUG org.flywaydb.core.internal.scanner.Scanner -- Filtering out resource: db/migration/ (filename: )
+11:42:50.587 [pool-1-thread-1] DEBUG org.flywaydb.core.internal.resource.ResourceNameValidator -- Validating V1__Create_tables.sql
+11:42:50.588 [pool-1-thread-1] DEBUG org.flywaydb.core.internal.resource.ResourceNameValidator -- Validating V3__Jar_symbols.sql
+11:42:50.588 [pool-1-thread-1] DEBUG org.flywaydb.core.internal.resource.ResourceNameValidator -- Validating V2__Server_discovery.sql
+11:42:50.588 [pool-1-thread-1] DEBUG org.flywaydb.core.internal.resource.ResourceNameValidator -- Validating V4__Fingerprints.sql
+11:42:50.642 [pool-1-thread-1] INFO org.flywaydb.core.FlywayExecutor -- Database: jdbc:h2:file:/Users/johannes/repos/mobile-learning-app/backend/.metals/metals (H2 2.2)
+11:42:50.642 [pool-1-thread-1] DEBUG org.flywaydb.core.FlywayExecutor -- Driver: H2 JDBC Driver 2.2.224 (2023-09-17)
+11:42:50.642 [pool-1-thread-1] DEBUG org.flywaydb.core.FlywayExecutor -- DDL Transactions Supported: false
+11:42:50.643 [pool-1-thread-1] DEBUG org.flywaydb.core.internal.schemahistory.SchemaHistoryFactory -- Schemas: 
+11:42:50.643 [pool-1-thread-1] DEBUG org.flywaydb.core.internal.schemahistory.SchemaHistoryFactory -- Default schema: null
+11:42:50.646 [pool-1-thread-1] WARN org.flywaydb.core.internal.database.base.Database -- Flyway upgrade recommended: H2 2.2.224 is newer than this version of Flyway and support has not been tested. The latest supported version of H2 is 2.2.220.
+11:42:50.647 [pool-1-thread-1] DEBUG org.flywaydb.core.internal.callback.SqlScriptCallbackFactory -- Scanning for SQL callbacks ...
+11:42:50.647 [pool-1-thread-1] DEBUG org.flywaydb.core.internal.scanner.Scanner -- Filtering out resource: db/migration/ (filename: )
+11:42:50.650 [pool-1-thread-1] DEBUG org.flywaydb.core.internal.command.DbValidate -- Validating migrations ...
+11:42:50.652 [pool-1-thread-1] DEBUG org.flywaydb.core.internal.scanner.Scanner -- Filtering out resource: db/migration/ (filename: )
+11:42:50.657 [pool-1-thread-1] DEBUG org.flywaydb.core.internal.scanner.Scanner -- Filtering out resource: db/migration/ (filename: )
+11:42:50.657 [pool-1-thread-1] DEBUG org.flywaydb.core.internal.scanner.Scanner -- Filtering out resource: db/migration/V1__Create_tables.sql (filename: V1__Create_tables.sql)
+11:42:50.657 [pool-1-thread-1] DEBUG org.flywaydb.core.internal.scanner.Scanner -- Filtering out resource: db/migration/V3__Jar_symbols.sql (filename: V3__Jar_symbols.sql)
+11:42:50.657 [pool-1-thread-1] DEBUG org.flywaydb.core.internal.scanner.Scanner -- Filtering out resource: db/migration/V2__Server_discovery.sql (filename: V2__Server_discovery.sql)
+11:42:50.657 [pool-1-thread-1] DEBUG org.flywaydb.core.internal.scanner.Scanner -- Filtering out resource: db/migration/V4__Fingerprints.sql (filename: V4__Fingerprints.sql)
+11:42:50.657 [pool-1-thread-1] DEBUG org.flywaydb.core.internal.scanner.Scanner -- Filtering out resource: db/migration/ (filename: )
+11:42:50.657 [pool-1-thread-1] DEBUG org.flywaydb.core.internal.scanner.Scanner -- Filtering out resource: db/migration/V1__Create_tables.sql (filename: V1__Create_tables.sql)
+11:42:50.657 [pool-1-thread-1] DEBUG org.flywaydb.core.internal.scanner.Scanner -- Filtering out resource: db/migration/V3__Jar_symbols.sql (filename: V3__Jar_symbols.sql)
+11:42:50.657 [pool-1-thread-1] DEBUG org.flywaydb.core.internal.scanner.Scanner -- Filtering out resource: db/migration/V2__Server_discovery.sql (filename: V2__Server_discovery.sql)
+11:42:50.657 [pool-1-thread-1] DEBUG org.flywaydb.core.internal.scanner.Scanner -- Filtering out resource: db/migration/V4__Fingerprints.sql (filename: V4__Fingerprints.sql)
+11:42:50.658 [pool-1-thread-1] INFO org.flywaydb.core.internal.schemahistory.JdbcTableSchemaHistory -- Schema history table "PUBLIC"."flyway_schema_history" does not exist yet
+11:42:50.659 [pool-1-thread-1] INFO org.flywaydb.core.internal.command.DbValidate -- Successfully validated 4 migrations (execution time 00:00.008s)
+11:42:50.660 [pool-1-thread-1] DEBUG org.flywaydb.core.internal.command.DbSchemas -- Skipping creation of existing schema: "PUBLIC"
+11:42:50.662 [pool-1-thread-1] INFO org.flywaydb.core.internal.schemahistory.JdbcTableSchemaHistory -- Creating Schema History table "PUBLIC"."flyway_schema_history" ...
+11:42:50.664 [pool-1-thread-1] DEBUG org.flywaydb.core.internal.parser.Parser -- Parsing  ...
+11:42:50.668 [pool-1-thread-1] DEBUG org.flywaydb.core.internal.sqlscript.ParserSqlScript -- Found statement at line 1: CREATE TABLE IF NOT EXISTS "PUBLIC"."flyway_schema_history" (
+    "installed_rank" INT NOT NULL,
+    "version" VARCHAR(50),
+    "description" VARCHAR(200) NOT NULL,
+    "type" VARCHAR(20) NOT NULL,
+    "script" VARCHAR(1000) NOT NULL,
+    "checksum" INT,
+    "installed_by" VARCHAR(100) NOT NULL,
+    "installed_on" TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "execution_time" INT NOT NULL,
+    "success" BOOLEAN NOT NULL,
+    CONSTRAINT "flyway_schema_history_pk" PRIMARY KEY ("installed_rank")
+) AS SELECT -1, NULL, '<< Flyway Schema History table created >>', 'TABLE', '', NULL, 'SA', CURRENT_TIMESTAMP, 0, TRUE
+11:42:50.669 [pool-1-thread-1] DEBUG org.flywaydb.core.internal.sqlscript.ParserSqlScript -- Found statement at line 14: CREATE INDEX "PUBLIC"."flyway_schema_history_s_idx" ON "PUBLIC"."flyway_schema_history" ("success")
+11:42:50.669 [pool-1-thread-1] DEBUG org.flywaydb.core.internal.sqlscript.DefaultSqlScriptExecutor -- Executing SQL: CREATE TABLE IF NOT EXISTS "PUBLIC"."flyway_schema_history" (
+    "installed_rank" INT NOT NULL,
+    "version" VARCHAR(50),
+    "description" VARCHAR(200) NOT NULL,
+    "type" VARCHAR(20) NOT NULL,
+    "script" VARCHAR(1000) NOT NULL,
+    "checksum" INT,
+    "installed_by" VARCHAR(100) NOT NULL,
+    "installed_on" TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "execution_time" INT NOT NULL,
+    "success" BOOLEAN NOT NULL,
+    CONSTRAINT "flyway_schema_history_pk" PRIMARY KEY ("installed_rank")
+) AS SELECT -1, NULL, '<< Flyway Schema History table created >>', 'TABLE', '', NULL, 'SA', CURRENT_TIMESTAMP, 0, TRUE
+11:42:50.670 [pool-1-thread-1] DEBUG org.flywaydb.core.internal.sqlscript.DefaultSqlScriptExecutor -- 0 rows affected
+11:42:50.670 [pool-1-thread-1] DEBUG org.flywaydb.core.internal.sqlscript.DefaultSqlScriptExecutor -- Executing SQL: CREATE INDEX "PUBLIC"."flyway_schema_history_s_idx" ON "PUBLIC"."flyway_schema_history" ("success")
+11:42:50.673 [pool-1-thread-1] DEBUG org.flywaydb.core.internal.sqlscript.DefaultSqlScriptExecutor -- 0 rows affected
+11:42:50.673 [pool-1-thread-1] DEBUG org.flywaydb.core.internal.schemahistory.JdbcTableSchemaHistory -- Created Schema History table "PUBLIC"."flyway_schema_history"
+11:42:50.680 [pool-1-thread-1] INFO org.flywaydb.core.internal.command.DbMigrate -- Current version of schema "PUBLIC": << Empty Schema >>
+11:42:50.681 [pool-1-thread-1] DEBUG org.flywaydb.core.internal.parser.Parser -- Parsing V1__Create_tables.sql ...
+11:42:50.683 [pool-1-thread-1] DEBUG org.flywaydb.core.internal.sqlscript.ParserSqlScript -- Found statement at line 4: -- The relationship between library dependency sources under .metals/readonly/**
+-- and build targets they belong to. Required to know what classpath to use
+-- for compiling dependency sources.
+create table dependency_source(
+  text_document_uri varchar primary key,
+  build_target_uri varchar not null
+)
+11:42:50.686 [pool-1-thread-1] DEBUG org.flywaydb.core.internal.sqlscript.ParserSqlScript -- Found statement at line 12: -- The relationship between library dependency sources under .metals/readonly/**
+-- and worksheets they belong to. Required to know what classpath to use
+-- for compiling dependency sources.
+create table worksheet_dependency_source(
+  text_document_uri varchar primary key,
+  worksheet_uri varchar not null
+)
+11:42:50.687 [pool-1-thread-1] DEBUG org.flywaydb.core.internal.sqlscript.ParserSqlScript -- Found statement at line 19: -- The relationship between what library dependency sources under .metals/readonly/**
+-- map to which build targets.
+create table sbt_digest(
+  md5 varchar,
+  status tinyint not null,
+  when_recorded timestamp
+)
+11:42:50.688 [pool-1-thread-1] DEBUG org.flywaydb.core.internal.sqlscript.ParserSqlScript -- Found statement at line 27: -- Which window/showMessage and window/showMessageRequest dialogues have been dismissed
+-- by the user via "Don't show again" or closed by clicking on "x".
+create table dismissed_notification(
+  id int,
+  when_dismissed timestamp,
+  when_expires timestamp
+)
+11:42:50.688 [pool-1-thread-1] DEBUG org.flywaydb.core.internal.sqlscript.ParserSqlScript -- Found statement at line 34: -- The choice of build tool when multiple build tool files are found in a workspace
+create table chosen_build_tool(
+  build_tool varchar primary key
+)
+11:42:50.690 [pool-1-thread-1] DEBUG org.flywaydb.core.internal.command.DbMigrate -- Starting migration of schema "PUBLIC" to version "1 - Create tables" ...
+11:42:50.692 [pool-1-thread-1] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "PUBLIC" to version "1 - Create tables"
+11:42:50.694 [pool-1-thread-1] DEBUG org.flywaydb.core.internal.sqlscript.DefaultSqlScriptExecutor -- Executing SQL: -- The relationship between library dependency sources under .metals/readonly/**
+-- and build targets they belong to. Required to know what classpath to use
+-- for compiling dependency sources.
+create table dependency_source(
+  text_document_uri varchar primary key,
+  build_target_uri varchar not null
+)
+11:42:50.696 [pool-1-thread-1] DEBUG org.flywaydb.core.internal.sqlscript.DefaultSqlScriptExecutor -- 0 rows affected
+11:42:50.696 [pool-1-thread-1] DEBUG org.flywaydb.core.internal.sqlscript.DefaultSqlScriptExecutor -- Executing SQL: -- The relationship between library dependency sources under .metals/readonly/**
+-- and worksheets they belong to. Required to know what classpath to use
+-- for compiling dependency sources.
+create table worksheet_dependency_source(
+  text_document_uri varchar primary key,
+  worksheet_uri varchar not null
+)
+11:42:50.698 [pool-1-thread-1] DEBUG org.flywaydb.core.internal.sqlscript.DefaultSqlScriptExecutor -- 0 rows affected
+11:42:50.698 [pool-1-thread-1] DEBUG org.flywaydb.core.internal.sqlscript.DefaultSqlScriptExecutor -- Executing SQL: -- The relationship between what library dependency sources under .metals/readonly/**
+-- map to which build targets.
+create table sbt_digest(
+  md5 varchar,
+  status tinyint not null,
+  when_recorded timestamp
+)
+11:42:50.700 [pool-1-thread-1] DEBUG org.flywaydb.core.internal.sqlscript.DefaultSqlScriptExecutor -- 0 rows affected
+11:42:50.700 [pool-1-thread-1] DEBUG org.flywaydb.core.internal.sqlscript.DefaultSqlScriptExecutor -- Executing SQL: -- Which window/showMessage and window/showMessageRequest dialogues have been dismissed
+-- by the user via "Don't show again" or closed by clicking on "x".
+create table dismissed_notification(
+  id int,
+  when_dismissed timestamp,
+  when_expires timestamp
+)
+11:42:50.700 [pool-1-thread-1] DEBUG org.flywaydb.core.internal.sqlscript.DefaultSqlScriptExecutor -- 0 rows affected
+11:42:50.700 [pool-1-thread-1] DEBUG org.flywaydb.core.internal.sqlscript.DefaultSqlScriptExecutor -- Executing SQL: -- The choice of build tool when multiple build tool files are found in a workspace
+create table chosen_build_tool(
+  build_tool varchar primary key
+)
+11:42:50.701 [pool-1-thread-1] DEBUG org.flywaydb.core.internal.sqlscript.DefaultSqlScriptExecutor -- 0 rows affected
+11:42:50.702 [pool-1-thread-1] DEBUG org.flywaydb.core.internal.command.DbMigrate -- Successfully completed migration of schema "PUBLIC" to version "1 - Create tables"
+11:42:50.705 [pool-1-thread-1] DEBUG org.flywaydb.core.internal.schemahistory.JdbcTableSchemaHistory -- Schema History table "PUBLIC"."flyway_schema_history" successfully updated to reflect changes
+11:42:50.758 [pool-1-thread-1] DEBUG org.flywaydb.core.internal.parser.Parser -- Parsing V2__Server_discovery.sql ...
+11:42:50.760 [pool-1-thread-1] DEBUG org.flywaydb.core.internal.sqlscript.ParserSqlScript -- Found statement at line 4: -- For each unique combination of installed build servers we select one server.
+-- The md5 checksum is computed from the names of the installed build servers, and
+-- the selected server is the server which the user chose for this workspace.
+create table chosen_build_server(
+  md5 varchar primary key,
+  selected_server varchar,
+  when_recorded timestamp
+)
+11:42:50.760 [pool-1-thread-1] DEBUG org.flywaydb.core.internal.command.DbMigrate -- Starting migration of schema "PUBLIC" to version "2 - Server discovery" ...
+11:42:50.760 [pool-1-thread-1] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "PUBLIC" to version "2 - Server discovery"
+11:42:50.761 [pool-1-thread-1] DEBUG org.flywaydb.core.internal.sqlscript.DefaultSqlScriptExecutor -- Executing SQL: -- For each unique combination of installed build servers we select one server.
+-- The md5 checksum is computed from the names of the installed build servers, and
+-- the selected server is the server which the user chose for this workspace.
+create table chosen_build_server(
+  md5 varchar primary key,
+  selected_server varchar,
+  when_recorded timestamp
+)
+11:42:50.761 [pool-1-thread-1] DEBUG org.flywaydb.core.internal.sqlscript.DefaultSqlScriptExecutor -- 0 rows affected
+11:42:50.761 [pool-1-thread-1] DEBUG org.flywaydb.core.internal.command.DbMigrate -- Successfully completed migration of schema "PUBLIC" to version "2 - Server discovery"
+11:42:50.763 [pool-1-thread-1] DEBUG org.flywaydb.core.internal.schemahistory.JdbcTableSchemaHistory -- Schema History table "PUBLIC"."flyway_schema_history" successfully updated to reflect changes
+11:42:50.765 [pool-1-thread-1] DEBUG org.flywaydb.core.internal.parser.Parser -- Parsing V3__Jar_symbols.sql ...
+11:42:50.766 [pool-1-thread-1] DEBUG org.flywaydb.core.internal.sqlscript.ParserSqlScript -- Found statement at line 2: -- Indexed jars, the MD5 digest of path, modified time and size as key
+create table indexed_jar(
+  id int auto_increment unique,
+  md5 varchar primary key
+)
+11:42:50.766 [pool-1-thread-1] DEBUG org.flywaydb.core.internal.sqlscript.ParserSqlScript -- Found statement at line 7: -- Top Level Symbols per jar, allow for multiple jars with same symbols and paths
+create table toplevel_symbol(
+  symbol varchar not null,
+  path varchar not null,
+  jar int,
+  foreign key (jar) references indexed_jar (id) on delete cascade,
+  primary key (jar, path, symbol)
+)
+11:42:50.769 [pool-1-thread-1] DEBUG org.flywaydb.core.internal.sqlscript.ParserSqlScript -- Found statement at line 15: -- Create index to speedup lookup of jar symbols
+create index toplevel_symbol_jar on toplevel_symbol(jar)
+11:42:50.770 [pool-1-thread-1] DEBUG org.flywaydb.core.internal.command.DbMigrate -- Starting migration of schema "PUBLIC" to version "3 - Jar symbols" ...
+11:42:50.771 [pool-1-thread-1] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "PUBLIC" to version "3 - Jar symbols"
+11:42:50.771 [pool-1-thread-1] DEBUG org.flywaydb.core.internal.sqlscript.DefaultSqlScriptExecutor -- Executing SQL: -- Indexed jars, the MD5 digest of path, modified time and size as key
+create table indexed_jar(
+  id int auto_increment unique,
+  md5 varchar primary key
+)
+11:42:50.786 [pool-1-thread-1] DEBUG org.flywaydb.core.internal.sqlscript.DefaultSqlScriptExecutor -- 0 rows affected
+11:42:50.787 [pool-1-thread-1] DEBUG org.flywaydb.core.internal.sqlscript.DefaultSqlScriptExecutor -- Executing SQL: -- Top Level Symbols per jar, allow for multiple jars with same symbols and paths
+create table toplevel_symbol(
+  symbol varchar not null,
+  path varchar not null,
+  jar int,
+  foreign key (jar) references indexed_jar (id) on delete cascade,
+  primary key (jar, path, symbol)
+)
+11:42:50.791 [pool-1-thread-1] DEBUG org.flywaydb.core.internal.sqlscript.DefaultSqlScriptExecutor -- 0 rows affected
+11:42:50.791 [pool-1-thread-1] DEBUG org.flywaydb.core.internal.sqlscript.DefaultSqlScriptExecutor -- Executing SQL: -- Create index to speedup lookup of jar symbols
+create index toplevel_symbol_jar on toplevel_symbol(jar)
+11:42:50.792 [pool-1-thread-1] DEBUG org.flywaydb.core.internal.sqlscript.DefaultSqlScriptExecutor -- 0 rows affected
+11:42:50.792 [pool-1-thread-1] DEBUG org.flywaydb.core.internal.command.DbMigrate -- Successfully completed migration of schema "PUBLIC" to version "3 - Jar symbols"
+11:42:50.792 [pool-1-thread-1] DEBUG org.flywaydb.core.internal.schemahistory.JdbcTableSchemaHistory -- Schema History table "PUBLIC"."flyway_schema_history" successfully updated to reflect changes
+11:42:50.795 [pool-1-thread-1] DEBUG org.flywaydb.core.internal.parser.Parser -- Parsing V4__Fingerprints.sql ...
+11:42:50.797 [pool-1-thread-1] DEBUG org.flywaydb.core.internal.sqlscript.ParserSqlScript -- Found statement at line 2: -- Fingerprints saved between invocations
+create table fingerprints(
+  path varchar not null,
+  text varchar not null,
+  md5 varchar not null,
+  id int auto_increment unique
+)
+11:42:50.797 [pool-1-thread-1] DEBUG org.flywaydb.core.internal.command.DbMigrate -- Starting migration of schema "PUBLIC" to version "4 - Fingerprints" ...
+11:42:50.797 [pool-1-thread-1] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "PUBLIC" to version "4 - Fingerprints"
+11:42:50.797 [pool-1-thread-1] DEBUG org.flywaydb.core.internal.sqlscript.DefaultSqlScriptExecutor -- Executing SQL: -- Fingerprints saved between invocations
+create table fingerprints(
+  path varchar not null,
+  text varchar not null,
+  md5 varchar not null,
+  id int auto_increment unique
+)
+11:42:50.798 [pool-1-thread-1] DEBUG org.flywaydb.core.internal.sqlscript.DefaultSqlScriptExecutor -- 0 rows affected
+11:42:50.798 [pool-1-thread-1] DEBUG org.flywaydb.core.internal.command.DbMigrate -- Successfully completed migration of schema "PUBLIC" to version "4 - Fingerprints"
+11:42:50.799 [pool-1-thread-1] DEBUG org.flywaydb.core.internal.schemahistory.JdbcTableSchemaHistory -- Schema History table "PUBLIC"."flyway_schema_history" successfully updated to reflect changes
+11:42:50.802 [pool-1-thread-1] INFO org.flywaydb.core.internal.command.DbMigrate -- Successfully applied 4 migrations to schema "PUBLIC", now at version v4 (execution time 00:00.034s)
+11:42:50.815 [pool-1-thread-1] DEBUG org.flywaydb.core.FlywayExecutor -- Memory usage: 35 of 104M
+11:42:50.983 [pool-1-thread-3] DEBUG org.flywaydb.core.internal.scanner.classpath.ClassPathScanner -- Scanning for classpath resources at 'classpath:db/callback' ...
+11:42:50.983 [pool-1-thread-3] DEBUG org.flywaydb.core.internal.scanner.classpath.ClassPathScanner -- Determining location urls for classpath:db/callback using ClassLoader jdk.internal.loader.ClassLoaders$AppClassLoader@1cf4f579 ...
+11:42:50.983 [pool-1-thread-3] DEBUG org.flywaydb.core.internal.scanner.classpath.ClassPathScanner -- Unable to resolve location classpath:db/callback.
+11:42:50.983 [pool-1-thread-3] DEBUG org.flywaydb.core.internal.scanner.classpath.ClassPathScanner -- Scanning for classpath resources at 'classpath:db/migration' ...
+11:42:50.984 [pool-1-thread-3] DEBUG org.flywaydb.core.internal.scanner.classpath.ClassPathScanner -- Determining location urls for classpath:db/migration using ClassLoader jdk.internal.loader.ClassLoaders$AppClassLoader@1cf4f579 ...
+11:42:50.984 [pool-1-thread-3] DEBUG org.flywaydb.core.internal.scanner.classpath.ClassPathScanner -- Scanning URL: jar:file:/Users/johannes/Library/Caches/Coursier/v1/https/repo1.maven.org/maven2/org/scalameta/metals_2.13/1.2.2/metals_2.13-1.2.2.jar!/db/migration
+11:42:50.984 [pool-1-thread-3] DEBUG org.flywaydb.core.internal.scanner.classpath.ClassPathScanner -- Found resource: db/migration/
+11:42:50.984 [pool-1-thread-3] DEBUG org.flywaydb.core.internal.scanner.classpath.ClassPathScanner -- Found resource: db/migration/V1__Create_tables.sql
+11:42:50.984 [pool-1-thread-3] DEBUG org.flywaydb.core.internal.scanner.classpath.ClassPathScanner -- Found resource: db/migration/V2__Server_discovery.sql
+11:42:50.984 [pool-1-thread-3] DEBUG org.flywaydb.core.internal.scanner.classpath.ClassPathScanner -- Found resource: db/migration/V3__Jar_symbols.sql
+11:42:50.984 [pool-1-thread-3] DEBUG org.flywaydb.core.internal.scanner.classpath.ClassPathScanner -- Found resource: db/migration/V4__Fingerprints.sql
+11:42:50.984 [pool-1-thread-3] DEBUG org.flywaydb.core.internal.scanner.classpath.ClassPathScanner -- Scanning for classes at classpath:db/migration
+11:42:50.985 [pool-1-thread-3] DEBUG org.flywaydb.core.internal.scanner.Scanner -- Filtering out resource: db/migration/ (filename: )
+11:42:50.985 [pool-1-thread-3] DEBUG org.flywaydb.core.internal.resource.ResourceNameValidator -- Validating V1__Create_tables.sql
+11:42:50.985 [pool-1-thread-3] DEBUG org.flywaydb.core.internal.resource.ResourceNameValidator -- Validating V3__Jar_symbols.sql
+11:42:50.985 [pool-1-thread-3] DEBUG org.flywaydb.core.internal.resource.ResourceNameValidator -- Validating V2__Server_discovery.sql
+11:42:50.985 [pool-1-thread-3] DEBUG org.flywaydb.core.internal.resource.ResourceNameValidator -- Validating V4__Fingerprints.sql
+11:42:51.052 [pool-1-thread-3] INFO org.flywaydb.core.FlywayExecutor -- Database: jdbc:h2:file:/Users/johannes/repos/mobile-learning-app/.metals/metals (H2 2.2)
+11:42:51.053 [pool-1-thread-3] DEBUG org.flywaydb.core.FlywayExecutor -- Driver: H2 JDBC Driver 2.2.224 (2023-09-17)
+11:42:51.054 [pool-1-thread-3] DEBUG org.flywaydb.core.FlywayExecutor -- DDL Transactions Supported: false
+11:42:51.054 [pool-1-thread-3] DEBUG org.flywaydb.core.internal.schemahistory.SchemaHistoryFactory -- Schemas: 
+11:42:51.054 [pool-1-thread-3] DEBUG org.flywaydb.core.internal.schemahistory.SchemaHistoryFactory -- Default schema: null
+11:42:51.056 [pool-1-thread-3] WARN org.flywaydb.core.internal.database.base.Database -- Flyway upgrade recommended: H2 2.2.224 is newer than this version of Flyway and support has not been tested. The latest supported version of H2 is 2.2.220.
+11:42:51.056 [pool-1-thread-3] DEBUG org.flywaydb.core.internal.callback.SqlScriptCallbackFactory -- Scanning for SQL callbacks ...
+11:42:51.056 [pool-1-thread-3] DEBUG org.flywaydb.core.internal.scanner.Scanner -- Filtering out resource: db/migration/ (filename: )
+11:42:51.057 [pool-1-thread-3] DEBUG org.flywaydb.core.internal.command.DbValidate -- Validating migrations ...
+11:42:51.057 [pool-1-thread-3] DEBUG org.flywaydb.core.internal.scanner.Scanner -- Filtering out resource: db/migration/ (filename: )
+11:42:51.058 [pool-1-thread-3] DEBUG org.flywaydb.core.internal.scanner.Scanner -- Filtering out resource: db/migration/ (filename: )
+11:42:51.058 [pool-1-thread-3] DEBUG org.flywaydb.core.internal.scanner.Scanner -- Filtering out resource: db/migration/V1__Create_tables.sql (filename: V1__Create_tables.sql)
+11:42:51.058 [pool-1-thread-3] DEBUG org.flywaydb.core.internal.scanner.Scanner -- Filtering out resource: db/migration/V3__Jar_symbols.sql (filename: V3__Jar_symbols.sql)
+11:42:51.058 [pool-1-thread-3] DEBUG org.flywaydb.core.internal.scanner.Scanner -- Filtering out resource: db/migration/V2__Server_discovery.sql (filename: V2__Server_discovery.sql)
+11:42:51.058 [pool-1-thread-3] DEBUG org.flywaydb.core.internal.scanner.Scanner -- Filtering out resource: db/migration/V4__Fingerprints.sql (filename: V4__Fingerprints.sql)
+11:42:51.058 [pool-1-thread-3] DEBUG org.flywaydb.core.internal.scanner.Scanner -- Filtering out resource: db/migration/ (filename: )
+11:42:51.058 [pool-1-thread-3] DEBUG org.flywaydb.core.internal.scanner.Scanner -- Filtering out resource: db/migration/V1__Create_tables.sql (filename: V1__Create_tables.sql)
+11:42:51.058 [pool-1-thread-3] DEBUG org.flywaydb.core.internal.scanner.Scanner -- Filtering out resource: db/migration/V3__Jar_symbols.sql (filename: V3__Jar_symbols.sql)
+11:42:51.058 [pool-1-thread-3] DEBUG org.flywaydb.core.internal.scanner.Scanner -- Filtering out resource: db/migration/V2__Server_discovery.sql (filename: V2__Server_discovery.sql)
+11:42:51.058 [pool-1-thread-3] DEBUG org.flywaydb.core.internal.scanner.Scanner -- Filtering out resource: db/migration/V4__Fingerprints.sql (filename: V4__Fingerprints.sql)
+11:42:51.058 [pool-1-thread-3] INFO org.flywaydb.core.internal.schemahistory.JdbcTableSchemaHistory -- Schema history table "PUBLIC"."flyway_schema_history" does not exist yet
+11:42:51.059 [pool-1-thread-3] INFO org.flywaydb.core.internal.command.DbValidate -- Successfully validated 4 migrations (execution time 00:00.001s)
+11:42:51.059 [pool-1-thread-3] DEBUG org.flywaydb.core.internal.command.DbSchemas -- Skipping creation of existing schema: "PUBLIC"
+11:42:51.059 [pool-1-thread-3] INFO org.flywaydb.core.internal.schemahistory.JdbcTableSchemaHistory -- Creating Schema History table "PUBLIC"."flyway_schema_history" ...
+11:42:51.059 [pool-1-thread-3] DEBUG org.flywaydb.core.internal.parser.Parser -- Parsing  ...
+11:42:51.060 [pool-1-thread-3] DEBUG org.flywaydb.core.internal.sqlscript.ParserSqlScript -- Found statement at line 1: CREATE TABLE IF NOT EXISTS "PUBLIC"."flyway_schema_history" (
+    "installed_rank" INT NOT NULL,
+    "version" VARCHAR(50),
+    "description" VARCHAR(200) NOT NULL,
+    "type" VARCHAR(20) NOT NULL,
+    "script" VARCHAR(1000) NOT NULL,
+    "checksum" INT,
+    "installed_by" VARCHAR(100) NOT NULL,
+    "installed_on" TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "execution_time" INT NOT NULL,
+    "success" BOOLEAN NOT NULL,
+    CONSTRAINT "flyway_schema_history_pk" PRIMARY KEY ("installed_rank")
+) AS SELECT -1, NULL, '<< Flyway Schema History table created >>', 'TABLE', '', NULL, 'SA', CURRENT_TIMESTAMP, 0, TRUE
+11:42:51.060 [pool-1-thread-3] DEBUG org.flywaydb.core.internal.sqlscript.ParserSqlScript -- Found statement at line 14: CREATE INDEX "PUBLIC"."flyway_schema_history_s_idx" ON "PUBLIC"."flyway_schema_history" ("success")
+11:42:51.060 [pool-1-thread-3] DEBUG org.flywaydb.core.internal.sqlscript.DefaultSqlScriptExecutor -- Executing SQL: CREATE TABLE IF NOT EXISTS "PUBLIC"."flyway_schema_history" (
+    "installed_rank" INT NOT NULL,
+    "version" VARCHAR(50),
+    "description" VARCHAR(200) NOT NULL,
+    "type" VARCHAR(20) NOT NULL,
+    "script" VARCHAR(1000) NOT NULL,
+    "checksum" INT,
+    "installed_by" VARCHAR(100) NOT NULL,
+    "installed_on" TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "execution_time" INT NOT NULL,
+    "success" BOOLEAN NOT NULL,
+    CONSTRAINT "flyway_schema_history_pk" PRIMARY KEY ("installed_rank")
+) AS SELECT -1, NULL, '<< Flyway Schema History table created >>', 'TABLE', '', NULL, 'SA', CURRENT_TIMESTAMP, 0, TRUE
+2024.03.24 11:42:51 WARN  Build server is not auto-connectable.
+11:42:51.061 [pool-1-thread-3] DEBUG org.flywaydb.core.internal.sqlscript.DefaultSqlScriptExecutor -- 0 rows affected
+11:42:51.061 [pool-1-thread-3] DEBUG org.flywaydb.core.internal.sqlscript.DefaultSqlScriptExecutor -- Executing SQL: CREATE INDEX "PUBLIC"."flyway_schema_history_s_idx" ON "PUBLIC"."flyway_schema_history" ("success")
+11:42:51.061 [pool-1-thread-3] DEBUG org.flywaydb.core.internal.sqlscript.DefaultSqlScriptExecutor -- 0 rows affected
+11:42:51.061 [pool-1-thread-3] DEBUG org.flywaydb.core.internal.schemahistory.JdbcTableSchemaHistory -- Created Schema History table "PUBLIC"."flyway_schema_history"
+11:42:51.062 [pool-1-thread-3] INFO org.flywaydb.core.internal.command.DbMigrate -- Current version of schema "PUBLIC": << Empty Schema >>
+11:42:51.062 [pool-1-thread-3] DEBUG org.flywaydb.core.internal.parser.Parser -- Parsing V1__Create_tables.sql ...
+11:42:51.064 [pool-1-thread-3] DEBUG org.flywaydb.core.internal.sqlscript.ParserSqlScript -- Found statement at line 4: -- The relationship between library dependency sources under .metals/readonly/**
+-- and build targets they belong to. Required to know what classpath to use
+-- for compiling dependency sources.
+create table dependency_source(
+  text_document_uri varchar primary key,
+  build_target_uri varchar not null
+)
+11:42:51.064 [pool-1-thread-3] DEBUG org.flywaydb.core.internal.sqlscript.ParserSqlScript -- Found statement at line 12: -- The relationship between library dependency sources under .metals/readonly/**
+-- and worksheets they belong to. Required to know what classpath to use
+-- for compiling dependency sources.
+create table worksheet_dependency_source(
+  text_document_uri varchar primary key,
+  worksheet_uri varchar not null
+)
+11:42:51.064 [pool-1-thread-3] DEBUG org.flywaydb.core.internal.sqlscript.ParserSqlScript -- Found statement at line 19: -- The relationship between what library dependency sources under .metals/readonly/**
+-- map to which build targets.
+create table sbt_digest(
+  md5 varchar,
+  status tinyint not null,
+  when_recorded timestamp
+)
+11:42:51.065 [pool-1-thread-3] DEBUG org.flywaydb.core.internal.sqlscript.ParserSqlScript -- Found statement at line 27: -- Which window/showMessage and window/showMessageRequest dialogues have been dismissed
+-- by the user via "Don't show again" or closed by clicking on "x".
+create table dismissed_notification(
+  id int,
+  when_dismissed timestamp,
+  when_expires timestamp
+)
+11:42:51.065 [pool-1-thread-3] DEBUG org.flywaydb.core.internal.sqlscript.ParserSqlScript -- Found statement at line 34: -- The choice of build tool when multiple build tool files are found in a workspace
+create table chosen_build_tool(
+  build_tool varchar primary key
+)
+11:42:51.065 [pool-1-thread-3] DEBUG org.flywaydb.core.internal.command.DbMigrate -- Starting migration of schema "PUBLIC" to version "1 - Create tables" ...
+11:42:51.066 [pool-1-thread-3] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "PUBLIC" to version "1 - Create tables"
+11:42:51.066 [pool-1-thread-3] DEBUG org.flywaydb.core.internal.sqlscript.DefaultSqlScriptExecutor -- Executing SQL: -- The relationship between library dependency sources under .metals/readonly/**
+-- and build targets they belong to. Required to know what classpath to use
+-- for compiling dependency sources.
+create table dependency_source(
+  text_document_uri varchar primary key,
+  build_target_uri varchar not null
+)
+11:42:51.066 [pool-1-thread-3] DEBUG org.flywaydb.core.internal.sqlscript.DefaultSqlScriptExecutor -- 0 rows affected
+11:42:51.066 [pool-1-thread-3] DEBUG org.flywaydb.core.internal.sqlscript.DefaultSqlScriptExecutor -- Executing SQL: -- The relationship between library dependency sources under .metals/readonly/**
+-- and worksheets they belong to. Required to know what classpath to use
+-- for compiling dependency sources.
+create table worksheet_dependency_source(
+  text_document_uri varchar primary key,
+  worksheet_uri varchar not null
+)
+11:42:51.067 [pool-1-thread-3] DEBUG org.flywaydb.core.internal.sqlscript.DefaultSqlScriptExecutor -- 0 rows affected
+11:42:51.067 [pool-1-thread-3] DEBUG org.flywaydb.core.internal.sqlscript.DefaultSqlScriptExecutor -- Executing SQL: -- The relationship between what library dependency sources under .metals/readonly/**
+-- map to which build targets.
+create table sbt_digest(
+  md5 varchar,
+  status tinyint not null,
+  when_recorded timestamp
+)
+11:42:51.067 [pool-1-thread-3] DEBUG org.flywaydb.core.internal.sqlscript.DefaultSqlScriptExecutor -- 0 rows affected
+11:42:51.067 [pool-1-thread-3] DEBUG org.flywaydb.core.internal.sqlscript.DefaultSqlScriptExecutor -- Executing SQL: -- Which window/showMessage and window/showMessageRequest dialogues have been dismissed
+-- by the user via "Don't show again" or closed by clicking on "x".
+create table dismissed_notification(
+  id int,
+  when_dismissed timestamp,
+  when_expires timestamp
+)
+11:42:51.068 [pool-1-thread-3] DEBUG org.flywaydb.core.internal.sqlscript.DefaultSqlScriptExecutor -- 0 rows affected
+11:42:51.068 [pool-1-thread-3] DEBUG org.flywaydb.core.internal.sqlscript.DefaultSqlScriptExecutor -- Executing SQL: -- The choice of build tool when multiple build tool files are found in a workspace
+create table chosen_build_tool(
+  build_tool varchar primary key
+)
+11:42:51.069 [pool-1-thread-3] DEBUG org.flywaydb.core.internal.sqlscript.DefaultSqlScriptExecutor -- 0 rows affected
+11:42:51.070 [pool-1-thread-3] DEBUG org.flywaydb.core.internal.command.DbMigrate -- Successfully completed migration of schema "PUBLIC" to version "1 - Create tables"
+11:42:51.071 [pool-1-thread-3] DEBUG org.flywaydb.core.internal.schemahistory.JdbcTableSchemaHistory -- Schema History table "PUBLIC"."flyway_schema_history" successfully updated to reflect changes
+11:42:51.072 [pool-1-thread-3] DEBUG org.flywaydb.core.internal.parser.Parser -- Parsing V2__Server_discovery.sql ...
+11:42:51.074 [pool-1-thread-3] DEBUG org.flywaydb.core.internal.sqlscript.ParserSqlScript -- Found statement at line 4: -- For each unique combination of installed build servers we select one server.
+-- The md5 checksum is computed from the names of the installed build servers, and
+-- the selected server is the server which the user chose for this workspace.
+create table chosen_build_server(
+  md5 varchar primary key,
+  selected_server varchar,
+  when_recorded timestamp
+)
+11:42:51.074 [pool-1-thread-3] DEBUG org.flywaydb.core.internal.command.DbMigrate -- Starting migration of schema "PUBLIC" to version "2 - Server discovery" ...
+11:42:51.075 [pool-1-thread-3] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "PUBLIC" to version "2 - Server discovery"
+11:42:51.075 [pool-1-thread-3] DEBUG org.flywaydb.core.internal.sqlscript.DefaultSqlScriptExecutor -- Executing SQL: -- For each unique combination of installed build servers we select one server.
+-- The md5 checksum is computed from the names of the installed build servers, and
+-- the selected server is the server which the user chose for this workspace.
+create table chosen_build_server(
+  md5 varchar primary key,
+  selected_server varchar,
+  when_recorded timestamp
+)
+11:42:51.076 [pool-1-thread-3] DEBUG org.flywaydb.core.internal.sqlscript.DefaultSqlScriptExecutor -- 0 rows affected
+11:42:51.076 [pool-1-thread-3] DEBUG org.flywaydb.core.internal.command.DbMigrate -- Successfully completed migration of schema "PUBLIC" to version "2 - Server discovery"
+11:42:51.078 [pool-1-thread-3] DEBUG org.flywaydb.core.internal.schemahistory.JdbcTableSchemaHistory -- Schema History table "PUBLIC"."flyway_schema_history" successfully updated to reflect changes
+11:42:51.081 [pool-1-thread-3] DEBUG org.flywaydb.core.internal.parser.Parser -- Parsing V3__Jar_symbols.sql ...
+11:42:51.084 [pool-1-thread-3] DEBUG org.flywaydb.core.internal.sqlscript.ParserSqlScript -- Found statement at line 2: -- Indexed jars, the MD5 digest of path, modified time and size as key
+create table indexed_jar(
+  id int auto_increment unique,
+  md5 varchar primary key
+)
+11:42:51.085 [pool-1-thread-3] DEBUG org.flywaydb.core.internal.sqlscript.ParserSqlScript -- Found statement at line 7: -- Top Level Symbols per jar, allow for multiple jars with same symbols and paths
+create table toplevel_symbol(
+  symbol varchar not null,
+  path varchar not null,
+  jar int,
+  foreign key (jar) references indexed_jar (id) on delete cascade,
+  primary key (jar, path, symbol)
+)
+11:42:51.086 [pool-1-thread-3] DEBUG org.flywaydb.core.internal.sqlscript.ParserSqlScript -- Found statement at line 15: -- Create index to speedup lookup of jar symbols
+create index toplevel_symbol_jar on toplevel_symbol(jar)
+11:42:51.086 [pool-1-thread-3] DEBUG org.flywaydb.core.internal.command.DbMigrate -- Starting migration of schema "PUBLIC" to version "3 - Jar symbols" ...
+11:42:51.087 [pool-1-thread-3] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "PUBLIC" to version "3 - Jar symbols"
+11:42:51.087 [pool-1-thread-3] DEBUG org.flywaydb.core.internal.sqlscript.DefaultSqlScriptExecutor -- Executing SQL: -- Indexed jars, the MD5 digest of path, modified time and size as key
+create table indexed_jar(
+  id int auto_increment unique,
+  md5 varchar primary key
+)
+11:42:51.088 [pool-1-thread-3] DEBUG org.flywaydb.core.internal.sqlscript.DefaultSqlScriptExecutor -- 0 rows affected
+11:42:51.089 [pool-1-thread-3] DEBUG org.flywaydb.core.internal.sqlscript.DefaultSqlScriptExecutor -- Executing SQL: -- Top Level Symbols per jar, allow for multiple jars with same symbols and paths
+create table toplevel_symbol(
+  symbol varchar not null,
+  path varchar not null,
+  jar int,
+  foreign key (jar) references indexed_jar (id) on delete cascade,
+  primary key (jar, path, symbol)
+)
+11:42:51.091 [pool-1-thread-3] DEBUG org.flywaydb.core.internal.sqlscript.DefaultSqlScriptExecutor -- 0 rows affected
+11:42:51.091 [pool-1-thread-3] DEBUG org.flywaydb.core.internal.sqlscript.DefaultSqlScriptExecutor -- Executing SQL: -- Create index to speedup lookup of jar symbols
+create index toplevel_symbol_jar on toplevel_symbol(jar)
+11:42:51.092 [pool-1-thread-3] DEBUG org.flywaydb.core.internal.sqlscript.DefaultSqlScriptExecutor -- 0 rows affected
+11:42:51.092 [pool-1-thread-3] DEBUG org.flywaydb.core.internal.command.DbMigrate -- Successfully completed migration of schema "PUBLIC" to version "3 - Jar symbols"
+11:42:51.093 [pool-1-thread-3] DEBUG org.flywaydb.core.internal.schemahistory.JdbcTableSchemaHistory -- Schema History table "PUBLIC"."flyway_schema_history" successfully updated to reflect changes
+11:42:51.097 [pool-1-thread-3] DEBUG org.flywaydb.core.internal.parser.Parser -- Parsing V4__Fingerprints.sql ...
+11:42:51.098 [pool-1-thread-3] DEBUG org.flywaydb.core.internal.sqlscript.ParserSqlScript -- Found statement at line 2: -- Fingerprints saved between invocations
+create table fingerprints(
+  path varchar not null,
+  text varchar not null,
+  md5 varchar not null,
+  id int auto_increment unique
+)
+11:42:51.098 [pool-1-thread-3] DEBUG org.flywaydb.core.internal.command.DbMigrate -- Starting migration of schema "PUBLIC" to version "4 - Fingerprints" ...
+11:42:51.099 [pool-1-thread-3] INFO org.flywaydb.core.internal.command.DbMigrate -- Migrating schema "PUBLIC" to version "4 - Fingerprints"
+11:42:51.099 [pool-1-thread-3] DEBUG org.flywaydb.core.internal.sqlscript.DefaultSqlScriptExecutor -- Executing SQL: -- Fingerprints saved between invocations
+create table fingerprints(
+  path varchar not null,
+  text varchar not null,
+  md5 varchar not null,
+  id int auto_increment unique
+)
+11:42:51.100 [pool-1-thread-3] DEBUG org.flywaydb.core.internal.sqlscript.DefaultSqlScriptExecutor -- 0 rows affected
+11:42:51.100 [pool-1-thread-3] DEBUG org.flywaydb.core.internal.command.DbMigrate -- Successfully completed migration of schema "PUBLIC" to version "4 - Fingerprints"
+11:42:51.100 [pool-1-thread-3] DEBUG org.flywaydb.core.internal.schemahistory.JdbcTableSchemaHistory -- Schema History table "PUBLIC"."flyway_schema_history" successfully updated to reflect changes
+11:42:51.103 [pool-1-thread-3] INFO org.flywaydb.core.internal.command.DbMigrate -- Successfully applied 4 migrations to schema "PUBLIC", now at version v4 (execution time 00:00.012s)
+11:42:51.112 [pool-1-thread-3] DEBUG org.flywaydb.core.FlywayExecutor -- Memory usage: 55 of 104M
+2024.03.24 11:42:51 WARN  Build server is not auto-connectable.
+2024.03.24 11:42:55 INFO  no build target found for /Users/johannes/repos/mobile-learning-app/backend/src/test/java/de/htwg_konstanz/mobilelearning/services/feedback/socket/LiveFeedbackSocketTest.java. Using presentation compiler with project's scala-library version: 3.3.1
+Mar 24, 2024 11:42:56 AM org.eclipse.lsp4j.jsonrpc.RemoteEndpoint handleCancellation
+WARNING: Unmatched cancel notification for request id 6
+Mar 24, 2024 11:42:56 AM org.eclipse.lsp4j.jsonrpc.RemoteEndpoint handleCancellation
+WARNING: Unmatched cancel notification for request id 5
+Mar 24, 2024 11:42:57 AM scala.meta.internal.pc.CompilerAccess handleError
+SEVERE: A severe compiler error occurred, full details of the error can be found in the error report /Users/johannes/repos/mobile-learning-app/backend/.metals/.reports/metals-full/2024-03-24/r_compiler-error_11-42-57-088.md
+Mar 24, 2024 11:43:09 AM org.eclipse.lsp4j.jsonrpc.RemoteEndpoint handleCancellation
+WARNING: Unmatched cancel notification for request id 10
+Mar 24, 2024 11:43:12 AM org.eclipse.lsp4j.jsonrpc.RemoteEndpoint handleCancellation
+WARNING: Unmatched cancel notification for request id 17
+Mar 24, 2024 11:43:15 AM scala.meta.internal.pc.CompilerAccess handleError
+SEVERE: A severe compiler error occurred, full details of the error can be found in the error report /Users/johannes/repos/mobile-learning-app/backend/.metals/.reports/metals-full/2024-03-24/r_compiler-error_11-43-15-079.md
+Mar 24, 2024 11:43:17 AM scala.meta.internal.pc.CompilerAccess handleError
+SEVERE: A severe compiler error occurred, full details of the error can be found in the error report /Users/johannes/repos/mobile-learning-app/backend/.metals/.reports/metals-full/2024-03-24/r_compiler-error_11-43-17-475.md
+Mar 24, 2024 11:43:41 AM scala.meta.internal.pc.CompilerAccess handleError
+SEVERE: A severe compiler error occurred, full details of the error can be found in the error report /Users/johannes/repos/mobile-learning-app/backend/.metals/.reports/metals-full/2024-03-24/r_compiler-error_11-43-41-693.md
+Mar 24, 2024 11:43:42 AM scala.meta.internal.pc.CompilerAccess handleError
+SEVERE: A severe compiler error occurred, full details of the error can be found in the error report /Users/johannes/repos/mobile-learning-app/backend/.metals/.reports/metals-full/2024-03-24/r_compiler-error_11-43-42-643.md
+Mar 24, 2024 11:43:44 AM scala.meta.internal.pc.CompilerAccess handleError
+SEVERE: A severe compiler error occurred, full details of the error can be found in the error report /Users/johannes/repos/mobile-learning-app/backend/.metals/.reports/metals-full/2024-03-24/r_compiler-error_11-43-44-601.md
+Mar 24, 2024 11:43:53 AM org.eclipse.lsp4j.jsonrpc.RemoteEndpoint handleCancellation
+WARNING: Unmatched cancel notification for request id 60
+Mar 24, 2024 11:43:55 AM scala.meta.internal.pc.CompilerAccess handleError
+SEVERE: A severe compiler error occurred, full details of the error can be found in the error report /Users/johannes/repos/mobile-learning-app/backend/.metals/.reports/metals-full/2024-03-24/r_compiler-error_11-43-55-711.md
+Mar 24, 2024 11:43:58 AM scala.meta.internal.pc.CompilerAccess handleError
+SEVERE: A severe compiler error occurred, full details of the error can be found in the error report /Users/johannes/repos/mobile-learning-app/backend/.metals/.reports/metals-full/2024-03-24/r_compiler-error_11-43-58-581.md
+Mar 24, 2024 11:44:47 AM org.eclipse.lsp4j.jsonrpc.RemoteEndpoint handleCancellation
+WARNING: Unmatched cancel notification for request id 74
+Mar 24, 2024 11:44:52 AM org.eclipse.lsp4j.jsonrpc.RemoteEndpoint handleCancellation
+WARNING: Unmatched cancel notification for request id 108
+Mar 24, 2024 11:44:52 AM org.eclipse.lsp4j.jsonrpc.RemoteEndpoint handleCancellation
+WARNING: Unmatched cancel notification for request id 110
+2024.03.24 11:45:00 WARN  no build target for: /Users/johannes/repos/mobile-learning-app/backend/src/test/java/de/htwg_konstanz/mobilelearning/services/feedback/socket/LiveFeedbackSocketTest.java
+Mar 24, 2024 11:45:03 AM scala.meta.internal.pc.CompilerAccess handleError
+SEVERE: A severe compiler error occurred, full details of the error can be found in the error report /Users/johannes/repos/mobile-learning-app/backend/.metals/.reports/metals-full/2024-03-24/r_compiler-error_11-45-03-439.md
+2024.03.24 11:45:04 WARN  no build target for: /Users/johannes/repos/mobile-learning-app/backend/src/test/java/de/htwg_konstanz/mobilelearning/services/feedback/socket/LiveFeedbackSocketTest.java
+2024.03.24 11:45:05 WARN  Running javac-semanticdb failed for file:///Users/johannes/repos/mobile-learning-app/backend/src/test/java/de/htwg_konstanz/mobilelearning/services/feedback/socket/LiveFeedbackSocketTest.java. Output:
+
+Mar 24, 2024 11:45:05 AM scala.meta.internal.pc.CompilerAccess handleError
+SEVERE: A severe compiler error occurred, full details of the error can be found in the error report /Users/johannes/repos/mobile-learning-app/backend/.metals/.reports/metals-full/2024-03-24/r_compiler-error_11-45-05-185.md
+Mar 24, 2024 11:45:05 AM scala.meta.internal.pc.CompilerAccess handleError
+SEVERE: A severe compiler error occurred, full details of the error can be found in the error report /Users/johannes/repos/mobile-learning-app/backend/.metals/.reports/metals-full/2024-03-24/r_compiler-error_11-45-05-830.md
+Mar 24, 2024 11:45:06 AM scala.meta.internal.pc.CompilerAccess handleError
+SEVERE: A severe compiler error occurred, full details of the error can be found in the error report /Users/johannes/repos/mobile-learning-app/backend/.metals/.reports/metals-full/2024-03-24/r_compiler-error_11-45-06-758.md
+2024.03.24 11:45:07 WARN  Running javac-semanticdb failed for file:///Users/johannes/repos/mobile-learning-app/backend/src/test/java/de/htwg_konstanz/mobilelearning/services/feedback/socket/LiveFeedbackSocketTest.java. Output:
+
+2024.03.24 11:45:08 WARN  Running javac-semanticdb failed for file:///Users/johannes/repos/mobile-learning-app/backend/src/test/java/de/htwg_konstanz/mobilelearning/services/feedback/socket/LiveFeedbackSocketTest.java. Output:
+
+2024.03.24 11:45:08 WARN  no build target for: /Users/johannes/repos/mobile-learning-app/backend/src/test/java/de/htwg_konstanz/mobilelearning/services/feedback/socket/LiveFeedbackSocketTest.java
+2024.03.24 11:45:09 WARN  Running javac-semanticdb failed for file:///Users/johannes/repos/mobile-learning-app/backend/src/test/java/de/htwg_konstanz/mobilelearning/services/feedback/socket/LiveFeedbackSocketTest.java. Output:
+
+Mar 24, 2024 11:45:09 AM org.eclipse.lsp4j.jsonrpc.RemoteEndpoint handleCancellation
+WARNING: Unmatched cancel notification for request id 193
+2024.03.24 11:45:10 WARN  Running javac-semanticdb failed for file:///Users/johannes/repos/mobile-learning-app/backend/src/test/java/de/htwg_konstanz/mobilelearning/services/feedback/socket/LiveFeedbackSocketTest.java. Output:
+
+2024.03.24 11:45:10 WARN  no build target for: /Users/johannes/repos/mobile-learning-app/backend/src/test/java/de/htwg_konstanz/mobilelearning/services/feedback/socket/LiveFeedbackSocketTest.java
+2024.03.24 11:45:16 WARN  Running javac-semanticdb failed for file:///Users/johannes/repos/mobile-learning-app/backend/src/test/java/de/htwg_konstanz/mobilelearning/services/feedback/socket/LiveFeedbackSocketTest.java. Output:
+
+2024.03.24 11:45:17 WARN  no build target for: /Users/johannes/repos/mobile-learning-app/backend/src/test/java/de/htwg_konstanz/mobilelearning/services/feedback/socket/LiveFeedbackSocketTest.java
+Mar 24, 2024 11:45:18 AM scala.meta.internal.pc.CompilerAccess handleError
+SEVERE: A severe compiler error occurred, full details of the error can be found in the error report /Users/johannes/repos/mobile-learning-app/backend/.metals/.reports/metals-full/2024-03-24/r_compiler-error_11-45-18-680.md
+2024.03.24 11:45:18 WARN  Running javac-semanticdb failed for file:///Users/johannes/repos/mobile-learning-app/backend/src/test/java/de/htwg_konstanz/mobilelearning/services/feedback/socket/LiveFeedbackSocketTest.java. Output:
+
+2024.03.24 11:45:19 WARN  no build target for: /Users/johannes/repos/mobile-learning-app/backend/src/test/java/de/htwg_konstanz/mobilelearning/services/feedback/socket/LiveFeedbackSocketTest.java
+Mar 24, 2024 11:45:19 AM scala.meta.internal.pc.CompilerAccess handleError
+SEVERE: A severe compiler error occurred, full details of the error can be found in the error report /Users/johannes/repos/mobile-learning-app/backend/.metals/.reports/metals-full/2024-03-24/r_compiler-error_11-45-19-827.md
+2024.03.24 11:45:21 WARN  Running javac-semanticdb failed for file:///Users/johannes/repos/mobile-learning-app/backend/src/test/java/de/htwg_konstanz/mobilelearning/services/feedback/socket/LiveFeedbackSocketTest.java. Output:
+
+2024.03.24 11:45:22 WARN  no build target for: /Users/johannes/repos/mobile-learning-app/backend/src/test/java/de/htwg_konstanz/mobilelearning/services/feedback/socket/LiveFeedbackSocketTest.java
+Mar 24, 2024 11:45:22 AM scala.meta.internal.pc.CompilerAccess handleError
+SEVERE: A severe compiler error occurred, full details of the error can be found in the error report /Users/johannes/repos/mobile-learning-app/backend/.metals/.reports/metals-full/2024-03-24/r_compiler-error_11-45-22-407.md
+2024.03.24 11:45:22 WARN  Running javac-semanticdb failed for file:///Users/johannes/repos/mobile-learning-app/backend/src/test/java/de/htwg_konstanz/mobilelearning/services/feedback/socket/LiveFeedbackSocketTest.java. Output:
+
+Mar 24, 2024 11:45:23 AM scala.meta.internal.pc.CompilerAccess handleError
+SEVERE: A severe compiler error occurred, full details of the error can be found in the error report /Users/johannes/repos/mobile-learning-app/backend/.metals/.reports/metals-full/2024-03-24/r_compiler-error_11-45-23-765.md
+2024.03.24 11:45:23 WARN  Running javac-semanticdb failed for file:///Users/johannes/repos/mobile-learning-app/backend/src/test/java/de/htwg_konstanz/mobilelearning/services/feedback/socket/LiveFeedbackSocketTest.java. Output:
+
+2024.03.24 11:45:24 WARN  no build target for: /Users/johannes/repos/mobile-learning-app/backend/src/test/java/de/htwg_konstanz/mobilelearning/services/feedback/socket/LiveFeedbackSocketTest.java
+Mar 24, 2024 11:45:25 AM scala.meta.internal.pc.CompilerAccess handleError
+SEVERE: A severe compiler error occurred, full details of the error can be found in the error report /Users/johannes/repos/mobile-learning-app/backend/.metals/.reports/metals-full/2024-03-24/r_compiler-error_11-45-25-062.md
+Mar 24, 2024 11:45:25 AM scala.meta.internal.pc.CompilerAccess handleError
+SEVERE: A severe compiler error occurred, full details of the error can be found in the error report /Users/johannes/repos/mobile-learning-app/backend/.metals/.reports/metals-full/2024-03-24/r_compiler-error_11-45-25-184.md
+2024.03.24 11:45:25 WARN  Running javac-semanticdb failed for file:///Users/johannes/repos/mobile-learning-app/backend/src/test/java/de/htwg_konstanz/mobilelearning/services/feedback/socket/LiveFeedbackSocketTest.java. Output:
+
+Mar 24, 2024 11:45:26 AM scala.meta.internal.pc.CompilerAccess handleError
+SEVERE: A severe compiler error occurred, full details of the error can be found in the error report /Users/johannes/repos/mobile-learning-app/backend/.metals/.reports/metals-full/2024-03-24/r_compiler-error_11-45-26-567.md
+2024.03.24 11:45:26 WARN  Running javac-semanticdb failed for file:///Users/johannes/repos/mobile-learning-app/backend/src/test/java/de/htwg_konstanz/mobilelearning/services/feedback/socket/LiveFeedbackSocketTest.java. Output:
+
+2024.03.24 11:45:27 WARN  no build target for: /Users/johannes/repos/mobile-learning-app/backend/src/test/java/de/htwg_konstanz/mobilelearning/services/feedback/socket/LiveFeedbackSocketTest.java
+Mar 24, 2024 11:45:28 AM scala.meta.internal.pc.CompilerAccess handleError
+SEVERE: A severe compiler error occurred, full details of the error can be found in the error report /Users/johannes/repos/mobile-learning-app/backend/.metals/.reports/metals-full/2024-03-24/r_compiler-error_11-45-28-898.md
+2024.03.24 11:45:29 WARN  Running javac-semanticdb failed for file:///Users/johannes/repos/mobile-learning-app/backend/src/test/java/de/htwg_konstanz/mobilelearning/services/feedback/socket/LiveFeedbackSocketTest.java. Output:
+
+Mar 24, 2024 11:45:29 AM scala.meta.internal.pc.CompilerAccess handleError
+SEVERE: A severe compiler error occurred, full details of the error can be found in the error report /Users/johannes/repos/mobile-learning-app/backend/.metals/.reports/metals-full/2024-03-24/r_compiler-error_11-45-29-741.md
+2024.03.24 11:45:29 WARN  Running javac-semanticdb failed for file:///Users/johannes/repos/mobile-learning-app/backend/src/test/java/de/htwg_konstanz/mobilelearning/services/feedback/socket/LiveFeedbackSocketTest.java. Output:
+
+2024.03.24 11:45:30 WARN  no build target for: /Users/johannes/repos/mobile-learning-app/backend/src/test/java/de/htwg_konstanz/mobilelearning/services/feedback/socket/LiveFeedbackSocketTest.java
+2024.03.24 11:45:31 WARN  Running javac-semanticdb failed for file:///Users/johannes/repos/mobile-learning-app/backend/src/test/java/de/htwg_konstanz/mobilelearning/services/feedback/socket/LiveFeedbackSocketTest.java. Output:
+
+2024.03.24 11:45:31 WARN  Running javac-semanticdb failed for file:///Users/johannes/repos/mobile-learning-app/backend/src/test/java/de/htwg_konstanz/mobilelearning/services/feedback/socket/LiveFeedbackSocketTest.java. Output:
+
+Mar 24, 2024 11:45:31 AM scala.meta.internal.pc.CompilerAccess handleError
+SEVERE: A severe compiler error occurred, full details of the error can be found in the error report /Users/johannes/repos/mobile-learning-app/backend/.metals/.reports/metals-full/2024-03-24/r_compiler-error_11-45-31-869.md
+2024.03.24 11:45:32 WARN  no build target for: /Users/johannes/repos/mobile-learning-app/backend/src/test/java/de/htwg_konstanz/mobilelearning/services/feedback/socket/LiveFeedbackSocketTest.java
+Mar 24, 2024 11:45:33 AM scala.meta.internal.pc.CompilerAccess handleError
+SEVERE: A severe compiler error occurred, full details of the error can be found in the error report /Users/johannes/repos/mobile-learning-app/backend/.metals/.reports/metals-full/2024-03-24/r_compiler-error_11-45-33-211.md
+2024.03.24 11:45:33 WARN  Running javac-semanticdb failed for file:///Users/johannes/repos/mobile-learning-app/backend/src/test/java/de/htwg_konstanz/mobilelearning/services/feedback/socket/LiveFeedbackSocketTest.java. Output:
+
+2024.03.24 11:45:33 WARN  no build target for: /Users/johannes/repos/mobile-learning-app/backend/src/test/java/de/htwg_konstanz/mobilelearning/services/feedback/socket/LiveFeedbackSocketTest.java
+2024.03.24 11:45:41 WARN  Running javac-semanticdb failed for file:///Users/johannes/repos/mobile-learning-app/backend/src/test/java/de/htwg_konstanz/mobilelearning/services/feedback/socket/LiveFeedbackSocketTest.java. Output:
+
+2024.03.24 11:45:42 WARN  Running javac-semanticdb failed for file:///Users/johannes/repos/mobile-learning-app/backend/src/test/java/de/htwg_konstanz/mobilelearning/services/feedback/socket/LiveFeedbackSocketTest.java. Output:
+
+2024.03.24 11:45:43 WARN  no build target for: /Users/johannes/repos/mobile-learning-app/backend/src/test/java/de/htwg_konstanz/mobilelearning/services/feedback/socket/LiveFeedbackSocketTest.java
+2024.03.24 11:45:43 WARN  Running javac-semanticdb failed for file:///Users/johannes/repos/mobile-learning-app/backend/src/test/java/de/htwg_konstanz/mobilelearning/services/feedback/socket/LiveFeedbackSocketTest.java. Output:
+
+2024.03.24 11:45:44 WARN  no build target for: /Users/johannes/repos/mobile-learning-app/backend/src/test/java/de/htwg_konstanz/mobilelearning/services/feedback/socket/LiveFeedbackSocketTest.java
+2024.03.24 11:45:48 WARN  no build target for: /Users/johannes/repos/mobile-learning-app/backend/src/test/java/de/htwg_konstanz/mobilelearning/services/feedback/socket/LiveFeedbackSocketTest.java
+2024.03.24 11:45:56 WARN  no build target for: /Users/johannes/repos/mobile-learning-app/backend/src/test/java/de/htwg_konstanz/mobilelearning/services/feedback/socket/LiveFeedbackSocketTest.java
+Mar 24, 2024 11:45:57 AM org.eclipse.lsp4j.jsonrpc.RemoteEndpoint handleCancellation
+WARNING: Unmatched cancel notification for request id 319
+2024.03.24 11:46:00 WARN  no build target for: /Users/johannes/repos/mobile-learning-app/backend/src/test/java/de/htwg_konstanz/mobilelearning/services/feedback/socket/LiveFeedbackSocketTest.java
+2024.03.24 11:46:01 WARN  no build target for: /Users/johannes/repos/mobile-learning-app/backend/src/test/java/de/htwg_konstanz/mobilelearning/services/feedback/socket/LiveFeedbackSocketTest.java
+2024.03.24 11:46:03 WARN  no build target for: /Users/johannes/repos/mobile-learning-app/backend/src/test/java/de/htwg_konstanz/mobilelearning/services/feedback/socket/LiveFeedbackSocketTest.java
+2024.03.24 11:46:09 WARN  no build target for: /Users/johannes/repos/mobile-learning-app/backend/src/test/java/de/htwg_konstanz/mobilelearning/services/feedback/socket/LiveFeedbackSocketTest.java
+2024.03.24 11:46:13 WARN  no build target for: /Users/johannes/repos/mobile-learning-app/backend/src/test/java/de/htwg_konstanz/mobilelearning/services/feedback/socket/LiveFeedbackSocketTest.java
+2024.03.24 11:46:14 WARN  Running javac-semanticdb failed for file:///Users/johannes/repos/mobile-learning-app/backend/src/test/java/de/htwg_konstanz/mobilelearning/services/feedback/socket/LiveFeedbackSocketTest.java. Output:
+
+2024.03.24 11:46:15 WARN  no build target for: /Users/johannes/repos/mobile-learning-app/backend/src/test/java/de/htwg_konstanz/mobilelearning/services/feedback/socket/LiveFeedbackSocketTest.java
+Mar 24, 2024 11:46:15 AM scala.meta.internal.pc.CompilerAccess handleError
+SEVERE: A severe compiler error occurred, full details of the error can be found in the error report /Users/johannes/repos/mobile-learning-app/backend/.metals/.reports/metals-full/2024-03-24/r_compiler-error_11-46-15-894.md
+2024.03.24 11:46:16 WARN  Running javac-semanticdb failed for file:///Users/johannes/repos/mobile-learning-app/backend/src/test/java/de/htwg_konstanz/mobilelearning/services/feedback/socket/LiveFeedbackSocketTest.java. Output:
+
+2024.03.24 11:46:16 WARN  Running javac-semanticdb failed for file:///Users/johannes/repos/mobile-learning-app/backend/src/test/java/de/htwg_konstanz/mobilelearning/services/feedback/socket/LiveFeedbackSocketTest.java. Output:
+
+2024.03.24 11:46:17 WARN  no build target for: /Users/johannes/repos/mobile-learning-app/backend/src/test/java/de/htwg_konstanz/mobilelearning/services/feedback/socket/LiveFeedbackSocketTest.java
+2024.03.24 11:46:18 WARN  Running javac-semanticdb failed for file:///Users/johannes/repos/mobile-learning-app/backend/src/test/java/de/htwg_konstanz/mobilelearning/services/feedback/socket/LiveFeedbackSocketTest.java. Output:
+
+2024.03.24 11:46:19 WARN  no build target for: /Users/johannes/repos/mobile-learning-app/backend/src/test/java/de/htwg_konstanz/mobilelearning/services/feedback/socket/LiveFeedbackSocketTest.java
+2024.03.24 11:46:21 WARN  Running javac-semanticdb failed for file:///Users/johannes/repos/mobile-learning-app/backend/src/test/java/de/htwg_konstanz/mobilelearning/services/feedback/socket/LiveFeedbackSocketTest.java. Output:
+
+2024.03.24 11:46:21 WARN  no build target for: /Users/johannes/repos/mobile-learning-app/backend/src/test/java/de/htwg_konstanz/mobilelearning/services/feedback/socket/LiveFeedbackSocketTest.java
+Mar 24, 2024 11:47:22 AM scala.meta.internal.pc.CompilerAccess handleError
+SEVERE: A severe compiler error occurred, full details of the error can be found in the error report /Users/johannes/repos/mobile-learning-app/backend/.metals/.reports/metals-full/2024-03-24/r_compiler-error_11-47-22-733.md
+Mar 24, 2024 11:47:24 AM scala.meta.internal.pc.CompilerAccess handleError
+SEVERE: A severe compiler error occurred, full details of the error can be found in the error report /Users/johannes/repos/mobile-learning-app/backend/.metals/.reports/metals-full/2024-03-24/r_compiler-error_11-47-24-285.md
+Mar 24, 2024 11:47:32 AM org.eclipse.lsp4j.jsonrpc.RemoteEndpoint handleCancellation
+WARNING: Unmatched cancel notification for request id 472
+Mar 24, 2024 11:47:33 AM scala.meta.internal.pc.CompilerAccess handleError
+SEVERE: A severe compiler error occurred, full details of the error can be found in the error report /Users/johannes/repos/mobile-learning-app/backend/.metals/.reports/metals-full/2024-03-24/r_compiler-error_11-47-33-433.md
+Mar 24, 2024 11:47:33 AM org.eclipse.lsp4j.jsonrpc.RemoteEndpoint handleCancellation
+WARNING: Unmatched cancel notification for request id 480
+Mar 24, 2024 11:47:36 AM scala.meta.internal.pc.CompilerAccess handleError
+SEVERE: A severe compiler error occurred, full details of the error can be found in the error report /Users/johannes/repos/mobile-learning-app/backend/.metals/.reports/metals-full/2024-03-24/r_compiler-error_11-47-36-990.md
+Mar 24, 2024 11:48:23 AM scala.meta.internal.pc.CompilerAccess handleError
+SEVERE: A severe compiler error occurred, full details of the error can be found in the error report /Users/johannes/repos/mobile-learning-app/backend/.metals/.reports/metals-full/2024-03-24/r_compiler-error_11-48-23-250.md
+Mar 24, 2024 11:48:23 AM scala.meta.internal.pc.CompilerAccess handleError
+SEVERE: A severe compiler error occurred, full details of the error can be found in the error report /Users/johannes/repos/mobile-learning-app/backend/.metals/.reports/metals-full/2024-03-24/r_compiler-error_11-48-23-801.md
+Mar 24, 2024 11:48:37 AM scala.meta.internal.pc.CompilerAccess handleError
+SEVERE: A severe compiler error occurred, full details of the error can be found in the error report /Users/johannes/repos/mobile-learning-app/backend/.metals/.reports/metals-full/2024-03-24/r_compiler-error_11-48-37-383.md
+Mar 24, 2024 11:48:40 AM scala.meta.internal.pc.CompilerAccess handleError
+SEVERE: A severe compiler error occurred, full details of the error can be found in the error report /Users/johannes/repos/mobile-learning-app/backend/.metals/.reports/metals-full/2024-03-24/r_compiler-error_11-48-40-230.md
+Mar 24, 2024 11:48:40 AM scala.meta.internal.pc.CompilerAccess handleError
+SEVERE: A severe compiler error occurred, full details of the error can be found in the error report /Users/johannes/repos/mobile-learning-app/backend/.metals/.reports/metals-full/2024-03-24/r_compiler-error_11-48-40-800.md
+Mar 24, 2024 11:48:42 AM scala.meta.internal.pc.CompilerAccess handleError
+SEVERE: A severe compiler error occurred, full details of the error can be found in the error report /Users/johannes/repos/mobile-learning-app/backend/.metals/.reports/metals-full/2024-03-24/r_compiler-error_11-48-42-307.md
+Mar 24, 2024 11:48:49 AM scala.meta.internal.pc.CompilerAccess handleError
+SEVERE: A severe compiler error occurred, full details of the error can be found in the error report /Users/johannes/repos/mobile-learning-app/backend/.metals/.reports/metals-full/2024-03-24/r_compiler-error_11-48-49-417.md
+Mar 24, 2024 11:48:51 AM scala.meta.internal.pc.CompilerAccess handleError
+SEVERE: A severe compiler error occurred, full details of the error can be found in the error report /Users/johannes/repos/mobile-learning-app/backend/.metals/.reports/metals-full/2024-03-24/r_compiler-error_11-48-51-032.md
+Mar 24, 2024 11:49:17 AM scala.meta.internal.pc.CompilerAccess handleError
+SEVERE: A severe compiler error occurred, full details of the error can be found in the error report /Users/johannes/repos/mobile-learning-app/backend/.metals/.reports/metals-full/2024-03-24/r_compiler-error_11-49-17-461.md
+Mar 24, 2024 11:49:22 AM scala.meta.internal.pc.CompilerAccess handleError
+SEVERE: A severe compiler error occurred, full details of the error can be found in the error report /Users/johannes/repos/mobile-learning-app/backend/.metals/.reports/metals-full/2024-03-24/r_compiler-error_11-49-22-073.md
+Mar 24, 2024 11:49:33 AM scala.meta.internal.pc.CompilerAccess handleError
+SEVERE: A severe compiler error occurred, full details of the error can be found in the error report /Users/johannes/repos/mobile-learning-app/backend/.metals/.reports/metals-full/2024-03-24/r_compiler-error_11-49-33-509.md
+Mar 24, 2024 11:49:33 AM scala.meta.internal.pc.CompilerAccess handleError
+SEVERE: A severe compiler error occurred, full details of the error can be found in the error report /Users/johannes/repos/mobile-learning-app/backend/.metals/.reports/metals-full/2024-03-24/r_compiler-error_11-49-33-791.md
+Mar 24, 2024 11:49:36 AM scala.meta.internal.pc.CompilerAccess handleError
+SEVERE: A severe compiler error occurred, full details of the error can be found in the error report /Users/johannes/repos/mobile-learning-app/backend/.metals/.reports/metals-full/2024-03-24/r_compiler-error_11-49-36-103.md
+Mar 24, 2024 11:49:36 AM scala.meta.internal.pc.CompilerAccess handleError
+SEVERE: A severe compiler error occurred, full details of the error can be found in the error report /Users/johannes/repos/mobile-learning-app/backend/.metals/.reports/metals-full/2024-03-24/r_compiler-error_11-49-36-273.md
+Mar 24, 2024 11:49:42 AM scala.meta.internal.pc.CompilerAccess handleError
+SEVERE: A severe compiler error occurred, full details of the error can be found in the error report /Users/johannes/repos/mobile-learning-app/backend/.metals/.reports/metals-full/2024-03-24/r_compiler-error_11-49-42-316.md
+2024.03.24 11:49:43 WARN  no build target for: /Users/johannes/repos/mobile-learning-app/backend/src/main/java/de/htwg_konstanz/mobilelearning/models/feedback/FeedbackForm.java
+Mar 24, 2024 11:49:43 AM scala.meta.internal.pc.CompilerAccess handleError
+SEVERE: A severe compiler error occurred, full details of the error can be found in the error report /Users/johannes/repos/mobile-learning-app/backend/.metals/.reports/metals-full/2024-03-24/r_compiler-error_11-49-43-753.md
+2024.03.24 11:49:44 WARN  no build target for: /Users/johannes/repos/mobile-learning-app/backend/src/main/java/de/htwg_konstanz/mobilelearning/models/feedback/FeedbackForm.java
+Mar 24, 2024 11:49:44 AM scala.meta.internal.pc.CompilerAccess handleError
+SEVERE: A severe compiler error occurred, full details of the error can be found in the error report /Users/johannes/repos/mobile-learning-app/backend/.metals/.reports/metals-full/2024-03-24/r_compiler-error_11-49-44-876.md
+2024.03.24 11:49:45 WARN  no build target for: /Users/johannes/repos/mobile-learning-app/backend/src/main/java/de/htwg_konstanz/mobilelearning/models/feedback/FeedbackForm.java
+Mar 24, 2024 11:49:46 AM scala.meta.internal.pc.CompilerAccess handleError
+SEVERE: A severe compiler error occurred, full details of the error can be found in the error report /Users/johannes/repos/mobile-learning-app/backend/.metals/.reports/metals-full/2024-03-24/r_compiler-error_11-49-46-820.md
+2024.03.24 11:49:47 WARN  no build target for: /Users/johannes/repos/mobile-learning-app/backend/src/main/java/de/htwg_konstanz/mobilelearning/models/feedback/FeedbackForm.java
+2024.03.24 11:49:50 WARN  no build target for: /Users/johannes/repos/mobile-learning-app/backend/src/main/java/de/htwg_konstanz/mobilelearning/models/feedback/FeedbackForm.java
+2024.03.24 11:49:50 WARN  no build target for: /Users/johannes/repos/mobile-learning-app/backend/src/main/java/de/htwg_konstanz/mobilelearning/models/feedback/FeedbackForm.java
+2024.03.24 11:49:50 WARN  no build target for: /Users/johannes/repos/mobile-learning-app/backend/src/main/java/de/htwg_konstanz/mobilelearning/models/feedback/FeedbackForm.java
+2024.03.24 11:49:51 WARN  no build target for: /Users/johannes/repos/mobile-learning-app/backend/src/main/java/de/htwg_konstanz/mobilelearning/models/feedback/FeedbackParticipant.java
+Mar 24, 2024 11:49:52 AM scala.meta.internal.pc.CompilerAccess handleError
+SEVERE: A severe compiler error occurred, full details of the error can be found in the error report /Users/johannes/repos/mobile-learning-app/backend/.metals/.reports/metals-full/2024-03-24/r_compiler-error_11-49-52-041.md
+Mar 24, 2024 11:52:02 AM scala.meta.internal.pc.CompilerAccess handleError
+SEVERE: A severe compiler error occurred, full details of the error can be found in the error report /Users/johannes/repos/mobile-learning-app/backend/.metals/.reports/metals-full/2024-03-24/r_compiler-error_11-52-02-185.md
+2024.03.24 11:52:19 WARN  Using indexes to guess the definition of addParticipant
+Mar 24, 2024 11:52:19 AM scala.meta.internal.pc.CompilerAccess handleError
+SEVERE: A severe compiler error occurred, full details of the error can be found in the error report /Users/johannes/repos/mobile-learning-app/backend/.metals/.reports/metals-full/2024-03-24/r_compiler-error_11-52-19-573.md
+2024.03.24 11:52:19 WARN  Using indexes to guess the definition of addParticipant
+Mar 24, 2024 11:52:57 AM scala.meta.internal.pc.CompilerAccess handleError
+SEVERE: A severe compiler error occurred, full details of the error can be found in the error report /Users/johannes/repos/mobile-learning-app/backend/.metals/.reports/metals-full/2024-03-24/r_compiler-error_11-52-57-155.md
+Mar 24, 2024 11:52:57 AM scala.meta.internal.pc.CompilerAccess handleError
+SEVERE: A severe compiler error occurred, full details of the error can be found in the error report /Users/johannes/repos/mobile-learning-app/backend/.metals/.reports/metals-full/2024-03-24/r_compiler-error_11-52-57-750.md
+Mar 24, 2024 11:53:02 AM scala.meta.internal.pc.CompilerAccess handleError
+SEVERE: A severe compiler error occurred, full details of the error can be found in the error report /Users/johannes/repos/mobile-learning-app/backend/.metals/.reports/metals-full/2024-03-24/r_compiler-error_11-53-02-060.md
+2024.03.24 11:53:04 WARN  no build target for: /Users/johannes/repos/mobile-learning-app/backend/src/main/java/de/htwg_konstanz/mobilelearning/models/feedback/FeedbackParticipant.java
+Mar 24, 2024 11:53:08 AM scala.meta.internal.pc.CompilerAccess handleError
+SEVERE: A severe compiler error occurred, full details of the error can be found in the error report /Users/johannes/repos/mobile-learning-app/backend/.metals/.reports/metals-full/2024-03-24/r_compiler-error_11-53-08-947.md
+2024.03.24 11:53:10 WARN  no build target for: /Users/johannes/repos/mobile-learning-app/backend/src/main/java/de/htwg_konstanz/mobilelearning/models/feedback/FeedbackParticipant.java
+Mar 24, 2024 11:53:15 AM scala.meta.internal.pc.CompilerAccess handleError
+SEVERE: A severe compiler error occurred, full details of the error can be found in the error report /Users/johannes/repos/mobile-learning-app/backend/.metals/.reports/metals-full/2024-03-24/r_compiler-error_11-53-15-161.md
+2024.03.24 11:53:16 WARN  no build target for: /Users/johannes/repos/mobile-learning-app/backend/src/main/java/de/htwg_konstanz/mobilelearning/models/feedback/FeedbackParticipant.java
+2024.03.24 11:53:18 WARN  no build target for: /Users/johannes/repos/mobile-learning-app/backend/src/main/java/de/htwg_konstanz/mobilelearning/models/feedback/FeedbackParticipant.java
+Mar 24, 2024 11:54:10 AM scala.meta.internal.pc.CompilerAccess handleError
+SEVERE: A severe compiler error occurred, full details of the error can be found in the error report /Users/johannes/repos/mobile-learning-app/backend/.metals/.reports/metals-full/2024-03-24/r_compiler-error_11-54-10-495.md
+2024.03.24 11:54:14 WARN  no build target for: /Users/johannes/repos/mobile-learning-app/backend/src/main/java/de/htwg_konstanz/mobilelearning/models/feedback/FeedbackParticipant.java
+2024.03.24 11:54:15 WARN  no build target for: /Users/johannes/repos/mobile-learning-app/backend/src/main/java/de/htwg_konstanz/mobilelearning/models/feedback/FeedbackParticipant.java
+2024.03.24 11:54:17 WARN  no build target for: /Users/johannes/repos/mobile-learning-app/backend/src/main/java/de/htwg_konstanz/mobilelearning/models/feedback/FeedbackParticipant.java
+Mar 24, 2024 11:54:17 AM scala.meta.internal.pc.CompilerAccess handleError
+SEVERE: A severe compiler error occurred, full details of the error can be found in the error report /Users/johannes/repos/mobile-learning-app/backend/.metals/.reports/metals-full/2024-03-24/r_compiler-error_11-54-17-283.md
+2024.03.24 11:54:18 WARN  no build target for: /Users/johannes/repos/mobile-learning-app/backend/src/main/java/de/htwg_konstanz/mobilelearning/models/feedback/FeedbackParticipant.java
+2024.03.24 11:54:27 WARN  Using indexes to guess the definition of getUserId
+2024.03.24 11:54:27 WARN  Using indexes to guess the definition of FeedbackParticipant
+Mar 24, 2024 11:54:27 AM scala.meta.internal.pc.CompilerAccess handleError
+SEVERE: A severe compiler error occurred, full details of the error can be found in the error report /Users/johannes/repos/mobile-learning-app/backend/.metals/.reports/metals-full/2024-03-24/r_compiler-error_11-54-27-995.md
+Mar 24, 2024 11:54:28 AM scala.meta.internal.pc.CompilerAccess handleError
+SEVERE: A severe compiler error occurred, full details of the error can be found in the error report /Users/johannes/repos/mobile-learning-app/backend/.metals/.reports/metals-full/2024-03-24/r_compiler-error_11-54-28-367.md
+Mar 24, 2024 11:54:28 AM scala.meta.internal.pc.CompilerAccess handleError
+SEVERE: A severe compiler error occurred, full details of the error can be found in the error report /Users/johannes/repos/mobile-learning-app/backend/.metals/.reports/metals-full/2024-03-24/r_compiler-error_11-54-28-596.md
+2024.03.24 11:54:27 WARN  Using indexes to guess the definition of FeedbackParticipant
+2024.03.24 11:54:28 WARN  Using indexes to guess the definition of FeedbackParticipant
+2024.03.24 11:54:29 WARN  no build target for: /Users/johannes/repos/mobile-learning-app/backend/src/main/java/de/htwg_konstanz/mobilelearning/models/feedback/FeedbackParticipant.java
+Mar 24, 2024 11:54:31 AM scala.meta.internal.pc.CompilerAccess handleError
+SEVERE: A severe compiler error occurred, full details of the error can be found in the error report /Users/johannes/repos/mobile-learning-app/backend/.metals/.reports/metals-full/2024-03-24/r_compiler-error_11-54-31-250.md
+Mar 24, 2024 11:54:32 AM scala.meta.internal.pc.CompilerAccess handleError
+SEVERE: A severe compiler error occurred, full details of the error can be found in the error report /Users/johannes/repos/mobile-learning-app/backend/.metals/.reports/metals-full/2024-03-24/r_compiler-error_11-54-32-021.md
+Mar 24, 2024 11:54:32 AM scala.meta.internal.pc.CompilerAccess handleError
+SEVERE: A severe compiler error occurred, full details of the error can be found in the error report /Users/johannes/repos/mobile-learning-app/backend/.metals/.reports/metals-full/2024-03-24/r_compiler-error_11-54-32-960.md
+Mar 24, 2024 11:54:33 AM scala.meta.internal.pc.CompilerAccess handleError
+SEVERE: A severe compiler error occurred, full details of the error can be found in the error report /Users/johannes/repos/mobile-learning-app/backend/.metals/.reports/metals-full/2024-03-24/r_compiler-error_11-54-33-280.md
+Mar 24, 2024 11:54:33 AM scala.meta.internal.pc.CompilerAccess handleError
+SEVERE: A severe compiler error occurred, full details of the error can be found in the error report /Users/johannes/repos/mobile-learning-app/backend/.metals/.reports/metals-full/2024-03-24/r_compiler-error_11-54-33-894.md
+Mar 24, 2024 11:54:33 AM org.eclipse.lsp4j.jsonrpc.RemoteEndpoint handleCancellation
+WARNING: Unmatched cancel notification for request id 776
+Mar 24, 2024 11:54:33 AM scala.meta.internal.pc.CompilerAccess handleError
+SEVERE: A severe compiler error occurred, full details of the error can be found in the error report /Users/johannes/repos/mobile-learning-app/backend/.metals/.reports/metals-full/2024-03-24/r_compiler-error_11-54-33-951.md
+Mar 24, 2024 11:54:34 AM scala.meta.internal.pc.CompilerAccess handleError
+SEVERE: A severe compiler error occurred, full details of the error can be found in the error report /Users/johannes/repos/mobile-learning-app/backend/.metals/.reports/metals-full/2024-03-24/r_compiler-error_11-54-34-105.md
+Mar 24, 2024 11:54:34 AM scala.meta.internal.pc.CompilerAccess handleError
+SEVERE: A severe compiler error occurred, full details of the error can be found in the error report /Users/johannes/repos/mobile-learning-app/backend/.metals/.reports/metals-full/2024-03-24/r_compiler-error_11-54-34-257.md
+Mar 24, 2024 11:54:35 AM scala.meta.internal.pc.CompilerAccess handleError
+SEVERE: A severe compiler error occurred, full details of the error can be found in the error report /Users/johannes/repos/mobile-learning-app/backend/.metals/.reports/metals-full/2024-03-24/r_compiler-error_11-54-35-708.md
+2024.03.24 11:54:36 WARN  no build target for: /Users/johannes/repos/mobile-learning-app/backend/src/main/java/de/htwg_konstanz/mobilelearning/models/feedback/FeedbackParticipant.java
+2024.03.24 11:54:40 WARN  Running javac-semanticdb failed for file:///Users/johannes/repos/mobile-learning-app/backend/src/main/java/de/htwg_konstanz/mobilelearning/models/feedback/FeedbackParticipant.java. Output:
+
+Mar 24, 2024 11:54:40 AM scala.meta.internal.pc.CompilerAccess handleError
+SEVERE: A severe compiler error occurred, full details of the error can be found in the error report /Users/johannes/repos/mobile-learning-app/backend/.metals/.reports/metals-full/2024-03-24/r_compiler-error_11-54-40-879.md
+Mar 24, 2024 11:54:40 AM org.eclipse.lsp4j.jsonrpc.RemoteEndpoint handleCancellation
+WARNING: Unmatched cancel notification for request id 806
+Mar 24, 2024 11:54:40 AM scala.meta.internal.pc.CompilerAccess handleError
+SEVERE: A severe compiler error occurred, full details of the error can be found in the error report /Users/johannes/repos/mobile-learning-app/backend/.metals/.reports/metals-full/2024-03-24/r_compiler-error_11-54-40-912.md
+2024.03.24 11:54:41 WARN  Running javac-semanticdb failed for file:///Users/johannes/repos/mobile-learning-app/backend/src/main/java/de/htwg_konstanz/mobilelearning/models/feedback/FeedbackParticipant.java. Output:
+
+Mar 24, 2024 11:54:41 AM org.eclipse.lsp4j.jsonrpc.RemoteEndpoint handleCancellation
+WARNING: Unmatched cancel notification for request id 812
+2024.03.24 11:54:41 WARN  Running javac-semanticdb failed for file:///Users/johannes/repos/mobile-learning-app/backend/src/main/java/de/htwg_konstanz/mobilelearning/models/feedback/FeedbackParticipant.java. Output:
+
+2024.03.24 11:54:42 WARN  no build target for: /Users/johannes/repos/mobile-learning-app/backend/src/main/java/de/htwg_konstanz/mobilelearning/models/feedback/FeedbackParticipant.java
+2024.03.24 11:54:44 WARN  Running javac-semanticdb failed for file:///Users/johannes/repos/mobile-learning-app/backend/src/main/java/de/htwg_konstanz/mobilelearning/models/feedback/FeedbackParticipant.java. Output:
+
+2024.03.24 11:54:44 WARN  no build target for: /Users/johannes/repos/mobile-learning-app/backend/src/main/java/de/htwg_konstanz/mobilelearning/models/feedback/FeedbackParticipant.java
+2024.03.24 11:54:45 WARN  Running javac-semanticdb failed for file:///Users/johannes/repos/mobile-learning-app/backend/src/main/java/de/htwg_konstanz/mobilelearning/models/feedback/FeedbackParticipant.java. Output:
+
+2024.03.24 11:54:46 WARN  Running javac-semanticdb failed for file:///Users/johannes/repos/mobile-learning-app/backend/src/main/java/de/htwg_konstanz/mobilelearning/models/feedback/FeedbackParticipant.java. Output:
+
+2024.03.24 11:54:46 WARN  Running javac-semanticdb failed for file:///Users/johannes/repos/mobile-learning-app/backend/src/main/java/de/htwg_konstanz/mobilelearning/models/feedback/FeedbackParticipant.java. Output:
+
+2024.03.24 11:54:46 WARN  Running javac-semanticdb failed for file:///Users/johannes/repos/mobile-learning-app/backend/src/main/java/de/htwg_konstanz/mobilelearning/models/feedback/FeedbackParticipant.java. Output:
+
+2024.03.24 11:54:47 WARN  Running javac-semanticdb failed for file:///Users/johannes/repos/mobile-learning-app/backend/src/main/java/de/htwg_konstanz/mobilelearning/models/feedback/FeedbackParticipant.java. Output:
+
+2024.03.24 11:54:48 WARN  no build target for: /Users/johannes/repos/mobile-learning-app/backend/src/main/java/de/htwg_konstanz/mobilelearning/models/feedback/FeedbackParticipant.java
+2024.03.24 11:54:52 WARN  no build target for: /Users/johannes/repos/mobile-learning-app/backend/src/main/java/de/htwg_konstanz/mobilelearning/models/feedback/FeedbackParticipant.java
+Mar 24, 2024 11:55:16 AM scala.meta.internal.pc.CompilerAccess handleError
+SEVERE: A severe compiler error occurred, full details of the error can be found in the error report /Users/johannes/repos/mobile-learning-app/backend/.metals/.reports/metals-full/2024-03-24/r_compiler-error_11-55-16-044.md
+Mar 24, 2024 11:55:17 AM scala.meta.internal.pc.CompilerAccess handleError
+SEVERE: A severe compiler error occurred, full details of the error can be found in the error report /Users/johannes/repos/mobile-learning-app/backend/.metals/.reports/metals-full/2024-03-24/r_compiler-error_11-55-17-631.md
+Mar 24, 2024 11:55:18 AM scala.meta.internal.pc.CompilerAccess handleError
+SEVERE: A severe compiler error occurred, full details of the error can be found in the error report /Users/johannes/repos/mobile-learning-app/backend/.metals/.reports/metals-full/2024-03-24/r_compiler-error_11-55-18-250.md
+Mar 24, 2024 11:55:19 AM scala.meta.internal.pc.CompilerAccess handleError
+SEVERE: A severe compiler error occurred, full details of the error can be found in the error report /Users/johannes/repos/mobile-learning-app/backend/.metals/.reports/metals-full/2024-03-24/r_compiler-error_11-55-19-176.md
+2024.03.24 11:55:19 WARN  no build target for: /Users/johannes/repos/mobile-learning-app/backend/src/main/java/de/htwg_konstanz/mobilelearning/models/feedback/FeedbackForm.java
+Mar 24, 2024 11:55:23 AM scala.meta.internal.pc.CompilerAccess handleError
+SEVERE: A severe compiler error occurred, full details of the error can be found in the error report /Users/johannes/repos/mobile-learning-app/backend/.metals/.reports/metals-full/2024-03-24/r_compiler-error_11-55-23-231.md
+Mar 24, 2024 11:55:23 AM scala.meta.internal.pc.CompilerAccess handleError
+SEVERE: A severe compiler error occurred, full details of the error can be found in the error report /Users/johannes/repos/mobile-learning-app/backend/.metals/.reports/metals-full/2024-03-24/r_compiler-error_11-55-23-565.md
+Mar 24, 2024 11:55:25 AM scala.meta.internal.pc.CompilerAccess handleError
+SEVERE: A severe compiler error occurred, full details of the error can be found in the error report /Users/johannes/repos/mobile-learning-app/backend/.metals/.reports/metals-full/2024-03-24/r_compiler-error_11-55-25-475.md
+2024.03.24 11:55:26 WARN  Running javac-semanticdb failed for file:///Users/johannes/repos/mobile-learning-app/backend/src/main/java/de/htwg_konstanz/mobilelearning/models/feedback/FeedbackForm.java. Output:
+
+2024.03.24 11:55:26 WARN  no build target for: /Users/johannes/repos/mobile-learning-app/backend/src/main/java/de/htwg_konstanz/mobilelearning/models/feedback/FeedbackForm.java
+Mar 24, 2024 11:55:27 AM scala.meta.internal.pc.CompilerAccess handleError
+SEVERE: A severe compiler error occurred, full details of the error can be found in the error report /Users/johannes/repos/mobile-learning-app/backend/.metals/.reports/metals-full/2024-03-24/r_compiler-error_11-55-27-432.md
+Mar 24, 2024 11:55:27 AM scala.meta.internal.pc.CompilerAccess handleError
+SEVERE: A severe compiler error occurred, full details of the error can be found in the error report /Users/johannes/repos/mobile-learning-app/backend/.metals/.reports/metals-full/2024-03-24/r_compiler-error_11-55-27-827.md
+Mar 24, 2024 11:55:28 AM scala.meta.internal.pc.CompilerAccess handleError
+SEVERE: A severe compiler error occurred, full details of the error can be found in the error report /Users/johannes/repos/mobile-learning-app/backend/.metals/.reports/metals-full/2024-03-24/r_compiler-error_11-55-28-175.md
+2024.03.24 11:55:29 WARN  Running javac-semanticdb failed for file:///Users/johannes/repos/mobile-learning-app/backend/src/main/java/de/htwg_konstanz/mobilelearning/models/feedback/FeedbackForm.java. Output:
+
+2024.03.24 11:55:29 WARN  Running javac-semanticdb failed for file:///Users/johannes/repos/mobile-learning-app/backend/src/main/java/de/htwg_konstanz/mobilelearning/models/feedback/FeedbackForm.java. Output:
+
+2024.03.24 11:55:29 WARN  no build target for: /Users/johannes/repos/mobile-learning-app/backend/src/main/java/de/htwg_konstanz/mobilelearning/models/feedback/FeedbackForm.java
+2024.03.24 11:55:32 WARN  Running javac-semanticdb failed for file:///Users/johannes/repos/mobile-learning-app/backend/src/main/java/de/htwg_konstanz/mobilelearning/models/feedback/FeedbackForm.java. Output:
+
+2024.03.24 11:55:33 WARN  no build target for: /Users/johannes/repos/mobile-learning-app/backend/src/main/java/de/htwg_konstanz/mobilelearning/models/feedback/FeedbackForm.java
+2024.03.24 11:55:35 WARN  Running javac-semanticdb failed for file:///Users/johannes/repos/mobile-learning-app/backend/src/main/java/de/htwg_konstanz/mobilelearning/models/feedback/FeedbackForm.java. Output:
+
+Mar 24, 2024 11:55:35 AM scala.meta.internal.pc.CompilerAccess handleError
+SEVERE: A severe compiler error occurred, full details of the error can be found in the error report /Users/johannes/repos/mobile-learning-app/backend/.metals/.reports/metals-full/2024-03-24/r_compiler-error_11-55-35-688.md
+2024.03.24 11:55:36 WARN  Running javac-semanticdb failed for file:///Users/johannes/repos/mobile-learning-app/backend/src/main/java/de/htwg_konstanz/mobilelearning/models/feedback/FeedbackForm.java. Output:
+
+2024.03.24 11:55:36 WARN  no build target for: /Users/johannes/repos/mobile-learning-app/backend/src/main/java/de/htwg_konstanz/mobilelearning/models/feedback/FeedbackForm.java
+2024.03.24 11:55:37 WARN  Running javac-semanticdb failed for file:///Users/johannes/repos/mobile-learning-app/backend/src/main/java/de/htwg_konstanz/mobilelearning/models/feedback/FeedbackForm.java. Output:
+
+2024.03.24 11:55:38 WARN  Running javac-semanticdb failed for file:///Users/johannes/repos/mobile-learning-app/backend/src/main/java/de/htwg_konstanz/mobilelearning/models/feedback/FeedbackForm.java. Output:
+
+2024.03.24 11:55:39 WARN  no build target for: /Users/johannes/repos/mobile-learning-app/backend/src/main/java/de/htwg_konstanz/mobilelearning/models/feedback/FeedbackForm.java
+2024.03.24 11:55:41 WARN  Running javac-semanticdb failed for file:///Users/johannes/repos/mobile-learning-app/backend/src/main/java/de/htwg_konstanz/mobilelearning/models/feedback/FeedbackForm.java. Output:
+
+2024.03.24 11:55:42 WARN  Running javac-semanticdb failed for file:///Users/johannes/repos/mobile-learning-app/backend/src/main/java/de/htwg_konstanz/mobilelearning/models/feedback/FeedbackForm.java. Output:
+
+2024.03.24 11:55:43 WARN  Running javac-semanticdb failed for file:///Users/johannes/repos/mobile-learning-app/backend/src/main/java/de/htwg_konstanz/mobilelearning/models/feedback/FeedbackForm.java. Output:
+
+2024.03.24 11:55:45 WARN  Running javac-semanticdb failed for file:///Users/johannes/repos/mobile-learning-app/backend/src/main/java/de/htwg_konstanz/mobilelearning/models/feedback/FeedbackForm.java. Output:
+
+2024.03.24 11:55:47 WARN  Running javac-semanticdb failed for file:///Users/johannes/repos/mobile-learning-app/backend/src/main/java/de/htwg_konstanz/mobilelearning/models/feedback/FeedbackForm.java. Output:
+
+2024.03.24 11:55:48 WARN  Running javac-semanticdb failed for file:///Users/johannes/repos/mobile-learning-app/backend/src/main/java/de/htwg_konstanz/mobilelearning/models/feedback/FeedbackForm.java. Output:
+
+2024.03.24 11:55:49 WARN  Running javac-semanticdb failed for file:///Users/johannes/repos/mobile-learning-app/backend/src/main/java/de/htwg_konstanz/mobilelearning/models/feedback/FeedbackForm.java. Output:
+
+2024.03.24 11:55:50 WARN  Running javac-semanticdb failed for file:///Users/johannes/repos/mobile-learning-app/backend/src/main/java/de/htwg_konstanz/mobilelearning/models/feedback/FeedbackForm.java. Output:
+
+2024.03.24 11:55:51 WARN  no build target for: /Users/johannes/repos/mobile-learning-app/backend/src/main/java/de/htwg_konstanz/mobilelearning/models/feedback/FeedbackForm.java
+2024.03.24 11:55:52 WARN  Running javac-semanticdb failed for file:///Users/johannes/repos/mobile-learning-app/backend/src/main/java/de/htwg_konstanz/mobilelearning/models/feedback/FeedbackForm.java. Output:
+
+2024.03.24 11:55:52 WARN  no build target for: /Users/johannes/repos/mobile-learning-app/backend/src/main/java/de/htwg_konstanz/mobilelearning/models/feedback/FeedbackForm.java
+Mar 24, 2024 11:56:18 AM scala.meta.internal.pc.CompilerAccess handleError
+SEVERE: A severe compiler error occurred, full details of the error can be found in the error report /Users/johannes/repos/mobile-learning-app/backend/.metals/.reports/metals-full/2024-03-24/r_compiler-error_11-56-18-903.md
+Mar 24, 2024 11:56:19 AM scala.meta.internal.pc.CompilerAccess handleError
+SEVERE: A severe compiler error occurred, full details of the error can be found in the error report /Users/johannes/repos/mobile-learning-app/backend/.metals/.reports/metals-full/2024-03-24/r_compiler-error_11-56-19-800.md
+Mar 24, 2024 11:56:20 AM scala.meta.internal.pc.CompilerAccess handleError
+SEVERE: A severe compiler error occurred, full details of the error can be found in the error report /Users/johannes/repos/mobile-learning-app/backend/.metals/.reports/metals-full/2024-03-24/r_compiler-error_11-56-20-149.md
+Mar 24, 2024 11:56:20 AM scala.meta.internal.pc.CompilerAccess handleError
+SEVERE: A severe compiler error occurred, full details of the error can be found in the error report /Users/johannes/repos/mobile-learning-app/backend/.metals/.reports/metals-full/2024-03-24/r_compiler-error_11-56-20-784.md
+Mar 24, 2024 11:56:21 AM org.eclipse.lsp4j.jsonrpc.RemoteEndpoint handleCancellation
+WARNING: Unmatched cancel notification for request id 1050
+Mar 24, 2024 11:56:22 AM scala.meta.internal.pc.CompilerAccess handleError
+SEVERE: A severe compiler error occurred, full details of the error can be found in the error report /Users/johannes/repos/mobile-learning-app/backend/.metals/.reports/metals-full/2024-03-24/r_compiler-error_11-56-22-418.md
+2024.03.24 11:56:25 WARN  no build target for: /Users/johannes/repos/mobile-learning-app/backend/src/main/java/de/htwg_konstanz/mobilelearning/services/feedback/socket/LiveFeedbackSocket.java
+Mar 24, 2024 11:56:25 AM scala.meta.internal.pc.CompilerAccess handleError
+SEVERE: A severe compiler error occurred, full details of the error can be found in the error report /Users/johannes/repos/mobile-learning-app/backend/.metals/.reports/metals-full/2024-03-24/r_compiler-error_11-56-25-711.md
+Mar 24, 2024 11:56:25 AM org.eclipse.lsp4j.jsonrpc.RemoteEndpoint handleCancellation
+WARNING: Unmatched cancel notification for request id 1059
+Mar 24, 2024 11:56:27 AM org.eclipse.lsp4j.jsonrpc.RemoteEndpoint handleCancellation
+WARNING: Unmatched cancel notification for request id 1065
+Mar 24, 2024 11:56:28 AM org.eclipse.lsp4j.jsonrpc.RemoteEndpoint handleCancellation
+WARNING: Unmatched cancel notification for request id 1071
+Mar 24, 2024 11:56:29 AM org.eclipse.lsp4j.jsonrpc.RemoteEndpoint handleCancellation
+WARNING: Unmatched cancel notification for request id 1077
+Mar 24, 2024 11:56:31 AM org.eclipse.lsp4j.jsonrpc.RemoteEndpoint handleCancellation
+WARNING: Unmatched cancel notification for request id 1084
+Mar 24, 2024 11:56:31 AM org.eclipse.lsp4j.jsonrpc.RemoteEndpoint handleCancellation
+WARNING: Unmatched cancel notification for request id 1086
+Mar 24, 2024 11:56:31 AM org.eclipse.lsp4j.jsonrpc.RemoteEndpoint handleCancellation
+WARNING: Unmatched cancel notification for request id 1089
+Mar 24, 2024 11:56:31 AM org.eclipse.lsp4j.jsonrpc.RemoteEndpoint handleCancellation
+WARNING: Unmatched cancel notification for request id 1092
+Mar 24, 2024 11:56:32 AM org.eclipse.lsp4j.jsonrpc.RemoteEndpoint handleCancellation
+WARNING: Unmatched cancel notification for request id 1093
+Mar 24, 2024 11:56:33 AM org.eclipse.lsp4j.jsonrpc.RemoteEndpoint handleCancellation
+WARNING: Unmatched cancel notification for request id 1108
+Mar 24, 2024 11:56:34 AM org.eclipse.lsp4j.jsonrpc.RemoteEndpoint handleCancellation
+WARNING: Unmatched cancel notification for request id 1113
+2024.03.24 11:56:37 WARN  Running javac-semanticdb failed for file:///Users/johannes/repos/mobile-learning-app/backend/src/main/java/de/htwg_konstanz/mobilelearning/models/feedback/FeedbackForm.java. Output:
+
+2024.03.24 11:56:38 WARN  Running javac-semanticdb failed for file:///Users/johannes/repos/mobile-learning-app/backend/src/main/java/de/htwg_konstanz/mobilelearning/models/feedback/FeedbackForm.java. Output:
+
+2024.03.24 11:56:38 WARN  Running javac-semanticdb failed for file:///Users/johannes/repos/mobile-learning-app/backend/src/main/java/de/htwg_konstanz/mobilelearning/models/feedback/FeedbackForm.java. Output:
+
+2024.03.24 11:56:39 WARN  no build target for: /Users/johannes/repos/mobile-learning-app/backend/src/main/java/de/htwg_konstanz/mobilelearning/models/feedback/FeedbackForm.java
+2024.03.24 11:56:40 WARN  Running javac-semanticdb failed for file:///Users/johannes/repos/mobile-learning-app/backend/src/main/java/de/htwg_konstanz/mobilelearning/models/feedback/FeedbackForm.java. Output:
+
+2024.03.24 11:56:40 WARN  no build target for: /Users/johannes/repos/mobile-learning-app/backend/src/main/java/de/htwg_konstanz/mobilelearning/models/feedback/FeedbackForm.java
+Mar 24, 2024 11:56:46 AM scala.meta.internal.pc.CompilerAccess handleError
+SEVERE: A severe compiler error occurred, full details of the error can be found in the error report /Users/johannes/repos/mobile-learning-app/backend/.metals/.reports/metals-full/2024-03-24/r_compiler-error_11-56-46-233.md
+Mar 24, 2024 11:56:46 AM scala.meta.internal.pc.CompilerAccess handleError
+SEVERE: A severe compiler error occurred, full details of the error can be found in the error report /Users/johannes/repos/mobile-learning-app/backend/.metals/.reports/metals-full/2024-03-24/r_compiler-error_11-56-46-471.md
+Mar 24, 2024 11:56:47 AM scala.meta.internal.pc.CompilerAccess handleError
+SEVERE: A severe compiler error occurred, full details of the error can be found in the error report /Users/johannes/repos/mobile-learning-app/backend/.metals/.reports/metals-full/2024-03-24/r_compiler-error_11-56-47-123.md
+Mar 24, 2024 11:56:47 AM scala.meta.internal.pc.CompilerAccess handleError
+SEVERE: A severe compiler error occurred, full details of the error can be found in the error report /Users/johannes/repos/mobile-learning-app/backend/.metals/.reports/metals-full/2024-03-24/r_compiler-error_11-56-47-258.md
+Mar 24, 2024 11:56:48 AM scala.meta.internal.pc.CompilerAccess handleError
+SEVERE: A severe compiler error occurred, full details of the error can be found in the error report /Users/johannes/repos/mobile-learning-app/backend/.metals/.reports/metals-full/2024-03-24/r_compiler-error_11-56-48-709.md
+Mar 24, 2024 11:56:49 AM scala.meta.internal.pc.CompilerAccess handleError
+SEVERE: A severe compiler error occurred, full details of the error can be found in the error report /Users/johannes/repos/mobile-learning-app/backend/.metals/.reports/metals-full/2024-03-24/r_compiler-error_11-56-49-994.md
+2024.03.24 11:56:50 WARN  Running javac-semanticdb failed for file:///Users/johannes/repos/mobile-learning-app/backend/src/main/java/de/htwg_konstanz/mobilelearning/models/feedback/FeedbackForm.java. Output:
+
+2024.03.24 11:56:51 WARN  no build target for: /Users/johannes/repos/mobile-learning-app/backend/src/main/java/de/htwg_konstanz/mobilelearning/models/feedback/FeedbackForm.java
+Mar 24, 2024 11:56:55 AM scala.meta.internal.pc.CompilerAccess handleError
+SEVERE: A severe compiler error occurred, full details of the error can be found in the error report /Users/johannes/repos/mobile-learning-app/backend/.metals/.reports/metals-full/2024-03-24/r_compiler-error_11-56-55-147.md
+Mar 24, 2024 11:56:56 AM scala.meta.internal.pc.CompilerAccess handleError
+SEVERE: A severe compiler error occurred, full details of the error can be found in the error report /Users/johannes/repos/mobile-learning-app/backend/.metals/.reports/metals-full/2024-03-24/r_compiler-error_11-56-56-362.md
+2024.03.24 11:56:56 WARN  Running javac-semanticdb failed for file:///Users/johannes/repos/mobile-learning-app/backend/src/main/java/de/htwg_konstanz/mobilelearning/models/feedback/FeedbackForm.java. Output:
+
+2024.03.24 11:56:57 WARN  Running javac-semanticdb failed for file:///Users/johannes/repos/mobile-learning-app/backend/src/main/java/de/htwg_konstanz/mobilelearning/models/feedback/FeedbackForm.java. Output:
+
+2024.03.24 11:56:58 WARN  Running javac-semanticdb failed for file:///Users/johannes/repos/mobile-learning-app/backend/src/main/java/de/htwg_konstanz/mobilelearning/models/feedback/FeedbackForm.java. Output:
+
+2024.03.24 11:56:58 WARN  Running javac-semanticdb failed for file:///Users/johannes/repos/mobile-learning-app/backend/src/main/java/de/htwg_konstanz/mobilelearning/models/feedback/FeedbackForm.java. Output:
+
+2024.03.24 11:57:00 WARN  Running javac-semanticdb failed for file:///Users/johannes/repos/mobile-learning-app/backend/src/main/java/de/htwg_konstanz/mobilelearning/models/feedback/FeedbackForm.java. Output:
+
+2024.03.24 11:57:01 WARN  no build target for: /Users/johannes/repos/mobile-learning-app/backend/src/main/java/de/htwg_konstanz/mobilelearning/models/feedback/FeedbackForm.java
+Mar 24, 2024 11:57:01 AM scala.meta.internal.pc.CompilerAccess handleError
+SEVERE: A severe compiler error occurred, full details of the error can be found in the error report /Users/johannes/repos/mobile-learning-app/backend/.metals/.reports/metals-full/2024-03-24/r_compiler-error_11-57-01-318.md
+2024.03.24 11:57:03 WARN  Running javac-semanticdb failed for file:///Users/johannes/repos/mobile-learning-app/backend/src/main/java/de/htwg_konstanz/mobilelearning/models/feedback/FeedbackForm.java. Output:
+
+2024.03.24 11:57:04 WARN  no build target for: /Users/johannes/repos/mobile-learning-app/backend/src/main/java/de/htwg_konstanz/mobilelearning/models/feedback/FeedbackForm.java
+Mar 24, 2024 11:57:06 AM scala.meta.internal.pc.CompilerAccess handleError
+SEVERE: A severe compiler error occurred, full details of the error can be found in the error report /Users/johannes/repos/mobile-learning-app/backend/.metals/.reports/metals-full/2024-03-24/r_compiler-error_11-57-06-097.md
+Mar 24, 2024 11:57:06 AM scala.meta.internal.pc.CompilerAccess handleError
+SEVERE: A severe compiler error occurred, full details of the error can be found in the error report /Users/johannes/repos/mobile-learning-app/backend/.metals/.reports/metals-full/2024-03-24/r_compiler-error_11-57-06-925.md
+2024.03.24 11:57:07 WARN  Running javac-semanticdb failed for file:///Users/johannes/repos/mobile-learning-app/backend/src/main/java/de/htwg_konstanz/mobilelearning/models/feedback/FeedbackForm.java. Output:
+
+2024.03.24 11:57:08 WARN  Running javac-semanticdb failed for file:///Users/johannes/repos/mobile-learning-app/backend/src/main/java/de/htwg_konstanz/mobilelearning/models/feedback/FeedbackForm.java. Output:
+
+2024.03.24 11:57:08 WARN  Running javac-semanticdb failed for file:///Users/johannes/repos/mobile-learning-app/backend/src/main/java/de/htwg_konstanz/mobilelearning/models/feedback/FeedbackForm.java. Output:
+
+2024.03.24 11:57:08 WARN  no build target for: /Users/johannes/repos/mobile-learning-app/backend/src/main/java/de/htwg_konstanz/mobilelearning/models/feedback/FeedbackForm.java
+2024.03.24 11:57:13 WARN  Running javac-semanticdb failed for file:///Users/johannes/repos/mobile-learning-app/backend/src/main/java/de/htwg_konstanz/mobilelearning/models/feedback/FeedbackForm.java. Output:
+
+Mar 24, 2024 11:57:13 AM scala.meta.internal.pc.CompilerAccess handleError
+SEVERE: A severe compiler error occurred, full details of the error can be found in the error report /Users/johannes/repos/mobile-learning-app/backend/.metals/.reports/metals-full/2024-03-24/r_compiler-error_11-57-13-686.md
+2024.03.24 11:57:14 WARN  Running javac-semanticdb failed for file:///Users/johannes/repos/mobile-learning-app/backend/src/main/java/de/htwg_konstanz/mobilelearning/models/feedback/FeedbackForm.java. Output:
+
+2024.03.24 11:57:14 WARN  no build target for: /Users/johannes/repos/mobile-learning-app/backend/src/main/java/de/htwg_konstanz/mobilelearning/models/feedback/FeedbackForm.java
+2024.03.24 11:57:19 WARN  Running javac-semanticdb failed for file:///Users/johannes/repos/mobile-learning-app/backend/src/main/java/de/htwg_konstanz/mobilelearning/models/feedback/FeedbackForm.java. Output:
+
+2024.03.24 11:57:20 WARN  no build target for: /Users/johannes/repos/mobile-learning-app/backend/src/main/java/de/htwg_konstanz/mobilelearning/models/feedback/FeedbackForm.java
+Mar 24, 2024 11:57:21 AM scala.meta.internal.pc.CompilerAccess handleError
+SEVERE: A severe compiler error occurred, full details of the error can be found in the error report /Users/johannes/repos/mobile-learning-app/backend/.metals/.reports/metals-full/2024-03-24/r_compiler-error_11-57-21-548.md
+Mar 24, 2024 11:57:22 AM scala.meta.internal.pc.CompilerAccess handleError
+SEVERE: A severe compiler error occurred, full details of the error can be found in the error report /Users/johannes/repos/mobile-learning-app/backend/.metals/.reports/metals-full/2024-03-24/r_compiler-error_11-57-22-101.md
+Mar 24, 2024 11:57:23 AM scala.meta.internal.pc.CompilerAccess handleError
+SEVERE: A severe compiler error occurred, full details of the error can be found in the error report /Users/johannes/repos/mobile-learning-app/backend/.metals/.reports/metals-full/2024-03-24/r_compiler-error_11-57-23-527.md
+2024.03.24 11:57:24 WARN  Running javac-semanticdb failed for file:///Users/johannes/repos/mobile-learning-app/backend/src/main/java/de/htwg_konstanz/mobilelearning/models/feedback/FeedbackForm.java. Output:
+
+Mar 24, 2024 11:57:24 AM scala.meta.internal.pc.CompilerAccess handleError
+SEVERE: A severe compiler error occurred, full details of the error can be found in the error report /Users/johannes/repos/mobile-learning-app/backend/.metals/.reports/metals-full/2024-03-24/r_compiler-error_11-57-24-902.md
+2024.03.24 11:57:25 WARN  no build target for: /Users/johannes/repos/mobile-learning-app/backend/src/main/java/de/htwg_konstanz/mobilelearning/models/feedback/FeedbackForm.java
+Mar 24, 2024 11:57:25 AM scala.meta.internal.pc.CompilerAccess handleError
+SEVERE: A severe compiler error occurred, full details of the error can be found in the error report /Users/johannes/repos/mobile-learning-app/backend/.metals/.reports/metals-full/2024-03-24/r_compiler-error_11-57-25-323.md
+Mar 24, 2024 11:57:25 AM scala.meta.internal.pc.CompilerAccess handleError
+SEVERE: A severe compiler error occurred, full details of the error can be found in the error report /Users/johannes/repos/mobile-learning-app/backend/.metals/.reports/metals-full/2024-03-24/r_compiler-error_11-57-25-927.md
+2024.03.24 11:57:28 WARN  Running javac-semanticdb failed for file:///Users/johannes/repos/mobile-learning-app/backend/src/main/java/de/htwg_konstanz/mobilelearning/models/feedback/FeedbackForm.java. Output:
+
+2024.03.24 11:57:28 WARN  no build target for: /Users/johannes/repos/mobile-learning-app/backend/src/main/java/de/htwg_konstanz/mobilelearning/models/feedback/FeedbackForm.java
+2024.03.24 11:58:29 WARN  no build target for: /Users/johannes/repos/mobile-learning-app/backend/src/main/java/de/htwg_konstanz/mobilelearning/models/feedback/FeedbackForm.java
+Mar 24, 2024 11:58:32 AM scala.meta.internal.pc.CompilerAccess handleError
+SEVERE: A severe compiler error occurred, full details of the error can be found in the error report /Users/johannes/repos/mobile-learning-app/backend/.metals/.reports/metals-full/2024-03-24/r_compiler-error_11-58-32-259.md
+Mar 24, 2024 11:58:32 AM scala.meta.internal.pc.CompilerAccess handleError
+SEVERE: A severe compiler error occurred, full details of the error can be found in the error report /Users/johannes/repos/mobile-learning-app/backend/.metals/.reports/metals-full/2024-03-24/r_compiler-error_11-58-32-396.md
+Mar 24, 2024 11:58:34 AM scala.meta.internal.pc.CompilerAccess handleError
+SEVERE: A severe compiler error occurred, full details of the error can be found in the error report /Users/johannes/repos/mobile-learning-app/backend/.metals/.reports/metals-full/2024-03-24/r_compiler-error_11-58-34-278.md
+2024.03.24 11:58:39 WARN  no build target for: /Users/johannes/repos/mobile-learning-app/backend/src/main/java/de/htwg_konstanz/mobilelearning/models/feedback/FeedbackForm.java
+Mar 24, 2024 11:58:39 AM org.eclipse.lsp4j.jsonrpc.RemoteEndpoint handleCancellation
+WARNING: Unmatched cancel notification for request id 1307
+2024.03.24 11:58:42 WARN  no build target for: /Users/johannes/repos/mobile-learning-app/backend/src/main/java/de/htwg_konstanz/mobilelearning/models/feedback/FeedbackForm.java
+2024.03.24 11:58:43 WARN  no build target for: /Users/johannes/repos/mobile-learning-app/backend/src/main/java/de/htwg_konstanz/mobilelearning/models/feedback/FeedbackForm.java
+Mar 24, 2024 11:58:45 AM scala.meta.internal.pc.CompilerAccess handleError
+SEVERE: A severe compiler error occurred, full details of the error can be found in the error report /Users/johannes/repos/mobile-learning-app/backend/.metals/.reports/metals-full/2024-03-24/r_compiler-error_11-58-45-235.md
+Mar 24, 2024 11:58:46 AM scala.meta.internal.pc.CompilerAccess handleError
+SEVERE: A severe compiler error occurred, full details of the error can be found in the error report /Users/johannes/repos/mobile-learning-app/backend/.metals/.reports/metals-full/2024-03-24/r_compiler-error_11-58-46-073.md
+Mar 24, 2024 11:58:46 AM scala.meta.internal.pc.CompilerAccess handleError
+SEVERE: A severe compiler error occurred, full details of the error can be found in the error report /Users/johannes/repos/mobile-learning-app/backend/.metals/.reports/metals-full/2024-03-24/r_compiler-error_11-58-46-285.md
+Mar 24, 2024 11:58:47 AM scala.meta.internal.pc.CompilerAccess handleError
+SEVERE: A severe compiler error occurred, full details of the error can be found in the error report /Users/johannes/repos/mobile-learning-app/backend/.metals/.reports/metals-full/2024-03-24/r_compiler-error_11-58-47-868.md
+2024.03.24 11:58:48 WARN  no build target for: /Users/johannes/repos/mobile-learning-app/backend/src/main/java/de/htwg_konstanz/mobilelearning/models/feedback/FeedbackForm.java
+Mar 24, 2024 11:58:51 AM scala.meta.internal.pc.CompilerAccess handleError
+SEVERE: A severe compiler error occurred, full details of the error can be found in the error report /Users/johannes/repos/mobile-learning-app/backend/.metals/.reports/metals-full/2024-03-24/r_compiler-error_11-58-51-226.md
+Mar 24, 2024 11:58:52 AM scala.meta.internal.pc.CompilerAccess handleError
+SEVERE: A severe compiler error occurred, full details of the error can be found in the error report /Users/johannes/repos/mobile-learning-app/backend/.metals/.reports/metals-full/2024-03-24/r_compiler-error_11-58-52-796.md
+Mar 24, 2024 11:58:52 AM scala.meta.internal.pc.CompilerAccess handleError
+SEVERE: A severe compiler error occurred, full details of the error can be found in the error report /Users/johannes/repos/mobile-learning-app/backend/.metals/.reports/metals-full/2024-03-24/r_compiler-error_11-58-52-958.md
+Mar 24, 2024 11:58:53 AM scala.meta.internal.pc.CompilerAccess handleError
+SEVERE: A severe compiler error occurred, full details of the error can be found in the error report /Users/johannes/repos/mobile-learning-app/backend/.metals/.reports/metals-full/2024-03-24/r_compiler-error_11-58-53-888.md
+Mar 24, 2024 11:58:54 AM scala.meta.internal.pc.CompilerAccess handleError
+SEVERE: A severe compiler error occurred, full details of the error can be found in the error report /Users/johannes/repos/mobile-learning-app/backend/.metals/.reports/metals-full/2024-03-24/r_compiler-error_11-58-54-111.md
+2024.03.24 11:58:55 WARN  no build target for: /Users/johannes/repos/mobile-learning-app/backend/src/main/java/de/htwg_konstanz/mobilelearning/models/feedback/FeedbackForm.java
+Mar 24, 2024 11:58:55 AM scala.meta.internal.pc.CompilerAccess handleError
+SEVERE: A severe compiler error occurred, full details of the error can be found in the error report /Users/johannes/repos/mobile-learning-app/backend/.metals/.reports/metals-full/2024-03-24/r_compiler-error_11-58-55-439.md
+Mar 24, 2024 11:58:56 AM scala.meta.internal.pc.CompilerAccess handleError
+SEVERE: A severe compiler error occurred, full details of the error can be found in the error report /Users/johannes/repos/mobile-learning-app/backend/.metals/.reports/metals-full/2024-03-24/r_compiler-error_11-58-56-098.md
+Mar 24, 2024 11:58:57 AM scala.meta.internal.pc.CompilerAccess handleError
+SEVERE: A severe compiler error occurred, full details of the error can be found in the error report /Users/johannes/repos/mobile-learning-app/backend/.metals/.reports/metals-full/2024-03-24/r_compiler-error_11-58-57-310.md
+2024.03.24 11:58:59 WARN  no build target for: /Users/johannes/repos/mobile-learning-app/backend/src/main/java/de/htwg_konstanz/mobilelearning/models/feedback/FeedbackForm.java
+Mar 24, 2024 11:59:00 AM scala.meta.internal.pc.CompilerAccess handleError
+SEVERE: A severe compiler error occurred, full details of the error can be found in the error report /Users/johannes/repos/mobile-learning-app/backend/.metals/.reports/metals-full/2024-03-24/r_compiler-error_11-59-00-932.md
+Mar 24, 2024 11:59:01 AM scala.meta.internal.pc.CompilerAccess handleError
+SEVERE: A severe compiler error occurred, full details of the error can be found in the error report /Users/johannes/repos/mobile-learning-app/backend/.metals/.reports/metals-full/2024-03-24/r_compiler-error_11-59-01-139.md
+Mar 24, 2024 11:59:03 AM scala.meta.internal.pc.CompilerAccess handleError
+SEVERE: A severe compiler error occurred, full details of the error can be found in the error report /Users/johannes/repos/mobile-learning-app/backend/.metals/.reports/metals-full/2024-03-24/r_compiler-error_11-59-03-143.md
+Mar 24, 2024 11:59:06 AM scala.meta.internal.pc.CompilerAccess handleError
+SEVERE: A severe compiler error occurred, full details of the error can be found in the error report /Users/johannes/repos/mobile-learning-app/backend/.metals/.reports/metals-full/2024-03-24/r_compiler-error_11-59-06-189.md
+Mar 24, 2024 11:59:08 AM scala.meta.internal.pc.CompilerAccess handleError
+SEVERE: A severe compiler error occurred, full details of the error can be found in the error report /Users/johannes/repos/mobile-learning-app/backend/.metals/.reports/metals-full/2024-03-24/r_compiler-error_11-59-08-569.md
+2024.03.24 11:59:08 WARN  no build target for: /Users/johannes/repos/mobile-learning-app/backend/src/main/java/de/htwg_konstanz/mobilelearning/models/feedback/FeedbackForm.java
+Mar 24, 2024 11:59:09 AM scala.meta.internal.pc.CompilerAccess handleError
+SEVERE: A severe compiler error occurred, full details of the error can be found in the error report /Users/johannes/repos/mobile-learning-app/backend/.metals/.reports/metals-full/2024-03-24/r_compiler-error_11-59-09-402.md
+Mar 24, 2024 11:59:10 AM scala.meta.internal.pc.CompilerAccess handleError
+SEVERE: A severe compiler error occurred, full details of the error can be found in the error report /Users/johannes/repos/mobile-learning-app/backend/.metals/.reports/metals-full/2024-03-24/r_compiler-error_11-59-10-365.md
+2024.03.24 11:59:11 WARN  no build target for: /Users/johannes/repos/mobile-learning-app/backend/src/main/java/de/htwg_konstanz/mobilelearning/models/feedback/FeedbackForm.java
+Mar 24, 2024 11:59:27 AM scala.meta.internal.pc.CompilerAccess handleError
+SEVERE: A severe compiler error occurred, full details of the error can be found in the error report /Users/johannes/repos/mobile-learning-app/backend/.metals/.reports/metals-full/2024-03-24/r_compiler-error_11-59-27-569.md
+Mar 24, 2024 11:59:29 AM scala.meta.internal.pc.CompilerAccess handleError
+SEVERE: A severe compiler error occurred, full details of the error can be found in the error report /Users/johannes/repos/mobile-learning-app/backend/.metals/.reports/metals-full/2024-03-24/r_compiler-error_11-59-29-118.md
+2024.03.24 11:59:32 WARN  no build target for: /Users/johannes/repos/mobile-learning-app/backend/src/main/java/de/htwg_konstanz/mobilelearning/models/feedback/FeedbackForm.java
+Mar 24, 2024 11:59:34 AM scala.meta.internal.pc.CompilerAccess handleError
+SEVERE: A severe compiler error occurred, full details of the error can be found in the error report /Users/johannes/repos/mobile-learning-app/backend/.metals/.reports/metals-full/2024-03-24/r_compiler-error_11-59-34-025.md
+Mar 24, 2024 11:59:35 AM scala.meta.internal.pc.CompilerAccess handleError
+SEVERE: A severe compiler error occurred, full details of the error can be found in the error report /Users/johannes/repos/mobile-learning-app/backend/.metals/.reports/metals-full/2024-03-24/r_compiler-error_11-59-35-994.md
+2024.03.24 11:59:37 WARN  no build target for: /Users/johannes/repos/mobile-learning-app/backend/src/main/java/de/htwg_konstanz/mobilelearning/models/feedback/FeedbackForm.java
+Mar 24, 2024 11:59:37 AM scala.meta.internal.pc.CompilerAccess handleError
+SEVERE: A severe compiler error occurred, full details of the error can be found in the error report /Users/johannes/repos/mobile-learning-app/backend/.metals/.reports/metals-full/2024-03-24/r_compiler-error_11-59-37-536.md
+Mar 24, 2024 11:59:41 AM scala.meta.internal.pc.CompilerAccess handleError
+SEVERE: A severe compiler error occurred, full details of the error can be found in the error report /Users/johannes/repos/mobile-learning-app/backend/.metals/.reports/metals-full/2024-03-24/r_compiler-error_11-59-41-778.md
+Mar 24, 2024 11:59:41 AM scala.meta.internal.pc.CompilerAccess handleError
+SEVERE: A severe compiler error occurred, full details of the error can be found in the error report /Users/johannes/repos/mobile-learning-app/backend/.metals/.reports/metals-full/2024-03-24/r_compiler-error_11-59-41-996.md
+Mar 24, 2024 11:59:42 AM scala.meta.internal.pc.CompilerAccess handleError
+SEVERE: A severe compiler error occurred, full details of the error can be found in the error report /Users/johannes/repos/mobile-learning-app/backend/.metals/.reports/metals-full/2024-03-24/r_compiler-error_11-59-42-616.md
+Mar 24, 2024 11:59:43 AM scala.meta.internal.pc.CompilerAccess handleError
+SEVERE: A severe compiler error occurred, full details of the error can be found in the error report /Users/johannes/repos/mobile-learning-app/backend/.metals/.reports/metals-full/2024-03-24/r_compiler-error_11-59-43-661.md
+Mar 24, 2024 11:59:45 AM org.eclipse.lsp4j.jsonrpc.RemoteEndpoint handleCancellation
+WARNING: Unmatched cancel notification for request id 1452
+Mar 24, 2024 11:59:45 AM scala.meta.internal.pc.CompilerAccess handleError
+SEVERE: A severe compiler error occurred, full details of the error can be found in the error report /Users/johannes/repos/mobile-learning-app/backend/.metals/.reports/metals-full/2024-03-24/r_compiler-error_11-59-45-367.md
+Mar 24, 2024 11:59:45 AM scala.meta.internal.pc.CompilerAccess handleError
+SEVERE: A severe compiler error occurred, full details of the error can be found in the error report /Users/johannes/repos/mobile-learning-app/backend/.metals/.reports/metals-full/2024-03-24/r_compiler-error_11-59-45-487.md
+2024.03.24 11:59:46 WARN  no build target for: /Users/johannes/repos/mobile-learning-app/backend/src/main/java/de/htwg_konstanz/mobilelearning/models/feedback/FeedbackForm.java
+2024.03.24 11:59:46 WARN  Running javac-semanticdb failed for file:///Users/johannes/repos/mobile-learning-app/backend/src/main/java/de/htwg_konstanz/mobilelearning/models/feedback/FeedbackForm.java. Output:
+
+2024.03.24 11:59:46 WARN  no build target for: /Users/johannes/repos/mobile-learning-app/backend/src/main/java/de/htwg_konstanz/mobilelearning/models/feedback/FeedbackForm.java
+Mar 24, 2024 11:59:50 AM scala.meta.internal.pc.CompilerAccess handleError
+SEVERE: A severe compiler error occurred, full details of the error can be found in the error report /Users/johannes/repos/mobile-learning-app/backend/.metals/.reports/metals-full/2024-03-24/r_compiler-error_11-59-50-004.md
+Mar 24, 2024 12:00:00 PM scala.meta.internal.pc.CompilerAccess handleError
+SEVERE: A severe compiler error occurred, full details of the error can be found in the error report /Users/johannes/repos/mobile-learning-app/backend/.metals/.reports/metals-full/2024-03-24/r_compiler-error_12-00-00-916.md
+Mar 24, 2024 12:00:38 PM scala.meta.internal.pc.CompilerAccess handleError
+SEVERE: A severe compiler error occurred, full details of the error can be found in the error report /Users/johannes/repos/mobile-learning-app/backend/.metals/.reports/metals-full/2024-03-24/r_compiler-error_12-00-38-343.md
+Mar 24, 2024 12:00:40 PM scala.meta.internal.pc.CompilerAccess handleError
+SEVERE: A severe compiler error occurred, full details of the error can be found in the error report /Users/johannes/repos/mobile-learning-app/backend/.metals/.reports/metals-full/2024-03-24/r_compiler-error_12-00-40-090.md
+Mar 24, 2024 12:00:40 PM scala.meta.internal.pc.CompilerAccess handleError
+SEVERE: A severe compiler error occurred, full details of the error can be found in the error report /Users/johannes/repos/mobile-learning-app/backend/.metals/.reports/metals-full/2024-03-24/r_compiler-error_12-00-40-873.md

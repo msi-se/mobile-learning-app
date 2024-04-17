@@ -36,6 +36,12 @@ class _YesNoQuizState extends State<YesNoQuiz> {
     if (widget.value == null) {
       _selection = -1;
     }
+    if (widget.value == "yes") {
+      _selection = 1;
+    }
+    if (widget.value == "no") {
+      _selection = 0;
+    }
     if (widget.correctAnswers.isEmpty) {
       return Row(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,

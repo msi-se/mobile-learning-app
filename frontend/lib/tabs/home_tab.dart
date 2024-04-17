@@ -3,6 +3,20 @@ import 'package:frontend/components/dashboard_card.dart';
 import 'package:frontend/components/dashboard_statistics.dart';
 import 'package:frontend/theme/assets.dart';
 
+class DashboardItem {
+  final String page;
+  final String svgImage;
+  final String text;
+  final bool enabled;
+
+  DashboardItem({
+    required this.page,
+    required this.svgImage,
+    required this.text,
+    required this.enabled,
+  });
+}
+
 Widget _buildColumn(String title, String value, bool smallDevice) {
   return Column(
     children: [
@@ -46,14 +60,16 @@ class _HomeTabState extends State<HomeTab> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
-    final pages = ['/test', '/menu', '/test', '/test'];
-    final svgImages = [
-      events,
-      mensa,
-      calendar,
-      analytics,
+    final dashboardItems = [
+      DashboardItem(
+          page: '/test', svgImage: events, text: 'Events', enabled: false),
+      DashboardItem(
+          page: '/menu', svgImage: mensa, text: 'Mensa', enabled: true),
+      DashboardItem(
+          page: '/test', svgImage: calendar, text: 'LSF', enabled: false),
+      DashboardItem(
+          page: '/test', svgImage: analytics, text: 'Noten', enabled: false),
     ];
-    final texts = ['Events', 'Mensa', 'LSF', 'Noten'];
 
     var screenWidth = MediaQuery.of(context).size.width;
     int crossAxisCount = screenWidth > 800 ? 4 : 2;
@@ -78,14 +94,16 @@ class _HomeTabState extends State<HomeTab> with TickerProviderStateMixin {
                     mainAxisSpacing: 10,
                     childAspectRatio: 1,
                   ),
-                  itemCount: 4,
+                  itemCount: dashboardItems.length,
                   primary: false,
                   shrinkWrap: true,
                   itemBuilder: (context, index) {
+                    var dashboardItem = dashboardItems[index];
                     return DashboardCard(
-                      svgImage: svgImages[index],
-                      text: texts[index],
-                      onTap: () => Navigator.pushNamed(context, pages[index]),
+                      svgImage: dashboardItem.svgImage,
+                      text: dashboardItem.text,
+                      onTap: () => Navigator.pushNamed(context, dashboardItem.page),
+                      enabled: dashboardItem.enabled,
                     );
                   },
                 ),
