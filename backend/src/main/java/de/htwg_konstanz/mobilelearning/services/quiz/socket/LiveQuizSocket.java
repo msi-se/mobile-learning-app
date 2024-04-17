@@ -1,5 +1,6 @@
 package de.htwg_konstanz.mobilelearning.services.quiz.socket;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -142,17 +143,19 @@ public class LiveQuizSocket {
         // check if the user already submitted a result
         Boolean userAlreadySubmitted = false;
         String hashedUserId = Hasher.hash(user.getId().toHexString());
+        List<String> userAnswers = new ArrayList<String>();
         QuestionWrapper currentQuestionWrapper = form.questions.get(form.currentQuestionIndex);
         for (Result result : currentQuestionWrapper.results) {
             if (result.hashedUserId.equals(hashedUserId)) {
                 userAlreadySubmitted = true;
+                userAnswers = result.values;
                 break;
             }
         }
 
         // if the user already submitted a result, send him a message
         if (userAlreadySubmitted) {
-            LiveQuizSocketMessage message = new LiveQuizSocketMessage("ALREADY_SUBMITTED", null, null, null, null);
+            LiveQuizSocketMessage message = new LiveQuizSocketMessage("ALREADY_SUBMITTED", null, null, null, null, userAnswers);
             this.sendMessageToUser(user, message);
         }
     }
