@@ -45,6 +45,7 @@ class _QuizControlPageState extends AuthState<QuizControlPage> {
 
   late List<Map<String, dynamic>> _results;
   late List<dynamic> _scoreboard;
+  bool _showLeaderboard = false;
 
   int _participantCounter = 0;
   List<dynamic> _userNames = [];
@@ -98,9 +99,7 @@ class _QuizControlPageState extends AuthState<QuizControlPage> {
         _userNames = data["participants"]
             .map((participant) => participant["userAlias"])
             .toList();
-        if (_form.status == FormStatus.finished) {
-          _scoreboard = getScoreboard(data);
-        }
+        _scoreboard = getScoreboard(data);
 
         startWebsocket();
 
@@ -159,13 +158,12 @@ class _QuizControlPageState extends AuthState<QuizControlPage> {
           _form.status = FormStatus.fromString(data["formStatus"]);
           _form.currentQuestionIndex = form.currentQuestionIndex;
           _form.currentQuestionFinished = form.currentQuestionFinished;
-          if (_form.status == FormStatus.finished) {
-            _scoreboard = getScoreboard(data["form"]);
-          }
+          _scoreboard = getScoreboard(data["form"]);
         });
       }
       if (data["action"] == "RESULT_ADDED") {
         setState(() {
+          _scoreboard = getScoreboard(data["form"]);
           _results = getResults(data["form"]);
         });
       }
@@ -252,16 +250,37 @@ class _QuizControlPageState extends AuthState<QuizControlPage> {
         "userId": _userId,
       }));
     }
+
     Navigator.pop(context);
   }
 
   void next() {
-    if (_socketChannel != null) {
-      _socketChannel!.sink.add(jsonEncode({
-        "action": "NEXT",
-        "roles": _roles,
-        "userId": _userId,
-      }));
+    if (_form.currentQuestionFinished) {
+      if (_showLeaderboard) {
+        if (_socketChannel != null) {
+          _socketChannel!.sink.add(jsonEncode({
+            "action": "NEXT",
+            "roles": _roles,
+            "userId": _userId,
+          }));
+        }
+        setState(() {
+          _showLeaderboard = false;
+        });
+      } else {
+        // Show the leaderboard first before moving to the next question
+        setState(() {
+          _showLeaderboard = true;
+        });
+      }
+    } else {
+      if (_socketChannel != null) {
+        _socketChannel!.sink.add(jsonEncode({
+          "action": "NEXT",
+          "roles": _roles,
+          "userId": _userId,
+        }));
+      }
     }
   }
 
@@ -364,12 +383,24 @@ class _QuizControlPageState extends AuthState<QuizControlPage> {
       );
     } else if (_fetchResult == 'success') {
       final colors = Theme.of(context).colorScheme;
+      final int totalQuestions = _form.questions.length;
+      final double progress = (_form.currentQuestionIndex + 1) / totalQuestions;
 
       final appBar = AppBar(
         title: Text(_form.name,
-            style: const TextStyle(
-                color: Colors.white, fontWeight: FontWeight.bold)),
-        backgroundColor: colors.primary,
+            style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+        backgroundColor: Theme.of(context).colorScheme.primary,
+        bottom: PreferredSize(
+          preferredSize: const Size.fromHeight(10.0),
+          child: SizedBox(
+            height: 10.0,
+            child: LinearProgressIndicator(
+              value: progress,
+              backgroundColor: Colors.grey[300],
+              valueColor: AlwaysStoppedAnimation<Color>(Theme.of(context).colorScheme.secondary),
+            ),
+          ),
+        ),
       );
 
       if (_form.status == FormStatus.not_started ||
@@ -378,7 +409,12 @@ class _QuizControlPageState extends AuthState<QuizControlPage> {
         code = "${code.substring(0, 3)} ${code.substring(3, 6)}";
 
         return Scaffold(
-            appBar: appBar,
+            appBar: AppBar(
+              title: Text(_form.name,
+                  style: const TextStyle(
+                      color: Colors.white, fontWeight: FontWeight.bold)),
+              backgroundColor: colors.primary,
+            ),
             body: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
@@ -572,56 +608,56 @@ class _QuizControlPageState extends AuthState<QuizControlPage> {
                                 style: const TextStyle(fontSize: 15),
                                 textAlign: TextAlign.center),
                             const SizedBox(height: 16),
-                            if (_form.currentQuestionFinished == true)
-                              Card(
-                                child: Padding(
-                                  padding: const EdgeInsets.all(16),
-                                  child: element.type ==
-                                          QuestionType.single_choice
+                            if (_form.currentQuestionFinished == true) 
+                              if(_showLeaderboard)
+                                Center(
+                                  child: Container(
+                                    constraints: const BoxConstraints(maxWidth: 800),
+                                    child: Card(
+                                      child: Padding(
+                                        padding: const EdgeInsets.all(8),
+                                        child: QuizScoreboard(scoreboard: _scoreboard),
+                                      ),
+                                    ),
+                                  )
+                                )
+                              else 
+                                Card(
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(16),
+                                    child: element.type == QuestionType.single_choice
                                       ? SingleChoiceQuizResult(
-                                          results: values
-                                              .map((e) => int.parse(e))
-                                              .toList()
-                                              .cast<int>(),
+                                          results: values.map((e) => int.parse(e)).toList().cast<int>(),
                                           options: element.options,
-                                          correctAnswer:
-                                              element.correctAnswers[0],
+                                          correctAnswer: element.correctAnswers[0],
                                         )
                                       : element.type == QuestionType.yes_no
-                                          ? SingleChoiceQuizResult(
-                                              results: values
-                                                  .map(
-                                                      (e) => e == "yes" ? 0 : 1)
-                                                  .toList()
-                                                  .cast<int>(),
-                                              options: const ["Ja", "Nein"],
-                                              correctAnswer:
-                                                  element.correctAnswers[0] ==
-                                                          "yes"
-                                                      ? "0"
-                                                      : "1",
-                                            )
-                                          : Text(element.type.toString()),
+                                      ? SingleChoiceQuizResult(
+                                          results: values.map((e) => e == "yes" ? 0 : 1).toList().cast<int>(),
+                                          options: const ["Ja", "Nein"],
+                                          correctAnswer: element.correctAnswers[0] == "yes" ? "0" : "1",
+                                        )
+                                      : Text(element.type.toString()),
+                                  ),
                                 ),
-                              )
                           ],
                         ),
                       ),
                     ),
                     if (_form.status == FormStatus.started)
-                      Column(
-                        children: [
-                          ElevatedButton(
-                            onPressed: next,
-                            child: const Text('Next'),
-                          ),
-                          const SizedBox(height: 8),
-                          ElevatedButton(
-                            onPressed: stopForm,
-                            child: const Text('Quiz beenden'),
-                          ),
-                        ],
-                      ),
+                    Column(
+                      children: [
+                        ElevatedButton(
+                          onPressed: next,
+                          child: const Text('Next'),
+                        ),
+                        const SizedBox(height: 8),
+                        ElevatedButton(
+                          onPressed: stopForm,
+                          child: const Text('Quiz beenden'),
+                        ),
+                      ],
+                    ),
                     if (_form.status == FormStatus.finished)
                       Column(
                         children: [
