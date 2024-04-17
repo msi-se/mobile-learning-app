@@ -58,6 +58,27 @@ services:
     networks:
       - proxy
 
+  # admin node server
+  mobile-learning-admin:
+    container_name: mobile-learning-admin-server
+    build:
+      context: ./admin-server
+      dockerfile: Dockerfile
+    restart: always
+    depends_on:
+      - mobile-learning-mongo
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.admin.entrypoints=websecure"
+      - "traefik.http.routers.admin.rule=Host(`loco.in.htwg-konstanz.de`) && PathPrefix(`/admin`)"
+      - "traefik.http.routers.admin.middlewares=admin-stripprefix"
+      - "traefik.http.middlewares.admin-stripprefix.stripprefix.prefixes=/admin"
+      - "traefik.http.middlewares.admin-stripprefix.stripprefix.forceSlash=false"
+      - "traefik.docker.network=proxy"
+    networks:
+      - proxy
+  
+  # traefik proxy
   traefik-proxy:
     container_name: traefik-proxy
     image: traefik:v2.11
