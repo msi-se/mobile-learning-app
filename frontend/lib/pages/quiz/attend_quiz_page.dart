@@ -44,6 +44,7 @@ class _AttendQuizPageState extends AuthState<AttendQuizPage> {
 
   late List<dynamic> _scoreboard;
   SMITrigger? _bump;
+  SMITrigger? _notVoted;
   SMIInput<bool>? _boolInput;
 
   dynamic _value;
@@ -221,6 +222,10 @@ class _AttendQuizPageState extends AuthState<AttendQuizPage> {
     _bump?.fire();
   }
 
+  void _notVotedAnimation() {
+    _notVoted?.fire();
+  }
+
   void startWebsocket() {
     _socketChannel = WebSocketChannel.connect(
       Uri.parse(
@@ -267,6 +272,9 @@ class _AttendQuizPageState extends AuthState<AttendQuizPage> {
           _userHasAnsweredCorrectly = data["userHasAnsweredCorrectly"];
           _correctAnswers = data["correctAnswers"];
           _hitBump();
+          if (!_voted) {
+            _notVotedAnimation();
+          }
         }
       }
       // if action is ALREADY_SUBMITTED, the user has already submitted feedback
@@ -328,6 +336,7 @@ class _AttendQuizPageState extends AuthState<AttendQuizPage> {
     artboard.addController(controller!);
     // Get a reference to the "bump" state machine input
     _bump = controller.findInput<bool>('tf trigger') as SMITrigger;
+    _notVoted = controller.findInput<bool>('nicht abgestimmt') as SMITrigger;
     _boolInput = controller.findInput<bool>('answer') as SMIInput<bool>;
   }
 
@@ -367,7 +376,12 @@ class _AttendQuizPageState extends AuthState<AttendQuizPage> {
 
     setState(() {
       _animations.insert(
-          0, Throw(key: UniqueKey(), throwType: type, clickX: dX, clickY: dY));
+          0,
+          Throw(
+              key: UniqueKey(),
+              throwType: ThrowType.paperPlane,
+              clickX: dX,
+              clickY: dY));
       print(_animations.length);
     });
 
@@ -424,6 +438,19 @@ class _AttendQuizPageState extends AuthState<AttendQuizPage> {
           body: Stack(
             key: mainStackKey,
             children: [
+              Center(
+                child: Container(
+                  margin: const EdgeInsets.only(top: 100.0, bottom: 100.0),
+                  width: 400,
+                  height: 400,
+                  child: RiveAnimation.asset(
+                    'assets/animations/rive/animations.riv',
+                    fit: BoxFit.cover,
+                    artboard: 'firework',
+                    stateMachines: ['Firework State Machine'],
+                  ),
+                ),
+              ),
               Padding(
                 padding: const EdgeInsets.all(16.0),
                 child: Column(
@@ -471,11 +498,6 @@ class _AttendQuizPageState extends AuthState<AttendQuizPage> {
                   ],
                 ),
               ),
-              IgnorePointer(
-                child: Stack(
-                  children: _animations,
-                ),
-              )
             ],
           ),
         );
@@ -535,6 +557,8 @@ class _AttendQuizPageState extends AuthState<AttendQuizPage> {
                         child: element.type == QuestionType.single_choice
                             ? SingleChoiceQuiz(
                                 correctAnswers: _correctAnswers,
+                                currentQuestionFinished:
+                                    _form!.currentQuestionFinished,
                                 voted: _voted,
                                 value: _value,
                                 options: element.options,
@@ -547,6 +571,8 @@ class _AttendQuizPageState extends AuthState<AttendQuizPage> {
                             : element.type == QuestionType.yes_no
                                 ? YesNoQuiz(
                                     correctAnswers: _correctAnswers,
+                                    currentQuestionFinished:
+                                        _form!.currentQuestionFinished,
                                     voted: _voted,
                                     value: _value,
                                     onSelectionChanged: (newValue) {
@@ -580,7 +606,7 @@ class _AttendQuizPageState extends AuthState<AttendQuizPage> {
                     });
                   },
                 ),
-              if (_form!.currentQuestionFinished || _voted)
+              if (_form!.currentQuestionFinished && _voted)
                 Container(
                     margin: const EdgeInsets.only(
                         top: 0.0,
@@ -594,6 +620,20 @@ class _AttendQuizPageState extends AuthState<AttendQuizPage> {
                       artboard: 'true & false',
                       stateMachines: ['tf State Machine'],
                       onInit: _onRiveInit,
+                    )),
+              if (_form!.currentQuestionFinished && !_voted)
+                Container(
+                    margin: const EdgeInsets.only(
+                        top: 0.0,
+                        bottom: 100.0), // specify the top and bottom margin
+
+                    width: 130,
+                    height: 130,
+                    child: RiveAnimation.asset(
+                      'assets/animations/rive/animations.riv',
+                      fit: BoxFit.cover,
+                      artboard: 'true & false',
+                      animations: ['nicht abgestimmt'],
                     )),
             ],
           ),

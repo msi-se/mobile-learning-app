@@ -17,6 +17,7 @@ import 'package:frontend/theme/assets.dart';
 import 'package:frontend/utils.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 import 'package:http/http.dart' as http;
+import 'package:rive/rive.dart';
 
 class AttendFeedbackPage extends StatefulWidget {
   final String code;
@@ -230,23 +231,26 @@ class _AttendFeedbackPageState extends AuthState<AttendFeedbackPage> {
         ],
       );
 
-      if (_form.status != FormStatus.started) {
+      if (_form?.status != FormStatus.started) {
         return Scaffold(
           appBar: appbar,
           body: Center(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
-                const Padding(
-                  padding: EdgeInsets.only(left: 20.0, right: 20.0),
-                  child: Text(
-                      "Bitte warten Sie bis die Feedbackrunde gestartet wird"),
-                ),
                 Padding(
-                  padding: const EdgeInsets.all(20.0),
-                  child: LinearProgressIndicator(
-                    valueColor: AlwaysStoppedAnimation<Color>(colors.primary),
-                    backgroundColor: colors.secondary.withAlpha(32),
+                    padding: const EdgeInsets.only(left: 20.0, right: 20.0),
+                    child: const Text(
+                        "Bitte warten Sie bis das Quiz gestartet wird")),
+                Container(
+                  margin: const EdgeInsets.only(top: 100.0, bottom: 100.0),
+                  width: 150,
+                  height: 150,
+                  child: RiveAnimation.asset(
+                    'assets/animations/rive/animations.riv',
+                    fit: BoxFit.cover,
+                    artboard: 'Waiting with coffee shorter arm',
+                    stateMachines: ['Waiting State Machine'],
                   ),
                 ),
               ],
@@ -327,7 +331,8 @@ class _AttendFeedbackPageState extends AuthState<AttendFeedbackPage> {
                                     });
                                   },
                                 )
-                              else if (element.type == QuestionType.single_choice)
+                              else if (element.type ==
+                                  QuestionType.single_choice)
                                 SingleChoiceFeedback(
                                   options: element.options,
                                   initialFeedback: _feedbackValues[element.id],
