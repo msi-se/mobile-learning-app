@@ -82,10 +82,6 @@ public class QuestionWrapper {
         return questionId;
     }
 
-    public List<Result> getResults() {
-        return results;
-    }
-
     public List<String> getResultsByUserId(ObjectId userId) {
         List<String> userResults = new ArrayList<String>();
         for (Result result : this.results) {
@@ -98,5 +94,20 @@ public class QuestionWrapper {
             }
         }
         return userResults;
+    }
+
+    public QuestionWrapper deepCopy() {
+        QuestionWrapper copy = new QuestionWrapper();
+        copy.id = this.id;
+        copy.questionId = this.questionId;
+        copy.results = new ArrayList<Result>();
+        this.results.forEach(r -> copy.results.add(r.deepCopy()));
+        copy.analytics = this.analytics.deepCopy();
+        copy.questionContent = this.questionContent != null ? this.questionContent.copy() : null;
+        return copy;
+    }
+
+    public List<Result> getResults() {
+        return results;
     }
 }

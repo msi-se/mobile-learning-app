@@ -10,7 +10,6 @@ import org.jboss.resteasy.reactive.RestPath;
 import de.htwg_konstanz.mobilelearning.helper.moodle.MoodleCourse;
 import de.htwg_konstanz.mobilelearning.helper.moodle.MoodleInterface;
 import de.htwg_konstanz.mobilelearning.models.Course;
-import de.htwg_konstanz.mobilelearning.models.QuestionWrapper;
 import de.htwg_konstanz.mobilelearning.models.auth.User;
 import de.htwg_konstanz.mobilelearning.models.auth.UserRole;
 import de.htwg_konstanz.mobilelearning.repositories.CourseRepository;
@@ -23,7 +22,6 @@ import jakarta.ws.rs.POST;
 import jakarta.ws.rs.PUT;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
-import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.MediaType;
 
 /**
@@ -47,9 +45,6 @@ public class CourseService {
      * @param courseId
      * @return Course
      */
-    @GET
-    @Produces(MediaType.APPLICATION_JSON)
-    @Path("/{courseId}")
     public Course getCourse(@RestPath String courseId) {
         ObjectId courseObjectId = new ObjectId(courseId);
         Course course = courseRepository.findById(courseObjectId);

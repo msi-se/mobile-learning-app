@@ -4,6 +4,7 @@ class SingleChoiceQuiz extends StatefulWidget {
   final ValueChanged<int> onSelectionChanged;
   final List<String> options;
   final List<dynamic> correctAnswers;
+  final bool currentQuestionFinished;
 
   final bool voted;
   final dynamic value;
@@ -15,6 +16,7 @@ class SingleChoiceQuiz extends StatefulWidget {
     required this.voted,
     required this.value,
     required this.correctAnswers,
+    required this.currentQuestionFinished,
   });
 
   @override
@@ -37,6 +39,15 @@ class _SingleChoiceQuizState extends State<SingleChoiceQuiz> {
 
     if (widget.value == null) {
       _selection = -1;
+    }
+
+    // try to parse the value to int
+    if (widget.value != null) {
+      try {
+        _selection = widget.value;
+      } catch (e) {
+        _selection = -1;
+      }
     }
 
     if (widget.correctAnswers.isEmpty) {
@@ -103,7 +114,11 @@ class _SingleChoiceQuizState extends State<SingleChoiceQuiz> {
               side: BorderSide(
                 color: widget.correctAnswers[0] == index.toString()
                     ? Colors.green
-                    : Colors.red,
+                    : widget.correctAnswers[0] == _selection.toString()
+                        ? Colors.grey
+                        : index == _selection
+                            ? Colors.red
+                            : Colors.grey,
                 width: selected ? 3.0 : 1.0,
               ),
             ),
@@ -116,7 +131,11 @@ class _SingleChoiceQuizState extends State<SingleChoiceQuiz> {
                 decoration: BoxDecoration(
                   color: widget.correctAnswers[0] == index.toString()
                       ? Colors.green
-                      : Colors.red,
+                      : widget.correctAnswers[0] == _selection.toString()
+                          ? Colors.grey
+                          : index == _selection
+                              ? Colors.red
+                              : Colors.grey,
                   shape: BoxShape.circle,
                 ),
                 child: Center(
@@ -132,7 +151,7 @@ class _SingleChoiceQuizState extends State<SingleChoiceQuiz> {
               ),
               title: Text(_options[index]),
               onTap: () {
-                if (!widget.voted) {
+                if (!widget.voted && !widget.currentQuestionFinished) {
                   setState(() {
                     _selection = index;
                   });

@@ -10,7 +10,6 @@ import org.eclipse.microprofile.jwt.JsonWebToken;
 import org.jboss.resteasy.reactive.RestHeader;
 
 import de.htwg_konstanz.mobilelearning.helper.Crypto;
-import de.htwg_konstanz.mobilelearning.models.Course;
 import de.htwg_konstanz.mobilelearning.models.auth.User;
 import de.htwg_konstanz.mobilelearning.models.auth.UserRole;
 import de.htwg_konstanz.mobilelearning.models.feedback.FeedbackForm;
