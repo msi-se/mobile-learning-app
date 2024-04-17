@@ -1235,6 +1235,7 @@ public class LiveQuizSocketTest {
 
         // check that the user got the "ALREADY_SUBMITTED" message
         Assertions.assertEquals("ALREADY_SUBMITTED", LiveQuizSocketMessage.getByJsonWithForm(studentClient.getMessageQueue().get(studentClient.getMessageQueue().size() - 1)).action);
+        Assertions.assertEquals("2", LiveQuizSocketMessage.getByJsonWithForm(studentClient.getMessageQueue().get(studentClient.getMessageQueue().size() - 1)).userAnswers.get(0));
 
         // close the websocket connections
         profSession.close();
