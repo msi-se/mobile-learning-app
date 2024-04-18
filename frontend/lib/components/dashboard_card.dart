@@ -5,12 +5,14 @@ class DashboardCard extends StatefulWidget {
   final String svgImage;
   final String text;
   final VoidCallback onTap;
+  final bool enabled;
 
   const DashboardCard({
     Key? key,
     required this.svgImage,
     required this.text,
     required this.onTap,
+    required this.enabled,
   }) : super(key: key);
 
   @override
@@ -28,24 +30,44 @@ class _DashboardCardState extends State<DashboardCard> with SingleTickerProvider
       duration: const Duration(milliseconds: 400),
       vsync: this,
     );
-
     _animation = CurvedAnimation(
       parent: _controller,
       curve: Curves.easeOut,
     );
-
     _controller.forward();
+  }
+  
+  void _displayDisabledDialog() {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text('Noch nicht verfügbar'),
+          content: const Text('Diese Funktion ist noch in der Entwicklung.'),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: const Text('OK'),
+            ),
+          ],
+        );
+      },
+    );
   }
 
   @override
   Widget build(BuildContext context) {
+    double screenWidth = MediaQuery.of(context).size.width;
+    double imageSize = screenWidth * 0.25; // 25% der Bildschirmbreite
+    imageSize = imageSize.clamp(80.0, 150.0); // Begrenzung der Größe zwischen 80 und 150 Pixeln
+
     return GestureDetector(
-      onTap: widget.onTap,
+      onTap: widget.enabled ? widget.onTap : _displayDisabledDialog,
       child: ScaleTransition(
         scale: _animation,
         child: Container(
           decoration: BoxDecoration(
-            color: const Color(0xffd9e5ec),
+            color: widget.enabled ? const Color(0xffd9e5ec) : Colors.grey[300],
             borderRadius: BorderRadius.circular(24),
           ),
           child: Column(
@@ -53,8 +75,11 @@ class _DashboardCardState extends State<DashboardCard> with SingleTickerProvider
             children: [
               SvgPicture.asset(
                 widget.svgImage,
-                height: 110,
-                width: 110,
+                height: imageSize,
+                width: imageSize,
+                colorFilter: widget.enabled
+                    ? null
+                    : ColorFilter.mode(Colors.grey[300]!, BlendMode.saturation),
               ),
               const SizedBox(height: 8),
               Text(
@@ -65,6 +90,17 @@ class _DashboardCardState extends State<DashboardCard> with SingleTickerProvider
                   fontWeight: FontWeight.bold,
                 ),
               ),
+              if (!widget.enabled)
+                const Padding(
+                  padding: EdgeInsets.all(8),
+                  child: Text(
+                    'Noch nicht verfügbar',
+                    style: TextStyle(
+                      color: Colors.black,
+                      fontSize: 12,
+                    ),
+                  ),
+                ),
             ],
           ),
         ),
@@ -78,4 +114,3 @@ class _DashboardCardState extends State<DashboardCard> with SingleTickerProvider
     super.dispose();
   }
 }
-

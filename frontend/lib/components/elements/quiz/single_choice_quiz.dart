@@ -4,6 +4,7 @@ class SingleChoiceQuiz extends StatefulWidget {
   final ValueChanged<int> onSelectionChanged;
   final List<String> options;
   final List<dynamic> correctAnswers;
+  final bool currentQuestionFinished;
 
   final bool voted;
   final dynamic value;
@@ -15,6 +16,7 @@ class SingleChoiceQuiz extends StatefulWidget {
     required this.voted,
     required this.value,
     required this.correctAnswers,
+    required this.currentQuestionFinished,
   });
 
   @override
@@ -42,7 +44,7 @@ class _SingleChoiceQuizState extends State<SingleChoiceQuiz> {
     // try to parse the value to int
     if (widget.value != null) {
       try {
-        _selection = int.parse(widget.value);
+        _selection = widget.value;
       } catch (e) {
         _selection = -1;
       }
@@ -149,7 +151,7 @@ class _SingleChoiceQuizState extends State<SingleChoiceQuiz> {
               ),
               title: Text(_options[index]),
               onTap: () {
-                if (!widget.voted) {
+                if (!widget.voted && !widget.currentQuestionFinished) {
                   setState(() {
                     _selection = index;
                   });

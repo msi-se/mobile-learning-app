@@ -4,30 +4,37 @@ import 'package:rive/rive.dart';
 
 enum ThrowType {
   paperPlane(
-      filename: "paper_plane.riv",
-      artboard: "Artboard",
+      filename: "throw_animations.riv",
+      artboard: "Paper Plane",
       stateMachine: "Hit State Machine",
       width: 700,
       height: 1200,
       hitX: 602,
       hitY: 144),
   stone(
-      filename: "stone.riv",
-      artboard: "New Artboard",
+      filename: "throw_animations.riv",
+      artboard: "Stone",
       stateMachine: "State Machine 1",
       width: 700,
       height: 500,
       hitX: 614,
       hitY: 96),
   dart(
-      filename: "dart.riv",
-      artboard: "New Artboard",
+      filename: "throw_animations.riv",
+      artboard: "Dart",
       stateMachine: "State Machine 1",
       width: 700,
       height: 1000,
       hitX: 660,
-      hitY: 41);
-  // ball("ball.riv"),
+      hitY: 41),
+  ball(
+      filename: "throw_animations.riv",
+      artboard: "Ball",
+      stateMachine: "State Machine 1",
+      width: 700,
+      height: 1200,
+      hitX: 640,
+      hitY: 39);
 
   final String filename;
   final String artboard;
@@ -45,6 +52,13 @@ enum ThrowType {
       required this.width,
       required this.height,
       required this.hitY});
+
+  static ThrowType fromString(String str) {
+    for (var value in ThrowType.values) {
+      if (value.name.toLowerCase() == str.toLowerCase()) return value;
+    }
+    throw ArgumentError('Invalid form type: $str');
+  }
 }
 
 class Throw extends StatefulWidget {

@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 import 'dart:async';
+import 'dart:math';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -44,6 +45,7 @@ class _QuizControlPageState extends AuthState<QuizControlPage> {
 
   late List<Map<String, dynamic>> _results;
   late List<dynamic> _scoreboard;
+  bool _showLeaderboard = false;
 
   int _participantCounter = 0;
   List<dynamic> _userNames = [];
@@ -97,9 +99,7 @@ class _QuizControlPageState extends AuthState<QuizControlPage> {
         _userNames = data["participants"]
             .map((participant) => participant["userAlias"])
             .toList();
-        if (_form.status == FormStatus.finished) {
-          _scoreboard = getScoreboard(data);
-        }
+        _scoreboard = getScoreboard(data);
 
         startWebsocket();
 
@@ -155,16 +155,16 @@ class _QuizControlPageState extends AuthState<QuizControlPage> {
       if (data["action"] == "FORM_STATUS_CHANGED") {
         var form = QuizForm.fromJson(data["form"]);
         setState(() {
+          _showLeaderboard = false;
           _form.status = FormStatus.fromString(data["formStatus"]);
           _form.currentQuestionIndex = form.currentQuestionIndex;
           _form.currentQuestionFinished = form.currentQuestionFinished;
-          if (_form.status == FormStatus.finished) {
-            _scoreboard = getScoreboard(data["form"]);
-          }
+          _scoreboard = getScoreboard(data["form"]);
         });
       }
       if (data["action"] == "RESULT_ADDED") {
         setState(() {
+          _scoreboard = getScoreboard(data["form"]);
           _results = getResults(data["form"]);
         });
       }
@@ -189,7 +189,12 @@ class _QuizControlPageState extends AuthState<QuizControlPage> {
         if (data["fun"]["action"] == "THROW_PAPER_PLANE") {
           double percentageX = data["fun"]["percentageX"];
           double percentageY = data["fun"]["percentageY"];
-          animatePaperPlane(percentageX, percentageY);
+          animateThrow(ThrowType.paperPlane, percentageX, percentageY);
+        }
+        if (data["fun"]["action"] == "THROW_BALL") {
+          double percentageX = data["fun"]["percentageX"];
+          double percentageY = data["fun"]["percentageY"];
+          animateThrow(ThrowType.ball, percentageX, percentageY);
         }
       }
     }, onError: (error) {
@@ -246,25 +251,46 @@ class _QuizControlPageState extends AuthState<QuizControlPage> {
         "userId": _userId,
       }));
     }
+
     Navigator.pop(context);
   }
 
   void next() {
-    if (_socketChannel != null) {
-      _socketChannel!.sink.add(jsonEncode({
-        "action": "NEXT",
-        "roles": _roles,
-        "userId": _userId,
-      }));
+    if (_form.currentQuestionFinished) {
+      if (_showLeaderboard) {
+        if (_socketChannel != null) {
+          _socketChannel!.sink.add(jsonEncode({
+            "action": "NEXT",
+            "roles": _roles,
+            "userId": _userId,
+          }));
+        }
+      } else {
+        // Show the leaderboard first before moving to the next question
+        setState(() {
+          _showLeaderboard = true;
+        });
+      }
+    } else {
+      if (_socketChannel != null) {
+        _socketChannel!.sink.add(jsonEncode({
+          "action": "NEXT",
+          "roles": _roles,
+          "userId": _userId,
+        }));
+      }
     }
   }
 
-  void throwPaperPlane(double percentageX, double percentageY) {
+  void throwAtScoreboard(double percentageX, double percentageY) {
     if (_socketChannel != null) {
+      // random between THROW_PAPER_PLANE and THROW_BALL
+      var random = Random().nextInt(2);
+      var action = random == 0 ? "THROW_PAPER_PLANE" : "THROW_BALL";
       _socketChannel!.sink.add(jsonEncode({
         "action": "FUN",
         "fun": {
-          "action": "THROW_PAPER_PLANE",
+          "action": action,
           "percentageX": percentageX,
           "percentageY": percentageY,
         },
@@ -274,7 +300,7 @@ class _QuizControlPageState extends AuthState<QuizControlPage> {
     }
   }
 
-  void animatePaperPlane(double percentageX, double percentageY) {
+  void animateThrow(ThrowType type, double percentageX, double percentageY) {
     print("ADD ANIMATION");
 
     final RenderBox mainStackBox =
@@ -292,7 +318,7 @@ class _QuizControlPageState extends AuthState<QuizControlPage> {
 
     setState(() {
       _animations.insert(
-          0, Throw(key: UniqueKey(), throwType: ThrowType.paperPlane, clickX: dX, clickY: dY));
+          0, Throw(key: UniqueKey(), throwType: type, clickX: dX, clickY: dY));
       print(_animations.length);
     });
 
@@ -355,12 +381,26 @@ class _QuizControlPageState extends AuthState<QuizControlPage> {
       );
     } else if (_fetchResult == 'success') {
       final colors = Theme.of(context).colorScheme;
+      final int totalQuestions = _form.questions.length;
+      final double progress = (_form.currentQuestionIndex + 1) / totalQuestions;
 
       final appBar = AppBar(
         title: Text(_form.name,
             style: const TextStyle(
                 color: Colors.white, fontWeight: FontWeight.bold)),
-        backgroundColor: colors.primary,
+        backgroundColor: Theme.of(context).colorScheme.primary,
+        bottom: PreferredSize(
+          preferredSize: const Size.fromHeight(10.0),
+          child: SizedBox(
+            height: 10.0,
+            child: LinearProgressIndicator(
+              value: progress,
+              backgroundColor: Colors.grey[300],
+              valueColor: AlwaysStoppedAnimation<Color>(
+                  Theme.of(context).colorScheme.secondary),
+            ),
+          ),
+        ),
       );
 
       if (_form.status == FormStatus.not_started ||
@@ -369,7 +409,12 @@ class _QuizControlPageState extends AuthState<QuizControlPage> {
         code = "${code.substring(0, 3)} ${code.substring(3, 6)}";
 
         return Scaffold(
-            appBar: appBar,
+            appBar: AppBar(
+              title: Text(_form.name,
+                  style: const TextStyle(
+                      color: Colors.white, fontWeight: FontWeight.bold)),
+              backgroundColor: colors.primary,
+            ),
             body: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
@@ -415,31 +460,64 @@ class _QuizControlPageState extends AuthState<QuizControlPage> {
                             width: 0.5,
                           ),
                         ),
-                        child: GridView.count(
-                          crossAxisCount: crossAxisCount,
-                          mainAxisSpacing: 5.0,
-                          crossAxisSpacing: 5.0,
-                          childAspectRatio: childAspectRatio,
-                          children: List.generate(_userNames.length, (index) {
-                            return Center(
-                              child: Container(
-                                padding: const EdgeInsets.symmetric(
-                                    horizontal: 10, vertical: 3),
-                                decoration: BoxDecoration(
-                                  color:
-                                      const Color.fromARGB(255, 165, 224, 211),
-                                  borderRadius: BorderRadius.circular(20.0),
+                        // scrollable list of participants
+                        child: Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: ListView.builder(
+                            itemCount: _userNames.length,
+                            itemBuilder: (context, index) {
+                              return Padding(
+                                padding: const EdgeInsets.all(4.0),
+                                child: Align(
+                                  alignment: Alignment.center,
+                                  // padding: const EdgeInsets.symmetric(
+                                  //     horizontal: 10, vertical: 3),
+                                  child: Container(
+                                    decoration: BoxDecoration(
+                                      color: const Color.fromARGB(255, 165, 224, 211),
+                                      borderRadius: BorderRadius.circular(20.0),
+                                    ),
+                                    child: Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 10, vertical: 3),
+                                      child: Text(
+                                        _userNames[index],
+                                        style: const TextStyle(
+                                            fontSize: 14,
+                                            fontWeight: FontWeight.bold),
+                                      ),
+                                    ),
+                                  ),
                                 ),
-                                child: Text(
-                                  _userNames[index],
-                                  style: const TextStyle(
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.bold),
-                                ),
-                              ),
-                            );
-                          }),
+                              );
+                            },
+                          ),
                         ),
+                        // child: GridView.count(
+                        //   crossAxisCount: crossAxisCount,
+                        //   mainAxisSpacing: 5.0,
+                        //   crossAxisSpacing: 5.0,
+                        //   childAspectRatio: childAspectRatio,
+                        //   children: List.generate(_userNames.length, (index) {
+                        //     return Center(
+                        //       child: Container(
+                        //         padding: const EdgeInsets.symmetric(
+                        //             horizontal: 10, vertical: 3),
+                        //         decoration: BoxDecoration(
+                        //           color:
+                        //               const Color.fromARGB(255, 165, 224, 211),
+                        //           borderRadius: BorderRadius.circular(20.0),
+                        //         ),
+                        //         child: Text(
+                        //           _userNames[index],
+                        //           style: const TextStyle(
+                        //               fontSize: 14,
+                        //               fontWeight: FontWeight.bold),
+                        //         ),
+                        //       ),
+                        //     );
+                        //   }),
+                        //),
                       ),
                     ),
                   ),
@@ -497,7 +575,7 @@ class _QuizControlPageState extends AuthState<QuizControlPage> {
                           double percentageX = x / box.size.width;
                           double y = details.localPosition.dy;
                           double percentageY = y / box.size.height;
-                          throwPaperPlane(percentageX, percentageY);
+                          throwAtScoreboard(percentageX, percentageY);
                         },
                         child: Container(
                           constraints: const BoxConstraints(maxWidth: 800),
@@ -558,43 +636,58 @@ class _QuizControlPageState extends AuthState<QuizControlPage> {
                           children: <Widget>[
                             Text(element.name,
                                 style: const TextStyle(
-                                    fontSize: 24, fontWeight: FontWeight.bold)),
+                                    fontSize: 25, fontWeight: FontWeight.w700)),
                             Text(element.description,
-                                style: const TextStyle(fontSize: 15),
+                                style: const TextStyle(
+                                    fontSize: 20, fontWeight: FontWeight.w500),
                                 textAlign: TextAlign.center),
                             const SizedBox(height: 16),
                             if (_form.currentQuestionFinished == true)
-                              Card(
-                                child: Padding(
-                                  padding: const EdgeInsets.all(16),
-                                  child: element.type ==
-                                          QuestionType.single_choice
-                                      ? SingleChoiceQuizResult(
-                                          results: values
-                                              .map((e) => int.parse(e))
-                                              .toList()
-                                              .cast<int>(),
-                                          options: element.options,
-                                          correctAnswer:
-                                              element.correctAnswers[0],
-                                        )
-                                      : element.type == QuestionType.yes_no
-                                          ? SingleChoiceQuizResult(
-                                              results: values
-                                                  .map(
-                                                      (e) => e == "yes" ? 0 : 1)
-                                                  .toList()
-                                                  .cast<int>(),
-                                              options: const ["Ja", "Nein"],
-                                              correctAnswer:
-                                                  element.correctAnswers[0] ==
-                                                          "yes"
-                                                      ? "0"
-                                                      : "1",
-                                            )
-                                          : Text(element.type.toString()),
+                              if (_showLeaderboard)
+                                Center(
+                                    child: Container(
+                                  constraints:
+                                      const BoxConstraints(maxWidth: 800),
+                                  child: Card(
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(8),
+                                      child: QuizScoreboard(
+                                          scoreboard: _scoreboard),
+                                    ),
+                                  ),
+                                ))
+                              else
+                                Card(
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(16),
+                                    child: element.type ==
+                                            QuestionType.single_choice
+                                        ? SingleChoiceQuizResult(
+                                            results: values
+                                                .map((e) => int.parse(e))
+                                                .toList()
+                                                .cast<int>(),
+                                            options: element.options,
+                                            correctAnswer:
+                                                element.correctAnswers[0],
+                                          )
+                                        : element.type == QuestionType.yes_no
+                                            ? SingleChoiceQuizResult(
+                                                results: values
+                                                    .map((e) =>
+                                                        e == "yes" ? 0 : 1)
+                                                    .toList()
+                                                    .cast<int>(),
+                                                options: const ["Ja", "Nein"],
+                                                correctAnswer:
+                                                    element.correctAnswers[0] ==
+                                                            "yes"
+                                                        ? "0"
+                                                        : "1",
+                                              )
+                                            : Text(element.type.toString()),
+                                  ),
                                 ),
-                              )
                           ],
                         ),
                       ),

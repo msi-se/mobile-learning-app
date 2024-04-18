@@ -37,7 +37,8 @@ class _TestPageState extends State<TestPage> with TickerProviderStateMixin {
                   key: UniqueKey(),
                   // throwType: ThrowType.paperPlane,
                   // throwType: ThrowType.stone,
-                  throwType: ThrowType.dart,
+                  // throwType: ThrowType.dart,
+                  throwType: ThrowType.ball,
                   clickX: details.localPosition.dx,
                   clickY: details.localPosition.dy));
               print(_animations.length);

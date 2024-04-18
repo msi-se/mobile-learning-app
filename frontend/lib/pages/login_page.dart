@@ -1,17 +1,17 @@
 import 'dart:convert';
 import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:http/http.dart' as http;
+import 'package:jwt_decoder/jwt_decoder.dart';
 import 'package:frontend/components/button.dart';
+import 'package:frontend/components/textfield.dart';
 import 'package:frontend/components/error/general_error_widget.dart';
 import 'package:frontend/components/error/network_error_widget.dart';
-import 'package:frontend/components/textfield.dart';
 import 'package:frontend/global.dart';
 import 'package:frontend/theme/assets.dart';
 import 'package:frontend/utils.dart';
-import 'package:http/http.dart' as http;
-import 'package:jwt_decoder/jwt_decoder.dart';
+
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -24,8 +24,8 @@ class _LoginPageState extends State<LoginPage> {
   final usernameController = TextEditingController();
   final passwordController = TextEditingController();
   bool _isLoading = false;
+  bool _serverNotResponding = false;
   bool _isCheckingLoggedIn = true;
-
 
   @override
   void initState() {
@@ -41,379 +41,202 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   void _keyboardCallback(RawKeyEvent event) {
-    if (event.logicalKey == LogicalKeyboardKey.enter) {
-      if (_isLoading) return;
-      setState(() {
-        _isLoading = true;
-      });
-      signUserIn(context).then((value) {
-        setState(() {
-          _isLoading = false;
-        });
-      });
+    if (event.logicalKey == LogicalKeyboardKey.enter && !_isLoading) {
+      _signInUser();
     }
   }
 
-  Future checkLoggedIn() async {
-    if (getSession() != null) {
-      if (!JwtDecoder.isExpired(getSession()!.jwt)) {
-        // check http /verify route 200 status code
+  Future<void> checkLoggedIn() async {
+    var session = getSession();
+    if (session != null && !JwtDecoder.isExpired(session.jwt)) {
+      try {
         final response = await http.get(
           Uri.parse("${getBackendUrl()}/user/verify"),
           headers: {
             "Content-Type": "application/json",
-            "AUTHORIZATION": "Bearer ${getSession()!.jwt}"
+            "Authorization": "Bearer ${session.jwt}"
           },
-        );
+        ).timeout(const Duration(seconds: 4));
+
         if (response.statusCode == 200 && mounted) {
           Navigator.pushReplacementNamed(context, '/main');
           return;
         }
+      } catch (e) {
+        if (!mounted) return;
+        setState(() {
+          _serverNotResponding = true;
+          _isCheckingLoggedIn = false;
+        });
       }
     }
     clearSession();
-    if (!mounted) return;
-    setState(() {
-      _isCheckingLoggedIn = false;
-    });
+    if (mounted) {
+      setState(() => _isCheckingLoggedIn = false);
+    }
   }
 
-  Future signUserIn(BuildContext context) async {
+  void _retryConnection() {
+    setState(() {
+      _serverNotResponding = false;
+    });
+    checkLoggedIn();
+  }
+
+  Future<void> _signInUser() async {
+    setState(() => _isLoading = true);
+
+    var username = usernameController.text;
+    var password = passwordController.text;
     try {
-      var username = usernameController.text;
-      var password = passwordController.text;
       final response = await http.post(
         Uri.parse("${getBackendUrl()}/user/login"),
         headers: {
           "Content-Type": "application/json",
-          "AUTHORIZATION":
-              "Basic ${base64Encode(utf8.encode('$username:$password'))}"
+          "Authorization": "Basic ${base64Encode(utf8.encode('$username:$password'))}"
         },
       );
 
       if (response.statusCode == 200) {
         var jwt = JwtDecoder.decode(response.body);
-        var userId = jwt["sub"];
-        var username = jwt["preferred_username"];
-        var fullName = jwt["full_name"];
-        var roles = jwt["groups"].cast<String>();
         await setSession(Session(
-            jwt: response.body,
-            userId: userId,
-            username: username,
-            fullName: fullName,
-            roles: roles));
-        if (!context.mounted) return;
-        Navigator.pushReplacementNamed(context, '/main');
+          jwt: response.body,
+          userId: jwt["sub"],
+          username: jwt["preferred_username"],
+          fullName: jwt["full_name"],
+          roles: jwt["groups"].cast<String>(),
+        ));
+
+        if (mounted) {
+          Navigator.pushReplacementNamed(context, '/main');
+        }
       } else {
-        if (!context.mounted) return;
-        showDialog(
-          context: context,
-          builder: (BuildContext context) {
-            return AlertDialog(
-              title: const Text('Falsche Anmeldeinformationen'),
-              actions: <Widget>[
-                TextButton(
-                  child: const Text('Schließen'),
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                  },
-                ),
-              ],
-            );
-          },
-        );
+        if (mounted) {
+          _showDialog('Falsche Anmeldeinformationen');
+        }
       }
-    } on http.ClientException {
-      showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return const NetworkErrorWidget();
-        },
-      );
-    } on SocketException {
-      showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return const NetworkErrorWidget();
-        },
-      );
     } catch (e) {
-      showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return const GeneralErrorWidget();
-        },
-      );
+      if (mounted) {
+        _handleLoginError(e as Exception);
+      }
+    } finally {
+      if (mounted) {
+        setState(() => _isLoading = false);
+      }
     }
+  }
+
+
+  void _showDialog(String message) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) => AlertDialog(
+        title: Text(message),
+        actions: <Widget>[
+          TextButton(
+            child: const Text('Schließen'),
+            onPressed: () => Navigator.of(context).pop(),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _handleLoginError(Exception e) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        if (e is SocketException) {
+          return const NetworkErrorWidget();
+        } else {
+          return const GeneralErrorWidget();
+        }
+      },
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     final colors = Theme.of(context).colorScheme;
+
     if (_isCheckingLoggedIn) {
-      return const Scaffold(
-        body: Center(
-          child: CircularProgressIndicator(),
-        ),
-      );
+      return const Scaffold(body: Center(child: CircularProgressIndicator()));
     }
 
+    if (_serverNotResponding) {
+      return _buildNoConnectionScreen();
+    }
+
+
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: colors.onError,
-        toolbarHeight: 0,
-      ),
+      appBar: AppBar(backgroundColor: colors.onError, toolbarHeight: 0),
       body: SafeArea(
-        child: LayoutBuilder(
-            builder: (BuildContext context, BoxConstraints constraints) {
-          // Tablet / desktop view
-          if (constraints.maxWidth > 600) {
-            return Center(
-              child: SizedBox(
-                width: 480,
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Container(
-                      decoration: BoxDecoration(
-                        borderRadius: const BorderRadius.only(
-                          topLeft: Radius.circular(15),
-                          topRight: Radius.circular(15),
-                        ),
-                        border: Border(
-                          top: BorderSide(
-                              color: colors.outlineVariant, width: 0.5),
-                          right: BorderSide(
-                              color: colors.outlineVariant, width: 0.5),
-                          left: BorderSide(
-                              color: colors.outlineVariant, width: 0.5),
-                        ),
-                      ),
-                      child: Column(
-                        children: [
-                          Container(
-                            margin: const EdgeInsets.all(20.0),
-                            child: Image.asset(
-                              htwgExtendedLogo,
-                              height: 100.0,
-                            ),
-                          ),
-                          // Login Text
-                          Container(
-                            margin: const EdgeInsets.all(18.0),
-                            child: const Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Text('Log In',
-                                    style: TextStyle(
-                                        fontSize: 40,
-                                        color: Colors.black,
-                                        fontWeight: FontWeight.bold),
-                                    textAlign: TextAlign.center),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    // Bottom Half of the Login Screen
-                    Container(
-                      decoration: BoxDecoration(
-                        borderRadius: const BorderRadius.only(
-                          bottomLeft: Radius.circular(15),
-                          bottomRight: Radius.circular(15),
-                        ),
-                        border: Border(
-                          bottom: BorderSide(
-                              color: colors.outlineVariant, width: 0.5),
-                          right: BorderSide(
-                              color: colors.outlineVariant, width: 0.5),
-                          left: BorderSide(
-                              color: colors.outlineVariant, width: 0.5),
-                        ),
-                      ),
-                      child: Column(
-                        children: [
-                          // Username TextField
-                          Container(
-                            padding: const EdgeInsets.only(top: 30),
-                            margin: const EdgeInsets.symmetric(horizontal: 40),
-                            child: const Row(
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              children: [
-                                Text('Benutzername',
-                                    style: TextStyle(
-                                      fontSize: 15,
-                                      color: Colors.grey,
-                                    ),
-                                    textAlign: TextAlign.left),
-                              ],
-                            ),
-                          ),
-                          MyTextField(
-                              controller: usernameController,
-                              hintText: '',
-                              obscureText: false),
-
-                          // Password TextField
-                          Container(
-                            padding: const EdgeInsets.only(top: 10),
-                            margin: const EdgeInsets.symmetric(horizontal: 40),
-                            child: const Row(
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              children: [
-                                Text('Passwort',
-                                    style: TextStyle(
-                                      fontSize: 15,
-                                      color: Colors.grey,
-                                    ),
-                                    textAlign: TextAlign.left),
-                              ],
-                            ),
-                          ),
-                          MyTextField(
-                              controller: passwordController,
-                              hintText: '',
-                              obscureText: true),
-                          const SizedBox(height: 10),
-
-                          // Submit Button
-                          if (_isLoading)
-                            const CircularProgressIndicator()
-                          else
-                            SubmitButton(
-                              onTap: () async {
-                                setState(() {
-                                  _isLoading = true;
-                                });
-                                await signUserIn(context);
-                                setState(() {
-                                  _isLoading = false;
-                                });
-                              },
-                            ),
-                          const SizedBox(height: 25)
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            );
-          } else {
-            // Mobile View
-            return Column(
-              children: [
-                Container(
-                  color: colors.surface,
+        child: Center(
+          child: SingleChildScrollView(
+            child: LayoutBuilder(
+              builder: (BuildContext context, BoxConstraints constraints) {
+                double width = constraints.maxWidth > 480 ? 480 : constraints.maxWidth;
+                return Container(
+                  width: width,
+                  padding: const EdgeInsets.all(20),
+                  margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 50),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(15),
+                    border: Border.all(color: colors.outlineVariant, width: 1),
+                  ),
                   child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Container(
-                        margin: const EdgeInsets.all(20.0),
-                        child: Image.asset(
-                          htwgExtendedLogo,
-                          height: 100.0,
-                        ),
-                      ),
-                      // Login Text
-                      Container(
-                        margin: const EdgeInsets.symmetric(horizontal: 40),
-                        child: const Row(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          children: [
-                            Text('Log In',
-                                style: TextStyle(
-                                    fontSize: 40,
-                                    color: Colors.black,
-                                    fontWeight: FontWeight.bold),
-                                textAlign: TextAlign.left),
-                          ],
-                        ),
-                      ),
+                      Image.asset(htwgExtendedLogo, height: 100),
+                      const SizedBox(height: 20),
+                      const Text('Log In', style: TextStyle(fontSize: 36, fontWeight: FontWeight.bold)),
+                      const SizedBox(height: 20),
+                      _buildLoginField(title: 'Benutzername', controller: usernameController, obscureText: false),
+                      const SizedBox(height: 20),
+                      _buildLoginField(title: 'Passwort', controller: passwordController, obscureText: true),
+                      const SizedBox(height: 20),
+                      _isLoading ? const CircularProgressIndicator() : SubmitButton(onTap: _signInUser),
                       const SizedBox(height: 20),
                     ],
                   ),
-                ),
-                // Bottom Half of the Login Screen
-                Container(
-                  decoration: BoxDecoration(
-                    color: colors.surface,
-                    border: Border(
-                        top: BorderSide(
-                            color: colors.outlineVariant, width: 0.5)),
-                    // borderRadius: const BorderRadius.only(
-                    //     topLeft: Radius.circular(20),
-                    //     topRight: Radius.circular(20))
-                  ),
-                  child: Column(
-                    children: [
-                      // Username TextField
-                      Container(
-                        padding: const EdgeInsets.only(top: 40),
-                        margin: const EdgeInsets.symmetric(horizontal: 40),
-                        child: const Row(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          children: [
-                            Text('Benutzername',
-                                style: TextStyle(
-                                  fontSize: 15,
-                                  color: Colors.grey,
-                                ),
-                                textAlign: TextAlign.left),
-                          ],
-                        ),
-                      ),
-                      MyTextField(
-                          controller: usernameController,
-                          hintText: '',
-                          obscureText: false),
+                );
+              },
+            ),
+          ),
+        ),
+      ),
+    );
+  }
 
-                      // Password TextField
-                      Container(
-                        padding: const EdgeInsets.only(top: 15),
-                        margin: const EdgeInsets.symmetric(horizontal: 40),
-                        child: const Row(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          children: [
-                            Text('Passwort',
-                                style: TextStyle(
-                                  fontSize: 15,
-                                  color: Colors.grey,
-                                ),
-                                textAlign: TextAlign.left),
-                          ],
-                        ),
-                      ),
-                      MyTextField(
-                          controller: passwordController,
-                          hintText: '',
-                          obscureText: true),
-                      const SizedBox(height: 10),
+  Widget _buildLoginField({required String title, required TextEditingController controller, required bool obscureText}) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(title, style: Theme.of(context).textTheme.titleMedium),
+        MyTextField(
+          controller: controller,
+          hintText: '',
+          obscureText: obscureText,
+        ),
+      ],
+    );
+  }
 
-                      // Submit Button
-                      if (_isLoading)
-                        const CircularProgressIndicator()
-                      else
-                        SubmitButton(
-                          onTap: () async {
-                            setState(() {
-                              _isLoading = true;
-                            });
-                            await signUserIn(context);
-                            setState(() {
-                              _isLoading = false;
-                            });
-                          },
-                        ),
-                    ],
-                  ),
-                ),
-              ],
-            );
-          }
-        }),
+  Widget _buildNoConnectionScreen() {
+    return Scaffold(
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Text('Es scheint, als hättest du keine Internetverbindung.'),
+            const SizedBox(height: 10),
+            TextButton(
+              onPressed: _retryConnection,
+              child: const Text('Erneut versuchen'),
+            ),
+          ],
+        ),
       ),
     );
   }

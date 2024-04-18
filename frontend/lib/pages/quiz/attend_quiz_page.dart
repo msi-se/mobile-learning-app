@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
+import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:frontend/auth_state.dart';
@@ -36,13 +37,15 @@ class _AttendQuizPageState extends AuthState<AttendQuizPage> {
   late String _formId;
   late String _userId;
   late String _alias;
+  QuizForm? _form;
+
   String _aliasError = '';
 
-  QuizForm? _form;
   WebSocketChannel? _socketChannel;
 
   late List<dynamic> _scoreboard;
   SMITrigger? _bump;
+  SMITrigger? _notVoted;
   SMIInput<bool>? _boolInput;
 
   dynamic _value;
@@ -89,7 +92,7 @@ class _AttendQuizPageState extends AuthState<AttendQuizPage> {
           _loading = false;
           _fetchResult = 'success';
         });
-        //await fetchForm();
+        // await fetchForm();
       }
     } on http.ClientException {
       setState(() {
@@ -220,6 +223,10 @@ class _AttendQuizPageState extends AuthState<AttendQuizPage> {
     _bump?.fire();
   }
 
+  void _notVotedAnimation() {
+    _notVoted?.fire();
+  }
+
   void startWebsocket() {
     _socketChannel = WebSocketChannel.connect(
       Uri.parse(
@@ -229,7 +236,7 @@ class _AttendQuizPageState extends AuthState<AttendQuizPage> {
     _socketChannel!.stream.listen((event) {
       var data = jsonDecode(event);
       if (data["formStatus"] == "FINISHED") {
-        _form?.status = FormStatus.fromString(data["formStatus"]);
+        _form!.status = FormStatus.fromString(data["formStatus"]);
         _value = null;
         _voted = false;
         _userHasAnsweredCorrectly = false;
@@ -238,22 +245,20 @@ class _AttendQuizPageState extends AuthState<AttendQuizPage> {
       if (data["action"] == "FORM_STATUS_CHANGED") {
         var form = QuizForm.fromJson(data["form"]);
         setState(() {
-          _form?.status = FormStatus.fromString(data["formStatus"]);
+          _form!.status = FormStatus.fromString(data["formStatus"]);
           _value = null;
           _voted = false;
-          _form?.currentQuestionIndex = form.currentQuestionIndex;
-          _form?.currentQuestionFinished = form.currentQuestionFinished;
-          if (_form?.status == FormStatus.finished) {
-            _scoreboard = getScoreboard(data["form"]);
-          }
+          _form!.currentQuestionIndex = form.currentQuestionIndex;
+          _form!.currentQuestionFinished = form.currentQuestionFinished;
+          _scoreboard = getScoreboard(data["form"]);
         });
       }
       if (data["action"] == "CLOSED_QUESTION" ||
           data["action"] == "OPENED_NEXT_QUESTION") {
         var form = QuizForm.fromJson(data["form"]);
         setState(() {
-          _form?.currentQuestionIndex = form.currentQuestionIndex;
-          _form?.currentQuestionFinished = form.currentQuestionFinished;
+          _form!.currentQuestionIndex = form.currentQuestionIndex;
+          _form!.currentQuestionFinished = form.currentQuestionFinished;
         });
         if (data["action"] == "OPENED_NEXT_QUESTION") {
           setState(() {
@@ -266,6 +271,9 @@ class _AttendQuizPageState extends AuthState<AttendQuizPage> {
           _userHasAnsweredCorrectly = data["userHasAnsweredCorrectly"];
           _correctAnswers = data["correctAnswers"];
           _hitBump();
+          if (!_voted) {
+            _notVotedAnimation();
+          }
         }
       }
       // if action is ALREADY_SUBMITTED, the user has already submitted feedback
@@ -279,13 +287,18 @@ class _AttendQuizPageState extends AuthState<AttendQuizPage> {
         if (data["fun"]["action"] == "THROW_PAPER_PLANE") {
           double percentageX = data["fun"]["percentageX"];
           double percentageY = data["fun"]["percentageY"];
-          animatePaperPlane(percentageX, percentageY);
+          animateThrow(ThrowType.paperPlane, percentageX, percentageY);
+        }
+        if (data["fun"]["action"] == "THROW_BALL") {
+          double percentageX = data["fun"]["percentageX"];
+          double percentageY = data["fun"]["percentageY"];
+          animateThrow(ThrowType.ball, percentageX, percentageY);
         }
       }
     }, onError: (error) {
       //TODO: Should there be another error handling for this?
       setState(() {
-        _form?.status = FormStatus.error;
+        _form!.status = FormStatus.error;
       });
     });
   }
@@ -322,15 +335,19 @@ class _AttendQuizPageState extends AuthState<AttendQuizPage> {
     artboard.addController(controller!);
     // Get a reference to the "bump" state machine input
     _bump = controller.findInput<bool>('tf trigger') as SMITrigger;
+    _notVoted = controller.findInput<bool>('nicht abgestimmt') as SMITrigger;
     _boolInput = controller.findInput<bool>('answer') as SMIInput<bool>;
   }
 
-  void throwPaperPlane(double percentageX, double percentageY) {
+  void throwAtScoreboard(double percentageX, double percentageY) {
     if (_socketChannel != null) {
+      // random between THROW_PAPER_PLANE and THROW_BALL
+      var random = Random().nextInt(2);
+      var action = random == 0 ? "THROW_PAPER_PLANE" : "THROW_BALL";
       _socketChannel!.sink.add(jsonEncode({
         "action": "FUN",
         "fun": {
-          "action": "THROW_PAPER_PLANE",
+          "action": action,
           "percentageX": percentageX,
           "percentageY": percentageY,
         },
@@ -340,7 +357,7 @@ class _AttendQuizPageState extends AuthState<AttendQuizPage> {
     }
   }
 
-  void animatePaperPlane(double percentageX, double percentageY) {
+  void animateThrow(ThrowType type, double percentageX, double percentageY) {
     print("ADD ANIMATION");
 
     final RenderBox mainStackBox =
@@ -358,12 +375,7 @@ class _AttendQuizPageState extends AuthState<AttendQuizPage> {
 
     setState(() {
       _animations.insert(
-          0,
-          Throw(
-              key: UniqueKey(),
-              throwType: ThrowType.paperPlane,
-              clickX: dX,
-              clickY: dY));
+          0, Throw(key: UniqueKey(), throwType: type, clickX: dX, clickY: dY));
       print(_animations.length);
     });
 
@@ -377,28 +389,30 @@ class _AttendQuizPageState extends AuthState<AttendQuizPage> {
 
   @override
   Widget build(BuildContext context) {
-    final colors = Theme.of(context).colorScheme;
     if (_loading) {
       return const Scaffold(
         body: Center(
           child: CircularProgressIndicator(),
         ),
       );
-    } else if (_fetchResult == 'success') {
-      final appbar = AppBar(
-        title: Text(
+    } 
+    
+    if (_fetchResult == 'success') {
+
+      final appBar = AppBar(
+        title: const Text(
             'Einem Quiz beitreten', //_form.name, TODO: find better solution
-            style: const TextStyle(
-                color: Colors.white, fontWeight: FontWeight.bold)),
-        backgroundColor: colors.primary,
+            style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+        backgroundColor: Theme.of(context).colorScheme.primary,
       );
 
       if (!_aliasChosen) {
         return Scaffold(
-          appBar: appbar,
+          appBar: appBar,
           body: ChooseAlias(
             onAliasSubmitted: (chosenAlias) async {
               setState(() {
+                _loading = true;
                 _alias = chosenAlias;
               });
               bool success = await participate();
@@ -414,12 +428,45 @@ class _AttendQuizPageState extends AuthState<AttendQuizPage> {
         );
       }
 
+      final int totalQuestions = _form!.questions.length;
+      final double progress = (_form!.currentQuestionIndex + 1) / totalQuestions;
+
+      final appBarWithProgress = AppBar(
+        title: Text(_form!.name,
+            style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+        backgroundColor: Theme.of(context).colorScheme.primary,
+        bottom: PreferredSize(
+          preferredSize: const Size.fromHeight(10.0),
+          child: SizedBox(
+            height: 10.0,
+            child: LinearProgressIndicator(
+              value: progress,
+              backgroundColor: Colors.grey[300],
+              valueColor: AlwaysStoppedAnimation<Color>(Theme.of(context).colorScheme.secondary),
+            ),
+          ),
+        ),
+      );
+
       if (_form?.status == FormStatus.finished) {
         return Scaffold(
-          appBar: appbar,
+          appBar: appBar,
           body: Stack(
             key: mainStackKey,
             children: [
+              Center(
+                child: Container(
+                  margin: const EdgeInsets.only(top: 100.0, bottom: 100.0),
+                  width: 400,
+                  height: 400,
+                  child: RiveAnimation.asset(
+                    'assets/animations/rive/animations.riv',
+                    fit: BoxFit.cover,
+                    artboard: 'firework',
+                    stateMachines: ['Firework State Machine'],
+                  ),
+                ),
+              ),
               Padding(
                 padding: const EdgeInsets.all(16.0),
                 child: Column(
@@ -451,7 +498,7 @@ class _AttendQuizPageState extends AuthState<AttendQuizPage> {
                           double percentageX = x / box.size.width;
                           double y = details.localPosition.dy;
                           double percentageY = y / box.size.height;
-                          throwPaperPlane(percentageX, percentageY);
+                          throwAtScoreboard(percentageX, percentageY);
                         },
                         child: Container(
                           constraints: const BoxConstraints(maxWidth: 800),
@@ -477,17 +524,17 @@ class _AttendQuizPageState extends AuthState<AttendQuizPage> {
         );
       }
 
-      if (_form?.status != FormStatus.started) {
+      if (_form!.status != FormStatus.started) {
         return Scaffold(
-          appBar: appbar,
+          appBar: appBar,
           body: Center(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
-                Padding(
-                    padding: const EdgeInsets.only(left: 20.0, right: 20.0),
-                    child: const Text(
-                        "Bitte warten Sie bis das Quiz gestartet wird")),
+                const Padding(
+                    padding: EdgeInsets.only(left: 20.0, right: 20.0),
+                    child:
+                        Text("Bitte warten Sie bis das Quiz gestartet wird")),
                 Container(
                   margin: const EdgeInsets.only(top: 100.0, bottom: 100.0),
                   width: 150,
@@ -505,24 +552,26 @@ class _AttendQuizPageState extends AuthState<AttendQuizPage> {
         );
       }
 
-      final element = _form?.questions[_form!.currentQuestionIndex];
+      final element = _form!.questions[_form!.currentQuestionIndex];
 
       return Scaffold(
-        appBar: appbar,
+        appBar: appBarWithProgress,
         body: SizedBox(
           width: double.infinity,
           child: Column(
             children: [
               Padding(
-                padding: const EdgeInsets.all(16.0),
+                padding:
+                    const EdgeInsets.only(left: 16.0, top: 16.0, right: 16.0),
                 child: Column(
                   children: <Widget>[
                     const SizedBox(height: 16),
-                    Text(element!.name,
+                    Text(element.name,
                         style: const TextStyle(
-                            fontSize: 24, fontWeight: FontWeight.bold)),
+                            fontSize: 25, fontWeight: FontWeight.w700)),
                     Text(element.description,
-                        style: const TextStyle(fontSize: 15),
+                        style: const TextStyle(
+                            fontSize: 20, fontWeight: FontWeight.w500),
                         textAlign: TextAlign.center),
                     const SizedBox(height: 16),
                     Card(
@@ -531,6 +580,8 @@ class _AttendQuizPageState extends AuthState<AttendQuizPage> {
                         child: element.type == QuestionType.single_choice
                             ? SingleChoiceQuiz(
                                 correctAnswers: _correctAnswers,
+                                currentQuestionFinished:
+                                    _form!.currentQuestionFinished,
                                 voted: _voted,
                                 value: _value,
                                 options: element.options,
@@ -543,6 +594,8 @@ class _AttendQuizPageState extends AuthState<AttendQuizPage> {
                             : element.type == QuestionType.yes_no
                                 ? YesNoQuiz(
                                     correctAnswers: _correctAnswers,
+                                    currentQuestionFinished:
+                                        _form!.currentQuestionFinished,
                                     voted: _voted,
                                     value: _value,
                                     onSelectionChanged: (newValue) {
@@ -576,11 +629,11 @@ class _AttendQuizPageState extends AuthState<AttendQuizPage> {
                     });
                   },
                 ),
-              if (_form!.currentQuestionFinished || _voted)
+              if (!_form!.currentQuestionFinished && _voted)
                 Container(
                     margin: const EdgeInsets.only(
                         top: 0.0,
-                        bottom: 100.0), // specify the top and bottom margin
+                        bottom: 10.0), // specify the top and bottom margin
 
                     width: 130,
                     height: 130,
@@ -590,6 +643,35 @@ class _AttendQuizPageState extends AuthState<AttendQuizPage> {
                       artboard: 'true & false',
                       stateMachines: ['tf State Machine'],
                       onInit: _onRiveInit,
+                    )),
+              if (_form!.currentQuestionFinished && _voted)
+                Container(
+                    margin: const EdgeInsets.only(
+                        top: 0.0,
+                        bottom: 10.0), // specify the top and bottom margin
+
+                    width: 130,
+                    height: 130,
+                    child: RiveAnimation.asset(
+                      'assets/animations/rive/animations.riv',
+                      fit: BoxFit.cover,
+                      artboard: 'true & false',
+                      stateMachines: ['tf State Machine'],
+                      onInit: _onRiveInit,
+                    )),
+              if (_form!.currentQuestionFinished && !_voted)
+                Container(
+                    margin: const EdgeInsets.only(
+                        top: 0.0,
+                        bottom: 10.0), // specify the top and bottom margin
+
+                    width: 130,
+                    height: 130,
+                    child: RiveAnimation.asset(
+                      'assets/animations/rive/animations.riv',
+                      fit: BoxFit.cover,
+                      artboard: 'true & false',
+                      animations: ['nicht abgestimmt'],
                     )),
             ],
           ),
