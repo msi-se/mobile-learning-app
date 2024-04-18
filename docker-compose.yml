@@ -1,7 +1,7 @@
 version: "3.1"
 services:
   
-  # mongo db
+  # mongodb
   mobile-learning-mongo:
     image: mongo
     container_name: mobile-learning-mongo
@@ -9,6 +9,27 @@ services:
       - MONGO_INITDB=mobilelearning
     volumes:
       - ./mongo-data:/data/db
+    networks:
+      - proxy
+
+  # mongo express
+  mobile-learning-mongoexpress:
+    image: mongo-express
+    container_name: mobile-learning-mongoexpress
+    environment:
+      - ME_CONFIG_MONGODB_URL=mongodb://mobile-learning-mongo:27017
+      - ME_CONFIG_MONGODB_SERVER=mobile-learning-mongo
+      - ME_CONFIG_MONGODB_PORT=27017
+      - ME_CONFIG_SITE_BASEURL=/mongo
+      - ME_CONFIG_BASICAUTH_USERNAME=admin
+      - ME_CONFIG_BASICAUTH_PASSWORD=admin
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.mongo-express.entrypoints=websecure"
+      - "traefik.http.routers.mongo-express.rule=Host(`loco.in.htwg-konstanz.de`) && PathPrefix(`/mongo`)"
+      - "traefik.docker.network=proxy"
+    depends_on:
+      - mobile-learning-mongo
     networks:
       - proxy
 
