@@ -41,7 +41,6 @@ class _AttendQuizPageState extends AuthState<AttendQuizPage> {
 
   String _aliasError = '';
 
-
   WebSocketChannel? _socketChannel;
 
   late List<dynamic> _scoreboard;
@@ -376,12 +375,7 @@ class _AttendQuizPageState extends AuthState<AttendQuizPage> {
 
     setState(() {
       _animations.insert(
-          0,
-          Throw(
-              key: UniqueKey(),
-              throwType: type,
-              clickX: dX,
-              clickY: dY));
+          0, Throw(key: UniqueKey(), throwType: type, clickX: dX, clickY: dY));
       print(_animations.length);
     });
 
@@ -408,8 +402,7 @@ class _AttendQuizPageState extends AuthState<AttendQuizPage> {
       final appBar = AppBar(
         title: const Text(
             'Einem Quiz beitreten', //_form.name, TODO: find better solution
-            style: TextStyle(
-                color: Colors.white, fontWeight: FontWeight.bold)),
+            style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
         backgroundColor: Theme.of(context).colorScheme.primary,
       );
 
@@ -540,8 +533,8 @@ class _AttendQuizPageState extends AuthState<AttendQuizPage> {
               children: <Widget>[
                 const Padding(
                     padding: EdgeInsets.only(left: 20.0, right: 20.0),
-                    child: Text(
-                        "Bitte warten Sie bis das Quiz gestartet wird")),
+                    child:
+                        Text("Bitte warten Sie bis das Quiz gestartet wird")),
                 Container(
                   margin: const EdgeInsets.only(top: 100.0, bottom: 100.0),
                   width: 150,
@@ -568,15 +561,17 @@ class _AttendQuizPageState extends AuthState<AttendQuizPage> {
           child: Column(
             children: [
               Padding(
-                padding: const EdgeInsets.all(16.0),
+                padding:
+                    const EdgeInsets.only(left: 16.0, top: 16.0, right: 16.0),
                 child: Column(
                   children: <Widget>[
                     const SizedBox(height: 16),
                     Text(element.name,
                         style: const TextStyle(
-                            fontSize: 24, fontWeight: FontWeight.bold)),
+                            fontSize: 25, fontWeight: FontWeight.w700)),
                     Text(element.description,
-                        style: const TextStyle(fontSize: 15),
+                        style: const TextStyle(
+                            fontSize: 20, fontWeight: FontWeight.w500),
                         textAlign: TextAlign.center),
                     const SizedBox(height: 16),
                     Card(
@@ -638,7 +633,7 @@ class _AttendQuizPageState extends AuthState<AttendQuizPage> {
                 Container(
                     margin: const EdgeInsets.only(
                         top: 0.0,
-                        bottom: 100.0), // specify the top and bottom margin
+                        bottom: 10.0), // specify the top and bottom margin
 
                     width: 130,
                     height: 130,
@@ -653,7 +648,7 @@ class _AttendQuizPageState extends AuthState<AttendQuizPage> {
                 Container(
                     margin: const EdgeInsets.only(
                         top: 0.0,
-                        bottom: 100.0), // specify the top and bottom margin
+                        bottom: 10.0), // specify the top and bottom margin
 
                     width: 130,
                     height: 130,
@@ -668,7 +663,7 @@ class _AttendQuizPageState extends AuthState<AttendQuizPage> {
                 Container(
                     margin: const EdgeInsets.only(
                         top: 0.0,
-                        bottom: 100.0), // specify the top and bottom margin
+                        bottom: 10.0), // specify the top and bottom margin
 
                     width: 130,
                     height: 130,

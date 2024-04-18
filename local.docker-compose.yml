@@ -1,0 +1,79 @@
+version: "3.1"
+services:
+  
+  # mongo db
+  mobile-learning-mongo:
+    image: mongo
+    container_name: mobile-learning-mongo
+    environment:
+      - MONGO_INITDB=mobilelearning
+    ports:
+      - 27017:27017
+    expose:
+      - 27017
+    volumes:
+      - ./mongo-data:/data/db
+
+  # java quarkus backend
+  mobile-learning-backend:
+    build:
+      context: ./backend
+      dockerfile: src/main/docker/Dockerfile.jvm
+      # dockerfile: Dockerfile
+    container_name: mobile-learning-backend
+    restart: always
+    ports:
+      - 8080:8080
+    depends_on:
+      - mobile-learning-mongo
+    environment:
+      - MONGODB_HOST=mobile-learning-mongo
+      - MONGODB_PORT=27017
+      - MONGODB_DATABASE=mobilelearning
+    volumes:
+      - ./backend/src/main/resources/privateKey.pem:/deployments/privateKey.pem
+      - ./backend/src/main/resources/publicKey.pem:/deployments/publicKey.pem
+      - ./backend/src/main/resources/application.properties:/deployments/application.properties
+    # extra_hosts:
+    #   - "host.docker.internal:host-gateway"
+    network_mode: "host"
+
+  # flutter frontend
+  mobile-learning-frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - "5000:80"
+    container_name: mobile-learning-frontend
+    restart: always
+
+  # mongo express (debug only)
+  mobile-learning-mongoexpress:
+    image: mongo-express
+    container_name: mobile-learning-mongoexpress
+    ports:
+      - 8085:8081
+    environment:
+      - ME_CONFIG_MONGODB_SERVER=mobile-learning-mongo
+      - ME_CONFIG_MONGODB_URL=mongodb://mobile-learning-mongo:27017
+      - ME_CONFIG_MONGODB_PORT=27017
+      - ME_CONFIG_SITE_BASEURL=/mongo
+    depends_on:
+      - mobile-learning-mongo
+    # network_mode: "host"
+
+
+  # nginx reverse proxy
+  mobile-learning-nginx:
+    build: ./nginx
+    container_name: mobile-learning-nginx
+    environment:
+      - MOBILE_LEARNING_BACKEND_URL=http://localhost:8080
+      - MOBILE_LEARNING_FRONTEND_URL=http://localhost:5000
+      - MOBILE_LEARNING_MONGOEXPRESS_URL=http://localhost:8085
+    ports:
+      - 80:80
+    depends_on:
+      - mobile-learning-backend
+    network_mode: "host"
