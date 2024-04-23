@@ -79,6 +79,7 @@ flutter:
     - assets/logo/
     - assets/animations/rive/animations.riv
     - assets/animations/rive/throw_animations.riv
+    - .env
 
   fonts:
     - family: NunitoSans
