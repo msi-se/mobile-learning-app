@@ -12,8 +12,10 @@ import 'package:frontend/pages/quiz/attend_quiz_page.dart';
 import 'package:frontend/pages/quiz/quiz_control_page.dart';
 import 'package:frontend/pages/quiz/quiz_preview_page.dart';
 import 'package:frontend/theme/themes.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 void main() async {
+  await dotenv.load(fileName: ".env");
   WidgetsFlutterBinding.ensureInitialized();
   await initPreferences();
   runApp(const MyApp());
