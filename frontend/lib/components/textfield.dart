@@ -31,7 +31,7 @@ class MyTextField extends StatelessWidget {
               borderRadius: BorderRadius.circular(12),
             ),
             hintText: hintText,
-            hintStyle: const TextStyle(color: Colors.black),
+            hintStyle: const TextStyle(color: Colors.grey),
           ),
         ),
       ),
