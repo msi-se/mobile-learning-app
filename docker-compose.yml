@@ -26,7 +26,7 @@ services:
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.mongo-express.entrypoints=websecure"
-      - "traefik.http.routers.mongo-express.rule=Host(`loco.in.htwg-konstanz.de`) && PathPrefix(`/mongo`)"
+      - "traefik.http.routers.mongo-express.rule=Host(`${DOMAIN}`) && PathPrefix(`/mongo`)"
       - "traefik.docker.network=proxy"
     depends_on:
       - mobile-learning-mongo
@@ -48,7 +48,7 @@ services:
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.backend.entrypoints=websecure"
-      - "traefik.http.routers.backend.rule=Host(`loco.in.htwg-konstanz.de`) && PathPrefix(`/api`)"
+      - "traefik.http.routers.backend.rule=Host(`${DOMAIN}`) && PathPrefix(`/api`)"
       - "traefik.http.routers.backend.middlewares=api-stripprefix"
       - "traefik.http.middlewares.api-stripprefix.stripprefix.prefixes=/api"
       - "traefik.http.middlewares.api-stripprefix.stripprefix.forceSlash=false"
@@ -74,7 +74,7 @@ services:
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.frontend.entrypoints=websecure"
-      - "traefik.http.routers.frontend.rule=Host(`loco.in.htwg-konstanz.de`)"
+      - "traefik.http.routers.frontend.rule=Host(`${DOMAIN}`)"
       - "traefik.docker.network=proxy"
     networks:
       - proxy

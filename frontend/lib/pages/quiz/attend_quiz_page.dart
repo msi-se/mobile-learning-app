@@ -467,51 +467,53 @@ class _AttendQuizPageState extends AuthState<AttendQuizPage> {
                   ),
                 ),
               ),
-              Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Column(
-                  children: <Widget>[
-                    Text(
-                      "Quiz beendet",
-                      style: Theme.of(context).textTheme.headlineMedium,
-                    ),
-                    // Container(
-                    //   margin: const EdgeInsets.only(top: 30.0, bottom: 10.0),
-                    //   width: 250,
-                    //   height: 250,
-                    //   child: RiveAnimation.asset(
-                    //     'assets/animations/rive/animations.riv',
-                    //     fit: BoxFit.cover,
-                    //     artboard: 'rigged without bodyparts darker firework',
-                    //     stateMachines: ['State Machine Winner'],
-                    //   ),
-                    // ),
-                    const SizedBox(height: 16),
-                    Center(
-                      child: GestureDetector(
-                        key: scoreboardKey,
-                        onTapUp: (details) {
-                          // get the position of the tap and convert it to a percentage of the total height
-                          final RenderBox box = scoreboardKey.currentContext!
-                              .findRenderObject() as RenderBox;
-                          double x = details.localPosition.dx;
-                          double percentageX = x / box.size.width;
-                          double y = details.localPosition.dy;
-                          double percentageY = y / box.size.height;
-                          throwAtScoreboard(percentageX, percentageY);
-                        },
-                        child: Container(
-                          constraints: const BoxConstraints(maxWidth: 800),
-                          child: Card(
-                            child: Padding(
-                              padding: const EdgeInsets.all(8),
-                              child: QuizScoreboard(scoreboard: _scoreboard),
+              SingleChildScrollView(
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Column(
+                    children: <Widget>[
+                      Text(
+                        "Quiz beendet",
+                        style: Theme.of(context).textTheme.headlineMedium,
+                      ),
+                      // Container(
+                      //   margin: const EdgeInsets.only(top: 30.0, bottom: 10.0),
+                      //   width: 250,
+                      //   height: 250,
+                      //   child: RiveAnimation.asset(
+                      //     'assets/animations/rive/animations.riv',
+                      //     fit: BoxFit.cover,
+                      //     artboard: 'rigged without bodyparts darker firework',
+                      //     stateMachines: ['State Machine Winner'],
+                      //   ),
+                      // ),
+                      const SizedBox(height: 16),
+                      Center(
+                        child: GestureDetector(
+                          key: scoreboardKey,
+                          onTapUp: (details) {
+                            // get the position of the tap and convert it to a percentage of the total height
+                            final RenderBox box = scoreboardKey.currentContext!
+                                .findRenderObject() as RenderBox;
+                            double x = details.localPosition.dx;
+                            double percentageX = x / box.size.width;
+                            double y = details.localPosition.dy;
+                            double percentageY = y / box.size.height;
+                            throwAtScoreboard(percentageX, percentageY);
+                          },
+                          child: Container(
+                            constraints: const BoxConstraints(maxWidth: 800),
+                            child: Card(
+                              child: Padding(
+                                padding: const EdgeInsets.all(8),
+                                child: QuizScoreboard(scoreboard: _scoreboard),
+                              ),
                             ),
                           ),
                         ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
               IgnorePointer(

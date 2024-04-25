@@ -544,56 +544,58 @@ class _QuizControlPageState extends AuthState<QuizControlPage> {
           body: Stack(
             key: mainStackKey,
             children: [
-              Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Column(
-                  children: <Widget>[
-                    Text(
-                      "Quiz beendet",
-                      style: Theme.of(context).textTheme.headlineMedium,
-                    ),
-                    Container(
-                      margin: const EdgeInsets.only(top: 30.0, bottom: 10.0),
-                      width: 250,
-                      height: 250,
-                      child: RiveAnimation.asset(
-                        'assets/animations/rive/animations.riv',
-                        fit: BoxFit.cover,
-                        artboard: 'rigged without bodyparts darker firework',
-                        stateMachines: ['State Machine Winner'],
+              SingleChildScrollView(
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Column(
+                    children: <Widget>[
+                      Text(
+                        "Quiz beendet",
+                        style: Theme.of(context).textTheme.headlineMedium,
                       ),
-                    ),
-                    const SizedBox(height: 16),
-                    Center(
-                      child: GestureDetector(
-                        key: scoreboardKey,
-                        onTapUp: (details) {
-                          // get the position of the tap and convert it to a percentage of the total height
-                          final RenderBox box = scoreboardKey.currentContext!
-                              .findRenderObject() as RenderBox;
-                          double x = details.localPosition.dx;
-                          double percentageX = x / box.size.width;
-                          double y = details.localPosition.dy;
-                          double percentageY = y / box.size.height;
-                          throwAtScoreboard(percentageX, percentageY);
-                        },
-                        child: Container(
-                          constraints: const BoxConstraints(maxWidth: 800),
-                          child: Card(
-                            child: Padding(
-                              padding: const EdgeInsets.all(8),
-                              child: QuizScoreboard(scoreboard: _scoreboard),
+                      Container(
+                        margin: const EdgeInsets.only(top: 30.0, bottom: 10.0),
+                        width: 250,
+                        height: 250,
+                        child: RiveAnimation.asset(
+                          'assets/animations/rive/animations.riv',
+                          fit: BoxFit.cover,
+                          artboard: 'rigged without bodyparts darker firework',
+                          stateMachines: ['State Machine Winner'],
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                      Center(
+                        child: GestureDetector(
+                          key: scoreboardKey,
+                          onTapUp: (details) {
+                            // get the position of the tap and convert it to a percentage of the total height
+                            final RenderBox box = scoreboardKey.currentContext!
+                                .findRenderObject() as RenderBox;
+                            double x = details.localPosition.dx;
+                            double percentageX = x / box.size.width;
+                            double y = details.localPosition.dy;
+                            double percentageY = y / box.size.height;
+                            throwAtScoreboard(percentageX, percentageY);
+                          },
+                          child: Container(
+                            constraints: const BoxConstraints(maxWidth: 800),
+                            child: Card(
+                              child: Padding(
+                                padding: const EdgeInsets.all(8),
+                                child: QuizScoreboard(scoreboard: _scoreboard),
+                              ),
                             ),
                           ),
                         ),
                       ),
-                    ),
-                    const SizedBox(height: 16),
-                    ElevatedButton(
-                      onPressed: resetForm,
-                      child: const Text('Quiz zurücksetzen'),
-                    ),
-                  ],
+                      const SizedBox(height: 16),
+                      ElevatedButton(
+                        onPressed: resetForm,
+                        child: const Text('Quiz zurücksetzen'),
+                      ),
+                    ],
+                  ),
                 ),
               ),
               IgnorePointer(
@@ -623,106 +625,108 @@ class _QuizControlPageState extends AuthState<QuizControlPage> {
           appBar: appBar,
           body: Stack(
             children: [
-              SizedBox(
-                width: double.infinity,
-                child: Column(
-                  children: <Widget>[
-                    const SizedBox(height: 32),
-                    Padding(
-                      padding: const EdgeInsets.all(16),
-                      child: Container(
-                        constraints: const BoxConstraints(maxWidth: 800),
-                        child: Column(
-                          children: <Widget>[
-                            Text(element.name,
-                                style: const TextStyle(
-                                    fontSize: 25, fontWeight: FontWeight.w700)),
-                            Text(element.description,
-                                style: const TextStyle(
-                                    fontSize: 20, fontWeight: FontWeight.w500),
-                                textAlign: TextAlign.center),
-                            const SizedBox(height: 16),
-                            if (_form.currentQuestionFinished == true)
-                              if (_showLeaderboard)
-                                Center(
-                                    child: Container(
-                                  constraints:
-                                      const BoxConstraints(maxWidth: 800),
-                                  child: Card(
+              SingleChildScrollView(
+                child: SizedBox(
+                  width: double.infinity,
+                  child: Column(
+                    children: <Widget>[
+                      const SizedBox(height: 32),
+                      Padding(
+                        padding: const EdgeInsets.all(16),
+                        child: Container(
+                          constraints: const BoxConstraints(maxWidth: 800),
+                          child: Column(
+                            children: <Widget>[
+                              Text(element.name,
+                                  style: const TextStyle(
+                                      fontSize: 25, fontWeight: FontWeight.w700)),
+                              Text(element.description,
+                                  style: const TextStyle(
+                                      fontSize: 20, fontWeight: FontWeight.w500),
+                                  textAlign: TextAlign.center),
+                              const SizedBox(height: 16),
+                              if (_form.currentQuestionFinished == true)
+                                if (_showLeaderboard)
+                                  Center(
+                                      child: Container(
+                                    constraints:
+                                        const BoxConstraints(maxWidth: 800),
+                                    child: Card(
+                                      child: Padding(
+                                        padding: const EdgeInsets.all(8),
+                                        child: QuizScoreboard(
+                                            scoreboard: _scoreboard),
+                                      ),
+                                    ),
+                                  ))
+                                else
+                                  Card(
                                     child: Padding(
-                                      padding: const EdgeInsets.all(8),
-                                      child: QuizScoreboard(
-                                          scoreboard: _scoreboard),
+                                      padding: const EdgeInsets.all(16),
+                                      child: element.type ==
+                                              QuestionType.single_choice
+                                          ? SingleChoiceQuizResult(
+                                              results: values
+                                                  .map((e) => int.parse(e))
+                                                  .toList()
+                                                  .cast<int>(),
+                                              options: element.options,
+                                              correctAnswer:
+                                                  element.correctAnswers[0],
+                                            )
+                                          : element.type == QuestionType.yes_no
+                                              ? SingleChoiceQuizResult(
+                                                  results: values
+                                                      .map((e) =>
+                                                          e == "yes" ? 0 : 1)
+                                                      .toList()
+                                                      .cast<int>(),
+                                                  options: const ["Ja", "Nein"],
+                                                  correctAnswer:
+                                                      element.correctAnswers[0] ==
+                                                              "yes"
+                                                          ? "0"
+                                                          : "1",
+                                                )
+                                              : Text(element.type.toString()),
                                     ),
                                   ),
-                                ))
-                              else
-                                Card(
-                                  child: Padding(
-                                    padding: const EdgeInsets.all(16),
-                                    child: element.type ==
-                                            QuestionType.single_choice
-                                        ? SingleChoiceQuizResult(
-                                            results: values
-                                                .map((e) => int.parse(e))
-                                                .toList()
-                                                .cast<int>(),
-                                            options: element.options,
-                                            correctAnswer:
-                                                element.correctAnswers[0],
-                                          )
-                                        : element.type == QuestionType.yes_no
-                                            ? SingleChoiceQuizResult(
-                                                results: values
-                                                    .map((e) =>
-                                                        e == "yes" ? 0 : 1)
-                                                    .toList()
-                                                    .cast<int>(),
-                                                options: const ["Ja", "Nein"],
-                                                correctAnswer:
-                                                    element.correctAnswers[0] ==
-                                                            "yes"
-                                                        ? "0"
-                                                        : "1",
-                                              )
-                                            : Text(element.type.toString()),
-                                  ),
-                                ),
-                          ],
+                            ],
+                          ),
                         ),
                       ),
-                    ),
-                    if (_form.status == FormStatus.started)
-                      Column(
-                        children: [
-                          ElevatedButton(
-                            onPressed: next,
-                            child: const Text('Next'),
-                          ),
-                          const SizedBox(height: 8),
-                          ElevatedButton(
-                            onPressed: stopForm,
-                            child: const Text('Quiz beenden'),
-                          ),
-                        ],
-                      ),
-                    if (_form.status == FormStatus.finished)
-                      Column(
-                        children: [
-                          ElevatedButton(
-                            onPressed: startForm,
-                            child: const Text('Quiz fortsetzen'),
-                          ),
-                          const SizedBox(height: 8),
-                          ElevatedButton(
-                            onPressed: resetForm,
-                            child: Text('Quiz zurücksetzen',
-                                style: TextStyle(color: colors.error)),
-                          ),
-                        ],
-                      ),
-                    const SizedBox(height: 32),
-                  ],
+                      if (_form.status == FormStatus.started)
+                        Column(
+                          children: [
+                            ElevatedButton(
+                              onPressed: next,
+                              child: const Text('Next'),
+                            ),
+                            const SizedBox(height: 8),
+                            ElevatedButton(
+                              onPressed: stopForm,
+                              child: const Text('Quiz beenden'),
+                            ),
+                          ],
+                        ),
+                      if (_form.status == FormStatus.finished)
+                        Column(
+                          children: [
+                            ElevatedButton(
+                              onPressed: startForm,
+                              child: const Text('Quiz fortsetzen'),
+                            ),
+                            const SizedBox(height: 8),
+                            ElevatedButton(
+                              onPressed: resetForm,
+                              child: Text('Quiz zurücksetzen',
+                                  style: TextStyle(color: colors.error)),
+                            ),
+                          ],
+                        ),
+                      const SizedBox(height: 32),
+                    ],
+                  ),
                 ),
               ),
               Positioned(
