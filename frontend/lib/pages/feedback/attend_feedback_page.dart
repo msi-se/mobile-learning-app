@@ -241,7 +241,7 @@ class _AttendFeedbackPageState extends AuthState<AttendFeedbackPage> {
                 Padding(
                     padding: const EdgeInsets.only(left: 20.0, right: 20.0),
                     child: const Text(
-                        "Bitte warten Sie bis das Quiz gestartet wird")),
+                        "Bitte warten Sie bis das Feedback gestartet wird")),
                 Container(
                   margin: const EdgeInsets.only(top: 100.0, bottom: 100.0),
                   width: 150,

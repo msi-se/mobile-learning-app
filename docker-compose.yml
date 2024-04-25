@@ -1,79 +1,116 @@
 version: "3.1"
 services:
   
-  # mongo db
+  # mongodb
   mobile-learning-mongo:
     image: mongo
     container_name: mobile-learning-mongo
     environment:
       - MONGO_INITDB=mobilelearning
-    ports:
-      - 27017:27017
-    expose:
-      - 27017
     volumes:
       - ./mongo-data:/data/db
+    networks:
+      - proxy
+
+  # mongo express
+  mobile-learning-mongoexpress:
+    image: mongo-express
+    container_name: mobile-learning-mongoexpress
+    environment:
+      - ME_CONFIG_MONGODB_URL=mongodb://mobile-learning-mongo:27017
+      - ME_CONFIG_MONGODB_SERVER=mobile-learning-mongo
+      - ME_CONFIG_MONGODB_PORT=27017
+      - ME_CONFIG_SITE_BASEURL=/mongo
+      - ME_CONFIG_BASICAUTH_USERNAME=admin
+      - ME_CONFIG_BASICAUTH_PASSWORD=admin
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.mongo-express.entrypoints=websecure"
+      - "traefik.http.routers.mongo-express.rule=Host(`${DOMAIN}`) && PathPrefix(`/mongo`)"
+      - "traefik.docker.network=proxy"
+    depends_on:
+      - mobile-learning-mongo
+    networks:
+      - proxy
 
   # java quarkus backend
   mobile-learning-backend:
+    container_name: mobile-learning-backend
     build:
       context: ./backend
       dockerfile: src/main/docker/Dockerfile.jvm
       # dockerfile: Dockerfile
-    container_name: mobile-learning-backend
     restart: always
-    ports:
-      - 8080:8080
+    # ports:
+    #   - 8080:8080
     depends_on:
       - mobile-learning-mongo
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.backend.entrypoints=websecure"
+      - "traefik.http.routers.backend.rule=Host(`${DOMAIN}`) && PathPrefix(`/api`)"
+      - "traefik.http.routers.backend.middlewares=api-stripprefix"
+      - "traefik.http.middlewares.api-stripprefix.stripprefix.prefixes=/api"
+      - "traefik.http.middlewares.api-stripprefix.stripprefix.forceSlash=false"
+      - "traefik.docker.network=proxy"
     environment:
-      - MONGODB_HOST=mobile-learning-mongo
-      - MONGODB_PORT=27017
-      - MONGODB_DATABASE=mobilelearning
+      - QUARKUS_MONGODB_CONNECTION_STRING=mongodb://mobile-learning-mongo:27017
     volumes:
       - ./backend/src/main/resources/privateKey.pem:/deployments/privateKey.pem
       - ./backend/src/main/resources/publicKey.pem:/deployments/publicKey.pem
       - ./backend/src/main/resources/application.properties:/deployments/application.properties
-    # extra_hosts:
-    #   - "host.docker.internal:host-gateway"
-    network_mode: "host"
+    networks:
+      - proxy
 
   # flutter frontend
   mobile-learning-frontend:
+    restart: always
+    container_name: mobile-learning-frontend
     build:
       context: ./frontend
       dockerfile: Dockerfile
-    ports:
-      - "5000:80"
-    container_name: mobile-learning-frontend
+    # ports:
+    #   - "80:80"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.frontend.entrypoints=websecure"
+      - "traefik.http.routers.frontend.rule=Host(`${DOMAIN}`)"
+      - "traefik.docker.network=proxy"
+    networks:
+      - proxy
+
+  traefik-proxy:
+    container_name: traefik-proxy
+    image: traefik:v2.11
     restart: always
-
-  # mongo express (debug only)
-  mobile-learning-mongoexpress:
-    image: mongo-express
-    container_name: mobile-learning-mongoexpress
+    command:
+      # - "--log.level=DEBUG"
+      # - "--api.insecure=true"
+      # - "--api.dashboard=true"
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+      - --entrypoints.web.address=:80
+      - --entrypoints.web.http.redirections.entrypoint.to=websecure
+      - --entryPoints.web.http.redirections.entrypoint.scheme=https
+      - "--entrypoints.websecure.address=:443"
+      - "--entrypoints.websecure.http.tls=true"
+      - "--entrypoints.websecure.http.tls.certresolver=prod"
+      - "--certificatesresolvers.prod.acme.tlschallenge=true"
+      - "--certificatesresolvers.prod.acme.email=fabian.klimpel@htwg-konstanz.de"
+      - "--certificatesresolvers.prod.acme.storage=/letsencrypt/acme.json"
     ports:
-      - 8085:8081
-    environment:
-      - ME_CONFIG_MONGODB_SERVER=mobile-learning-mongo
-      - ME_CONFIG_MONGODB_URL=mongodb://mobile-learning-mongo:27017
-      - ME_CONFIG_MONGODB_PORT=27017
-      - ME_CONFIG_SITE_BASEURL=/mongo
-    depends_on:
-      - mobile-learning-mongo
-    # network_mode: "host"
+      # http ports
+      - "80:80"
+      - "443:443"
+      # web ui (enabled by --api.insecure=true)
+      # - "8080:8080"
+    volumes:
+      - "./letsencrypt:/letsencrypt"
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    networks:
+      - proxy
 
-
-  # nginx reverse proxy
-  mobile-learning-nginx:
-    build: ./nginx
-    container_name: mobile-learning-nginx
-    environment:
-      - MOBILE_LEARNING_BACKEND_URL=http://localhost:8080
-      - MOBILE_LEARNING_FRONTEND_URL=http://localhost:5000
-      - MOBILE_LEARNING_MONGOEXPRESS_URL=http://localhost:8085
-    ports:
-      - 80:80
-    depends_on:
-      - mobile-learning-backend
-    network_mode: "host"
+networks:
+  proxy:
+    name: proxy
+    driver: bridge

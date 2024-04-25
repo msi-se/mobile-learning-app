@@ -1,10 +1,12 @@
 import 'package:flutter/foundation.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 String getBackendUrl({String protocol = 'http'}) {
   // final String? backendUrl = Platform.environment['BACKEND_URL']; // later maybe
 
   if (!kDebugMode) {
-    return '${protocol}s://connect.in.htwg-konstanz.de/api';
+    String domain = dotenv.get('DOMAIN', fallback: 'connect.in.htwg-konstanz.de');
+    return '${protocol}s://$domain/api';
   }
 
   // get the current domain (when running in a browser)

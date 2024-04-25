@@ -345,9 +345,8 @@ class _LiveTabState extends State<LiveTab> {
                     Padding(
                       padding: const EdgeInsets.only(bottom: 24),
                       child: ElevatedButton(
-                        onPressed: () {
-                          // openScanner(); Uncomment and implement as needed
-                        },
+                        onPressed: null,
+                        // openScanner(); Uncomment and implement as needed
                         style: ElevatedButton.styleFrom(
                           padding: EdgeInsets.zero,
                           shape: const CircleBorder(),
