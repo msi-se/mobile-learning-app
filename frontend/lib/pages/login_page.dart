@@ -11,6 +11,7 @@ import 'package:frontend/components/error/network_error_widget.dart';
 import 'package:frontend/global.dart';
 import 'package:frontend/theme/assets.dart';
 import 'package:frontend/utils.dart';
+import 'package:flutter_svg/svg.dart';
 
 
 class LoginPage extends StatefulWidget {
@@ -169,8 +170,17 @@ class _LoginPageState extends State<LoginPage> {
 
 
     return Scaffold(
+      //backgroundColor: colors.secondary,
       appBar: AppBar(backgroundColor: colors.onError, toolbarHeight: 0),
-      body: SafeArea(
+      body: Stack(
+        children: [
+          Positioned.fill(
+            child: SvgPicture.asset(
+              htwgPattern,
+              fit: BoxFit.cover,
+            ),
+          ),
+        SafeArea(
         child: Center(
           child: SingleChildScrollView(
             child: LayoutBuilder(
@@ -183,18 +193,30 @@ class _LoginPageState extends State<LoginPage> {
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(15),
                     border: Border.all(color: colors.outlineVariant, width: 1),
+                    color: colors.background,
                   ),
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Image.asset(htwgExtendedLogo, height: 100),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          SvgPicture.asset(htwgConnect, height: 130),
+                          const SizedBox(width: 20),
+                          Text('HTWG Connect', style: TextStyle(fontSize: 36, fontWeight: FontWeight.w900, color: colors.primary))
+                        ],
+                      ),
+                      const SizedBox(height: 20),
+                      const Divider(),
                       const SizedBox(height: 20),
                       const Text('Log In', style: TextStyle(fontSize: 36, fontWeight: FontWeight.bold)),
                       const SizedBox(height: 20),
-                      _buildLoginField(title: 'Benutzername', controller: usernameController, obscureText: false),
+                      const Text('Melden Sie sich mit Ihren HTWG-Zugangsdaten an', textAlign: TextAlign.center, style: TextStyle(fontSize: 16)), // Hinzugefügter Text
                       const SizedBox(height: 20),
-                      _buildLoginField(title: 'Passwort', controller: passwordController, obscureText: true),
+                      _buildLoginField(title: 'Benutzername', hintText: 'z.B. ma871mu', controller: usernameController, obscureText: false),
+                      const SizedBox(height: 20),
+                      _buildLoginField(title: 'Passwort', hintText: '••••••••',controller: passwordController, obscureText: true),
                       const SizedBox(height: 20),
                       _isLoading ? const CircularProgressIndicator() : SubmitButton(onTap: _signInUser),
                       const SizedBox(height: 20),
@@ -206,17 +228,18 @@ class _LoginPageState extends State<LoginPage> {
           ),
         ),
       ),
+    ]),
     );
   }
 
-  Widget _buildLoginField({required String title, required TextEditingController controller, required bool obscureText}) {
+  Widget _buildLoginField({required String title, required String hintText, required TextEditingController controller, required bool obscureText}) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(title, style: Theme.of(context).textTheme.titleMedium),
         MyTextField(
           controller: controller,
-          hintText: '',
+          hintText: hintText,
           obscureText: obscureText,
         ),
       ],

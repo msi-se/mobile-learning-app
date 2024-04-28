@@ -4,6 +4,7 @@ const String htwgWhiteExtendedLogo = 'assets/logo/HTWG_white_extended.png';
 const String moodleLogo = 'assets/logo/moodle.png';
 const String incognitoCircle = 'assets/icons/incognito-circle.svg';
 const String incognitoCirclePng = 'assets/icons/incognito-circle.png';
+const String htwgConnect = 'assets/logo/HTWG_Connect.svg';
 
 //Background assets
 const String onboardingLight = 'assets/backgrounds/onboarding-light.svg';
@@ -11,6 +12,7 @@ const String onboardingDark = 'assets/backgrounds/onboarding-dark.svg';
 const String usernameLight = 'assets/backgrounds/username-light.svg';
 const String usernameDark = 'assets/backgrounds/username-dark.svg';
 const String rotatePhone = 'assets/backgrounds/rotatePhone.svg';
+const String htwgPattern = 'assets/backgrounds/htwg-pattern.svg';
 
 //Icon assets
 const String undrawEducation = 'assets/icons/undraw_education_f8ru.svg';

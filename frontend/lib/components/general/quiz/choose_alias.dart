@@ -115,29 +115,29 @@ class _ChooseAliasState extends State<ChooseAlias> {
                   ],
                 ),
               ),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               TextButton(
                 onPressed: _onShufflePressed,
-                child: Text('Zufälliger Alias',
-                    style: TextStyle(color: colors.primary)),
                 style: TextButton.styleFrom(
-                  backgroundColor: colors.primaryContainer.withOpacity(0.1),
+                  backgroundColor: colors.primary,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(20),
                   ),
                 ),
+                child: const Text('Zufälliger Alias',
+                    style: TextStyle(color: Colors.white)),
               ),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               TextButton(
                 onPressed: _onRealNamePressed,
-                child: Text('Nimm meinen richtigen Namen',
-                    style: TextStyle(color: colors.primary)),
                 style: TextButton.styleFrom(
-                  backgroundColor: colors.primaryContainer.withOpacity(0.1),
+                  backgroundColor: colors.primary,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(20),
                   ),
                 ),
+                child: const Text('Nimm meinen richtigen Namen',
+                    style: TextStyle(color: Colors.white)),
               ),
             ],
           ),
