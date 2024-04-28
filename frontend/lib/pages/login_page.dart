@@ -202,7 +202,7 @@ class _LoginPageState extends State<LoginPage> {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.start,
                         children: [
-                          Image.asset(htwgConnect, height: 130),
+                          SvgPicture.asset(htwgConnect, height: 130),
                           const SizedBox(width: 20),
                           Text('HTWG Connect', style: TextStyle(fontSize: 36, fontWeight: FontWeight.w900, color: colors.primary))
                         ],

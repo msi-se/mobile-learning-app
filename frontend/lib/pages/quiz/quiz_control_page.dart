@@ -448,76 +448,38 @@ class _QuizControlPageState extends AuthState<QuizControlPage> {
                   Text('Teilnehmer: $_participantCounter'),
                   const SizedBox(height: 20),
                   Expanded(
-                    child: Padding(
-                      padding: EdgeInsets.symmetric(
-                          horizontal: _isPhone ? 20 : screenWidth * 0.2),
-                      child: Container(
-                        decoration: BoxDecoration(
-                          borderRadius:
-                              const BorderRadius.all(Radius.circular(20)),
-                          border: Border.all(
-                            color: colors.outlineVariant,
-                            width: 0.5,
-                          ),
+                    child: Container(
+                      margin: const EdgeInsets.symmetric(horizontal: 15),
+                      padding: const EdgeInsets.all(15),
+                      decoration: BoxDecoration(
+                        borderRadius: const BorderRadius.all(Radius.circular(20)),
+                        border: Border.all(
+                          color: colors.outlineVariant,
+                          width: 0.5,
                         ),
-                        // scrollable list of participants
-                        child: Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: ListView.builder(
-                            itemCount: _userNames.length,
-                            itemBuilder: (context, index) {
-                              return Padding(
-                                padding: const EdgeInsets.all(4.0),
-                                child: Align(
-                                  alignment: Alignment.center,
-                                  // padding: const EdgeInsets.symmetric(
-                                  //     horizontal: 10, vertical: 3),
-                                  child: Container(
-                                    decoration: BoxDecoration(
-                                      color: const Color.fromARGB(255, 165, 224, 211),
-                                      borderRadius: BorderRadius.circular(20.0),
-                                    ),
-                                    child: Padding(
-                                      padding: const EdgeInsets.symmetric(
-                                          horizontal: 10, vertical: 3),
-                                      child: Text(
-                                        _userNames[index],
-                                        style: const TextStyle(
-                                            fontSize: 14,
-                                            fontWeight: FontWeight.bold),
-                                      ),
-                                    ),
+                      ),
+                      child: SingleChildScrollView(
+                        child: Align(
+                          alignment: Alignment.topCenter,
+                          child: Wrap(
+                            alignment: WrapAlignment.center,
+                            spacing: 5.0,
+                            runSpacing: 5.0,
+                            children: List.generate(_userNames.length, (index) {
+                                return Container(
+                                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                                  decoration: BoxDecoration(
+                                    color: const Color.fromARGB(255, 165, 224, 211),
+                                    borderRadius: BorderRadius.circular(20.0),
                                   ),
-                                ),
-                              );
-                            },
+                                  child: Text(
+                                    _userNames[index],
+                                    style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+                                  ),
+                                );
+                            }),
                           ),
                         ),
-                        // child: GridView.count(
-                        //   crossAxisCount: crossAxisCount,
-                        //   mainAxisSpacing: 5.0,
-                        //   crossAxisSpacing: 5.0,
-                        //   childAspectRatio: childAspectRatio,
-                        //   children: List.generate(_userNames.length, (index) {
-                        //     return Center(
-                        //       child: Container(
-                        //         padding: const EdgeInsets.symmetric(
-                        //             horizontal: 10, vertical: 3),
-                        //         decoration: BoxDecoration(
-                        //           color:
-                        //               const Color.fromARGB(255, 165, 224, 211),
-                        //           borderRadius: BorderRadius.circular(20.0),
-                        //         ),
-                        //         child: Text(
-                        //           _userNames[index],
-                        //           style: const TextStyle(
-                        //               fontSize: 14,
-                        //               fontWeight: FontWeight.bold),
-                        //         ),
-                        //       ),
-                        //     );
-                        //   }),
-                        //),
                       ),
                     ),
                   ),

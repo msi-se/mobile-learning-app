@@ -4,7 +4,7 @@ const String htwgWhiteExtendedLogo = 'assets/logo/HTWG_white_extended.png';
 const String moodleLogo = 'assets/logo/moodle.png';
 const String incognitoCircle = 'assets/icons/incognito-circle.svg';
 const String incognitoCirclePng = 'assets/icons/incognito-circle.png';
-const String htwgConnect = 'assets/logo/HTWG_Connect_512.png';
+const String htwgConnect = 'assets/logo/HTWG_Connect.svg';
 
 //Background assets
 const String onboardingLight = 'assets/backgrounds/onboarding-light.svg';
