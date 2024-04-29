@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/auth_state.dart';
+import 'package:frontend/components/basicButton.dart';
 import 'package:frontend/global.dart';
 
 class ProfilePage extends StatefulWidget {
@@ -34,7 +35,7 @@ class _ProfilePage extends AuthState<ProfilePage> {
                 //   radius: 50,
                 //   backgroundImage: NetworkImage('https://via.placeholder.com/150'),
                 // ),
-                Icon(Icons.account_circle, size: 100, color: colors.secondary),
+                Icon(Icons.account_circle, size: 100, color: colors.primary),
                 Text(
                   getSession()!.fullName,
                   style: const TextStyle(
@@ -52,13 +53,13 @@ class _ProfilePage extends AuthState<ProfilePage> {
                   ),
                 ),
                 const SizedBox(height: 30),
-                ElevatedButton(
+                BasicButton(
+                  type: ButtonType.cancel,
+                  text: "Logout",
                   onPressed: () {
                     clearSession();
                     Navigator.pushReplacementNamed(context, "/login");
                   },
-                  child: const Text('Logout',
-                      style: TextStyle(fontSize: 20, color: Colors.red)),
                 ),
               ],
             ),

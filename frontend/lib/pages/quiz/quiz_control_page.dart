@@ -9,6 +9,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:frontend/auth_state.dart';
 import 'package:frontend/components/animations/throw.dart';
+import 'package:frontend/components/basicButton.dart';
 import 'package:frontend/enums/form_status.dart';
 import 'package:frontend/enums/question_type.dart';
 import 'package:frontend/components/elements/quiz/single_choice_quiz_result.dart';
@@ -484,17 +485,10 @@ class _QuizControlPageState extends AuthState<QuizControlPage> {
                     ),
                   ),
                   const SizedBox(height: 30),
-                  ElevatedButton(
+                  BasicButton(
+                    type: ButtonType.primary,
                     onPressed: startForm,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: colors.surfaceTint,
-                    ),
-                    child: const Text(
-                      'Start',
-                      style: TextStyle(
-                        color: Colors.white,
-                      ),
-                    ),
+                    text: "Start",
                   ),
                   const SizedBox(height: 50)
                 ]));
@@ -552,9 +546,10 @@ class _QuizControlPageState extends AuthState<QuizControlPage> {
                         ),
                       ),
                       const SizedBox(height: 16),
-                      ElevatedButton(
+                      BasicButton(
+                        type: ButtonType.primary,
+                        text: "Quiz zurücksetzen",
                         onPressed: resetForm,
-                        child: const Text('Quiz zurücksetzen'),
                       ),
                     ],
                   ),
@@ -660,29 +655,32 @@ class _QuizControlPageState extends AuthState<QuizControlPage> {
                       if (_form.status == FormStatus.started)
                         Column(
                           children: [
-                            ElevatedButton(
+                            BasicButton(
+                              type: ButtonType.primary,
+                              text: "Next",
                               onPressed: next,
-                              child: const Text('Next'),
                             ),
                             const SizedBox(height: 8),
-                            ElevatedButton(
+                            BasicButton(
+                              type: ButtonType.cancel,
+                              text: "Quiz beenden",
                               onPressed: stopForm,
-                              child: const Text('Quiz beenden'),
                             ),
                           ],
                         ),
                       if (_form.status == FormStatus.finished)
                         Column(
                           children: [
-                            ElevatedButton(
+                            BasicButton(
+                              type: ButtonType.secondary,
+                              text: "Quiz fortsetzen",
                               onPressed: startForm,
-                              child: const Text('Quiz fortsetzen'),
                             ),
                             const SizedBox(height: 8),
-                            ElevatedButton(
+                            BasicButton(
+                              type: ButtonType.cancel,
+                              text: "Quiz zurücksetzen",
                               onPressed: resetForm,
-                              child: Text('Quiz zurücksetzen',
-                                  style: TextStyle(color: colors.error)),
                             ),
                           ],
                         ),

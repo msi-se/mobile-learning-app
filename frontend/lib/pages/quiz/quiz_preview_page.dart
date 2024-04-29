@@ -5,6 +5,7 @@ import 'package:frontend/auth_state.dart';
 import 'package:frontend/components/error/general_error_widget.dart';
 import 'package:frontend/components/error/network_error_widget.dart';
 import 'package:frontend/components/layout/sliver_layout.dart';
+import 'package:frontend/components/basicButton.dart';
 import 'package:frontend/enums/form_status.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
@@ -141,7 +142,11 @@ class _QuizPreviewPageState extends AuthState<QuizPreviewPage> {
                   Row(
                     children: [
                       Expanded(
-                        child: FilledButton(
+                        child: BasicButton(
+                          type: ButtonType.primary,
+                          text: _form!.status == FormStatus.not_started ||
+                                  _form?.status == FormStatus.waiting
+                              ? "Starten" : "Ergebnisse",
                           onPressed: () async {
                             final _ = await Navigator.pushNamed(
                                 context, '/quiz-control',
@@ -151,22 +156,19 @@ class _QuizPreviewPageState extends AuthState<QuizPreviewPage> {
                                 });
                             fetchForm();
                           },
-                          child: _form!.status == FormStatus.not_started ||
-                                  _form?.status == FormStatus.waiting
-                              ? const Text('Starten')
-                              : const Text('Ergebnisse'),
                         ),
                       ),
                       const SizedBox(width: 10),
                       Expanded(
-                        child: FilledButton(
+                        child: BasicButton(
+                          type: ButtonType.primary,
+                          text: "Beitreten",
                           onPressed: () async {
                             final _ = await Navigator.pushNamed(
                                 context, '/attend-quiz',
                                 arguments: _form!.connectCode);
                             fetchForm();
                           },
-                          child: const Text('Beitreten'),
                         ),
                       ),
                     ],

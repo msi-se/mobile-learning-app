@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/components/basicButton.dart';
+import 'package:frontend/components/textfield.dart';
 
 class JoinCourseDialog extends StatefulWidget {
   final Function(String courseId) onJoinCourse;
@@ -15,28 +17,33 @@ class _JoinCourseDialogState extends State<JoinCourseDialog> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: const Text('Kurs beitreten'),
-      content: TextField(
+      title: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          const Text('Kurs beitreten'),
+          IconButton(
+            icon: const Icon(Icons.close),
+            onPressed: () => Navigator.of(context).pop(),
+          ),
+        ],
+      ),
+      content: MyTextField(
         controller: _controller,
-        decoration: const InputDecoration(
-          hintText: 'Gebe die Kurs-Id ein...',
-        ),
+        hintText: 'Gebe die Kurs-Id ein...',
+        obscureText: false,
       ),
       actions: <Widget>[
-        TextButton(
-          onPressed: () {
-            Navigator.of(context).pop();
-          },
-          child: const Text('Abbruch', style: TextStyle(color: Colors.red)),
-        ),
-        TextButton(
-          onPressed: () {
-            if (_controller.text.isNotEmpty) {
-              widget.onJoinCourse(_controller.text);
-              Navigator.of(context).pop();
-            }
-          },
-          child: const Text('Beitreten'),
+        Center(
+          child: BasicButton(
+            type: ButtonType.primary,
+            text: "Beitreten",
+            onPressed: () {
+              if (_controller.text.isNotEmpty) {
+                widget.onJoinCourse(_controller.text);
+                Navigator.of(context).pop();
+              }
+            },
+          ),
         ),
       ],
     );
