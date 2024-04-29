@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:frontend/components/choose/choose_course.dart';
 import 'package:frontend/components/choose/choose_form.dart';
+import 'package:frontend/components/elements/course/JoinCourseDialog.dart';
 import 'package:frontend/components/error/general_error_widget.dart';
 import 'package:frontend/components/error/network_error_widget.dart';
 import 'package:frontend/models/course.dart';
@@ -163,7 +164,26 @@ class _CoursesTabState extends State<CoursesTab> {
               artboard: 'Sleeping Mascot',
               stateMachines: ['Sleeping State Machine'],
             ),
-          )
+          ),
+          Positioned(
+            right: 16,
+            bottom: 16,
+            child: FloatingActionButton(
+              backgroundColor: Theme.of(context).colorScheme.primary,
+              onPressed: () {
+                showDialog(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return JoinCourseDialog(
+                      onJoinCourse: joinCourse,
+                    );
+                  },
+                );
+              },
+              child: const Icon(Icons.add,
+                  color: Color.fromARGB(255, 255, 255, 255)),
+            ),
+          ),
         ]));
       } else {
         return PopScope(
