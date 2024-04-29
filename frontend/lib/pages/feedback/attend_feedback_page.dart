@@ -214,8 +214,10 @@ class _AttendFeedbackPageState extends AuthState<AttendFeedbackPage> {
         ),
       );
     } else if (_fetchResult == 'success') {
+      double screenWidth = MediaQuery.of(context).size.width;
+      double buttonWidth =
+          screenWidth <= 600 ? screenWidth * 0.92 : screenWidth * 0.4;
       final colors = Theme.of(context).colorScheme;
-
       final appbar = AppBar(
         title: Text(_form.name,
             style: const TextStyle(
@@ -361,25 +363,41 @@ class _AttendFeedbackPageState extends AuthState<AttendFeedbackPage> {
                 ),
               ),
             ),
-            ElevatedButton(
-              child: const Text('Senden'),
-              onPressed: () {
-                // Iterate over the feedbackValues Map and send each feedback value to the socket
-                for (var entry in _feedbackValues.entries) {
-                  var message = {
-                    "action": "ADD_RESULT",
-                    "resultElementId": entry.key,
-                    "resultValues": [entry.value],
-                    "role": "STUDENT"
-                  };
-                  _socketChannel?.sink.add(jsonEncode(message));
-                }
-                setState(() {
-                  _voted = true;
-                });
-              },
+            SizedBox(
+              height: 55,
+              width: buttonWidth,
+              child: ElevatedButton(
+                style: ButtonStyle(
+                  elevation: MaterialStateProperty.all<double>(6.0),
+                  shape: MaterialStateProperty.all<OutlinedBorder>(
+                    RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(14.0),
+                    ),
+                  ),
+                  backgroundColor: MaterialStateProperty.all<Color>(
+                      Theme.of(context).colorScheme.surface),
+                  foregroundColor: MaterialStateProperty.all<Color>(
+                      Theme.of(context).colorScheme.primary),
+                ),
+                child: const Text('Senden', style: TextStyle(fontSize: 20)),
+                onPressed: () {
+                  // Iterate over the feedbackValues Map and send each feedback value to the socket
+                  for (var entry in _feedbackValues.entries) {
+                    var message = {
+                      "action": "ADD_RESULT",
+                      "resultElementId": entry.key,
+                      "resultValues": [entry.value],
+                      "role": "STUDENT"
+                    };
+                    _socketChannel?.sink.add(jsonEncode(message));
+                  }
+                  setState(() {
+                    _voted = true;
+                  });
+                },
+              ),
             ),
-            const SizedBox(height: 32),
+            const SizedBox(height: 20),
           ]),
         ),
       );
