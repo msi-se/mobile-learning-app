@@ -29,18 +29,18 @@ class Item {
 
   factory Item.fromJson(Map<String, dynamic> json) {
     return Item(
-      preis1: json['preis1'],
-      beilagen: json['beilagen'],
-      preis2: json['preis2'],
-      preis3: json['preis3'],
-      einheit: json['einheit'],
-      color: json['color'],
-      kennzeichnungen: json['kennzeichnungen'],
-      description: json['description'],
-      language: json['language'],
-      category: json['category'],
-      title: json['title'],
-      icons: json['icons'],
+      preis1: json['preis1'] ?? "",
+      beilagen: json['beilagen'] ?? "",
+      preis2: json['preis2'] ?? "",
+      preis3: json['preis3'] ?? "",
+      einheit: json['einheit'] ?? "",
+      color: json['color'] ?? "",
+      kennzeichnungen: json['kennzeichnungen'] ?? "",
+      description: json['description'] ?? "",
+      language: json['language'] ?? "",
+      category: json['category'] ?? "",
+      title: json['title'] ?? "",
+      icons: json['icons'] ?? "",
     );
   }
 }
