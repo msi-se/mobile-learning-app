@@ -68,9 +68,18 @@ public class MenuService {
             XmlMapper xmlMapper = new XmlMapper();
             // xmlMapper.enable(DeserializationFeature.ACCEPT_EMPTY_STRING_AS_NULL_OBJECT);
             Menu menueFromXML = xmlMapper.readValue(xmlString, Menu.class);
+            MenuState menuState = new MenuState(new Date(), menueFromXML);
+
+            // check if menu is empty -> if so, return the last menu
+            try {
+                if (menuState.getMenu().getDays().isEmpty() || menuState.getMenu().getDays().get(0).getItems().isEmpty()) {
+                    return menuStateRepository.getLatestMenuState();
+                }
+            } catch (Exception e) {
+                return menuStateRepository.getLatestMenuState();
+            }
 
             // save menu to database
-            MenuState menuState = new MenuState(new Date(), menueFromXML);
             menuStateRepository.persist(menuState);
 
             return menuState;
