@@ -47,7 +47,7 @@ public class MenuService {
         Date currentTimestamp = new Date();
         Date menuTimestamp = menuState != null ? menuState.getTimestamp() : new Date(0);
         Integer diff = (int) ((currentTimestamp.getTime() - menuTimestamp.getTime()) / 1000);
-        if (menuState == null || diff > minutes * 60 * 1000) {
+        if (menuState == null || diff > minutes * 60) {
             menuState = updateMenu();
         }
 
