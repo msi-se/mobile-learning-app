@@ -43,7 +43,11 @@ public class MenuService {
         MenuState menuState = menuStateRepository.getLatestMenuState();
 
         // if it is older than 10 minutes, update it
-        if (menuState == null || new Date().getTime() - menuState.timestamp.getTime() > 10 * 60 * 1000) {
+        Integer minutes = 10;
+        Date currentTimestamp = new Date();
+        Date menuTimestamp = menuState != null ? menuState.getTimestamp() : new Date(0);
+        Integer diff = (int) ((currentTimestamp.getTime() - menuTimestamp.getTime()) / 1000);
+        if (menuState == null || diff > minutes * 60 * 1000) {
             menuState = updateMenu();
         }
 
@@ -62,7 +66,7 @@ public class MenuService {
 
             // parse xml
             XmlMapper xmlMapper = new XmlMapper();
-            xmlMapper.enable(DeserializationFeature.ACCEPT_EMPTY_STRING_AS_NULL_OBJECT);
+            // xmlMapper.enable(DeserializationFeature.ACCEPT_EMPTY_STRING_AS_NULL_OBJECT);
             Menu menueFromXML = xmlMapper.readValue(xmlString, Menu.class);
 
             // save menu to database
