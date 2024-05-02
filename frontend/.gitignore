@@ -30,6 +30,11 @@ migrate_working_dir/
 .pub-cache/
 .pub/
 /build/
+GeneratedPluginRegistrant.swift
+generated_plugin_registrant.cc
+generated_plugin_registrant.h
+generated_plugins.cmake
+CMakeLists.txt
 
 # Symbolication related
 app.*.symbols
