@@ -43,7 +43,9 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   void _keyboardCallback(RawKeyEvent event) {
-    if (event.logicalKey == LogicalKeyboardKey.enter && !_isLoading) {
+    if (event.logicalKey == LogicalKeyboardKey.enter &&
+        !_isLoading &&
+        _isChecked) {
       _signInUser();
     }
   }
