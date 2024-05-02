@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:frontend/pages/test_page.dart';
+import 'package:frontend/pages/privacy_page.dart';
 
 class PrivacyApproval extends StatefulWidget {
   @override
@@ -12,7 +12,6 @@ class PrivacyApproval extends StatefulWidget {
 }
 
 class _PrivacyApprovalState extends State<PrivacyApproval> {
-
   @override
   Widget build(BuildContext context) {
     return CheckboxListTile(
@@ -20,7 +19,7 @@ class _PrivacyApprovalState extends State<PrivacyApproval> {
         onPressed: () {
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) => TestPage()),
+            MaterialPageRoute(builder: (context) => PrivacyPage()),
           );
         },
         child: const Text(
