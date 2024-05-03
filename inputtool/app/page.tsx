@@ -8,7 +8,8 @@ import Image from "next/image";
 import { useRouter } from 'next/navigation'
 import { useState, useEffect } from "react";
 import { toast } from "sonner";
-import {Loader2} from 'lucide-react';
+import { Loader2 } from 'lucide-react';
+import { hasValidJwtToken, login } from "@/lib/utils";
 
 
 export default function Home() {
@@ -32,45 +33,16 @@ export default function Home() {
     return null;
   }
 
-  // check if there is already a jwt token in the local storage
-  const jwtToken = localStorage.getItem("jwtToken");
-
-  if (jwtToken) {
-    router.push("/courses");
-  }
+  hasValidJwtToken().then((isValid) => {
+    if (isValid) router.push("/courses");
+  });
 
   const handleLogin = async () => {
 
-    console.log("Logging in...");
-
-    if (!username || !password) {
-      console.error("Username and password are required.");
-      return;
-    }
-
     setLoading(true);
-    const currentUrl = window.location.href;
-    const BACKEND_URL = currentUrl.includes("localhost") ? "http://localhost:8080" : `${currentUrl}/api`;
-
-    let loginResponse = await fetch(`${BACKEND_URL}/user/login`, {
-      method: "POST",
-      headers: {
-        "AUTHORIZATION": "Basic " + btoa(`${username}:${password}`)
-      }
-    });
-    let jwt = await loginResponse.text();
-    if (loginResponse.status !== 200) {
-        console.error(`Failed to login. Status: ${loginResponse.status}`);
-        console.error(loginResponse);
-        toast.error("Failed to login. Please check your credentials.");
-        setLoading(false);
-        return;
-    }
-    console.log(`Successfully logged in.`);
-    toast.success("Successfully logged in.");
-    console.log(`JWT: ${jwt}`);
-    localStorage.setItem("jwtToken", jwt);
-    router.push("/courses");
+    let success = await login(username, password);
+    setLoading(false);
+    if (success) router.push("/courses");
   };
 
   return (
@@ -89,6 +61,7 @@ export default function Home() {
             onClick={handleLogin}
             disabled={!username || !password}
           >{loading ? <Loader2 className="w-6 h-6 animate-spin" /> : "Login"}</Button>
+          {/* TODO: add event listener for enter key */}
         </CardContent>
       </Card>
     </div>
