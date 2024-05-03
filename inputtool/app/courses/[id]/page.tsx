@@ -22,6 +22,7 @@ import {
   TableRow,
 } from "@/components/ui/table"
 import { Course } from "@/lib/models";
+import { DeleteButton } from "@/components/delete-button";
 
 export default function CoursePage({ params }: { params: { id: string } }) {
 
@@ -95,13 +96,22 @@ export default function CoursePage({ params }: { params: { id: string } }) {
                 }}
                 placeholder="Course description"
               />
-              <Button
-                disabled={!somethingHasChanged}
-                className="mt-4"
-                onClick={() => {
-                  updateCourse(course?.id, courseName, courseDescription);
-                }}
-              >Update course</Button>
+              {/* first button at the left second at the right */}
+              <div className="flex justify-between">
+                <Button
+                  disabled={!somethingHasChanged}
+                  className="mt-4"
+                  onClick={() => {
+                    updateCourse(course?.id, courseName, courseDescription);
+                  }}
+                >Update course</Button>
+                <DeleteButton
+                  className="mt-4"
+                  onDelete={() => {
+                    deleteCourse(course?.id);
+                  }}
+                />
+              </div>
             </CardContent>
           </Card>
           <Table>

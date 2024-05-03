@@ -34,6 +34,7 @@ import {
   TableRow,
 } from "@/components/ui/table"
 import { Course } from "@/lib/models";
+import { DeleteButton } from "@/components/delete-button";
 
 export default function Courses() {
 
