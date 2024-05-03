@@ -94,7 +94,7 @@ export default function FeedbackQuestionPage({ params }: { params: { courseId: s
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <Label>Description</Label>
+              <Label className="mt-2">Description</Label>
               <Input
                 value={feedbackQuestion?.description}
                 onChange={(e) => {
@@ -103,69 +103,52 @@ export default function FeedbackQuestionPage({ params }: { params: { courseId: s
                 }}
                 placeholder="FeedbackQuestion description"
               />
-              <Label>Type</Label> {/* "SLIDER"| "STARS"| "SINGLE_CHOICE"| "FULLTEXT"| "YES_NO" */}
-              <Select>
+              <Label className="mt-2">Type</Label> {/* "SLIDER"| "STARS"| "SINGLE_CHOICE"| "FULLTEXT"| "YES_NO" */}
+              <Select defaultValue="SLIDER" onValueChange={(value) => {
+                setFeedbackQuestion({ ...feedbackQuestion, type: value as "SLIDER"| "STARS"| "SINGLE_CHOICE"| "FULLTEXT"| "YES_NO" });
+                setSomethingHasChanged(true);
+              }}
+              >
                 <SelectTrigger>
                   <SelectValue>{feedbackQuestion?.type}</SelectValue>
                 </SelectTrigger>
-                <SelectContent>
-                  <SelectItem
-                    value="SLIDER"
-                    onSelect={() => {
-                      setFeedbackQuestion({ ...feedbackQuestion, type: "SLIDER" });
-                      setSomethingHasChanged(true);
-                    }}
-                  >SLIDER</SelectItem>
-                  <SelectItem
-                    value="STARS"
-                    onSelect={() => {
-                      setFeedbackQuestion({ ...feedbackQuestion, type: "STARS" });
-                      setSomethingHasChanged(true);
-                    }}
-                  >STARS</SelectItem>
-                  <SelectItem
-                    value="SINGLE_CHOICE"
-                    onSelect={() => {
-                      setFeedbackQuestion({ ...feedbackQuestion, type: "SINGLE_CHOICE" });
-                      setSomethingHasChanged(true);
-                    }}
-                  >SINGLE_CHOICE</SelectItem>
-                  <SelectItem
-                    value="FULLTEXT"
-                    onSelect={() => {
-                      setFeedbackQuestion({ ...feedbackQuestion, type: "FULLTEXT" });
-                      setSomethingHasChanged(true);
-                    }}
-                  >FULLTEXT</SelectItem>
-                  <SelectItem
-                    value="YES_NO"
-                    onSelect={() => {
-                      setFeedbackQuestion({ ...feedbackQuestion, type: "YES_NO" });
-                      setSomethingHasChanged(true);
-                    }}
-                  >YES_NO</SelectItem>
+                {/* TODO: default selection not working if you click in it */}
+                <SelectContent defaultValue={feedbackQuestion?.type}>
+                  <SelectItem defaultChecked={feedbackQuestion?.type === "SLIDER"}
+                    value="SLIDER">Slider</SelectItem>
+                  <SelectItem defaultChecked={feedbackQuestion?.type === "STARS"}
+                    value="STARS">Stars</SelectItem>
+                  <SelectItem defaultChecked={feedbackQuestion?.type === "SINGLE_CHOICE"}
+                    value="SINGLE_CHOICE">Single Choice</SelectItem>
+                  <SelectItem defaultChecked={feedbackQuestion?.type === "FULLTEXT"}
+                    value="FULLTEXT">Fulltext</SelectItem>
+                  <SelectItem defaultChecked={feedbackQuestion?.type === "YES_NO"}
+                    value="YES_NO">Yes/No</SelectItem>
                 </SelectContent>
               </Select>
-
-              <Label>Range-Low</Label>
+              <Label className="mt-2">Range-Low</Label>
               <Input
+                hidden={feedbackQuestion?.type !== "SLIDER"}
+                disabled={feedbackQuestion?.type !== "SLIDER"}
                 value={feedbackQuestion?.rangeLow}
                 onChange={(e) => {
                   setFeedbackQuestion({ ...feedbackQuestion, rangeLow: e.target.value });
                   setSomethingHasChanged(true);
                 }}
-                placeholder="FeedbackQuestion rangeLow"
+                placeholder={feedbackQuestion?.type === "SLIDER" ? "Very Bad" : "Not applicable for this type"}
               />
-              <Label>Range-High</Label>
+              <Label className="mt-2">Range-High</Label>
               <Input
+                hidden={feedbackQuestion?.type !== "SLIDER"}
+                disabled={feedbackQuestion?.type !== "SLIDER"}
                 value={feedbackQuestion?.rangeHigh}
                 onChange={(e) => {
                   setFeedbackQuestion({ ...feedbackQuestion, rangeHigh: e.target.value });
                   setSomethingHasChanged(true);
                 }}
-                placeholder="FeedbackQuestion rangeHigh"
+                placeholder={feedbackQuestion?.type === "SLIDER" ? "Very Good" : "Not applicable for this type"}
               />
-              
+
 
               {/* first button at the left second at the right */}
               <div className="flex justify-between">
