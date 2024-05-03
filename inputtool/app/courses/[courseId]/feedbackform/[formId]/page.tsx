@@ -133,7 +133,7 @@ export default function FeedbackFormPage({ params }: { params: { courseId: strin
               {feedbackform?.questions.map((question) => (
                 <TableRow key={question.id} className="hover:bg-green-50 hover:cursor-pointer"
                   onClick={() => {
-                    router.push(`/feedbackforms/${feedbackform?.id}/quizform/${feedbackform.id}/question/${question.id}`)
+                    router.push(`/courses/${params.courseId}/feedbackform/${params.formId}/question/${question.id}`)
                   }}
                 >
                   <TableCell>{question.type}</TableCell>

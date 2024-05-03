@@ -7,8 +7,10 @@ import org.jboss.resteasy.reactive.RestResponse;
 
 import de.htwg_konstanz.mobilelearning.enums.FormStatus;
 import de.htwg_konstanz.mobilelearning.models.Course;
+import de.htwg_konstanz.mobilelearning.models.QuestionWrapper;
 import de.htwg_konstanz.mobilelearning.models.auth.UserRole;
 import de.htwg_konstanz.mobilelearning.models.feedback.FeedbackForm;
+import de.htwg_konstanz.mobilelearning.models.feedback.FeedbackQuestion;
 import de.htwg_konstanz.mobilelearning.repositories.CourseRepository;
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.inject.Inject;
@@ -174,6 +176,18 @@ public class FeedbackFormService {
         Course course = courseRepository.findById(new ObjectId(courseId));
         FeedbackForm feedbackForm = course.getFeedbackFormById(new ObjectId(formId));
         return Response.ok(feedbackForm.getResultsAsCsv(course)).header("Content-Disposition", "attachment; filename=results_" + feedbackForm.name + ".csv").build();
+    }
+
+    @Path("/{formId}/question/{questionId}")
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    @RolesAllowed({ UserRole.PROF, UserRole.STUDENT })
+    public Response getQuestion(@RestPath String courseId, @RestPath String formId, @RestPath String questionId) {
+        Course course = courseRepository.findById(new ObjectId(courseId));
+        FeedbackForm feedbackForm = course.getFeedbackFormById(new ObjectId(formId));
+        QuestionWrapper question = feedbackForm.getQuestionById(new ObjectId(questionId));
+        FeedbackQuestion feedbackQuestion = course.getFeedbackQuestionById(question.getQuestionId());
+        return Response.ok(feedbackQuestion).build();
     }
 
 }

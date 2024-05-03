@@ -2,7 +2,7 @@ import { type ClassValue, clsx } from "clsx"
 import { twMerge } from "tailwind-merge"
 import { toast } from "sonner";
 import Router from "next/router";
-import { Course, FeedbackForm } from "./models";
+import { Course, FeedbackForm, FeedbackQuestion } from "./models";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
@@ -153,4 +153,31 @@ export async function fetchFeedbackForm(courseId: string, formId: string): Promi
       return question.questionContent
     })
   };
+}
+
+export async function fetchFeedbackQuestion(courseId: string, formId: string, questionId: string): Promise<FeedbackQuestion | null> {
+  
+  // course/id/feedback/form/id/question/id
+  const BACKEND_URL = getBackendUrl();
+  const jwtToken = localStorage.getItem("jwtToken");
+  if (!jwtToken) {
+    console.error("No JWT token found.");
+    return null;
+  }
+
+  let feedbackQuestionResponse = await fetch(`${BACKEND_URL}/course/${courseId}/feedback/form/${formId}/question/${questionId}`, {
+    method: "GET",
+    headers: {
+      "AUTHORIZATION": "Bearer " + jwtToken
+    }
+  });
+  let feedbackQuestion = await feedbackQuestionResponse.json();
+  if (feedbackQuestionResponse.status !== 200) {
+    console.error(`Failed to get feedback question. Status: ${feedbackQuestionResponse.status}`);
+    console.error(feedbackQuestionResponse);
+    toast.error("Failed to get feedback question. Please try again.");
+    return null;
+  }
+  console.log(feedbackQuestion);
+  return feedbackQuestion;
 }
