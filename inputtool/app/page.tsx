@@ -8,6 +8,7 @@ import Image from "next/image";
 import { useRouter } from 'next/navigation'
 import { useState, useEffect } from "react";
 import { toast } from "sonner";
+import {Loader2} from 'lucide-react';
 
 
 export default function Home() {
@@ -17,6 +18,7 @@ export default function Home() {
   const router = useRouter();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     setMounted(true);
@@ -46,6 +48,7 @@ export default function Home() {
       return;
     }
 
+    setLoading(true);
     const currentUrl = window.location.href;
     const BACKEND_URL = currentUrl.includes("localhost") ? "http://localhost:8080" : `${currentUrl}/api`;
 
@@ -60,6 +63,7 @@ export default function Home() {
         console.error(`Failed to login. Status: ${loginResponse.status}`);
         console.error(loginResponse);
         toast.error("Failed to login. Please check your credentials.");
+        setLoading(false);
         return;
     }
     console.log(`Successfully logged in.`);
@@ -84,7 +88,7 @@ export default function Home() {
             className="mt-4"
             onClick={handleLogin}
             disabled={!username || !password}
-          >Login</Button>
+          >{loading ? <Loader2 className="w-6 h-6 animate-spin" /> : "Login"}</Button>
         </CardContent>
       </Card>
     </div>
