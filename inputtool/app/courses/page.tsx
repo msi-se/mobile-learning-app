@@ -129,22 +129,14 @@ export default function Courses() {
             <TableHeader>
               <TableRow>
                 <TableHead>Name</TableHead>
-                <TableHead className="text-right">Description</TableHead>
-                <TableHead className="text-right">QuizForms</TableHead>
-                <TableHead className="text-right">QuizQuestions</TableHead>
-                <TableHead className="text-right">FeedbackForms</TableHead>
-                <TableHead className="text-right">FeedbackQuestions</TableHead>
+                <TableHead>Description</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {courses.map((course) => (
                 <TableRow key={course.id} className="hover:bg-green-50 hover:cursor-pointer" onClick={() => router.push(`/courses/${course.id}`)}>
                   <TableCell className="font-medium">{course.name}</TableCell>
-                  <TableCell className="text-right">{course.description}</TableCell>
-                  <TableCell className="text-right">{course.amountQuizForms}</TableCell>
-                  <TableCell className="text-right">{course.amountQuizQuestions}</TableCell>
-                  <TableCell className="text-right">{course.amountFeedbackForms}</TableCell>
-                  <TableCell className="text-right">{course.amountFeedbackQuestions}</TableCell>
+                  <TableCell>{course.description}</TableCell>
                 </TableRow>
               ))}
             </TableBody>
