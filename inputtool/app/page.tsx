@@ -14,7 +14,7 @@ import { hasValidJwtToken, login } from "@/lib/utils";
 
 export default function Home() {
 
-  const [mounted, setMounted] = useState(false); // used for detecting renders
+  const [mounted, setMounted] = useState(false);
 
   const router = useRouter();
   const [username, setUsername] = useState("");

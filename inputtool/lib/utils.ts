@@ -2,6 +2,7 @@ import { type ClassValue, clsx } from "clsx"
 import { twMerge } from "tailwind-merge"
 import { toast } from "sonner";
 import Router from "next/router";
+import { Course } from "./models";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
@@ -63,4 +64,28 @@ export async function login(username: string, password: string): Promise<boolean
   }
   localStorage.setItem("jwtToken", jwt);
   return true;
+}
+
+export async function getCourses(): Promise<Course[]> {
+  const BACKEND_URL = getBackendUrl();
+  const jwtToken = localStorage.getItem("jwtToken");
+  if (!jwtToken) {
+    console.error("No JWT token found.");
+    return [];
+  }
+
+  let coursesResponse = await fetch(`${BACKEND_URL}/courses`, {
+    method: "GET",
+    headers: {
+      "AUTHORIZATION": "Bearer " + jwtToken
+    }
+  });
+  let courses = await coursesResponse.json();
+  if (coursesResponse.status !== 200) {
+    // console.error(`Failed to get courses. Status: ${coursesResponse.status}`);
+    // console.error(coursesResponse);
+    toast.error("Failed to get courses. Please try again.");
+    return [];
+  }
+  return courses;
 }
