@@ -9,7 +9,7 @@ import { useRouter } from 'next/navigation'
 import { useState, useEffect } from "react";
 import { toast } from "sonner";
 import { Loader2 } from 'lucide-react';
-import { fetchCourse, hasValidJwtToken, login } from "@/lib/utils";
+import { fetchFeedbackForm, hasValidJwtToken, login } from "@/lib/utils";
 import * as React from "react"
 import {
   Table,
@@ -21,35 +21,35 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
-import { Course } from "@/lib/models";
+import { FeedbackForm } from "@/lib/models";
 import { DeleteButton } from "@/components/delete-button";
 
-export default function CoursePage({ params }: { params: { id: string } }) {
+export default function FeedbackFormPage({ params }: { params: { courseId: string, formId: string } }) {
 
   const router = useRouter();
   const [mounted, setMounted] = useState(false);
   const [loading, setLoading] = useState(true);
 
-  const [courseName, setCourseName] = useState("");
-  const [courseDescription, setCourseDescription] = useState("");
+  const [feedbackformName, setFeedbackFormName] = useState("");
+  const [feedbackformDescription, setFeedbackFormDescription] = useState("");
   const [somethingHasChanged, setSomethingHasChanged] = useState(false);
 
-  const [course, setCourse] = useState<Course>();
+  const [feedbackform, setFeedbackForm] = useState<FeedbackForm>();
   useEffect(() => {
-    const loadCourse = async () => {
+    const loadFeedbackForm = async () => {
       setLoading(true);
-      let course = await fetchCourse(params.id);
-      if (!course) {
-        toast.error("Course not found.");
-        router.push("/courses");
+      let feedbackform = await fetchFeedbackForm(params.courseId, params.formId);
+      if (!feedbackform) {
+        toast.error("FeedbackForm not found.");
+        router.back();
         return;
       }
-      setCourse(course);
-      setCourseName(course.name);
-      setCourseDescription(course.description);
+      setFeedbackForm(feedbackform);
+      setFeedbackFormName(feedbackform.name);
+      setFeedbackFormDescription(feedbackform.description);
       setLoading(false);
     };
-    loadCourse();
+    loadFeedbackForm();
   }, []);
 
   useEffect(() => {
@@ -72,16 +72,19 @@ export default function CoursePage({ params }: { params: { id: string } }) {
 
       {!loading && (
         <>
+          <h1 className="text-2xl mb-4 font-bold">
+            Feedback-Form: {feedbackformName}
+          </h1>
           <Card className="w-full">
             <CardHeader>
               <CardTitle>
                 <Input
-                  value={courseName}
+                  value={feedbackformName}
                   onChange={(e) => {
-                    setCourseName(e.target.value);
+                    setFeedbackFormName(e.target.value);
                     setSomethingHasChanged(true);
                   }}
-                  placeholder="Course name"
+                  placeholder="FeedbackForm name"
                   className="font-bold bor"
                 />
               </CardTitle>
@@ -89,12 +92,12 @@ export default function CoursePage({ params }: { params: { id: string } }) {
             <CardContent>
               <Label>Description</Label>
               <Input
-                value={courseDescription}
+                value={feedbackformDescription}
                 onChange={(e) => {
-                  setCourseDescription(e.target.value);
+                  setFeedbackFormDescription(e.target.value);
                   setSomethingHasChanged(true);
                 }}
-                placeholder="Course description"
+                placeholder="FeedbackForm description"
               />
               {/* first button at the left second at the right */}
               <div className="flex justify-between">
@@ -102,37 +105,43 @@ export default function CoursePage({ params }: { params: { id: string } }) {
                   disabled={!somethingHasChanged}
                   className="mt-4"
                   onClick={() => {
-                    updateCourse(course?.id, courseName, courseDescription);
+                    updateFeedbackForm(feedbackform?.id, feedbackformName, feedbackformDescription);
                   }}
-                >Update course</Button>
+                >Update feedbackform</Button>
                 <DeleteButton
                   className="mt-4"
                   onDelete={() => {
-                    deleteCourse(course?.id);
+                    deleteFeedbackForm(feedbackform?.id);
                   }}
                 />
               </div>
             </CardContent>
           </Card>
+          <h2 className="text-2xl mt-4">Questions</h2>
           <Table>
             <TableHeader>
               <TableRow>
                 <TableHead>Type</TableHead>
                 <TableHead>Name</TableHead>
                 <TableHead>Description</TableHead>
+                <TableHead>Options</TableHead>
+                <TableHead>RangeLow</TableHead>
+                <TableHead>RangeHigh</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              {[...course?.feedbackForms || [], ...course?.quizForms || []].map((form) => (
-                <TableRow key={form.id} className="hover:bg-green-50 hover:cursor-pointer"
+              {feedbackform?.questions.map((question) => (
+                <TableRow key={question.id} className="hover:bg-green-50 hover:cursor-pointer"
                   onClick={() => {
-                    if (form.type === "Quiz") router.push(`/courses/${course?.id}/quizform/${form.id}`)
-                    else router.push(`/courses/${course?.id}/feedbackform/${form.id}`)
+                    router.push(`/feedbackforms/${feedbackform?.id}/quizform/${feedbackform.id}/question/${question.id}`)
                   }}
                 >
-                  <TableCell>{form.type}</TableCell>
-                  <TableCell className="font-medium">{form.name}</TableCell>
-                  <TableCell>{form.description}</TableCell>
+                  <TableCell>{question.type}</TableCell>
+                  <TableCell className="font-medium">{question.name}</TableCell>
+                  <TableCell>{question.description}</TableCell>
+                  <TableCell>{question.options?.join(", ")}</TableCell>
+                  <TableCell>{question.rangeLow}</TableCell>
+                  <TableCell>{question.rangeHigh}</TableCell>
                 </TableRow>
               ))}
             </TableBody>
@@ -140,12 +149,8 @@ export default function CoursePage({ params }: { params: { id: string } }) {
           <div className="flex flex-col items-stretch justify-center">
             <Button
               className="mt-4"
-              onClick={() => router.push(`/courses/${course?.id}/newfeedbackform`)}
-            >Create new feedback form</Button>
-            <Button
-              className="mt-4"
-              onClick={() => router.push(`/courses/${course?.id}/newquizform`)}
-            >Create new quiz form</Button>
+              onClick={() => router.push(`/feedbackforms/${feedbackform?.id}/question/new`)}
+            >Add new question</Button>
           </div>
         </>
       )}

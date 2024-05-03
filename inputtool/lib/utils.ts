@@ -2,7 +2,7 @@ import { type ClassValue, clsx } from "clsx"
 import { twMerge } from "tailwind-merge"
 import { toast } from "sonner";
 import Router from "next/router";
-import { Course } from "./models";
+import { Course, FeedbackForm } from "./models";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
@@ -41,9 +41,15 @@ export async function hasValidJwtToken(): Promise<boolean> {
 }
 
 export async function login(username: string, password: string): Promise<boolean> {
-  if (!username || !password) {
-    console.error("Username and password are required.");
-    toast.error("Username and password are required.");
+  // if (!username || !password) {
+  //   console.error("Username and password are required.");
+  //   toast.error("Username and password are required.");
+  //   return false;
+  // }
+  // DEBUG: password is not required
+  if (!username) {
+    console.error("Username is required.");
+    toast.error("Username is required.");
     return false;
   }
 
@@ -115,4 +121,36 @@ export async function fetchCourse(id: string): Promise<Course | null> {
   }
   return course;
 
+}
+
+export async function fetchFeedbackForm(courseId: string, formId: string): Promise<FeedbackForm | null> {
+  
+  // course/id/feedback/form/id/
+  const BACKEND_URL = getBackendUrl();
+  const jwtToken = localStorage.getItem("jwtToken");
+  if (!jwtToken) {
+    console.error("No JWT token found.");
+    return null;
+  }
+
+  let feedbackFormResponse = await fetch(`${BACKEND_URL}/course/${courseId}/feedback/form/${formId}`, {
+    method: "GET",
+    headers: {
+      "AUTHORIZATION": "Bearer " + jwtToken
+    }
+  });
+  let feedbackForm = await feedbackFormResponse.json();
+  if (feedbackFormResponse.status !== 200) {
+    console.error(`Failed to get feedback form. Status: ${feedbackFormResponse.status}`);
+    console.error(feedbackFormResponse);
+    toast.error("Failed to get feedback form. Please try again.");
+    return null;
+  }
+  console.log(feedbackForm);
+  return {
+    ...feedbackForm,
+    questions: feedbackForm.questions.map((question: any) => {
+      return question.questionContent
+    })
+  };
 }

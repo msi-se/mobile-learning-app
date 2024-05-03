@@ -70,7 +70,7 @@ export default function Home() {
           <Button
             className="mt-4"
             onClick={handleLogin}
-            disabled={!username || !password}
+            disabled={!username}
           >{loading ? <Loader2 className="w-6 h-6 animate-spin" /> : "Login"}</Button>
         </CardContent>
       </Card>
