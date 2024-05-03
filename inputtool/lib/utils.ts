@@ -42,6 +42,7 @@ export async function hasValidJwtToken(): Promise<boolean> {
 export async function login(username: string, password: string): Promise<boolean> {
   if (!username || !password) {
     console.error("Username and password are required.");
+    toast.error("Username and password are required.");
     return false;
   }
 

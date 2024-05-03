@@ -22,6 +22,18 @@ export default function Home() {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
+    const handleEnter = (e: KeyboardEvent) => {
+      if (e.key === "Enter") {
+        handleLogin();
+      }
+    };
+    document.addEventListener("keydown", handleEnter);
+    return () => {
+      document.removeEventListener("keydown", handleEnter);
+    };
+  });
+
+  useEffect(() => {
     setMounted(true);
   }, []);
 
@@ -38,7 +50,6 @@ export default function Home() {
   });
 
   const handleLogin = async () => {
-
     setLoading(true);
     let success = await login(username, password);
     setLoading(false);
