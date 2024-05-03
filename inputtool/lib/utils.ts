@@ -66,7 +66,7 @@ export async function login(username: string, password: string): Promise<boolean
   return true;
 }
 
-export async function getCourses(): Promise<Course[]> {
+export async function fetchCourses(): Promise<Course[]> {
   const BACKEND_URL = getBackendUrl();
   const jwtToken = localStorage.getItem("jwtToken");
   if (!jwtToken) {
@@ -74,18 +74,32 @@ export async function getCourses(): Promise<Course[]> {
     return [];
   }
 
-  let coursesResponse = await fetch(`${BACKEND_URL}/courses`, {
+  let coursesResponse = await fetch(`${BACKEND_URL}/course`, {
     method: "GET",
     headers: {
       "AUTHORIZATION": "Bearer " + jwtToken
     }
   });
-  let courses = await coursesResponse.json();
+  let coursesRaw = await coursesResponse.json();
   if (coursesResponse.status !== 200) {
-    // console.error(`Failed to get courses. Status: ${coursesResponse.status}`);
-    // console.error(coursesResponse);
+    console.error(`Failed to get courses. Status: ${coursesResponse.status}`);
+    console.error(coursesResponse);
     toast.error("Failed to get courses. Please try again.");
     return [];
   }
+  console.log(coursesRaw);
+  let courses = coursesRaw.map((course: any) => {
+    return {
+      id: course.id,
+      name: course.name,
+      description: course.description,
+      amountQuizForms: course.quizForms?.length || 0,
+      amountQuizQuestions: course.quizQuestions?.length || 0,
+      amountFeedbackForms: course.feedbackForms?.length || 0,
+      amountFeedbackQuestions: course.feedbackQuestions?.length || 0,
+    };
+  });
+  console.log(courses);
+
   return courses;
 }

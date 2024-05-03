@@ -72,7 +72,6 @@ export default function Home() {
             onClick={handleLogin}
             disabled={!username || !password}
           >{loading ? <Loader2 className="w-6 h-6 animate-spin" /> : "Login"}</Button>
-          {/* TODO: add event listener for enter key */}
         </CardContent>
       </Card>
     </div>
