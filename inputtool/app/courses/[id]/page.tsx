@@ -9,20 +9,8 @@ import { useRouter } from 'next/navigation'
 import { useState, useEffect } from "react";
 import { toast } from "sonner";
 import { Loader2 } from 'lucide-react';
-import { fetchCourses, hasValidJwtToken, login } from "@/lib/utils";
+import { fetchCourse, hasValidJwtToken, login } from "@/lib/utils";
 import * as React from "react"
-import {
-  ColumnDef,
-  ColumnFiltersState,
-  SortingState,
-  VisibilityState,
-  flexRender,
-  getCoreRowModel,
-  getFilteredRowModel,
-  getPaginationRowModel,
-  getSortedRowModel,
-  useReactTable,
-} from "@tanstack/react-table"
 import {
   Table,
   TableBody,
@@ -35,21 +23,26 @@ import {
 } from "@/components/ui/table"
 import { Course } from "@/lib/models";
 
-export default function Courses() {
+export default function CoursePage({ params }: { params: { id: string } }) {
 
   const router = useRouter();
   const [mounted, setMounted] = useState(false);
   const [loading, setLoading] = useState(true);
 
-  const [courses, setCourses] = useState<Course[]>([]);
+  const [course, setCourse] = useState<Course>();
   useEffect(() => {
-    const loadCourses = async () => {
+    const loadCourse = async () => {
       setLoading(true);
-      let courses = await fetchCourses();
-      setCourses(courses);
+      let course = await fetchCourse(params.id);
+      if (!course) {
+        toast.error("Course not found.");
+        router.push("/courses");
+        return;
+      }
+      setCourse(course);
       setLoading(false);
     };
-    loadCourses();
+    loadCourse();
   }, []);
 
   useEffect(() => {
@@ -72,26 +65,32 @@ export default function Courses() {
 
       {!loading && (
         <>
+          <Card className="w-[350px]">
+            <CardHeader>
+              <CardTitle>{course?.name}</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p>{course?.description}</p>
+            </CardContent>
+          </Card>
           <Table>
             <TableHeader>
               <TableRow>
+                <TableHead>Type</TableHead>
                 <TableHead>Name</TableHead>
                 <TableHead>Description</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              {courses.map((course) => (
-                <TableRow key={course.id} className="hover:bg-green-50 hover:cursor-pointer" onClick={() => router.push(`/courses/${course.id}`)}>
-                  <TableCell className="font-medium">{course.name}</TableCell>
-                  <TableCell>{course.description}</TableCell>
+              {[...course?.feedbackForms || [], ...course?.quizForms || []].map((form) => (
+                <TableRow key={form.id} className="hover:bg-green-50 hover:cursor-pointer" onClick={() => router.push(`/courses/${course?.id}/feedbackform/${form.id}`)}>
+                  <TableCell>{form.type}</TableCell>
+                  <TableCell className="font-medium">{form.name}</TableCell>
+                  <TableCell>{form.description}</TableCell>
                 </TableRow>
               ))}
             </TableBody>
           </Table>
-          <Button
-            className="mt-4"
-            onClick={() => router.push("/courses/new")}
-          >Create new course</Button>
         </>
       )}
     </div>

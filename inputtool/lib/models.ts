@@ -1,11 +1,14 @@
 export type FeedbackForm = {
+    id: string;
     key: string;
     name: string;
     description: string;
     questions: FeedbackQuestion[];
+    type: "Feedback";
 }
 
 export type FeedbackQuestion = {
+    id: string;
     key: string;
     name: string;
     description: string;
@@ -16,13 +19,16 @@ export type FeedbackQuestion = {
 }
 
 export type QuizForm = {
+    id: string;
     key: string;
     name: string;
     description: string;
     questions: QuizQuestion[];
+    type: "Quiz";
 }
 
 export type QuizQuestion = {
+    id: string;
     key: string;
     name: string;
     description: string;

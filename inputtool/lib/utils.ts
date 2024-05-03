@@ -93,13 +93,26 @@ export async function fetchCourses(): Promise<Course[]> {
       id: course.id,
       name: course.name,
       description: course.description,
-      amountQuizForms: course.quizForms?.length || 0,
-      amountQuizQuestions: course.quizQuestions?.length || 0,
-      amountFeedbackForms: course.feedbackForms?.length || 0,
-      amountFeedbackQuestions: course.feedbackQuestions?.length || 0,
+      moodleCourseId: course.moodleCourseId,
+      feedbackForms: course.feedbackForms.map((form: any) => { return { ...form, type: "Feedback" } }),
+      quizForms: course.quizForms.map((form: any) => { return { ...form, type: "Quiz" } })
     };
   });
   console.log(courses);
 
   return courses;
+}
+
+
+export async function fetchCourse(id: string): Promise<Course | null> {
+
+  let courses = await fetchCourses();
+  let course = courses.find((c) => c.id === id);
+  if (!course) {
+    console.error(`Course with id ${id} not found.`);
+    toast.error("Course not found.");
+    return null;
+  }
+  return course;
+
 }
