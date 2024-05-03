@@ -29,6 +29,10 @@ export default function CoursePage({ params }: { params: { id: string } }) {
   const [mounted, setMounted] = useState(false);
   const [loading, setLoading] = useState(true);
 
+  const [courseName, setCourseName] = useState("");
+  const [courseDescription, setCourseDescription] = useState("");
+  const [somethingHasChanged, setSomethingHasChanged] = useState(false);
+
   const [course, setCourse] = useState<Course>();
   useEffect(() => {
     const loadCourse = async () => {
@@ -40,6 +44,8 @@ export default function CoursePage({ params }: { params: { id: string } }) {
         return;
       }
       setCourse(course);
+      setCourseName(course.name);
+      setCourseDescription(course.description);
       setLoading(false);
     };
     loadCourse();
@@ -65,12 +71,37 @@ export default function CoursePage({ params }: { params: { id: string } }) {
 
       {!loading && (
         <>
-          <Card className="w-[350px]">
+          <Card className="w-full">
             <CardHeader>
-              <CardTitle>{course?.name}</CardTitle>
+              <CardTitle>
+                <Input
+                  value={courseName}
+                  onChange={(e) => {
+                    setCourseName(e.target.value);
+                    setSomethingHasChanged(true);
+                  }}
+                  placeholder="Course name"
+                  className="font-bold bor"
+                />
+              </CardTitle>
             </CardHeader>
             <CardContent>
-              <p>{course?.description}</p>
+              <Label>Description</Label>
+              <Input
+                value={courseDescription}
+                onChange={(e) => {
+                  setCourseDescription(e.target.value);
+                  setSomethingHasChanged(true);
+                }}
+                placeholder="Course description"
+              />
+              <Button
+                disabled={!somethingHasChanged}
+                className="mt-4"
+                onClick={() => {
+                  updateCourse(course?.id, courseName, courseDescription);
+                }}
+              >Update course</Button>
             </CardContent>
           </Card>
           <Table>
@@ -83,7 +114,12 @@ export default function CoursePage({ params }: { params: { id: string } }) {
             </TableHeader>
             <TableBody>
               {[...course?.feedbackForms || [], ...course?.quizForms || []].map((form) => (
-                <TableRow key={form.id} className="hover:bg-green-50 hover:cursor-pointer" onClick={() => router.push(`/courses/${course?.id}/feedbackform/${form.id}`)}>
+                <TableRow key={form.id} className="hover:bg-green-50 hover:cursor-pointer"
+                  onClick={() => {
+                    if (form.type === "Quiz") router.push(`/courses/${course?.id}/quizform/${form.id}`)
+                    else router.push(`/courses/${course?.id}/feedbackform/${form.id}`)
+                  }}
+                >
                   <TableCell>{form.type}</TableCell>
                   <TableCell className="font-medium">{form.name}</TableCell>
                   <TableCell>{form.description}</TableCell>
@@ -91,6 +127,16 @@ export default function CoursePage({ params }: { params: { id: string } }) {
               ))}
             </TableBody>
           </Table>
+          <div className="flex flex-col items-stretch justify-center">
+            <Button
+              className="mt-4"
+              onClick={() => router.push(`/courses/${course?.id}/newfeedbackform`)}
+            >Create new feedback form</Button>
+            <Button
+              className="mt-4"
+              onClick={() => router.push(`/courses/${course?.id}/newquizform`)}
+            >Create new quiz form</Button>
+          </div>
         </>
       )}
     </div>

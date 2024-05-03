@@ -88,10 +88,12 @@ export default function Courses() {
               ))}
             </TableBody>
           </Table>
-          <Button
-            className="mt-4"
-            onClick={() => router.push("/courses/new")}
-          >Create new course</Button>
+          <div className="flex flex-col items-stretch justify-center">
+            <Button
+              className="mt-4"
+              onClick={() => router.push("/courses/new")}
+            >Create new course</Button>
+          </div>
         </>
       )}
     </div>
