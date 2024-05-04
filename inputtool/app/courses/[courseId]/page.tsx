@@ -178,7 +178,6 @@ export default function CoursePage({ params }: { params: { courseId: string } })
               onClick={async () => {
                 const form = await addFeedbackForm(course?.id || "", "New feedback form", "");
                 if (form) {
-                  toast.success("Feedback form created.");
                   router.push(`/courses/${course?.id}/feedbackform/${form.id}`);
                 }}
               }

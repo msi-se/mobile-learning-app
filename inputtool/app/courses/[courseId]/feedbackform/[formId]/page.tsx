@@ -171,7 +171,7 @@ export default function FeedbackFormPage({ params }: { params: { courseId: strin
                 const question = await addFeedbackQuestion(params.courseId, params.formId, "New question", "", "SLIDER", [], "", "");
                 if (question) {
                   router.push(`/courses/${params.courseId}/feedbackform/${params.formId}/question/${question.id}`);
-                  toast.success("Question created.");
+                  // toast.success("Question created."); (crashes the app)
                 }
               }}
             >Add new question</Button>
