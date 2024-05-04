@@ -7,7 +7,7 @@ import { Label } from "@radix-ui/react-dropdown-menu";
 import { useRouter, useSearchParams } from 'next/navigation'
 import { useState, useEffect } from "react";
 import { toast } from "sonner";
-import { CircleArrowLeft, Loader2 } from 'lucide-react';
+import { CircleArrowLeft, Loader2, Save } from 'lucide-react';
 import { hasValidJwtToken } from "@/lib/utils";
 import * as React from "react"
 import {
@@ -138,7 +138,7 @@ export default function CoursePage({ params }: { params: { courseId: string } })
                       toast.error("Course update failed.");
                     }
                   }}
-                >Update course</Button>
+                ><Save /></Button>
                 <DeleteButton
                   className="mt-4"
                   onDelete={async () => {

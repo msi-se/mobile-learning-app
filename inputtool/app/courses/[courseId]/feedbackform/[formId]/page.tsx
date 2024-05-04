@@ -7,7 +7,7 @@ import { Label } from "@radix-ui/react-dropdown-menu";
 import { useRouter, useSearchParams } from 'next/navigation'
 import { useState, useEffect } from "react";
 import { toast } from "sonner";
-import { CircleArrowLeft, Loader2 } from 'lucide-react';
+import { CircleArrowLeft, Loader2, Save } from 'lucide-react';
 import { hasValidJwtToken } from "@/lib/utils";
 import * as React from "react"
 import {
@@ -20,7 +20,9 @@ import {
 } from "@/components/ui/table"
 import { FeedbackForm } from "@/lib/models";
 import { DeleteButton } from "@/components/delete-button";
-import { addFeedbackQuestion, deleteFeedbackForm, fetchFeedbackForm, updateFeedbackForm } from "@/lib/requests";
+import { addFeedbackQuestion, copyFeedbackForm, deleteFeedbackForm, fetchFeedbackForm, updateFeedbackForm } from "@/lib/requests";
+import getBackendUrl from "@/lib/get-backend-url";
+import Link from "next/link";
 
 export default function FeedbackFormPage({ params }: { params: { courseId: string, formId: string } }) {
 
@@ -127,17 +129,31 @@ export default function FeedbackFormPage({ params }: { params: { courseId: strin
                     }
 
                   }}
-                >Update feedbackform</Button>
-                <DeleteButton
-                  className="mt-4"
-                  onDelete={async () => {
-                    const result = await deleteFeedbackForm(params.courseId, params.formId);
-                    if (result) {
-                      toast.success("FeedbackForm deleted.");
-                      router.push(`/courses/${params.courseId}`);
-                    }
-                  }}
-                />
+                ><Save /></Button>
+                <div className="flex items-center">
+                  <Button
+                    className="mt-4"
+                    variant="secondary"
+                    disabled={somethingHasChanged}
+                    onClick={async () => {
+                      const result = await copyFeedbackForm(params.courseId, params.formId);
+                      if (result) {
+                        toast.success("Feedback Form Copied.");
+                        router.push(`/courses/${params.courseId}/feedbackform/${result.id}?is-new=true`);
+                      }
+                    }}
+                  >Copy Form</Button>
+                  <DeleteButton
+                    className="mt-4 ml-2"
+                    onDelete={async () => {
+                      const result = await deleteFeedbackForm(params.courseId, params.formId);
+                      if (result) {
+                        toast.success("FeedbackForm deleted.");
+                        router.push(`/courses/${params.courseId}`);
+                      }
+                    }}
+                  />
+                </div>
               </div>
             </CardContent>
           </Card>
@@ -185,7 +201,16 @@ export default function FeedbackFormPage({ params }: { params: { courseId: strin
                   router.push(`/courses/${params.courseId}/feedbackform/${params.formId}/question/${question.id}?is-new=true`);
                 }
               }}
-            >Add new question</Button>
+            >Add New Question</Button>
+            <Button
+              className="mt-4"
+              variant="secondary"
+              onClick={async () => {
+                const backendUrl = await getBackendUrl();
+                const url = `${backendUrl}/course/${params.courseId}/feedback/form/${params.formId}/downloadresults?token=${localStorage.getItem("jwtToken")}`;
+                window.open(url, "_blank");
+              }}
+            >Download Results</Button>
           </div>
         </>
       )}

@@ -149,6 +149,24 @@ export async function addFeedbackForm(courseId: string, feedbackformName: string
     return feedbackForm;
 }
 
+// POST /maint/course/${courseId}/feedback/form/${formId}/copy
+// copyFeedbackForm(params.courseId, params.formId) -> Error | Name, Description, Questions (Name, Description, Type, Options, RangeLow, RangeHigh)
+export async function copyFeedbackForm(courseId: string, formId: string): Promise<FeedbackForm | null> {
+    const BACKEND_URL = await getBackendUrl();
+    const jwtToken = localStorage.getItem("jwtToken");
+    let feedbackFormResponse = await fetch(`${BACKEND_URL}/maint/course/${courseId}/feedback/form/${formId}/copy`, {
+        method: "POST",
+        headers: { "AUTHORIZATION": "Bearer " + jwtToken }
+    });
+    if (feedbackFormResponse.status !== 200) {
+        toast.error(`Failed to copy feedback form. Please try again. Status: ${feedbackFormResponse.status}`);
+        return null;
+    }
+    let feedbackForm = await feedbackFormResponse.json();
+    feedbackForm.questions = feedbackForm.questions.map((question: any) => { return {...question.questionContent, id: question.id} });
+    return feedbackForm;
+}
+
 // DELETE /maint/course/${courseId}/feedback/form/${formId}
 // deleteFeedbackForm(params.courseId, params.formId) -> Error | Success
 export async function deleteFeedbackForm(courseId: string, formId: string): Promise<boolean> {

@@ -240,6 +240,32 @@ public class MaintService {
         return feedbackForm;
     }
 
+    @POST
+    @Produces(MediaType.APPLICATION_JSON)
+    @RolesAllowed({ UserRole.PROF, UserRole.STUDENT })
+    @Path("/course/{courseId}/feedback/form/{formId}/copy")
+    public FeedbackForm copyFeedbackForm(@RestPath String courseId, @RestPath String formId) {
+        Course course = courseRepository.findById(new ObjectId(courseId));
+        if (!isOwner(course)) {
+            throw new NotFoundException();
+        }
+        FeedbackForm feedbackForm = course.getFeedbackFormById(new ObjectId(formId));
+        if (feedbackForm == null) {
+            throw new NotFoundException();
+        }
+        FeedbackForm copiedFeedbackForm = new FeedbackForm(course.getId(), feedbackForm.getName() + (" (Copy)"), feedbackForm.getDescription(), new ArrayList<>(), FormStatus.NOT_STARTED);
+
+        // TODO: check if this is the correct way to copy questions (sync or copy)
+        for (QuestionWrapper questionWrapper : feedbackForm.getQuestions()) {
+            FeedbackQuestion feedbackQuestion = course.getFeedbackQuestionById(questionWrapper.getQuestionId());
+            copiedFeedbackForm.addQuestion(new QuestionWrapper(feedbackQuestion.getId(), new ArrayList<>()));
+        }
+        course.addFeedbackForm(copiedFeedbackForm);
+        courseRepository.update(course);
+
+        return getFeedbackForm(courseId, copiedFeedbackForm.getId().toString());
+    }
+
     @DELETE
     @Produces(MediaType.APPLICATION_JSON)
     @RolesAllowed({ UserRole.PROF, UserRole.STUDENT })
