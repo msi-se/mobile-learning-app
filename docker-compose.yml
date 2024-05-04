@@ -88,11 +88,11 @@ services:
       dockerfile: Dockerfile
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.backend.entrypoints=websecure"
-      - "traefik.http.routers.backend.rule=Host(`${DOMAIN}`) && PathPrefix(`/input`)"
-      - "traefik.http.routers.backend.middlewares=input-stripprefix"
+      - "traefik.http.routers.input.entrypoints=websecure"
+      - "traefik.http.routers.input.rule=Host(`${DOMAIN}`) && PathPrefix(`/input`)"
+      # - "traefik.http.routers.input.middlewares=input-stripprefix"
       - "traefik.http.middlewares.input-stripprefix.stripprefix.prefixes=/input"
-      - "traefik.http.middlewares.input-stripprefix.stripprefix.forceSlash=false"
+      # - "traefik.http.middlewares.input-stripprefix.stripprefix.forceSlash=false"
       - "traefik.docker.network=proxy"
     networks:
       - proxy
