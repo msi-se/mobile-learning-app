@@ -156,13 +156,13 @@ export default function FeedbackQuestionPage({ params }: { params: { courseId: s
                   disabled={!somethingHasChanged}
                   className="mt-4"
                   onClick={() => {
-                    updateFeedbackQuestion(feedbackquestion?.id, feedbackquestionName, feedbackquestionDescription, feedbackquestionType, feedbackquestionRangeLow, feedbackquestionRangeHigh);
+                    updateFeedbackQuestion(params.courseId, params.formId, params.questionId, feedbackQuestion?.name, feedbackQuestion?.description, feedbackQuestion?.type, feedbackQuestion?.options, feedbackQuestion?.rangeLow, feedbackQuestion?.rangeHigh);
                   }}
                 >Update feedbackquestion</Button>
                 <DeleteButton
                   className="mt-4"
                   onDelete={() => {
-                    deleteFeedbackQuestion(feedbackquestion?.id);
+                    deleteFeedbackQuestion(params.courseId, params.formId, params.questionId);
                   }}
                 />
               </div>

@@ -105,13 +105,13 @@ export default function FeedbackFormPage({ params }: { params: { courseId: strin
                   disabled={!somethingHasChanged}
                   className="mt-4"
                   onClick={() => {
-                    updateFeedbackForm(feedbackform?.id, feedbackformName, feedbackformDescription);
+                    updateFeedbackForm(params.courseId, params.formId, feedbackformName, feedbackformDescription);
                   }}
                 >Update feedbackform</Button>
                 <DeleteButton
                   className="mt-4"
                   onDelete={() => {
-                    deleteFeedbackForm(feedbackform?.id);
+                    deleteFeedbackForm(params.courseId, params.formId);
                   }}
                 />
               </div>

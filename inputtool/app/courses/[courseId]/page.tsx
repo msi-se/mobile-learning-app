@@ -105,13 +105,13 @@ export default function CoursePage({ params }: { params: { courseId: string } })
                   disabled={!somethingHasChanged}
                   className="mt-4"
                   onClick={() => {
-                    updateCourse(course?.id, courseName, courseDescription);
+                    updateCourse(params.courseId, courseName, courseDescription);
                   }}
                 >Update course</Button>
                 <DeleteButton
                   className="mt-4"
                   onDelete={() => {
-                    deleteCourse(course?.id);
+                    deleteCourse(params.courseId);
                   }}
                 />
               </div>
