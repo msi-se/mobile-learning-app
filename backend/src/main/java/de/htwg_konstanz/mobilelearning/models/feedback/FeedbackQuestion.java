@@ -30,4 +30,12 @@ public class FeedbackQuestion extends Question {
     public void setType(FeedbackQuestionType type) {
         this.type = type;
     }
+
+    public void setRangeLow(String rangeLow) {
+        this.rangeLow = rangeLow;
+    }
+
+    public void setRangeHigh(String rangeHigh) {
+        this.rangeHigh = rangeHigh;
+    }
 }
