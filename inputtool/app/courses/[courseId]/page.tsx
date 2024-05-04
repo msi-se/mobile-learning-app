@@ -67,14 +67,14 @@ export default function CoursePage({ params }: { params: { courseId: string } })
   }
 
   return (
-    <div className="flex flex-col items-center justify-center h-screen m-4">
+    <div className="flex flex-col items-center justify-center h-max m-4">
 
       {loading && (
         <Loader2 className="w-6 h-6 animate-spin" />
       )}
 
       {!loading && (
-        <div>
+        <>
 
           <Button
             className="mb-4 self-start text-sm"
@@ -187,7 +187,7 @@ export default function CoursePage({ params }: { params: { courseId: string } })
               disabled={true}
             >Create new quiz form</Button>
           </div>
-        </div>
+        </>
       )}
     </div>
   );
