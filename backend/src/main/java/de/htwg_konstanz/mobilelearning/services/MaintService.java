@@ -124,29 +124,42 @@ public class MaintService {
         return courseWithLessData;
     }
 
+    public class UpdateCourseRequest {
+        public String name;
+        public String description;
+        public String moodleCourseId;        
+    }
+
     @PUT
     @Produces(MediaType.APPLICATION_JSON)
     @RolesAllowed({ UserRole.PROF, UserRole.STUDENT })
     @Path("/course/{courseId}")
-    public Course updateCourse(@RestPath String courseId, String courseName, String courseDescription, String courseMoodleCourseId) {
+    public Course updateCourse(@RestPath String courseId, UpdateCourseRequest request) {
         Course course = courseRepository.findById(new ObjectId(courseId));
         if (!isOwner(course)) {
             throw new NotFoundException();
         }
-        course.setName(courseName);
-        course.setDescription(courseDescription);
-        course.setMoodleCourseId(courseMoodleCourseId);
+        course.setName(request.name);
+        course.setDescription(request.description);
+        course.setMoodleCourseId(request.moodleCourseId);
         courseRepository.update(course);
 
         return getCourse(courseId);
+    }
+
+    public class AddCourseRequest {
+        public String name;
+        public String description;
+        public String moodleCourseId;        
     }
 
     @POST
     @Produces(MediaType.APPLICATION_JSON)
     @RolesAllowed({ UserRole.PROF, UserRole.STUDENT })
     @Path("/course")
-    public Course addCourse(String courseName, String courseDescription) {
-        Course course = new Course(courseName, courseDescription);
+    public Course addCourse(AddCourseRequest request) {
+        Course course = new Course(request.name, request.description);
+        course.setMoodleCourseId(request.moodleCourseId);
         course.addOwner(userRepository.findByUsername(jwt.getName()).getId());
         courseRepository.persist(course);
         return course;
@@ -168,7 +181,7 @@ public class MaintService {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @RolesAllowed({ UserRole.PROF, UserRole.STUDENT })
-    @Path("/course/{courseId}/feedbackform/{formId}")
+    @Path("/course/{courseId}/feedback/form/{formId}")
     public FeedbackForm getFeedbackForm(@RestPath String courseId, @RestPath String formId) {
         Course course = courseRepository.findById(new ObjectId(courseId));
         if (!isOwner(course)) {
@@ -182,11 +195,16 @@ public class MaintService {
         return feedbackFormWithQuestionContents;
     }
 
+    public class UpdateFeedbackFormRequest {
+        public String name;
+        public String description;
+    }
+
     @PUT
     @Produces(MediaType.APPLICATION_JSON)
     @RolesAllowed({ UserRole.PROF, UserRole.STUDENT })
-    @Path("/course/{courseId}/feedbackform/{formId}")
-    public FeedbackForm updateFeedbackForm(@RestPath String courseId, @RestPath String formId, String feedbackformName, String feedbackformDescription) {
+    @Path("/course/{courseId}/feedback/form/{formId}")
+    public FeedbackForm updateFeedbackForm(@RestPath String courseId, @RestPath String formId, UpdateFeedbackFormRequest request) {
         Course course = courseRepository.findById(new ObjectId(courseId));
         if (!isOwner(course)) {
             throw new NotFoundException();
@@ -195,22 +213,27 @@ public class MaintService {
         if (feedbackForm == null) {
             throw new NotFoundException();
         }
-        feedbackForm.setName(feedbackformName);
-        feedbackForm.setDescription(feedbackformDescription);
+        feedbackForm.setName(request.name);
+        feedbackForm.setDescription(request.description);
         courseRepository.update(course);
         return getFeedbackForm(courseId, formId);
+    }
+
+    public class AddFeedbackFormRequest {
+        public String name;
+        public String description;
     }
 
     @POST
     @Produces(MediaType.APPLICATION_JSON)
     @RolesAllowed({ UserRole.PROF, UserRole.STUDENT })
     @Path("/course/{courseId}/feedbackform")
-    public FeedbackForm addFeedbackForm(@RestPath String courseId, String feedbackformName, String feedbackformDescription) {
+    public FeedbackForm addFeedbackForm(@RestPath String courseId, AddFeedbackFormRequest request) {
         Course course = courseRepository.findById(new ObjectId(courseId));
         if (!isOwner(course)) {
             throw new NotFoundException();
         }
-        FeedbackForm feedbackForm = new FeedbackForm(course.getId(), feedbackformName, feedbackformDescription, new ArrayList<>(), FormStatus.NOT_STARTED);
+        FeedbackForm feedbackForm = new FeedbackForm(course.getId(), request.name, request.description, new ArrayList<>(), FormStatus.NOT_STARTED);
         course.addFeedbackForm(feedbackForm);
         courseRepository.update(course);
         return feedbackForm;
@@ -219,7 +242,7 @@ public class MaintService {
     @DELETE
     @Produces(MediaType.APPLICATION_JSON)
     @RolesAllowed({ UserRole.PROF, UserRole.STUDENT })
-    @Path("/course/{courseId}/feedbackform/{formId}")
+    @Path("/course/{courseId}/feedback/form/{formId}")
     public Response deleteFeedbackForm(@RestPath String courseId, @RestPath String formId) {
         Course course = courseRepository.findById(new ObjectId(courseId));
         if (!isOwner(course)) {
@@ -237,7 +260,7 @@ public class MaintService {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @RolesAllowed({ UserRole.PROF, UserRole.STUDENT })
-    @Path("/course/{courseId}/feedbackform/{formId}/question/{questionId}")
+    @Path("/course/{courseId}/feedback/form/{formId}/question/{questionId}")
     public FeedbackQuestion getFeedbackQuestion(@RestPath String courseId, @RestPath String formId, @RestPath String questionId) {
         Course course = courseRepository.findById(new ObjectId(courseId));
         if (!isOwner(course)) {
@@ -255,11 +278,20 @@ public class MaintService {
         return feedbackQuestion;
     }
 
+    public class UpdateFeedbackQuestionRequest {
+        public String name;
+        public String description;
+        public String type;
+        public List<String> options;
+        public String rangeLow;
+        public String rangeHigh;
+    }
+
     @PUT
     @Produces(MediaType.APPLICATION_JSON)
     @RolesAllowed({ UserRole.PROF, UserRole.STUDENT })
-    @Path("/course/{courseId}/feedbackform/{formId}/question/{questionId}")
-    public FeedbackQuestion updateFeedbackQuestion(@RestPath String courseId, @RestPath String formId, @RestPath String questionId, String feedbackQuestionName, String feedbackQuestionDescription, String feedbackQuestionType, List<String> feedbackQuestionOptions, String feedbackQuestionRangeLow, String feedbackQuestionRangeHigh) {
+    @Path("/course/{courseId}/feedback/form/{formId}/question/{questionId}")
+    public FeedbackQuestion updateFeedbackQuestion(@RestPath String courseId, @RestPath String formId, @RestPath String questionId, UpdateFeedbackQuestionRequest request) {
         Course course = courseRepository.findById(new ObjectId(courseId));
         if (!isOwner(course)) {
             throw new NotFoundException();
@@ -273,13 +305,13 @@ public class MaintService {
             throw new NotFoundException();
         }
         FeedbackQuestion feedbackQuestion = course.getFeedbackQuestionById(questionWrapper.getQuestionId());
-        feedbackQuestion.setName(feedbackQuestionName);
-        feedbackQuestion.setDescription(feedbackQuestionDescription);
-        feedbackQuestion.setOptions(feedbackQuestionOptions);
-        feedbackQuestion.setRangeLow(feedbackQuestionRangeLow);
+        feedbackQuestion.setName(request.name);
+        feedbackQuestion.setDescription(request.description);
+        feedbackQuestion.setOptions(request.options);
+        feedbackQuestion.setRangeLow(request.rangeLow);
 
         try {
-            feedbackQuestion.setType(FeedbackQuestionType.valueOf(feedbackQuestionType));
+            feedbackQuestion.setType(FeedbackQuestionType.valueOf(request.type));
         } catch (IllegalArgumentException e) {
             throw new NotFoundException();
         }
@@ -287,12 +319,21 @@ public class MaintService {
         courseRepository.update(course);
         return getFeedbackQuestion(courseId, formId, questionId);
     }
+
+    public class AddFeedbackQuestionRequest {
+        public String name;
+        public String description;
+        public String type;
+        public List<String> options;
+        public String rangeLow;
+        public String rangeHigh;
+    }
     
     @POST
     @Produces(MediaType.APPLICATION_JSON)
     @RolesAllowed({ UserRole.PROF, UserRole.STUDENT })
-    @Path("/course/{courseId}/feedbackform/{formId}/question")
-    public FeedbackQuestion addFeedbackQuestion(@RestPath String courseId, @RestPath String formId, String feedbackQuestionName, String feedbackQuestionDescription, String feedbackQuestionType, List<String> feedbackQuestionOptions, String feedbackQuestionRangeLow, String feedbackQuestionRangeHigh) {
+    @Path("/course/{courseId}/feedback/form/{formId}/question")
+    public FeedbackQuestion addFeedbackQuestion(@RestPath String courseId, @RestPath String formId, AddFeedbackQuestionRequest request) {
         Course course = courseRepository.findById(new ObjectId(courseId));
         if (!isOwner(course)) {
             throw new NotFoundException();
@@ -303,9 +344,8 @@ public class MaintService {
         }
         
         try {
-            FeedbackQuestionType type = FeedbackQuestionType.valueOf(feedbackQuestionType);
-            // public FeedbackQuestion(String name, String description, FeedbackQuestionType type, List<String> options, String key, String rangeLow, String rangeHigh) {
-            FeedbackQuestion feedbackQuestion = new FeedbackQuestion(feedbackQuestionName, feedbackQuestionDescription, type, feedbackQuestionOptions, "", feedbackQuestionRangeLow, feedbackQuestionRangeHigh);
+            FeedbackQuestionType questionType = FeedbackQuestionType.valueOf(request.type);
+            FeedbackQuestion feedbackQuestion = new FeedbackQuestion(request.name, request.description, questionType, request.options, "", request.rangeLow, request.rangeHigh);
             course.addFeedbackQuestion(feedbackQuestion);
             QuestionWrapper questionWrapper = new QuestionWrapper(feedbackQuestion.getId(), new ArrayList<>());
             feedbackForm.addQuestion(questionWrapper);
@@ -319,7 +359,7 @@ public class MaintService {
     @DELETE
     @Produces(MediaType.APPLICATION_JSON)
     @RolesAllowed({ UserRole.PROF, UserRole.STUDENT })
-    @Path("/course/{courseId}/feedbackform/{formId}/question/{questionId}")
+    @Path("/course/{courseId}/feedback/form/{formId}/question/{questionId}")
     public Response deleteFeedbackQuestion(@RestPath String courseId, @RestPath String formId, @RestPath String questionId) {
         Course course = courseRepository.findById(new ObjectId(courseId));
         if (!isOwner(course)) {
