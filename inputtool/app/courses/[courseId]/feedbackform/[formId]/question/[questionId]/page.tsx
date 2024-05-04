@@ -9,7 +9,7 @@ import { useRouter } from 'next/navigation'
 import { useState, useEffect } from "react";
 import { toast } from "sonner";
 import { Loader2 } from 'lucide-react';
-import { fetchFeedbackQuestion, hasValidJwtToken } from "@/lib/utils";
+import { hasValidJwtToken } from "@/lib/utils";
 import * as React from "react"
 import {
   Table,
@@ -30,6 +30,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
+import { deleteFeedbackQuestion, fetchFeedbackQuestion, updateFeedbackQuestion } from "@/lib/requests";
 
 
 export default function FeedbackQuestionPage({ params }: { params: { courseId: string, formId: string, questionId: string } }) {
@@ -105,7 +106,7 @@ export default function FeedbackQuestionPage({ params }: { params: { courseId: s
               />
               <Label className="mt-2">Type</Label> {/* "SLIDER"| "STARS"| "SINGLE_CHOICE"| "FULLTEXT"| "YES_NO" */}
               <Select defaultValue="SLIDER" onValueChange={(value) => {
-                setFeedbackQuestion({ ...feedbackQuestion, type: value as "SLIDER"| "STARS"| "SINGLE_CHOICE"| "FULLTEXT"| "YES_NO" });
+                setFeedbackQuestion({ ...feedbackQuestion, type: value as "SLIDER" | "STARS" | "SINGLE_CHOICE" | "FULLTEXT" | "YES_NO" });
                 setSomethingHasChanged(true);
               }}
               >
@@ -126,28 +127,28 @@ export default function FeedbackQuestionPage({ params }: { params: { courseId: s
                     value="YES_NO">Yes/No</SelectItem>
                 </SelectContent>
               </Select>
-              <Label className="mt-2">Range-Low</Label>
-              <Input
-                hidden={feedbackQuestion?.type !== "SLIDER"}
-                disabled={feedbackQuestion?.type !== "SLIDER"}
-                value={feedbackQuestion?.rangeLow}
-                onChange={(e) => {
-                  setFeedbackQuestion({ ...feedbackQuestion, rangeLow: e.target.value });
-                  setSomethingHasChanged(true);
-                }}
-                placeholder={feedbackQuestion?.type === "SLIDER" ? "Very Bad" : "Not applicable for this type"}
-              />
-              <Label className="mt-2">Range-High</Label>
-              <Input
-                hidden={feedbackQuestion?.type !== "SLIDER"}
-                disabled={feedbackQuestion?.type !== "SLIDER"}
-                value={feedbackQuestion?.rangeHigh}
-                onChange={(e) => {
-                  setFeedbackQuestion({ ...feedbackQuestion, rangeHigh: e.target.value });
-                  setSomethingHasChanged(true);
-                }}
-                placeholder={feedbackQuestion?.type === "SLIDER" ? "Very Good" : "Not applicable for this type"}
-              />
+              {feedbackQuestion?.type === "SLIDER" && (
+                <>
+                  <Label className="mt-2">Range-Low</Label>
+                  <Input
+                    value={feedbackQuestion?.rangeLow}
+                    onChange={(e) => {
+                      setFeedbackQuestion({ ...feedbackQuestion, rangeLow: e.target.value });
+                      setSomethingHasChanged(true);
+                    }}
+                    placeholder={"Very Bad"}
+                  />
+                  <Label className="mt-2">Range-High</Label>
+                  <Input
+                    value={feedbackQuestion?.rangeHigh}
+                    onChange={(e) => {
+                      setFeedbackQuestion({ ...feedbackQuestion, rangeHigh: e.target.value });
+                      setSomethingHasChanged(true);
+                    }}
+                    placeholder={"Very Good"}
+                  />
+                </>
+              )}
 
 
               {/* first button at the left second at the right */}
@@ -161,60 +162,63 @@ export default function FeedbackQuestionPage({ params }: { params: { courseId: s
                 >Update feedbackquestion</Button>
                 <DeleteButton
                   className="mt-4"
-                  onDelete={() => {
-                    deleteFeedbackQuestion(params.courseId, params.formId, params.questionId);
+                  onDelete={async () => {
+                    const result = await deleteFeedbackQuestion(params.courseId, params.formId, params.questionId);
+                    if (result) {
+                      router.push(`/courses/${params.courseId}/feedbackform/${params.formId}`);
+                    }
                   }}
                 />
               </div>
             </CardContent>
           </Card>
           { /* Options */}
-          { feedbackQuestion?.type === "SINGLE_CHOICE" && (
-          <>
-          <h2 className="text-2xl mt-4">Options</h2>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Option</TableHead>
-                <TableHead>Remove</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {feedbackQuestion?.options?.map((question, index) => (
-                <TableRow key={index}>
-                  <TableCell>
-                    <Input
-                      value={question}
-                      onChange={(e) => {
-                        setFeedbackQuestion({ ...feedbackQuestion, options: feedbackQuestion.options?.map((q) => q === question ? e.target.value : q) });
-                        setSomethingHasChanged(true);
-                      }}
-                      placeholder="Option"
-                    />
-                  </TableCell>
-                  <TableCell>
-                    <Button
-                      onClick={() => {
-                        setFeedbackQuestion({ ...feedbackQuestion, options: feedbackQuestion.options?.filter((q) => q !== question) });
-                        setSomethingHasChanged(true);
-                      }}
-                    >Remove</Button>
-                  </TableCell>
-                </TableRow>
-              ))}
-              <TableRow>
-                <TableCell>
-                  <Button
-                    onClick={() => {
-                      setFeedbackQuestion({ ...feedbackQuestion, options: [...feedbackQuestion.options, ""] });
-                      setSomethingHasChanged(true);
-                    }}
-                  >Add Option</Button>
-                </TableCell>
-              </TableRow>
-            </TableBody>
-          </Table>
-          </>
+          {feedbackQuestion?.type === "SINGLE_CHOICE" && (
+            <>
+              <h2 className="text-2xl mt-4">Options</h2>
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Option</TableHead>
+                    <TableHead>Remove</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {feedbackQuestion?.options?.map((question, index) => (
+                    <TableRow key={index}>
+                      <TableCell>
+                        <Input
+                          value={question}
+                          onChange={(e) => {
+                            setFeedbackQuestion({ ...feedbackQuestion, options: feedbackQuestion.options?.map((q) => q === question ? e.target.value : q) });
+                            setSomethingHasChanged(true);
+                          }}
+                          placeholder="Option"
+                        />
+                      </TableCell>
+                      <TableCell>
+                        <Button
+                          onClick={() => {
+                            setFeedbackQuestion({ ...feedbackQuestion, options: feedbackQuestion.options?.filter((q) => q !== question) });
+                            setSomethingHasChanged(true);
+                          }}
+                        >Remove</Button>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                  <TableRow>
+                    <TableCell>
+                      <Button
+                        onClick={() => {
+                          setFeedbackQuestion({ ...feedbackQuestion, options: [...feedbackQuestion.options, ""] });
+                          setSomethingHasChanged(true);
+                        }}
+                      >Add Option</Button>
+                    </TableCell>
+                  </TableRow>
+                </TableBody>
+              </Table>
+            </>
           )}
         </>
       )}

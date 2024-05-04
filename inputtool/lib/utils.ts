@@ -72,115 +72,115 @@ export async function login(username: string, password: string): Promise<boolean
   return true;
 }
 
-export async function fetchCourses(): Promise<Course[]> {
-  const BACKEND_URL = getBackendUrl();
-  const jwtToken = localStorage.getItem("jwtToken");
-  if (!jwtToken) {
-    console.error("No JWT token found.");
-    return [];
-  }
+// export async function fetchCourses(): Promise<Course[]> {
+//   const BACKEND_URL = getBackendUrl();
+//   const jwtToken = localStorage.getItem("jwtToken");
+//   if (!jwtToken) {
+//     console.error("No JWT token found.");
+//     return [];
+//   }
 
-  let coursesResponse = await fetch(`${BACKEND_URL}/course`, {
-    method: "GET",
-    headers: {
-      "AUTHORIZATION": "Bearer " + jwtToken
-    }
-  });
-  let coursesRaw = await coursesResponse.json();
-  if (coursesResponse.status !== 200) {
-    console.error(`Failed to get courses. Status: ${coursesResponse.status}`);
-    console.error(coursesResponse);
-    toast.error("Failed to get courses. Please try again.");
-    return [];
-  }
-  console.log(coursesRaw);
-  let courses = coursesRaw.map((course: any) => {
-    return {
-      id: course.id,
-      name: course.name,
-      description: course.description,
-      moodleCourseId: course.moodleCourseId,
-      feedbackForms: course.feedbackForms.map((form: any) => { return { ...form, type: "Feedback" } }),
-      quizForms: course.quizForms.map((form: any) => { return { ...form, type: "Quiz" } })
-    };
-  });
-  console.log(courses);
+//   let coursesResponse = await fetch(`${BACKEND_URL}/course`, {
+//     method: "GET",
+//     headers: {
+//       "AUTHORIZATION": "Bearer " + jwtToken
+//     }
+//   });
+//   let coursesRaw = await coursesResponse.json();
+//   if (coursesResponse.status !== 200) {
+//     console.error(`Failed to get courses. Status: ${coursesResponse.status}`);
+//     console.error(coursesResponse);
+//     toast.error("Failed to get courses. Please try again.");
+//     return [];
+//   }
+//   console.log(coursesRaw);
+//   let courses = coursesRaw.map((course: any) => {
+//     return {
+//       id: course.id,
+//       name: course.name,
+//       description: course.description,
+//       moodleCourseId: course.moodleCourseId,
+//       feedbackForms: course.feedbackForms.map((form: any) => { return { ...form, type: "Feedback" } }),
+//       quizForms: course.quizForms.map((form: any) => { return { ...form, type: "Quiz" } })
+//     };
+//   });
+//   console.log(courses);
 
-  return courses;
-}
+//   return courses;
+// }
 
 
-export async function fetchCourse(id: string): Promise<Course | null> {
+// export async function fetchCourse(id: string): Promise<Course | null> {
 
-  let courses = await fetchCourses();
-  let course = courses.find((c) => c.id === id);
-  if (!course) {
-    console.error(`Course with id ${id} not found.`);
-    toast.error("Course not found.");
-    return null;
-  }
-  return course;
+//   let courses = await fetchCourses();
+//   let course = courses.find((c) => c.id === id);
+//   if (!course) {
+//     console.error(`Course with id ${id} not found.`);
+//     toast.error("Course not found.");
+//     return null;
+//   }
+//   return course;
 
-}
+// }
 
-export async function fetchFeedbackForm(courseId: string, formId: string): Promise<FeedbackForm | null> {
+// export async function fetchFeedbackForm(courseId: string, formId: string): Promise<FeedbackForm | null> {
   
-  // course/id/feedback/form/id/
-  const BACKEND_URL = getBackendUrl();
-  const jwtToken = localStorage.getItem("jwtToken");
-  if (!jwtToken) {
-    console.error("No JWT token found.");
-    return null;
-  }
+//   // course/id/feedback/form/id/
+//   const BACKEND_URL = getBackendUrl();
+//   const jwtToken = localStorage.getItem("jwtToken");
+//   if (!jwtToken) {
+//     console.error("No JWT token found.");
+//     return null;
+//   }
 
-  let feedbackFormResponse = await fetch(`${BACKEND_URL}/course/${courseId}/feedback/form/${formId}`, {
-    method: "GET",
-    headers: {
-      "AUTHORIZATION": "Bearer " + jwtToken
-    }
-  });
-  let feedbackForm = await feedbackFormResponse.json();
-  if (feedbackFormResponse.status !== 200) {
-    console.error(`Failed to get feedback form. Status: ${feedbackFormResponse.status}`);
-    console.error(feedbackFormResponse);
-    toast.error("Failed to get feedback form. Please try again.");
-    return null;
-  }
-  console.log(feedbackForm);
-  return {
-    ...feedbackForm,
-    questions: feedbackForm.questions.map((question: any) => {
-      return question.questionContent
-    })
-  };
-}
+//   let feedbackFormResponse = await fetch(`${BACKEND_URL}/course/${courseId}/feedback/form/${formId}`, {
+//     method: "GET",
+//     headers: {
+//       "AUTHORIZATION": "Bearer " + jwtToken
+//     }
+//   });
+//   let feedbackForm = await feedbackFormResponse.json();
+//   if (feedbackFormResponse.status !== 200) {
+//     console.error(`Failed to get feedback form. Status: ${feedbackFormResponse.status}`);
+//     console.error(feedbackFormResponse);
+//     toast.error("Failed to get feedback form. Please try again.");
+//     return null;
+//   }
+//   console.log(feedbackForm);
+//   return {
+//     ...feedbackForm,
+//     questions: feedbackForm.questions.map((question: any) => {
+//       return question.questionContent
+//     })
+//   };
+// }
 
-export async function fetchFeedbackQuestion(courseId: string, formId: string, questionId: string): Promise<FeedbackQuestion | null> {
+// export async function fetchFeedbackQuestion(courseId: string, formId: string, questionId: string): Promise<FeedbackQuestion | null> {
   
-  // course/id/feedback/form/id/question/id
-  const BACKEND_URL = getBackendUrl();
-  const jwtToken = localStorage.getItem("jwtToken");
-  if (!jwtToken) {
-    console.error("No JWT token found.");
-    return null;
-  }
+//   // course/id/feedback/form/id/question/id
+//   const BACKEND_URL = getBackendUrl();
+//   const jwtToken = localStorage.getItem("jwtToken");
+//   if (!jwtToken) {
+//     console.error("No JWT token found.");
+//     return null;
+//   }
 
-  let feedbackQuestionResponse = await fetch(`${BACKEND_URL}/course/${courseId}/feedback/form/${formId}/question/${questionId}`, {
-    method: "GET",
-    headers: {
-      "AUTHORIZATION": "Bearer " + jwtToken
-    }
-  });
-  let feedbackQuestion = await feedbackQuestionResponse.json();
-  if (feedbackQuestionResponse.status !== 200) {
-    console.error(`Failed to get feedback question. Status: ${feedbackQuestionResponse.status}`);
-    console.error(feedbackQuestionResponse);
-    toast.error("Failed to get feedback question. Please try again.");
-    return null;
-  }
-  console.log(feedbackQuestion);
-  return feedbackQuestion;
-}
+//   let feedbackQuestionResponse = await fetch(`${BACKEND_URL}/course/${courseId}/feedback/form/${formId}/question/${questionId}`, {
+//     method: "GET",
+//     headers: {
+//       "AUTHORIZATION": "Bearer " + jwtToken
+//     }
+//   });
+//   let feedbackQuestion = await feedbackQuestionResponse.json();
+//   if (feedbackQuestionResponse.status !== 200) {
+//     console.error(`Failed to get feedback question. Status: ${feedbackQuestionResponse.status}`);
+//     console.error(feedbackQuestionResponse);
+//     toast.error("Failed to get feedback question. Please try again.");
+//     return null;
+//   }
+//   console.log(feedbackQuestion);
+//   return feedbackQuestion;
+// }
 
 // listCourses(); -> Name, Description
 

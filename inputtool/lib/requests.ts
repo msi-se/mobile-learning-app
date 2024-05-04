@@ -33,6 +33,14 @@ export async function fetchCourse(courseId: string): Promise<Course | null> {
         toast.error(`Failed to get course. Please try again. Status: ${courseResponse.status}`);
         return null;
     }
+
+    //       feedbackForms: course.feedbackForms.map((form: any) => { return { ...form, type: "Feedback" } }),
+    //       quizForms: course.quizForms.map((form: any) => { return { ...form, type: "Quiz" } })
+
+    course.feedbackForms = course.feedbackForms.map((form: any) => { return { ...form, type: "Feedback" } });
+    course.quizForms = course.quizForms.map((form: any) => { return { ...form, type: "Quiz" } });
+
+
     return course;
 }
 
@@ -90,24 +98,143 @@ export async function deleteCourse(courseId: string): Promise<boolean> {
 
 // GET /maint/course/${courseId}/feedback/form/${formId}
 // getFeedbackForm(params.courseId, params.formId); -> Error | Name, Description, Questions (Name, Description, Type, Options, RangeLow, RangeHigh)
+export async function fetchFeedbackForm(courseId: string, formId: string): Promise<FeedbackForm | null> {
+    const BACKEND_URL = getBackendUrl();
+    const jwtToken = localStorage.getItem("jwtToken");
+    let feedbackFormResponse = await fetch(`${BACKEND_URL}/maint/course/${courseId}/feedback/form/${formId}`, {
+        method: "GET",
+        headers: { "AUTHORIZATION": "Bearer " + jwtToken }
+    });
+    let feedbackForm = await feedbackFormResponse.json();
+    if (feedbackFormResponse.status !== 200) {
+        toast.error(`Failed to get feedback form. Please try again. Status: ${feedbackFormResponse.status}`);
+        return null;
+    }
+    feedbackForm.questions = feedbackForm.questions.map((question: any) => { return question.questionContent });
+    return feedbackForm;
+}
 
 // PUT /maint/course/${courseId}/feedback/form/${formId} ({String name, String description})
 // updateFeedbackForm(params.courseId, params.formId, feedbackformName, feedbackformDescription) -> Error | Name, Description, Questions (Name, Description, Type, Options, RangeLow, RangeHigh)
+export async function updateFeedbackForm(courseId: string, formId: string, feedbackformName: string, feedbackformDescription: string): Promise<FeedbackForm | null> {
+    const BACKEND_URL = getBackendUrl();
+    const jwtToken = localStorage.getItem("jwtToken");
+    let feedbackFormResponse = await fetch(`${BACKEND_URL}/maint/course/${courseId}/feedback/form/${formId}`, {
+        method: "PUT",
+        headers: { "AUTHORIZATION": "Bearer " + jwtToken, "Content-Type": "application/json" },
+        body: JSON.stringify({ name: feedbackformName, description: feedbackformDescription })
+    });
+    let feedbackForm = await feedbackFormResponse.json();
+    if (feedbackFormResponse.status !== 200) {
+        toast.error(`Failed to update feedback form. Please try again. Status: ${feedbackFormResponse.status}`);
+        return null;
+    }
+    feedbackForm.questions = feedbackForm.questions.map((question: any) => { return question.questionContent });
+    return feedbackForm;
+}
 
 // POST /maint/course/${courseId}/feedback/form ({String name, String description})
 // addFeedbackForm(params.courseId, feedbackformName, feedbackformDescription) -> Error | Name, Description, Questions (Name, Description, Type, Options, RangeLow, RangeHigh)
+export async function addFeedbackForm(courseId: string, feedbackformName: string, feedbackformDescription: string): Promise<FeedbackForm | null> {
+    const BACKEND_URL = getBackendUrl();
+    const jwtToken = localStorage.getItem("jwtToken");
+    let feedbackFormResponse = await fetch(`${BACKEND_URL}/maint/course/${courseId}/feedback/form`, {
+        method: "POST",
+        headers: { "AUTHORIZATION": "Bearer " + jwtToken, "Content-Type": "application/json" },
+        body: JSON.stringify({ name: feedbackformName, description: feedbackformDescription })
+    });
+    let feedbackForm = await feedbackFormResponse.json();
+    if (feedbackFormResponse.status !== 200) {
+        toast.error(`Failed to add feedback form. Please try again. Status: ${feedbackFormResponse.status}`);
+        return null;
+    }
+    feedbackForm.questions = feedbackForm.questions.map((question: any) => { return question.questionContent });
+    return feedbackForm;
+}
 
 // DELETE /maint/course/${courseId}/feedback/form/${formId}
 // deleteFeedbackForm(params.courseId, params.formId) -> Error | Success
+export async function deleteFeedbackForm(courseId: string, formId: string): Promise<boolean> {
+    const BACKEND_URL = getBackendUrl();
+    const jwtToken = localStorage.getItem("jwtToken");
+    let feedbackFormResponse = await fetch(`${BACKEND_URL}/maint/course/${courseId}/feedback/form/${formId}`, {
+        method: "DELETE",
+        headers: { "AUTHORIZATION": "Bearer " + jwtToken }
+    });
+    if (feedbackFormResponse.status !== 200) {
+        toast.error(`Failed to delete feedback form. Please try again. Status: ${feedbackFormResponse.status}`);
+        return false;
+    }
+    return true;
+}
 
 // GET /maint/course/${courseId}/feedback/form/${formId}/question/${questionId}
 // getFeedbackQuestion(params.courseId, params.formId, params.questionId); -> Error | Name, Description, Type, Options, RangeLow, RangeHigh
+export async function fetchFeedbackQuestion(courseId: string, formId: string, questionId: string): Promise<FeedbackQuestion | null> {
+    const BACKEND_URL = getBackendUrl();
+    const jwtToken = localStorage.getItem("jwtToken");
+    let feedbackQuestionResponse = await fetch(`${BACKEND_URL}/maint/course/${courseId}/feedback/form/${formId}/question/${questionId}`, {
+        method: "GET",
+        headers: { "AUTHORIZATION": "Bearer " + jwtToken }
+    });
+    let feedbackQuestion = await feedbackQuestionResponse.json();
+    if (feedbackQuestionResponse.status !== 200) {
+        toast.error(`Failed to get feedback question. Please try again. Status: ${feedbackQuestionResponse.status}`);
+        return null;
+    }
+    console.log(feedbackQuestion);
+    
+    return feedbackQuestion;
+}
 
 // PUT /maint/course/${courseId}/feedback/form/${formId}/question/${questionId} ({String name, String description, String type, String[] options, int rangeLow, int rangeHigh})
 // updateFeedbackQuestion(params.courseId, params.formId, params.questionId, feedbackQuestion?.name, feedbackQuestion?.description, feedbackQuestion?.type, feedbackQuestion?.options, feedbackQuestion?.rangeLow, feedbackQuestion?.rangeHigh) -> Error | Name, Description, Type, Options, RangeLow, RangeHigh
+export async function updateFeedbackQuestion(courseId: string, formId: string, questionId: string, feedbackQuestionName: string, feedbackQuestionDescription: string, feedbackQuestionType: string, feedbackQuestionOptions: string[], feedbackQuestionRangeLow: number, feedbackQuestionRangeHigh: number): Promise<FeedbackQuestion | null> {
+    const BACKEND_URL = getBackendUrl();
+    const jwtToken = localStorage.getItem("jwtToken");
+    let feedbackQuestionResponse = await fetch(`${BACKEND_URL}/maint/course/${courseId}/feedback/form/${formId}/question/${questionId}`, {
+        method: "PUT",
+        headers: { "AUTHORIZATION": "Bearer " + jwtToken, "Content-Type": "application/json" },
+        body: JSON.stringify({ name: feedbackQuestionName, description: feedbackQuestionDescription, type: feedbackQuestionType, options: feedbackQuestionOptions, rangeLow: feedbackQuestionRangeLow, rangeHigh: feedbackQuestionRangeHigh })
+    });
+    let feedbackQuestion = await feedbackQuestionResponse.json();
+    if (feedbackQuestionResponse.status !== 200) {
+        toast.error(`Failed to update feedback question. Please try again. Status: ${feedbackQuestionResponse.status}`);
+        return null;
+    }
+    return feedbackQuestion;
+}
 
 // POST /maint/course/${courseId}/feedback/form/${formId}/question ({String name, String description, String type, String[] options, int rangeLow, int rangeHigh})
 // addFeedbackQuestion(params.courseId, params.formId, feedbackQuestion?.name, feedbackQuestion?.description, feedbackQuestion?.type, feedbackQuestion?.options, feedbackQuestion?.rangeLow, feedbackQuestion?.rangeHigh) -> Error | Name, Description, Type, Options, RangeLow, RangeHigh
+export async function addFeedbackQuestion(courseId: string, formId: string, feedbackQuestionName: string, feedbackQuestionDescription: string, feedbackQuestionType: string, feedbackQuestionOptions: string[], feedbackQuestionRangeLow: number, feedbackQuestionRangeHigh: number): Promise<FeedbackQuestion | null> {
+    const BACKEND_URL = getBackendUrl();
+    const jwtToken = localStorage.getItem("jwtToken");
+    let feedbackQuestionResponse = await fetch(`${BACKEND_URL}/maint/course/${courseId}/feedback/form/${formId}/question`, {
+        method: "POST",
+        headers: { "AUTHORIZATION": "Bearer " + jwtToken, "Content-Type": "application/json" },
+        body: JSON.stringify({ name: feedbackQuestionName, description: feedbackQuestionDescription, type: feedbackQuestionType, options: feedbackQuestionOptions, rangeLow: feedbackQuestionRangeLow, rangeHigh: feedbackQuestionRangeHigh })
+    });
+    let feedbackQuestion = await feedbackQuestionResponse.json();
+    if (feedbackQuestionResponse.status !== 200) {
+        toast.error(`Failed to add feedback question. Please try again. Status: ${feedbackQuestionResponse.status}`);
+        return null;
+    }
+    return feedbackQuestion;
+}
 
 // DELETE /maint/course/${courseId}/feedback/form/${formId}/question/${questionId}
 // deleteFeedbackQuestion(params.courseId, params.formId, params.questionId) -> Error | Success
+export async function deleteFeedbackQuestion(courseId: string, formId: string, questionId: string): Promise<boolean> {
+    const BACKEND_URL = getBackendUrl();
+    const jwtToken = localStorage.getItem("jwtToken");
+    let feedbackQuestionResponse = await fetch(`${BACKEND_URL}/maint/course/${courseId}/feedback/form/${formId}/question/${questionId}`, {
+        method: "DELETE",
+        headers: { "AUTHORIZATION": "Bearer " + jwtToken }
+    });
+    if (feedbackQuestionResponse.status !== 200) {
+        toast.error(`Failed to delete feedback question. Please try again. Status: ${feedbackQuestionResponse.status}`);
+        return false;
+    }
+    return true;
+}

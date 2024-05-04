@@ -9,7 +9,7 @@ import { useRouter } from 'next/navigation'
 import { useState, useEffect } from "react";
 import { toast } from "sonner";
 import { Loader2 } from 'lucide-react';
-import { fetchCourse, hasValidJwtToken, login } from "@/lib/utils";
+import { hasValidJwtToken, login } from "@/lib/utils";
 import * as React from "react"
 import {
   Table,
@@ -23,7 +23,7 @@ import {
 } from "@/components/ui/table"
 import { Course } from "@/lib/models";
 import { DeleteButton } from "@/components/delete-button";
-import { deleteCourse, updateCourse } from "@/lib/requests";
+import { deleteCourse, fetchCourse, updateCourse } from "@/lib/requests";
 
 export default function CoursePage({ params }: { params: { courseId: string } }) {
 

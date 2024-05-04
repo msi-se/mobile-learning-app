@@ -9,7 +9,7 @@ import { useRouter } from 'next/navigation'
 import { useState, useEffect } from "react";
 import { toast } from "sonner";
 import { Loader2 } from 'lucide-react';
-import { fetchFeedbackForm, hasValidJwtToken, login } from "@/lib/utils";
+import { hasValidJwtToken, login } from "@/lib/utils";
 import * as React from "react"
 import {
   Table,
@@ -23,6 +23,7 @@ import {
 } from "@/components/ui/table"
 import { FeedbackForm } from "@/lib/models";
 import { DeleteButton } from "@/components/delete-button";
+import { deleteFeedbackForm, fetchFeedbackForm, updateFeedbackForm } from "@/lib/requests";
 
 export default function FeedbackFormPage({ params }: { params: { courseId: string, formId: string } }) {
 
@@ -110,8 +111,11 @@ export default function FeedbackFormPage({ params }: { params: { courseId: strin
                 >Update feedbackform</Button>
                 <DeleteButton
                   className="mt-4"
-                  onDelete={() => {
-                    deleteFeedbackForm(params.courseId, params.formId);
+                  onDelete={async () => {
+                    const result = await deleteFeedbackForm(params.courseId, params.formId);
+                    if (result) {
+                      router.push(`/courses/${params.courseId}`);
+                    }
                   }}
                 />
               </div>

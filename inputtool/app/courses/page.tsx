@@ -9,7 +9,7 @@ import { useRouter } from 'next/navigation'
 import { useState, useEffect } from "react";
 import { toast } from "sonner";
 import { Loader2 } from 'lucide-react';
-import { fetchCourses, hasValidJwtToken, login } from "@/lib/utils";
+import { hasValidJwtToken, login } from "@/lib/utils";
 import * as React from "react"
 import {
   ColumnDef,
