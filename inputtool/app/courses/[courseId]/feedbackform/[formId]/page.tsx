@@ -75,7 +75,7 @@ export default function FeedbackFormPage({ params }: { params: { courseId: strin
         <>
           <Button
             className="mb-4 self-start text-sm"
-            onClick={() => router.back()}
+            onClick={() => router.push(`/courses/${params.courseId}`)}
           ><CircleArrowLeft /></Button>
           <h1 className="text-2xl mb-4 font-bold">
             Feedback-Form: {feedbackformName}
@@ -109,8 +109,17 @@ export default function FeedbackFormPage({ params }: { params: { courseId: strin
                 <Button
                   disabled={!somethingHasChanged}
                   className="mt-4"
-                  onClick={() => {
-                    updateFeedbackForm(params.courseId, params.formId, feedbackformName, feedbackformDescription);
+                  onClick={async () => {
+                    const result = await updateFeedbackForm(params.courseId, params.formId, feedbackformName, feedbackformDescription);
+                    if (result) {
+                      setSomethingHasChanged(false);
+                      toast.success("FeedbackForm updated.");
+                      setFeedbackFormName(feedbackformName);
+                      setFeedbackFormDescription(feedbackformDescription);
+                    } else {
+                      toast.error("FeedbackForm could not be updated.");
+                    }
+                    
                   }}
                 >Update feedbackform</Button>
                 <DeleteButton
@@ -119,6 +128,7 @@ export default function FeedbackFormPage({ params }: { params: { courseId: strin
                     const result = await deleteFeedbackForm(params.courseId, params.formId);
                     if (result) {
                       router.push(`/courses/${params.courseId}`);
+                      toast.success("FeedbackForm deleted.");
                     }
                   }}
                 />
@@ -161,6 +171,7 @@ export default function FeedbackFormPage({ params }: { params: { courseId: strin
                 const question = await addFeedbackQuestion(params.courseId, params.formId, "New question", "", "SLIDER", [], "", "");
                 if (question) {
                   router.push(`/courses/${params.courseId}/feedbackform/${params.formId}/question/${question.id}`);
+                  toast.success("Question created.");
                 }
               }}
             >Add new question</Button>

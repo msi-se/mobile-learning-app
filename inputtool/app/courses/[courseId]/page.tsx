@@ -78,7 +78,7 @@ export default function CoursePage({ params }: { params: { courseId: string } })
 
           <Button
             className="mb-4 self-start text-sm"
-            onClick={() => router.back()}
+            onClick={() => router.push(`/courses`)}
           ><CircleArrowLeft /></Button>
 
           <h1 className="text-2xl mb-4 font-bold">
@@ -113,15 +113,27 @@ export default function CoursePage({ params }: { params: { courseId: string } })
                 <Button
                   disabled={!somethingHasChanged}
                   className="mt-4"
-                  onClick={() => {
-                    updateCourse(params.courseId, courseName, courseDescription, courseMoodleCourseId);
+                  onClick={async () => {
+                    const result = await updateCourse(params.courseId, courseName, courseDescription, courseMoodleCourseId);
+                    if (result) {
+                      setSomethingHasChanged(false);
+                      toast.success("Course updated.");
+                      setCourseName(result.name);
+                      setCourseDescription(result.description);
+                      setCourseMoodleCourseId(result.moodleCourseId);
+                    } else {
+                      toast.error("Course update failed.");
+                    }
                   }}
                 >Update course</Button>
                 <DeleteButton
                   className="mt-4"
                   onDelete={async () => {
                     const result = await deleteCourse(params.courseId);
-                    if (result) router.push("/courses");
+                    if (result) {
+                      router.push("/courses");
+                      toast.success("Course deleted.");
+                    }
                   }}
                 />
               </div>
@@ -157,6 +169,7 @@ export default function CoursePage({ params }: { params: { courseId: string } })
               onClick={async () => {
                 const form = await addFeedbackForm(course?.id || "", "New feedback form", "");
                 if (form) {
+                  toast.success("Feedback form created.");
                   router.push(`/courses/${course?.id}/feedbackform/${form.id}`);
                 }}
               }

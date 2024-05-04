@@ -98,6 +98,7 @@ export default function Courses() {
                 const course = await addCourse("New course", "...", "");
                 if (course) {
                   setCourses([...courses, course]);
+                  toast.success("Course created.");
                   router.push(`/courses/${course.id}`);
                 }
               }}

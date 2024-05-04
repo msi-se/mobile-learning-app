@@ -79,7 +79,7 @@ export default function FeedbackQuestionPage({ params }: { params: { courseId: s
         <>
           <Button
             className="mb-4 self-start text-sm"
-            onClick={() => router.back()}
+            onClick={() => router.push(`/courses/${params.courseId}/feedbackform/${params.formId}`)}
           ><CircleArrowLeft /></Button>
           <h1 className="text-2xl mb-4 font-bold">
             Feedback-Question: {feedbackQuestion?.name}
@@ -160,8 +160,15 @@ export default function FeedbackQuestionPage({ params }: { params: { courseId: s
                 <Button
                   disabled={!somethingHasChanged}
                   className="mt-4"
-                  onClick={() => {
-                    updateFeedbackQuestion(params.courseId, params.formId, params.questionId, feedbackQuestion?.name, feedbackQuestion?.description, feedbackQuestion?.type, feedbackQuestion?.options, feedbackQuestion?.rangeLow, feedbackQuestion?.rangeHigh);
+                  onClick={async () => {
+                    const result = await updateFeedbackQuestion(params.courseId, params.formId, params.questionId, feedbackQuestion?.name, feedbackQuestion?.description, feedbackQuestion?.type, feedbackQuestion?.options, feedbackQuestion?.rangeLow, feedbackQuestion?.rangeHigh);
+                    if (result) {
+                      setSomethingHasChanged(false);
+                      setFeedbackQuestion(result);
+                      toast.success("FeedbackQuestion updated.");
+                    } else {
+                      toast.error("FeedbackQuestion could not be updated.");
+                    }
                   }}
                 >Update feedbackquestion</Button>
                 <DeleteButton
@@ -170,6 +177,7 @@ export default function FeedbackQuestionPage({ params }: { params: { courseId: s
                     const result = await deleteFeedbackQuestion(params.courseId, params.formId, params.questionId);
                     if (result) {
                       router.push(`/courses/${params.courseId}/feedbackform/${params.formId}`);
+                      toast.success("FeedbackQuestion deleted.");
                     }
                   }}
                 />
