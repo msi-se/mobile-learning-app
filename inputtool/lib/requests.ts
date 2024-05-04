@@ -56,9 +56,37 @@ export async function updateCourse(courseId: string, courseName: string, courseD
 
 // POST /maint/course ({String name, String description, String moodleCourseId})
 // addCourse(courseName, courseDescription); -> Error | Name, Description, MoodleCourseId, FeedbackForms (Name, Description), QuizForms (Name, Description)
+export async function addCourse(courseName: string, courseDescription: string, courseMoodleCourseId: string): Promise<Course | null> {
+    const BACKEND_URL = getBackendUrl();
+    const jwtToken = localStorage.getItem("jwtToken");
+    let courseResponse = await fetch(`${BACKEND_URL}/maint/course`, {
+        method: "POST",
+        headers: { "AUTHORIZATION": "Bearer " + jwtToken, "Content-Type": "application/json" },
+        body: JSON.stringify({ name: courseName, description: courseDescription, moodleCourseId: courseMoodleCourseId })
+    });
+    let course = await courseResponse.json();
+    if (courseResponse.status !== 200) {
+        toast.error(`Failed to add course. Please try again. Status: ${courseResponse.status}`);
+        return null;
+    }
+    return course;
+}
 
 // DELETE /maint/course/${courseId}
 // deleteCourse(params.courseId); -> Error | Success
+export async function deleteCourse(courseId: string): Promise<boolean> {
+    const BACKEND_URL = getBackendUrl();
+    const jwtToken = localStorage.getItem("jwtToken");
+    let courseResponse = await fetch(`${BACKEND_URL}/maint/course/${courseId}`, {
+        method: "DELETE",
+        headers: { "AUTHORIZATION": "Bearer " + jwtToken }
+    });
+    if (courseResponse.status !== 200) {
+        toast.error(`Failed to delete course. Please try again. Status: ${courseResponse.status}`);
+        return false;
+    }
+    return true;
+}
 
 // GET /maint/course/${courseId}/feedback/form/${formId}
 // getFeedbackForm(params.courseId, params.formId); -> Error | Name, Description, Questions (Name, Description, Type, Options, RangeLow, RangeHigh)

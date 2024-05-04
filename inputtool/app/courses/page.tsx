@@ -35,7 +35,7 @@ import {
 } from "@/components/ui/table"
 import { Course } from "@/lib/models";
 import { DeleteButton } from "@/components/delete-button";
-import { listCourses } from "@/lib/requests";
+import { addCourse, listCourses } from "@/lib/requests";
 
 export default function Courses() {
 
@@ -94,7 +94,13 @@ export default function Courses() {
           <div className="flex flex-col items-stretch justify-center">
             <Button
               className="mt-4"
-              onClick={() => router.push("/courses/new")}
+              onClick={async () => {
+                const course = await addCourse("New course", "...", "");
+                if (course) {
+                  setCourses([...courses, course]);
+                  router.push(`/courses/${course.id}`);
+                }
+              }}
             >Create new course</Button>
           </div>
         </>

@@ -23,7 +23,7 @@ import {
 } from "@/components/ui/table"
 import { Course } from "@/lib/models";
 import { DeleteButton } from "@/components/delete-button";
-import { updateCourse } from "@/lib/requests";
+import { deleteCourse, updateCourse } from "@/lib/requests";
 
 export default function CoursePage({ params }: { params: { courseId: string } }) {
 
@@ -113,8 +113,9 @@ export default function CoursePage({ params }: { params: { courseId: string } })
                 >Update course</Button>
                 <DeleteButton
                   className="mt-4"
-                  onDelete={() => {
-                    deleteCourse(params.courseId);
+                  onDelete={async () => {
+                    const result = await deleteCourse(params.courseId);
+                    if (result) router.push("/courses");
                   }}
                 />
               </div>
