@@ -3,14 +3,10 @@ import { twMerge } from "tailwind-merge"
 import { toast } from "sonner";
 import Router from "next/router";
 import { Course, FeedbackForm, FeedbackQuestion } from "./models";
+import getBackendUrl from "@/lib/get-backend-url";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
-}
-
-export function getBackendUrl() {
-  const currentUrl = window.location.href;
-  return currentUrl.includes("localhost") ? "http://localhost:8080" : `${currentUrl}/api`;
 }
 
 export async function hasValidJwtToken(): Promise<boolean> {
@@ -20,7 +16,7 @@ export async function hasValidJwtToken(): Promise<boolean> {
   }
 
   // check if the token is still valid
-  const BACKEND_URL = getBackendUrl();
+  const BACKEND_URL = await getBackendUrl();
 
   let checkResponse = await fetch(`${BACKEND_URL}/user/verify`, {
     method: "GET",
@@ -53,7 +49,7 @@ export async function login(username: string, password: string): Promise<boolean
     return false;
   }
 
-  const BACKEND_URL = getBackendUrl();
+  const BACKEND_URL = await getBackendUrl();
 
   let loginResponse = await fetch(`${BACKEND_URL}/user/login`, {
     method: "POST",
