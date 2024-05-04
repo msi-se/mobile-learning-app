@@ -168,41 +168,54 @@ export default function FeedbackQuestionPage({ params }: { params: { courseId: s
               </div>
             </CardContent>
           </Card>
-          <h2 className="text-2xl mt-4">Questions</h2>
-          {/* <Table>
+          { /* Options */}
+          { feedbackQuestion?.type === "SINGLE_CHOICE" && (
+          <>
+          <h2 className="text-2xl mt-4">Options</h2>
+          <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Type</TableHead>
-                <TableHead>Name</TableHead>
-                <TableHead>Description</TableHead>
-                <TableHead>Options</TableHead>
-                <TableHead>RangeLow</TableHead>
-                <TableHead>RangeHigh</TableHead>
+                <TableHead>Option</TableHead>
+                <TableHead>Remove</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              {feedbackquestion?.questions.map((question) => (
-                <TableRow key={question.id} className="hover:bg-green-50 hover:cursor-pointer"
-                  onClick={() => {
-                    router.push(`/feedbackquestions/${feedbackquestion?.id}/quizform/${feedbackquestion.id}/question/${question.id}`)
-                  }}
-                >
-                  <TableCell>{question.type}</TableCell>
-                  <TableCell className="font-medium">{question.name}</TableCell>
-                  <TableCell>{question.description}</TableCell>
-                  <TableCell>{question.options?.join(", ")}</TableCell>
-                  <TableCell>{question.rangeLow}</TableCell>
-                  <TableCell>{question.rangeHigh}</TableCell>
+              {feedbackQuestion?.options?.map((question, index) => (
+                <TableRow key={index}>
+                  <TableCell>
+                    <Input
+                      value={question}
+                      onChange={(e) => {
+                        setFeedbackQuestion({ ...feedbackQuestion, options: feedbackQuestion.options?.map((q) => q === question ? e.target.value : q) });
+                        setSomethingHasChanged(true);
+                      }}
+                      placeholder="Option"
+                    />
+                  </TableCell>
+                  <TableCell>
+                    <Button
+                      onClick={() => {
+                        setFeedbackQuestion({ ...feedbackQuestion, options: feedbackQuestion.options?.filter((q) => q !== question) });
+                        setSomethingHasChanged(true);
+                      }}
+                    >Remove</Button>
+                  </TableCell>
                 </TableRow>
               ))}
+              <TableRow>
+                <TableCell>
+                  <Button
+                    onClick={() => {
+                      setFeedbackQuestion({ ...feedbackQuestion, options: [...feedbackQuestion.options, ""] });
+                      setSomethingHasChanged(true);
+                    }}
+                  >Add Option</Button>
+                </TableCell>
+              </TableRow>
             </TableBody>
-          </Table> */}
-          {/* <div className="flex flex-col items-stretch justify-center">
-            <Button
-              className="mt-4"
-              onClick={() => router.push(`/feedbackquestions/${feedbackquestion?.id}/question/new`)}
-            >Add new question</Button>
-          </div> */}
+          </Table>
+          </>
+          )}
         </>
       )}
     </div>
