@@ -51,7 +51,7 @@ export default function FeedbackFormPage({ params }: { params: { courseId: strin
       setLoading(false);
     };
     loadFeedbackForm();
-  }, []);
+  }, [params.courseId, params.formId, router]);
 
   useEffect(() => {
     setMounted(true);

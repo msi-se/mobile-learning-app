@@ -53,7 +53,7 @@ export default function CoursePage({ params }: { params: { courseId: string } })
       setLoading(false);
     };
     loadCourse();
-  }, []);
+  }, [params.courseId, router]);
 
   useEffect(() => {
     setMounted(true);
@@ -74,7 +74,7 @@ export default function CoursePage({ params }: { params: { courseId: string } })
       )}
 
       {!loading && (
-        <>
+        <div>
 
           <Button
             className="mb-4 self-start text-sm"
@@ -188,7 +188,7 @@ export default function CoursePage({ params }: { params: { courseId: string } })
               disabled={true}
             >Create new quiz form</Button>
           </div>
-        </>
+        </div>
       )}
     </div>
   );
