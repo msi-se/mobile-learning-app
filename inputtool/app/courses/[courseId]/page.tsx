@@ -8,7 +8,7 @@ import Image from "next/image";
 import { useRouter } from 'next/navigation'
 import { useState, useEffect } from "react";
 import { toast } from "sonner";
-import { Loader2 } from 'lucide-react';
+import { CircleArrowLeft, Loader2 } from 'lucide-react';
 import { hasValidJwtToken, login } from "@/lib/utils";
 import * as React from "react"
 import {
@@ -23,7 +23,7 @@ import {
 } from "@/components/ui/table"
 import { Course } from "@/lib/models";
 import { DeleteButton } from "@/components/delete-button";
-import { deleteCourse, fetchCourse, updateCourse } from "@/lib/requests";
+import { addFeedbackForm, deleteCourse, fetchCourse, updateCourse } from "@/lib/requests";
 
 export default function CoursePage({ params }: { params: { courseId: string } }) {
 
@@ -67,7 +67,7 @@ export default function CoursePage({ params }: { params: { courseId: string } })
   }
 
   return (
-    <div className="flex flex-col items-center justify-center h-screen mx-4">
+    <div className="flex flex-col items-center justify-center h-screen m-4">
 
       {loading && (
         <Loader2 className="w-6 h-6 animate-spin" />
@@ -75,6 +75,12 @@ export default function CoursePage({ params }: { params: { courseId: string } })
 
       {!loading && (
         <>
+
+          <Button
+            className="mb-4 self-start text-sm"
+            onClick={() => router.back()}
+          ><CircleArrowLeft /></Button>
+
           <h1 className="text-2xl mb-4 font-bold">
             Course: {courseName}
           </h1>
@@ -148,11 +154,16 @@ export default function CoursePage({ params }: { params: { courseId: string } })
           <div className="flex flex-col items-stretch justify-center">
             <Button
               className="mt-4"
-              onClick={() => router.push(`/courses/${course?.id}/newfeedbackform`)}
+              onClick={async () => {
+                const form = await addFeedbackForm(course?.id || "", "New feedback form", "");
+                if (form) {
+                  router.push(`/courses/${course?.id}/feedbackform/${form.id}`);
+                }}
+              }
             >Create new feedback form</Button>
             <Button
               className="mt-4"
-              onClick={() => router.push(`/courses/${course?.id}/newquizform`)}
+              disabled={true}
             >Create new quiz form</Button>
           </div>
         </>

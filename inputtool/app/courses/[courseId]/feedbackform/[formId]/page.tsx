@@ -8,7 +8,7 @@ import Image from "next/image";
 import { useRouter } from 'next/navigation'
 import { useState, useEffect } from "react";
 import { toast } from "sonner";
-import { Loader2 } from 'lucide-react';
+import { CircleArrowLeft, Loader2 } from 'lucide-react';
 import { hasValidJwtToken, login } from "@/lib/utils";
 import * as React from "react"
 import {
@@ -23,7 +23,7 @@ import {
 } from "@/components/ui/table"
 import { FeedbackForm } from "@/lib/models";
 import { DeleteButton } from "@/components/delete-button";
-import { deleteFeedbackForm, fetchFeedbackForm, updateFeedbackForm } from "@/lib/requests";
+import { addFeedbackQuestion, deleteFeedbackForm, fetchFeedbackForm, updateFeedbackForm } from "@/lib/requests";
 
 export default function FeedbackFormPage({ params }: { params: { courseId: string, formId: string } }) {
 
@@ -65,7 +65,7 @@ export default function FeedbackFormPage({ params }: { params: { courseId: strin
   }
 
   return (
-    <div className="flex flex-col items-center justify-center h-screen mx-4">
+    <div className="flex flex-col items-center justify-center h-screen m-4">
 
       {loading && (
         <Loader2 className="w-6 h-6 animate-spin" />
@@ -73,6 +73,10 @@ export default function FeedbackFormPage({ params }: { params: { courseId: strin
 
       {!loading && (
         <>
+          <Button
+            className="mb-4 self-start text-sm"
+            onClick={() => router.back()}
+          ><CircleArrowLeft /></Button>
           <h1 className="text-2xl mb-4 font-bold">
             Feedback-Form: {feedbackformName}
           </h1>
@@ -153,7 +157,12 @@ export default function FeedbackFormPage({ params }: { params: { courseId: strin
           <div className="flex flex-col items-stretch justify-center">
             <Button
               className="mt-4"
-              onClick={() => router.push(`/feedbackforms/${feedbackform?.id}/question/new`)}
+              onClick={async () => {
+                const question = await addFeedbackQuestion(params.courseId, params.formId, "New question", "", "SLIDER", [], "", "");
+                if (question) {
+                  router.push(`/courses/${params.courseId}/feedbackform/${params.formId}/question/${question.id}`);
+                }
+              }}
             >Add new question</Button>
           </div>
         </>

@@ -11,11 +11,11 @@ export async function listCourses(): Promise<Course[]> {
         method: "GET",
         headers: { "AUTHORIZATION": "Bearer " + jwtToken }
     });
-    let courses = await courseResponse.json();
     if (courseResponse.status !== 200) {
         toast.error(`Failed to get courses. Please try again. Status: ${courseResponse.status}`);
         return [];
     }
+    let courses = await courseResponse.json();
     return courses;
 }
 
@@ -28,14 +28,11 @@ export async function fetchCourse(courseId: string): Promise<Course | null> {
         method: "GET",
         headers: { "AUTHORIZATION": "Bearer " + jwtToken }
     });
-    let course = await courseResponse.json();
     if (courseResponse.status !== 200) {
         toast.error(`Failed to get course. Please try again. Status: ${courseResponse.status}`);
         return null;
     }
-
-    //       feedbackForms: course.feedbackForms.map((form: any) => { return { ...form, type: "Feedback" } }),
-    //       quizForms: course.quizForms.map((form: any) => { return { ...form, type: "Quiz" } })
+    let course = await courseResponse.json();
 
     course.feedbackForms = course.feedbackForms.map((form: any) => { return { ...form, type: "Feedback" } });
     course.quizForms = course.quizForms.map((form: any) => { return { ...form, type: "Quiz" } });
@@ -54,11 +51,11 @@ export async function updateCourse(courseId: string, courseName: string, courseD
         headers: { "AUTHORIZATION": "Bearer " + jwtToken, "Content-Type": "application/json" },
         body: JSON.stringify({ name: courseName, description: courseDescription, moodleCourseId: courseMoodleCourseId })
     });
-    let course = await courseResponse.json();
     if (courseResponse.status !== 200) {
         toast.error(`Failed to update course. Please try again. Status: ${courseResponse.status}`);
         return null;
     }
+    let course = await courseResponse.json();
     return course;
 }
 
@@ -72,11 +69,11 @@ export async function addCourse(courseName: string, courseDescription: string, c
         headers: { "AUTHORIZATION": "Bearer " + jwtToken, "Content-Type": "application/json" },
         body: JSON.stringify({ name: courseName, description: courseDescription, moodleCourseId: courseMoodleCourseId })
     });
-    let course = await courseResponse.json();
     if (courseResponse.status !== 200) {
         toast.error(`Failed to add course. Please try again. Status: ${courseResponse.status}`);
         return null;
     }
+    let course = await courseResponse.json();
     return course;
 }
 
@@ -105,12 +102,12 @@ export async function fetchFeedbackForm(courseId: string, formId: string): Promi
         method: "GET",
         headers: { "AUTHORIZATION": "Bearer " + jwtToken }
     });
-    let feedbackForm = await feedbackFormResponse.json();
     if (feedbackFormResponse.status !== 200) {
         toast.error(`Failed to get feedback form. Please try again. Status: ${feedbackFormResponse.status}`);
         return null;
     }
-    feedbackForm.questions = feedbackForm.questions.map((question: any) => { return question.questionContent });
+    let feedbackForm = await feedbackFormResponse.json();
+    feedbackForm.questions = feedbackForm.questions.map((question: any) => { return {...question.questionContent, id: question.id} });
     return feedbackForm;
 }
 
@@ -124,12 +121,12 @@ export async function updateFeedbackForm(courseId: string, formId: string, feedb
         headers: { "AUTHORIZATION": "Bearer " + jwtToken, "Content-Type": "application/json" },
         body: JSON.stringify({ name: feedbackformName, description: feedbackformDescription })
     });
-    let feedbackForm = await feedbackFormResponse.json();
     if (feedbackFormResponse.status !== 200) {
         toast.error(`Failed to update feedback form. Please try again. Status: ${feedbackFormResponse.status}`);
         return null;
     }
-    feedbackForm.questions = feedbackForm.questions.map((question: any) => { return question.questionContent });
+    let feedbackForm = await feedbackFormResponse.json();
+    feedbackForm.questions = feedbackForm.questions.map((question: any) => { return {...question.questionContent, id: question.id} });
     return feedbackForm;
 }
 
@@ -143,12 +140,12 @@ export async function addFeedbackForm(courseId: string, feedbackformName: string
         headers: { "AUTHORIZATION": "Bearer " + jwtToken, "Content-Type": "application/json" },
         body: JSON.stringify({ name: feedbackformName, description: feedbackformDescription })
     });
-    let feedbackForm = await feedbackFormResponse.json();
     if (feedbackFormResponse.status !== 200) {
         toast.error(`Failed to add feedback form. Please try again. Status: ${feedbackFormResponse.status}`);
         return null;
     }
-    feedbackForm.questions = feedbackForm.questions.map((question: any) => { return question.questionContent });
+    let feedbackForm = await feedbackFormResponse.json();
+    feedbackForm.questions = feedbackForm.questions.map((question: any) => { return {...question.questionContent, id: question.id} });
     return feedbackForm;
 }
 
@@ -177,19 +174,19 @@ export async function fetchFeedbackQuestion(courseId: string, formId: string, qu
         method: "GET",
         headers: { "AUTHORIZATION": "Bearer " + jwtToken }
     });
-    let feedbackQuestion = await feedbackQuestionResponse.json();
     if (feedbackQuestionResponse.status !== 200) {
         toast.error(`Failed to get feedback question. Please try again. Status: ${feedbackQuestionResponse.status}`);
         return null;
     }
-    console.log(feedbackQuestion);
+    let feedbackQuestion = await feedbackQuestionResponse.json();
+    feedbackQuestion = { ...feedbackQuestion.questionContent, id: feedbackQuestion.id };
     
     return feedbackQuestion;
 }
 
 // PUT /maint/course/${courseId}/feedback/form/${formId}/question/${questionId} ({String name, String description, String type, String[] options, int rangeLow, int rangeHigh})
 // updateFeedbackQuestion(params.courseId, params.formId, params.questionId, feedbackQuestion?.name, feedbackQuestion?.description, feedbackQuestion?.type, feedbackQuestion?.options, feedbackQuestion?.rangeLow, feedbackQuestion?.rangeHigh) -> Error | Name, Description, Type, Options, RangeLow, RangeHigh
-export async function updateFeedbackQuestion(courseId: string, formId: string, questionId: string, feedbackQuestionName: string, feedbackQuestionDescription: string, feedbackQuestionType: string, feedbackQuestionOptions: string[], feedbackQuestionRangeLow: number, feedbackQuestionRangeHigh: number): Promise<FeedbackQuestion | null> {
+export async function updateFeedbackQuestion(courseId: string, formId: string, questionId: string, feedbackQuestionName: string, feedbackQuestionDescription: string, feedbackQuestionType: string, feedbackQuestionOptions: string[], feedbackQuestionRangeLow: string, feedbackQuestionRangeHigh: string): Promise<FeedbackQuestion | null> {
     const BACKEND_URL = getBackendUrl();
     const jwtToken = localStorage.getItem("jwtToken");
     let feedbackQuestionResponse = await fetch(`${BACKEND_URL}/maint/course/${courseId}/feedback/form/${formId}/question/${questionId}`, {
@@ -197,17 +194,19 @@ export async function updateFeedbackQuestion(courseId: string, formId: string, q
         headers: { "AUTHORIZATION": "Bearer " + jwtToken, "Content-Type": "application/json" },
         body: JSON.stringify({ name: feedbackQuestionName, description: feedbackQuestionDescription, type: feedbackQuestionType, options: feedbackQuestionOptions, rangeLow: feedbackQuestionRangeLow, rangeHigh: feedbackQuestionRangeHigh })
     });
-    let feedbackQuestion = await feedbackQuestionResponse.json();
     if (feedbackQuestionResponse.status !== 200) {
         toast.error(`Failed to update feedback question. Please try again. Status: ${feedbackQuestionResponse.status}`);
         return null;
     }
+    let feedbackQuestion = await feedbackQuestionResponse.json();
+    feedbackQuestion = { ...feedbackQuestion.questionContent, id: feedbackQuestion.id };
+
     return feedbackQuestion;
 }
 
 // POST /maint/course/${courseId}/feedback/form/${formId}/question ({String name, String description, String type, String[] options, int rangeLow, int rangeHigh})
 // addFeedbackQuestion(params.courseId, params.formId, feedbackQuestion?.name, feedbackQuestion?.description, feedbackQuestion?.type, feedbackQuestion?.options, feedbackQuestion?.rangeLow, feedbackQuestion?.rangeHigh) -> Error | Name, Description, Type, Options, RangeLow, RangeHigh
-export async function addFeedbackQuestion(courseId: string, formId: string, feedbackQuestionName: string, feedbackQuestionDescription: string, feedbackQuestionType: string, feedbackQuestionOptions: string[], feedbackQuestionRangeLow: number, feedbackQuestionRangeHigh: number): Promise<FeedbackQuestion | null> {
+export async function addFeedbackQuestion(courseId: string, formId: string, feedbackQuestionName: string, feedbackQuestionDescription: string, feedbackQuestionType: string, feedbackQuestionOptions: string[], feedbackQuestionRangeLow: string, feedbackQuestionRangeHigh: string): Promise<FeedbackQuestion | null> {
     const BACKEND_URL = getBackendUrl();
     const jwtToken = localStorage.getItem("jwtToken");
     let feedbackQuestionResponse = await fetch(`${BACKEND_URL}/maint/course/${courseId}/feedback/form/${formId}/question`, {
@@ -215,11 +214,13 @@ export async function addFeedbackQuestion(courseId: string, formId: string, feed
         headers: { "AUTHORIZATION": "Bearer " + jwtToken, "Content-Type": "application/json" },
         body: JSON.stringify({ name: feedbackQuestionName, description: feedbackQuestionDescription, type: feedbackQuestionType, options: feedbackQuestionOptions, rangeLow: feedbackQuestionRangeLow, rangeHigh: feedbackQuestionRangeHigh })
     });
-    let feedbackQuestion = await feedbackQuestionResponse.json();
     if (feedbackQuestionResponse.status !== 200) {
         toast.error(`Failed to add feedback question. Please try again. Status: ${feedbackQuestionResponse.status}`);
         return null;
     }
+    let feedbackQuestion = await feedbackQuestionResponse.json();
+    feedbackQuestion = { ...feedbackQuestion.questionContent, id: feedbackQuestion.id };
+
     return feedbackQuestion;
 }
 

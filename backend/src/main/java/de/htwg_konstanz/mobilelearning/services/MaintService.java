@@ -13,6 +13,7 @@ import de.htwg_konstanz.mobilelearning.enums.FormStatus;
 import de.htwg_konstanz.mobilelearning.helper.moodle.MoodleCourse;
 import de.htwg_konstanz.mobilelearning.helper.moodle.MoodleInterface;
 import de.htwg_konstanz.mobilelearning.models.Course;
+import de.htwg_konstanz.mobilelearning.models.Question;
 import de.htwg_konstanz.mobilelearning.models.QuestionWrapper;
 import de.htwg_konstanz.mobilelearning.models.auth.User;
 import de.htwg_konstanz.mobilelearning.models.auth.UserRole;
@@ -227,7 +228,7 @@ public class MaintService {
     @POST
     @Produces(MediaType.APPLICATION_JSON)
     @RolesAllowed({ UserRole.PROF, UserRole.STUDENT })
-    @Path("/course/{courseId}/feedbackform")
+    @Path("/course/{courseId}/feedback/form")
     public FeedbackForm addFeedbackForm(@RestPath String courseId, AddFeedbackFormRequest request) {
         Course course = courseRepository.findById(new ObjectId(courseId));
         if (!isOwner(course)) {
@@ -261,7 +262,7 @@ public class MaintService {
     @Produces(MediaType.APPLICATION_JSON)
     @RolesAllowed({ UserRole.PROF, UserRole.STUDENT })
     @Path("/course/{courseId}/feedback/form/{formId}/question/{questionId}")
-    public FeedbackQuestion getFeedbackQuestion(@RestPath String courseId, @RestPath String formId, @RestPath String questionId) {
+    public QuestionWrapper getFeedbackQuestion(@RestPath String courseId, @RestPath String formId, @RestPath String questionId) {
         Course course = courseRepository.findById(new ObjectId(courseId));
         if (!isOwner(course)) {
             throw new NotFoundException();
@@ -275,7 +276,11 @@ public class MaintService {
             throw new NotFoundException();
         }
         FeedbackQuestion feedbackQuestion = course.getFeedbackQuestionById(questionWrapper.getQuestionId());
-        return feedbackQuestion;
+        if (feedbackQuestion == null) {
+            throw new NotFoundException();
+        }
+        questionWrapper.setQuestionContent(feedbackQuestion);
+        return questionWrapper;
     }
 
     static class UpdateFeedbackQuestionRequest {
@@ -291,7 +296,7 @@ public class MaintService {
     @Produces(MediaType.APPLICATION_JSON)
     @RolesAllowed({ UserRole.PROF, UserRole.STUDENT })
     @Path("/course/{courseId}/feedback/form/{formId}/question/{questionId}")
-    public FeedbackQuestion updateFeedbackQuestion(@RestPath String courseId, @RestPath String formId, @RestPath String questionId, UpdateFeedbackQuestionRequest request) {
+    public QuestionWrapper updateFeedbackQuestion(@RestPath String courseId, @RestPath String formId, @RestPath String questionId, UpdateFeedbackQuestionRequest request) {
         Course course = courseRepository.findById(new ObjectId(courseId));
         if (!isOwner(course)) {
             throw new NotFoundException();
@@ -333,7 +338,7 @@ public class MaintService {
     @Produces(MediaType.APPLICATION_JSON)
     @RolesAllowed({ UserRole.PROF, UserRole.STUDENT })
     @Path("/course/{courseId}/feedback/form/{formId}/question")
-    public FeedbackQuestion addFeedbackQuestion(@RestPath String courseId, @RestPath String formId, AddFeedbackQuestionRequest request) {
+    public QuestionWrapper addFeedbackQuestion(@RestPath String courseId, @RestPath String formId, AddFeedbackQuestionRequest request) {
         Course course = courseRepository.findById(new ObjectId(courseId));
         if (!isOwner(course)) {
             throw new NotFoundException();
@@ -350,7 +355,9 @@ public class MaintService {
             QuestionWrapper questionWrapper = new QuestionWrapper(feedbackQuestion.getId(), new ArrayList<>());
             feedbackForm.addQuestion(questionWrapper);
             courseRepository.update(course);
-            return feedbackQuestion;
+
+            questionWrapper.setQuestionContent(feedbackQuestion);
+            return questionWrapper;
         } catch (IllegalArgumentException e) {
             throw new NotFoundException();
         }

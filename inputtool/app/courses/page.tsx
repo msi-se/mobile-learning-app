@@ -66,7 +66,7 @@ export default function Courses() {
   }
 
   return (
-    <div className="flex flex-col items-center justify-center h-screen mx-4">
+    <div className="flex flex-col items-center justify-center h-screen m-4">
 
       {loading && (
         <Loader2 className="w-6 h-6 animate-spin" />
