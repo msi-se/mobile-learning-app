@@ -108,6 +108,15 @@ export default function CoursePage({ params }: { params: { courseId: string } })
                 }}
                 placeholder="Course description"
               />
+              <Label className="mt-2">Moodle Course ID</Label>
+              <Input
+                value={courseMoodleCourseId}
+                onChange={(e) => {
+                  setCourseMoodleCourseId(e.target.value);
+                  setSomethingHasChanged(true);
+                }}
+                placeholder="Moodle course ID"
+              />
               {/* first button at the left second at the right */}
               <div className="flex justify-between">
                 <Button
