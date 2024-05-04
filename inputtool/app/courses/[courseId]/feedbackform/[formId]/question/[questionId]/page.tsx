@@ -118,7 +118,8 @@ export default function FeedbackQuestionPage({ params }: { params: { courseId: s
                 placeholder="FeedbackQuestion description"
               />
               <Label className="mt-2">Type</Label> {/* "SLIDER"| "STARS"| "SINGLE_CHOICE"| "FULLTEXT"| "YES_NO" */}
-              <Select defaultValue="SLIDER" onValueChange={(value) => {
+              <Select defaultValue={feedbackQuestion?.type} onValueChange={(value) => {
+                console.log("value", value);
                 setFeedbackQuestion({
                   ...feedbackQuestion,
                   type: value as "SLIDER" | "STARS" | "SINGLE_CHOICE" | "FULLTEXT" | "YES_NO",
@@ -128,48 +129,23 @@ export default function FeedbackQuestionPage({ params }: { params: { courseId: s
                   description: feedbackQuestion?.description || ""
                 });
                 setSomethingHasChanged(true);
-              }}
-              >
+              }}>
                 <SelectTrigger>
                   <SelectValue>{feedbackQuestion?.type}</SelectValue>
                 </SelectTrigger>
-                {/* TODO: default selection not working if you click in it */}
-                <SelectContent defaultValue={feedbackQuestion?.type}>
-                  <SelectItem defaultChecked={feedbackQuestion?.type === "SLIDER"}
-                    value="SLIDER">Slider</SelectItem>
-                  <SelectItem defaultChecked={feedbackQuestion?.type === "STARS"}
-                    value="STARS">Stars</SelectItem>
-                  <SelectItem defaultChecked={feedbackQuestion?.type === "SINGLE_CHOICE"}
-                    value="SINGLE_CHOICE">Single Choice</SelectItem>
-                  <SelectItem defaultChecked={feedbackQuestion?.type === "FULLTEXT"}
-                    value="FULLTEXT">Fulltext</SelectItem>
-                  <SelectItem defaultChecked={feedbackQuestion?.type === "YES_NO"}
-                    value="YES_NO">Yes/No</SelectItem>
+                <SelectContent>
+                  <SelectItem
+                    value="SLIDER">SLIDER</SelectItem>
+                  <SelectItem
+                    value="STARS">STARS</SelectItem>
+                  <SelectItem
+                    value="SINGLE_CHOICE">SINGLE_CHOICE</SelectItem>
+                  <SelectItem
+                    value="FULLTEXT">FULLTEXT</SelectItem>
+                  <SelectItem
+                    value="YES_NO">YES_NO</SelectItem>
                 </SelectContent>
               </Select>
-              {feedbackQuestion?.type === "SLIDER" && (
-                <>
-                  <Label className="mt-2">Range-Low</Label>
-                  <Input
-                    value={feedbackQuestion?.rangeLow}
-                    onChange={(e) => {
-                      setFeedbackQuestion({ ...feedbackQuestion, rangeLow: e.target.value });
-                      setSomethingHasChanged(true);
-                    }}
-                    placeholder={"Very Bad"}
-                  />
-                  <Label className="mt-2">Range-High</Label>
-                  <Input
-                    value={feedbackQuestion?.rangeHigh}
-                    onChange={(e) => {
-                      setFeedbackQuestion({ ...feedbackQuestion, rangeHigh: e.target.value });
-                      setSomethingHasChanged(true);
-                    }}
-                    placeholder={"Very Good"}
-                  />
-                </>
-              )}
-
 
               {/* first button at the left second at the right */}
               <div className="flex justify-between">
