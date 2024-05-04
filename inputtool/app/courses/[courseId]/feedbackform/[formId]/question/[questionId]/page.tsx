@@ -1,10 +1,9 @@
 "use client"
 
 import { Button } from "@/components/ui/button";
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@radix-ui/react-dropdown-menu";
-import Image from "next/image";
 import { useRouter } from 'next/navigation'
 import { useState, useEffect } from "react";
 import { toast } from "sonner";
@@ -14,9 +13,7 @@ import * as React from "react"
 import {
   Table,
   TableBody,
-  TableCaption,
   TableCell,
-  TableFooter,
   TableHead,
   TableHeader,
   TableRow,
@@ -85,27 +82,25 @@ export default function FeedbackQuestionPage({ params }: { params: { courseId: s
             Feedback-Question: {feedbackQuestion?.name}
           </h1>
           <Card className="w-full">
-            <CardHeader>
-              <CardTitle>
-                <Input
-                  value={feedbackQuestion?.name}
-                  onChange={(e) => {
-                    setFeedbackQuestion({
-                      ...feedbackQuestion,
-                      id: feedbackQuestion?.id || "",
-                      key: feedbackQuestion?.key || "",
-                      description: feedbackQuestion?.description || "",
-                      type: feedbackQuestion?.type || "SLIDER",
-                      name: e.target.value || ""
-                    });
-                    setSomethingHasChanged(true);
-                  }}
-                  placeholder="FeedbackQuestion name"
-                  className="font-bold bor"
-                />
-              </CardTitle>
-            </CardHeader>
             <CardContent>
+              <Label className="mt-6">Name</Label>
+              <Input
+                autoFocus
+                value={feedbackQuestion?.name}
+                onChange={(e) => {
+                  setFeedbackQuestion({
+                    ...feedbackQuestion,
+                    id: feedbackQuestion?.id || "",
+                    key: feedbackQuestion?.key || "",
+                    description: feedbackQuestion?.description || "",
+                    type: feedbackQuestion?.type || "SLIDER",
+                    name: e.target.value || ""
+                  });
+                  setSomethingHasChanged(true);
+                }}
+                placeholder="FeedbackQuestion name"
+                className="font-bold bor"
+              />
               <Label className="mt-2">Description</Label>
               <Input
                 value={feedbackQuestion?.description}
@@ -126,7 +121,7 @@ export default function FeedbackQuestionPage({ params }: { params: { courseId: s
               <Select defaultValue="SLIDER" onValueChange={(value) => {
                 setFeedbackQuestion({
                   ...feedbackQuestion,
-                  type: value as "SLIDER"| "STARS"| "SINGLE_CHOICE"| "FULLTEXT"| "YES_NO",
+                  type: value as "SLIDER" | "STARS" | "SINGLE_CHOICE" | "FULLTEXT" | "YES_NO",
                   id: feedbackQuestion?.id || "",
                   key: feedbackQuestion?.key || "",
                   name: feedbackQuestion?.name || "",
@@ -191,7 +186,7 @@ export default function FeedbackQuestionPage({ params }: { params: { courseId: s
                       toast.error("FeedbackQuestion could not be updated.");
                     }
                   }}
-                >Update feedbackquestion</Button>
+                >Update Feedback Question</Button>
                 <DeleteButton
                   className="mt-4"
                   onDelete={async () => {

@@ -1,22 +1,19 @@
 "use client"
 
 import { Button } from "@/components/ui/button";
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@radix-ui/react-dropdown-menu";
-import Image from "next/image";
 import { useRouter } from 'next/navigation'
 import { useState, useEffect } from "react";
 import { toast } from "sonner";
 import { CircleArrowLeft, Loader2 } from 'lucide-react';
-import { hasValidJwtToken, login } from "@/lib/utils";
+import { hasValidJwtToken } from "@/lib/utils";
 import * as React from "react"
 import {
   Table,
   TableBody,
-  TableCaption,
   TableCell,
-  TableFooter,
   TableHead,
   TableHeader,
   TableRow,
@@ -85,9 +82,10 @@ export default function CoursePage({ params }: { params: { courseId: string } })
             Course: {courseName}
           </h1>
           <Card className="w-full">
-            <CardHeader>
-              <CardTitle>
+            <CardContent>
+              <Label className="mt-6">Name</Label>
                 <Input
+                  autoFocus
                   value={courseName}
                   onChange={(e) => {
                     setCourseName(e.target.value);
@@ -96,10 +94,7 @@ export default function CoursePage({ params }: { params: { courseId: string } })
                   placeholder="Course name"
                   className="font-bold bor"
                 />
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <Label>Description</Label>
+              <Label className="mt-2">Description</Label>
               <Input
                 value={courseDescription}
                 onChange={(e) => {

@@ -1,22 +1,19 @@
 "use client"
 
 import { Button } from "@/components/ui/button";
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@radix-ui/react-dropdown-menu";
-import Image from "next/image";
 import { useRouter } from 'next/navigation'
 import { useState, useEffect } from "react";
 import { toast } from "sonner";
 import { CircleArrowLeft, Loader2 } from 'lucide-react';
-import { hasValidJwtToken, login } from "@/lib/utils";
+import { hasValidJwtToken } from "@/lib/utils";
 import * as React from "react"
 import {
   Table,
   TableBody,
-  TableCaption,
   TableCell,
-  TableFooter,
   TableHead,
   TableHeader,
   TableRow,
@@ -81,21 +78,19 @@ export default function FeedbackFormPage({ params }: { params: { courseId: strin
             Feedback-Form: {feedbackformName}
           </h1>
           <Card className="w-full">
-            <CardHeader>
-              <CardTitle>
-                <Input
-                  value={feedbackformName}
-                  onChange={(e) => {
-                    setFeedbackFormName(e.target.value);
-                    setSomethingHasChanged(true);
-                  }}
-                  placeholder="FeedbackForm name"
-                  className="font-bold bor"
-                />
-              </CardTitle>
-            </CardHeader>
             <CardContent>
-              <Label>Description</Label>
+              <Label className="mt-6">Name</Label>
+              <Input
+                autoFocus
+                value={feedbackformName}
+                onChange={(e) => {
+                  setFeedbackFormName(e.target.value);
+                  setSomethingHasChanged(true);
+                }}
+                placeholder="FeedbackForm name"
+                className="font-bold bor"
+              />
+              <Label className="mt-2">Description</Label>
               <Input
                 value={feedbackformDescription}
                 onChange={(e) => {
@@ -119,7 +114,7 @@ export default function FeedbackFormPage({ params }: { params: { courseId: strin
                     } else {
                       toast.error("FeedbackForm could not be updated.");
                     }
-                    
+
                   }}
                 >Update feedbackform</Button>
                 <DeleteButton

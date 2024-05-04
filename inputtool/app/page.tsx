@@ -64,7 +64,7 @@ export default function Home() {
         </CardHeader>
         <CardContent>
           <Label>HTWG-Username</Label>
-          <Input type="text" value={username} onChange={(e) => setUsername(e.target.value)} placeholder="jo871bra" />
+          <Input autoFocus type="text" value={username} onChange={(e) => setUsername(e.target.value)} placeholder="jo871bra" />
           <Label className="mt-2">Password</Label>
           <Input type="password" value={password} onChange={(e) => setPassword(e.target.value)} onSubmit={handleLogin} />
           <Button
