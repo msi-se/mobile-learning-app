@@ -122,8 +122,8 @@ export default function FeedbackFormPage({ params }: { params: { courseId: strin
                   onDelete={async () => {
                     const result = await deleteFeedbackForm(params.courseId, params.formId);
                     if (result) {
-                      router.push(`/courses/${params.courseId}`);
                       toast.success("FeedbackForm deleted.");
+                      router.push(`/courses/${params.courseId}`);
                     }
                   }}
                 />
@@ -165,8 +165,8 @@ export default function FeedbackFormPage({ params }: { params: { courseId: strin
               onClick={async () => {
                 const question = await addFeedbackQuestion(params.courseId, params.formId, "New question", "", "SLIDER", [], "", "");
                 if (question) {
+                  toast.success("Question created.");
                   router.push(`/courses/${params.courseId}/feedbackform/${params.formId}/question/${question.id}`);
-                  // toast.success("Question created."); (crashes the app)
                 }
               }}
             >Add new question</Button>

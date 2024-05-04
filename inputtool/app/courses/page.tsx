@@ -18,6 +18,7 @@ import {
 } from "@/components/ui/table"
 import { Course } from "@/lib/models";
 import { addCourse, listCourses } from "@/lib/requests";
+import { toast } from "sonner";
 
 export default function Courses() {
 
@@ -77,10 +78,10 @@ export default function Courses() {
             <Button
               className="mt-4"
               onClick={async () => {
-                const course = await addCourse("New course", "...", "");
+                const course = await addCourse("New course", "", "");
                 if (course) {
                   setCourses([...courses, course]);
-                  // toast.success("Course created."); (crashes the app)
+                  toast.success("Course created.");
                   router.push(`/courses/${course.id}`);
                 }
               }}

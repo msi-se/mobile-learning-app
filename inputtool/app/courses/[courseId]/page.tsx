@@ -135,8 +135,8 @@ export default function CoursePage({ params }: { params: { courseId: string } })
                   onDelete={async () => {
                     const result = await deleteCourse(params.courseId);
                     if (result) {
-                      router.push("/courses");
                       toast.success("Course deleted.");
+                      router.push("/courses");
                     }
                   }}
                 />
@@ -156,6 +156,7 @@ export default function CoursePage({ params }: { params: { courseId: string } })
               {[...course?.feedbackForms || [], ...course?.quizForms || []].map((form) => (
                 <TableRow key={form.id} className="hover:bg-green-50 hover:cursor-pointer"
                   onClick={() => {
+                    toast.dismiss();
                     if (form.type === "Quiz") router.push(`/courses/${course?.id}/quizform/${form.id}`)
                     else router.push(`/courses/${course?.id}/feedbackform/${form.id}`)
                   }}
@@ -173,6 +174,7 @@ export default function CoursePage({ params }: { params: { courseId: string } })
               onClick={async () => {
                 const form = await addFeedbackForm(course?.id || "", "New feedback form", "");
                 if (form) {
+                  toast.success("Feedback form created.");
                   router.push(`/courses/${course?.id}/feedbackform/${form.id}`);
                 }}
               }
