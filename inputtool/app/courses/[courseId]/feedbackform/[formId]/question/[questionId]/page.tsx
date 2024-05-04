@@ -90,7 +90,14 @@ export default function FeedbackQuestionPage({ params }: { params: { courseId: s
                 <Input
                   value={feedbackQuestion?.name}
                   onChange={(e) => {
-                    setFeedbackQuestion({ ...feedbackQuestion, name: e.target.value });
+                    setFeedbackQuestion({
+                      ...feedbackQuestion,
+                      id: feedbackQuestion?.id || "",
+                      key: feedbackQuestion?.key || "",
+                      description: feedbackQuestion?.description || "",
+                      type: feedbackQuestion?.type || "SLIDER",
+                      name: e.target.value || ""
+                    });
                     setSomethingHasChanged(true);
                   }}
                   placeholder="FeedbackQuestion name"
@@ -103,14 +110,28 @@ export default function FeedbackQuestionPage({ params }: { params: { courseId: s
               <Input
                 value={feedbackQuestion?.description}
                 onChange={(e) => {
-                  setFeedbackQuestion({ ...feedbackQuestion, description: e.target.value });
+                  setFeedbackQuestion({
+                    ...feedbackQuestion,
+                    id: feedbackQuestion?.id || "",
+                    key: feedbackQuestion?.key || "",
+                    name: feedbackQuestion?.name || "",
+                    type: feedbackQuestion?.type || "SLIDER",
+                    description: e.target.value
+                  });
                   setSomethingHasChanged(true);
                 }}
                 placeholder="FeedbackQuestion description"
               />
               <Label className="mt-2">Type</Label> {/* "SLIDER"| "STARS"| "SINGLE_CHOICE"| "FULLTEXT"| "YES_NO" */}
               <Select defaultValue="SLIDER" onValueChange={(value) => {
-                setFeedbackQuestion({ ...feedbackQuestion, type: value as "SLIDER" | "STARS" | "SINGLE_CHOICE" | "FULLTEXT" | "YES_NO" });
+                setFeedbackQuestion({
+                  ...feedbackQuestion,
+                  type: value as "SLIDER"| "STARS"| "SINGLE_CHOICE"| "FULLTEXT"| "YES_NO",
+                  id: feedbackQuestion?.id || "",
+                  key: feedbackQuestion?.key || "",
+                  name: feedbackQuestion?.name || "",
+                  description: feedbackQuestion?.description || ""
+                });
                 setSomethingHasChanged(true);
               }}
               >
@@ -161,7 +182,7 @@ export default function FeedbackQuestionPage({ params }: { params: { courseId: s
                   disabled={!somethingHasChanged}
                   className="mt-4"
                   onClick={async () => {
-                    const result = await updateFeedbackQuestion(params.courseId, params.formId, params.questionId, feedbackQuestion?.name, feedbackQuestion?.description, feedbackQuestion?.type, feedbackQuestion?.options, feedbackQuestion?.rangeLow, feedbackQuestion?.rangeHigh);
+                    const result = await updateFeedbackQuestion(params.courseId, params.formId, params.questionId, feedbackQuestion?.name || "", feedbackQuestion?.description || "", feedbackQuestion?.type || "", feedbackQuestion?.options || [], feedbackQuestion?.rangeLow || "", feedbackQuestion?.rangeHigh || "");
                     if (result) {
                       setSomethingHasChanged(false);
                       setFeedbackQuestion(result);
@@ -222,7 +243,7 @@ export default function FeedbackQuestionPage({ params }: { params: { courseId: s
                     <TableCell>
                       <Button
                         onClick={() => {
-                          setFeedbackQuestion({ ...feedbackQuestion, options: [...feedbackQuestion.options, ""] });
+                          setFeedbackQuestion({ ...feedbackQuestion, options: [...feedbackQuestion.options || [], ""] });
                           setSomethingHasChanged(true);
                         }}
                       >Add Option</Button>
