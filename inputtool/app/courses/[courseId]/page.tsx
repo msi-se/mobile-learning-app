@@ -23,6 +23,7 @@ import {
 } from "@/components/ui/table"
 import { Course } from "@/lib/models";
 import { DeleteButton } from "@/components/delete-button";
+import { updateCourse } from "@/lib/requests";
 
 export default function CoursePage({ params }: { params: { courseId: string } }) {
 
@@ -32,6 +33,7 @@ export default function CoursePage({ params }: { params: { courseId: string } })
 
   const [courseName, setCourseName] = useState("");
   const [courseDescription, setCourseDescription] = useState("");
+  const [courseMoodleCourseId, setCourseMoodleCourseId] = useState("");
   const [somethingHasChanged, setSomethingHasChanged] = useState(false);
 
   const [course, setCourse] = useState<Course>();
@@ -47,6 +49,7 @@ export default function CoursePage({ params }: { params: { courseId: string } })
       setCourse(course);
       setCourseName(course.name);
       setCourseDescription(course.description);
+      setCourseMoodleCourseId(course.moodleCourseId);
       setLoading(false);
     };
     loadCourse();
@@ -105,7 +108,7 @@ export default function CoursePage({ params }: { params: { courseId: string } })
                   disabled={!somethingHasChanged}
                   className="mt-4"
                   onClick={() => {
-                    updateCourse(params.courseId, courseName, courseDescription);
+                    updateCourse(params.courseId, courseName, courseDescription, courseMoodleCourseId);
                   }}
                 >Update course</Button>
                 <DeleteButton

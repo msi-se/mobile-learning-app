@@ -35,6 +35,7 @@ import {
 } from "@/components/ui/table"
 import { Course } from "@/lib/models";
 import { DeleteButton } from "@/components/delete-button";
+import { listCourses } from "@/lib/requests";
 
 export default function Courses() {
 
@@ -46,7 +47,7 @@ export default function Courses() {
   useEffect(() => {
     const loadCourses = async () => {
       setLoading(true);
-      let courses = await fetchCourses();
+      let courses = await listCourses();
       setCourses(courses);
       setLoading(false);
     };
