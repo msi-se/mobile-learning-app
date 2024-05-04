@@ -10,6 +10,7 @@ import { useState, useEffect } from "react";
 import { toast } from "sonner";
 import { Loader2 } from 'lucide-react';
 import { hasValidJwtToken, login } from "@/lib/utils";
+import HtwgPattern from "@/public/htwg-pattern";
 
 
 export default function Home() {
@@ -57,23 +58,26 @@ export default function Home() {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center h-screen">
-      <Card className="w-[350px]">
-        <CardHeader>
-          <CardTitle>Login</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <Label>HTWG-Username</Label>
-          <Input autoFocus type="text" value={username} onChange={(e) => setUsername(e.target.value)} placeholder="jo871bra" />
-          <Label className="mt-2">Password</Label>
-          <Input type="password" value={password} onChange={(e) => setPassword(e.target.value)} onSubmit={handleLogin} />
-          <Button
-            className="mt-4"
-            onClick={handleLogin}
-            disabled={!username}
-          >{loading ? <Loader2 className="w-6 h-6 animate-spin" /> : "Login"}</Button>
-        </CardContent>
-      </Card>
-    </div>
+    <>
+      <HtwgPattern className="absolute top-0 left-0 w-full h-full z-[-1]" />
+      <div className="flex flex-col items-center justify-center h-screen">
+        <Card className="w-[350px]">
+          <CardHeader>
+            <CardTitle>Login</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <Label>HTWG-Username</Label>
+            <Input autoFocus type="text" value={username} onChange={(e) => setUsername(e.target.value)} placeholder="jo871bra" />
+            <Label className="mt-2">Password</Label>
+            <Input type="password" value={password} onChange={(e) => setPassword(e.target.value)} onSubmit={handleLogin} />
+            <Button
+              className="mt-4"
+              onClick={handleLogin}
+              disabled={!username}
+            >{loading ? <Loader2 className="w-6 h-6 animate-spin" /> : "Login"}</Button>
+          </CardContent>
+        </Card>
+      </div>
+    </>
   );
 }
