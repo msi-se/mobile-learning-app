@@ -124,7 +124,7 @@ public class MaintService {
         return courseWithLessData;
     }
 
-    public class UpdateCourseRequest {
+    static class UpdateCourseRequest {
         public String name;
         public String description;
         public String moodleCourseId;        
@@ -147,7 +147,7 @@ public class MaintService {
         return getCourse(courseId);
     }
 
-    public class AddCourseRequest {
+    static class AddCourseRequest {
         public String name;
         public String description;
         public String moodleCourseId;        
@@ -195,7 +195,7 @@ public class MaintService {
         return feedbackFormWithQuestionContents;
     }
 
-    public class UpdateFeedbackFormRequest {
+    static class UpdateFeedbackFormRequest {
         public String name;
         public String description;
     }
@@ -219,7 +219,7 @@ public class MaintService {
         return getFeedbackForm(courseId, formId);
     }
 
-    public class AddFeedbackFormRequest {
+    static class AddFeedbackFormRequest {
         public String name;
         public String description;
     }
@@ -278,7 +278,7 @@ public class MaintService {
         return feedbackQuestion;
     }
 
-    public class UpdateFeedbackQuestionRequest {
+    static class UpdateFeedbackQuestionRequest {
         public String name;
         public String description;
         public String type;
@@ -320,7 +320,7 @@ public class MaintService {
         return getFeedbackQuestion(courseId, formId, questionId);
     }
 
-    public class AddFeedbackQuestionRequest {
+    static class AddFeedbackQuestionRequest {
         public String name;
         public String description;
         public String type;
