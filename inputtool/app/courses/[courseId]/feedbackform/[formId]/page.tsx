@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@radix-ui/react-dropdown-menu";
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { useState, useEffect } from "react";
 import { toast } from "sonner";
 import { CircleArrowLeft, Loader2 } from 'lucide-react';
@@ -31,6 +31,13 @@ export default function FeedbackFormPage({ params }: { params: { courseId: strin
   const [feedbackformName, setFeedbackFormName] = useState("");
   const [feedbackformDescription, setFeedbackFormDescription] = useState("");
   const [somethingHasChanged, setSomethingHasChanged] = useState(false);
+
+  const [isNew, setIsNew] = useState(false);
+  const searchParams = useSearchParams()
+  useEffect(() => {
+    let isNew = searchParams.get("is-new") === "true"
+    setIsNew(isNew);
+  }, [searchParams]);
 
   const [feedbackform, setFeedbackForm] = useState<FeedbackForm>();
   useEffect(() => {
@@ -81,7 +88,10 @@ export default function FeedbackFormPage({ params }: { params: { courseId: strin
             <CardContent>
               <Label className="mt-6">Name</Label>
               <Input
-                autoFocus
+                autoFocus={isNew}
+                onFocus={(e) => {
+                  if (isNew) e.target.select();
+                }}
                 value={feedbackformName}
                 onChange={(e) => {
                   setFeedbackFormName(e.target.value);
@@ -157,6 +167,11 @@ export default function FeedbackFormPage({ params }: { params: { courseId: strin
                   <TableCell>{question.rangeHigh}</TableCell>
                 </TableRow>
               ))}
+              {feedbackform?.questions.length === 0 && (
+                <TableRow>
+                  <TableCell colSpan={6} className="text-center">No questions found</TableCell>
+                </TableRow>
+              )}
             </TableBody>
           </Table>
           <div className="flex flex-col items-stretch justify-center">
@@ -166,7 +181,7 @@ export default function FeedbackFormPage({ params }: { params: { courseId: strin
                 const question = await addFeedbackQuestion(params.courseId, params.formId, "New question", "", "SLIDER", [], "", "");
                 if (question) {
                   toast.success("Question created.");
-                  router.push(`/courses/${params.courseId}/feedbackform/${params.formId}/question/${question.id}`);
+                  router.push(`/courses/${params.courseId}/feedbackform/${params.formId}/question/${question.id}?is-new=true`);
                 }
               }}
             >Add new question</Button>

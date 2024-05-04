@@ -80,12 +80,11 @@ export default function Courses() {
               onClick={async () => {
                 const course = await addCourse("New course", "", "");
                 if (course) {
-                  setCourses([...courses, course]);
                   toast.success("Course created.");
-                  router.push(`/courses/${course.id}`);
+                  router.push(`/courses/${course.id}?is-new=true`);
                 }
               }}
-            >Create new course</Button>
+            >Create new Course</Button>
           </div>
         </>
       )}

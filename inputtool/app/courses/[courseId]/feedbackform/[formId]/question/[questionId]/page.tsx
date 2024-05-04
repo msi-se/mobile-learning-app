@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@radix-ui/react-dropdown-menu";
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { useState, useEffect } from "react";
 import { toast } from "sonner";
 import { CircleArrowLeft, Loader2 } from 'lucide-react';
@@ -38,6 +38,12 @@ export default function FeedbackQuestionPage({ params }: { params: { courseId: s
 
   const [feedbackQuestion, setFeedbackQuestion] = useState<FeedbackQuestion | null>(null);
   const [somethingHasChanged, setSomethingHasChanged] = useState(false);
+  const [isNew, setIsNew] = useState(false);
+  const searchParams = useSearchParams()
+  useEffect(() => {
+    let isNew = searchParams.get("is-new") === "true"
+    setIsNew(isNew);
+  }, [searchParams]);
 
   useEffect(() => {
     const loadFeedbackQuestion = async () => {
@@ -85,7 +91,10 @@ export default function FeedbackQuestionPage({ params }: { params: { courseId: s
             <CardContent>
               <Label className="mt-6">Name</Label>
               <Input
-                autoFocus
+                autoFocus={isNew}
+                onFocus={(e) => {
+                  if (isNew) e.target.select();
+                }}
                 value={feedbackQuestion?.name}
                 onChange={(e) => {
                   setFeedbackQuestion({
@@ -135,15 +144,15 @@ export default function FeedbackQuestionPage({ params }: { params: { courseId: s
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem
-                    value="SLIDER">SLIDER</SelectItem>
+                    value="SLIDER">Slider</SelectItem>
                   <SelectItem
-                    value="STARS">STARS</SelectItem>
+                    value="STARS">Stars</SelectItem>
                   <SelectItem
-                    value="SINGLE_CHOICE">SINGLE_CHOICE</SelectItem>
+                    value="SINGLE_CHOICE">Single Choice</SelectItem>
                   <SelectItem
-                    value="FULLTEXT">FULLTEXT</SelectItem>
+                    value="FULLTEXT">Fulltext</SelectItem>
                   <SelectItem
-                    value="YES_NO">YES_NO</SelectItem>
+                    value="YES_NO">Yes/No</SelectItem>
                 </SelectContent>
               </Select>
 
@@ -210,8 +219,16 @@ export default function FeedbackQuestionPage({ params }: { params: { courseId: s
                       </TableCell>
                     </TableRow>
                   ))}
+
+                  {feedbackQuestion?.options?.length === 0 && (
+                    <TableRow>
+                      <TableCell colSpan={2}>
+                        No Options
+                      </TableCell>
+                    </TableRow>
+                  )}
                   <TableRow>
-                    <TableCell>
+                    <TableCell colSpan={2}>
                       <Button
                         onClick={() => {
                           setFeedbackQuestion({ ...feedbackQuestion, options: [...feedbackQuestion.options || [], ""] });

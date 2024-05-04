@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@radix-ui/react-dropdown-menu";
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { useState, useEffect } from "react";
 import { toast } from "sonner";
 import { CircleArrowLeft, Loader2 } from 'lucide-react';
@@ -32,6 +32,12 @@ export default function CoursePage({ params }: { params: { courseId: string } })
   const [courseDescription, setCourseDescription] = useState("");
   const [courseMoodleCourseId, setCourseMoodleCourseId] = useState("");
   const [somethingHasChanged, setSomethingHasChanged] = useState(false);
+  const [isNew, setIsNew] = useState(false);
+  const searchParams = useSearchParams()
+  useEffect(() => {
+    let isNew = searchParams.get("is-new") === "true"
+    setIsNew(isNew);
+  }, [searchParams]);
 
   const [course, setCourse] = useState<Course>();
   useEffect(() => {
@@ -85,7 +91,10 @@ export default function CoursePage({ params }: { params: { courseId: string } })
             <CardContent>
               <Label className="mt-6">Name</Label>
                 <Input
-                  autoFocus
+                  autoFocus={isNew}
+                  onFocus={(e) => {
+                    if (isNew) e.target.select();
+                  }}
                   value={courseName}
                   onChange={(e) => {
                     setCourseName(e.target.value);
@@ -166,6 +175,11 @@ export default function CoursePage({ params }: { params: { courseId: string } })
                   <TableCell>{form.description}</TableCell>
                 </TableRow>
               ))}
+              {course?.feedbackForms.length === 0 && course?.quizForms.length === 0 && (
+                <TableRow>
+                  <TableCell colSpan={3} className="text-center">No forms found.</TableCell>
+                </TableRow>
+              )}
             </TableBody>
           </Table>
           <div className="flex flex-col items-stretch justify-center">
@@ -175,14 +189,14 @@ export default function CoursePage({ params }: { params: { courseId: string } })
                 const form = await addFeedbackForm(course?.id || "", "New feedback form", "");
                 if (form) {
                   toast.success("Feedback form created.");
-                  router.push(`/courses/${course?.id}/feedbackform/${form.id}`);
+                  router.push(`/courses/${course?.id}/feedbackform/${form.id}?is-new=true`);
                 }}
               }
-            >Create new feedback form</Button>
+            >Create new Feedback Form</Button>
             <Button
               className="mt-4"
               disabled={true}
-            >Create new quiz form</Button>
+            >Create new Quiz Form</Button>
           </div>
         </>
       )}
