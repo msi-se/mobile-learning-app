@@ -51,6 +51,18 @@ export default function Courses() {
   return (
     <div className="flex flex-col items-center justify-center h-max m-4">
 
+      <Button
+        variant="secondary"
+        className="mb-4 self-start text-sm"
+        onClick={async () => {
+          // hacky way to logout (next cache issue)
+          localStorage.removeItem("jwtToken");
+          let currentUrl = window.location.href;
+          currentUrl = currentUrl.replace("courses", "");
+          window.location.href = currentUrl;
+        }}
+      >Logout</Button>
+
       {loading && (
         <Loader2 className="w-6 h-6 animate-spin" />
       )}
