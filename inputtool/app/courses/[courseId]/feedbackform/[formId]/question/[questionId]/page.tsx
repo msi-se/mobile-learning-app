@@ -81,6 +81,7 @@ export default function FeedbackQuestionPage({ params }: { params: { courseId: s
       {!loading && (
         <>
           <Button
+            variant="secondary"
             className="mb-4 self-start text-sm"
             onClick={() => router.push(`/courses/${params.courseId}/feedbackform/${params.formId}`)}
           ><CircleArrowLeft /></Button>

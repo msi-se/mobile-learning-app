@@ -72,6 +72,11 @@ export default function Courses() {
                   <TableCell>{course.description}</TableCell>
                 </TableRow>
               ))}
+              {courses.length === 0 && (
+                <TableRow>
+                  <TableCell colSpan={2}>No courses found.</TableCell>
+                </TableRow>
+              )}
             </TableBody>
           </Table>
           <div className="flex flex-col items-stretch justify-center">

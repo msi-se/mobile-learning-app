@@ -78,6 +78,7 @@ export default function FeedbackFormPage({ params }: { params: { courseId: strin
       {!loading && (
         <>
           <Button
+            variant="secondary"
             className="mb-4 self-start text-sm"
             onClick={() => router.push(`/courses/${params.courseId}`)}
           ><CircleArrowLeft /></Button>
@@ -154,7 +155,7 @@ export default function FeedbackFormPage({ params }: { params: { courseId: strin
             </TableHeader>
             <TableBody>
               {feedbackform?.questions.map((question) => (
-                <TableRow key={question.id} className="hover:bg-green-50 hover:cursor-pointer"
+                <TableRow key={question.id} className="hover:cursor-pointer"
                   onClick={() => {
                     router.push(`/courses/${params.courseId}/feedbackform/${params.formId}/question/${question.id}`)
                   }}

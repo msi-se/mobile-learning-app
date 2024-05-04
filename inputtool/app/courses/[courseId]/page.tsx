@@ -78,8 +78,8 @@ export default function CoursePage({ params }: { params: { courseId: string } })
 
       {!loading && (
         <>
-
           <Button
+            variant="secondary"
             className="mb-4 self-start text-sm"
             onClick={() => router.push(`/courses`)}
           ><CircleArrowLeft /></Button>
@@ -163,7 +163,7 @@ export default function CoursePage({ params }: { params: { courseId: string } })
             </TableHeader>
             <TableBody>
               {[...course?.feedbackForms || [], ...course?.quizForms || []].map((form) => (
-                <TableRow key={form.id} className="hover:bg-green-50 hover:cursor-pointer"
+                <TableRow key={form.id} className="hover:cursor-pointer"
                   onClick={() => {
                     toast.dismiss();
                     if (form.type === "Quiz") router.push(`/courses/${course?.id}/quizform/${form.id}`)
