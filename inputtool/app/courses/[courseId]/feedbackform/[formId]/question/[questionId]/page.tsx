@@ -127,12 +127,12 @@ export default function FeedbackQuestionPage({ params }: { params: { courseId: s
                 }}
                 placeholder="FeedbackQuestion description"
               />
-              <Label className="mt-2">Type</Label> {/* "SLIDER"| "STARS"| "SINGLE_CHOICE"| "FULLTEXT"| "YES_NO" */}
+              <Label className="mt-2">Type</Label> {/* "SLIDER"| "STARS"| "SINGLE_CHOICE"| "FULLTEXT" */}
               <Select defaultValue={feedbackQuestion?.type} onValueChange={(value) => {
                 console.log("value", value);
                 setFeedbackQuestion({
                   ...feedbackQuestion,
-                  type: value as "SLIDER" | "STARS" | "SINGLE_CHOICE" | "FULLTEXT" | "YES_NO",
+                  type: value as "SLIDER" | "STARS" | "SINGLE_CHOICE" | "FULLTEXT",
                   id: feedbackQuestion?.id || "",
                   key: feedbackQuestion?.key || "",
                   name: feedbackQuestion?.name || "",
@@ -152,8 +152,6 @@ export default function FeedbackQuestionPage({ params }: { params: { courseId: s
                     value="SINGLE_CHOICE">Single Choice</SelectItem>
                   <SelectItem
                     value="FULLTEXT">Fulltext</SelectItem>
-                  <SelectItem
-                    value="YES_NO">Yes/No</SelectItem>
                 </SelectContent>
               </Select>
 
