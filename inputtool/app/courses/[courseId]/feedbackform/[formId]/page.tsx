@@ -33,6 +33,7 @@ export default function FeedbackFormPage({ params }: { params: { courseId: strin
   const [feedbackformName, setFeedbackFormName] = useState("");
   const [feedbackformDescription, setFeedbackFormDescription] = useState("");
   const [somethingHasChanged, setSomethingHasChanged] = useState(false);
+  const [backendUrl, setBackendUrl] = useState("");
 
   const [isNew, setIsNew] = useState(false);
   const searchParams = useSearchParams()
@@ -54,6 +55,11 @@ export default function FeedbackFormPage({ params }: { params: { courseId: strin
       setFeedbackForm(feedbackform);
       setFeedbackFormName(feedbackform.name);
       setFeedbackFormDescription(feedbackform.description);
+
+      let backendUrl = await getBackendUrl();
+      setBackendUrl(backendUrl || "");
+      console.log(backendUrl);
+       
       setLoading(false);
     };
     loadFeedbackForm();
@@ -202,7 +208,7 @@ export default function FeedbackFormPage({ params }: { params: { courseId: strin
                 }
               }}
             >Add New Question</Button>
-            <Button
+            {/* <Button
               className="mt-4"
               variant="secondary"
               onClick={async () => {
@@ -210,7 +216,17 @@ export default function FeedbackFormPage({ params }: { params: { courseId: strin
                 const url = `${backendUrl}/course/${params.courseId}/feedback/form/${params.formId}/downloadresults?token=${localStorage.getItem("jwtToken")}`;
                 window.open(url, "_blank");
               }}
-            >Download Results</Button>
+            >Download Results</Button> */}
+
+            {/* with Link tab bc above code is not working on mobile */}
+            <Button
+              className="mt-4"
+              variant="secondary"
+              >
+              <Link href={`${backendUrl}/course/${params.courseId}/feedback/form/${params.formId}/downloadresults?token=${localStorage.getItem("jwtToken")}`}>
+                Download Results
+              </Link>
+            </Button>
           </div>
         </>
       )}
