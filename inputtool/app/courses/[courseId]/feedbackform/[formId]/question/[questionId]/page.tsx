@@ -157,6 +157,29 @@ export default function FeedbackQuestionPage({ params }: { params: { courseId: s
                 </SelectContent>
               </Select>
 
+              {feedbackQuestion?.type === "SLIDER" && (
+                <>
+                  <Label className="mt-2">Range-Low</Label>
+                  <Input
+                    value={feedbackQuestion?.rangeLow}
+                    onChange={(e) => {
+                      setFeedbackQuestion({ ...feedbackQuestion, rangeLow: e.target.value });
+                      setSomethingHasChanged(true);
+                    }}
+                    placeholder={"Very Bad"}
+                  />
+                  <Label className="mt-2">Range-High</Label>
+                  <Input
+                    value={feedbackQuestion?.rangeHigh}
+                    onChange={(e) => {
+                      setFeedbackQuestion({ ...feedbackQuestion, rangeHigh: e.target.value });
+                      setSomethingHasChanged(true);
+                    }}
+                    placeholder={"Very Good"}
+                  />
+                </>
+              )}
+
               {/* first button at the left second at the right */}
               <div className="flex justify-between">
                 <Button
