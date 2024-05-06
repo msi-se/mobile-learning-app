@@ -39,6 +39,7 @@ export default function FeedbackQuestionPage({ params }: { params: { courseId: s
   const [isNew, setIsNew] = useState(false);
   const searchParams = useSearchParams()
   const [hoversOnCreateRow, setHoversOnCreateRow] = useState(false);
+  const iconSize = 16;
 
   useEffect(() => {
     let isNew = searchParams.get("is-new") === "true"
@@ -214,35 +215,35 @@ export default function FeedbackQuestionPage({ params }: { params: { courseId: s
               }}>
                 <SelectTrigger>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                    {feedbackQuestion?.type === "SLIDER" && <SlidersHorizontal />}
-                    {feedbackQuestion?.type === "STARS" && <Star />}
-                    {feedbackQuestion?.type === "SINGLE_CHOICE" && <SquareCheckBig />}
-                    {feedbackQuestion?.type === "FULLTEXT" && <TextCursorInput />}
+                    {feedbackQuestion?.type === "SLIDER" && <SlidersHorizontal size={iconSize}/>}
+                    {feedbackQuestion?.type === "STARS" && <Star size={iconSize}/>}
+                    {feedbackQuestion?.type === "SINGLE_CHOICE" && <SquareCheckBig size={iconSize}/>}
+                    {feedbackQuestion?.type === "FULLTEXT" && <TextCursorInput size={iconSize}/>}
                     <SelectValue>{feedbackQuestion?.type}</SelectValue>
                   </div>
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="SLIDER">
                     <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                      <SlidersHorizontal size={16} />
+                      <SlidersHorizontal size={iconSize} />
                       <span>Slider</span>
                     </div>
                   </SelectItem>
                   <SelectItem value="STARS">
                     <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                      <Star />
+                      <Star size={iconSize}/>
                       <span>Stars</span>
                     </div>
                   </SelectItem>
                   <SelectItem value="SINGLE_CHOICE">
                     <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                      <SquareCheckBig />
+                      <SquareCheckBig size={iconSize}/>
                       <span>Single Choice</span>
                     </div>
                   </SelectItem>
                   <SelectItem value="FULLTEXT">
                     <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                      <TextCursorInput />
+                      <TextCursorInput size={iconSize}/>
                       <span>Fulltext</span>
                     </div>
                   </SelectItem>
