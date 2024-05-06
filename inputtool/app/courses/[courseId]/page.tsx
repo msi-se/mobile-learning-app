@@ -7,7 +7,7 @@ import { Label } from "@radix-ui/react-dropdown-menu";
 import { useRouter, useSearchParams } from 'next/navigation'
 import { useState, useEffect } from "react";
 import { toast } from "sonner";
-import { CircleArrowLeft, Loader2, Save } from 'lucide-react';
+import { Check, Circle, CircleArrowLeft, CircleCheck, CircleDashed, Loader2, Save } from 'lucide-react';
 import { hasValidJwtToken } from "@/lib/utils";
 import * as React from "react"
 import {
@@ -29,8 +29,8 @@ export default function CoursePage({ params }: { params: { courseId: string } })
   const [courseName, setCourseName] = useState("");
   const [courseDescription, setCourseDescription] = useState("");
   const [courseMoodleCourseId, setCourseMoodleCourseId] = useState("");
-  const [somethingHasChanged, setSomethingHasChanged] = useState(false);
   const [isNew, setIsNew] = useState(false);
+  const [userChangedSomething, setUserChangedSomething] = useState(false);
   const searchParams = useSearchParams()
 
   useEffect(() => {
@@ -39,6 +39,24 @@ export default function CoursePage({ params }: { params: { courseId: string } })
   }, [searchParams]);
 
   const [course, setCourse] = useState<Course>();
+
+  const save = async (logSuccess: boolean = true) => {
+    const result = await updateCourse(params.courseId, courseName, courseDescription, courseMoodleCourseId);
+    if (result) {
+      setCourseName(result.name);
+      setCourseDescription(result.description);
+      setCourseMoodleCourseId(result.moodleCourseId);
+      setUserChangedSomething(false);
+
+      if (logSuccess) {
+        toast.success("Saved.");
+      }
+
+    } else {
+      toast.error("Failed to save.");
+    }
+  }
+
   useEffect(() => {
     const loadCourse = async () => {
       setLoading(true);
@@ -57,6 +75,32 @@ export default function CoursePage({ params }: { params: { courseId: string } })
     loadCourse();
   }, [params.courseId, router]);
 
+
+  // setup autosave
+  const [autosaveTimeout, setAutosaveTimeout] = useState<NodeJS.Timeout | null>(null);
+  useEffect(() => {
+
+    if (autosaveTimeout) {
+      clearTimeout(autosaveTimeout);
+    }
+
+    if (!userChangedSomething) {
+      return;
+    }
+
+    setAutosaveTimeout(setTimeout(async () => {
+      await save(false);
+    }, 2000));
+
+    return () => {
+      if (autosaveTimeout) {
+        clearTimeout(autosaveTimeout);
+      }
+    };
+
+  }, [courseName, courseDescription, courseMoodleCourseId]);
+
+
   useEffect(() => {
     hasValidJwtToken().then((isValid) => {
       if (!isValid) router.push("/");
@@ -72,37 +116,82 @@ export default function CoursePage({ params }: { params: { courseId: string } })
 
       {!loading && (
         <>
-          <Button
-            variant="secondary"
-            className="mb-4 self-start text-sm"
-            onClick={() => router.push(`/courses`)}
-          ><CircleArrowLeft /></Button>
+          <div className="flex justify-between w-full">
 
+            <Button
+              variant="secondary"
+              className="mb-4 self-start text-sm"
+              onClick={() => router.push(`/courses`)}
+            ><CircleArrowLeft /></Button>
+            <div className="flex items-center">
+              <DeleteButton
+                className="mb-4 self-end"
+                onDelete={async () => {
+                  const result = await deleteCourse(params.courseId);
+                  if (result) {
+                    toast.success("Course deleted.");
+                    router.push("/courses");
+                  }
+                }}
+              />
+              <Button
+                variant="secondary"
+                id="saveIndicator"
+                aria-label="Save"
+                title="Save"
+                onClick={async () => {
+
+                  if (!userChangedSomething) {
+                    toast.success("Already saved.");
+                  } else {
+                    await save();
+                  }
+                }}
+                className="mb-4 self-end text-sm ml-4"
+              >
+
+                {userChangedSomething && (
+                  <CircleDashed className="w-6 h-6" />
+                )}
+
+                {loading && !userChangedSomething && (
+                  <Loader2 className="w-6 h-6 animate-spin" />
+                )}
+
+                {!userChangedSomething && (
+                  <CircleCheck className="w-6 h-6" />
+                )}
+
+              </Button>
+
+            </div>
+
+          </div>
           <h1 className="text-2xl mb-4 font-bold">
             Course: {courseName}
           </h1>
           <Card className="w-full">
             <CardContent>
               <Label className="mt-6">Name</Label>
-                <Input
-                  autoFocus={isNew}
-                  onFocus={(e) => {
-                    if (isNew) e.target.select();
-                  }}
-                  value={courseName}
-                  onChange={(e) => {
-                    setCourseName(e.target.value);
-                    setSomethingHasChanged(true);
-                  }}
-                  placeholder="Course name"
-                  className="font-bold bor"
-                />
+              <Input
+                autoFocus={isNew}
+                onFocus={(e) => {
+                  if (isNew) e.target.select();
+                }}
+                value={courseName}
+                onChange={(e) => {
+                  setCourseName(e.target.value);
+                  setUserChangedSomething(true);
+                }}
+                placeholder="Course name"
+                className="font-bold bor"
+              />
               <Label className="mt-2">Description</Label>
               <Input
                 value={courseDescription}
                 onChange={(e) => {
                   setCourseDescription(e.target.value);
-                  setSomethingHasChanged(true);
+                  setUserChangedSomething(true);
                 }}
                 placeholder="Course description"
               />
@@ -111,38 +200,12 @@ export default function CoursePage({ params }: { params: { courseId: string } })
                 value={courseMoodleCourseId}
                 onChange={(e) => {
                   setCourseMoodleCourseId(e.target.value);
-                  setSomethingHasChanged(true);
+                  setUserChangedSomething(true);
                 }}
                 placeholder="Moodle course ID"
               />
               {/* first button at the left second at the right */}
               <div className="flex justify-between">
-                <Button
-                  disabled={!somethingHasChanged}
-                  className="mt-4"
-                  onClick={async () => {
-                    const result = await updateCourse(params.courseId, courseName, courseDescription, courseMoodleCourseId);
-                    if (result) {
-                      setSomethingHasChanged(false);
-                      toast.success("Course updated.");
-                      setCourseName(result.name);
-                      setCourseDescription(result.description);
-                      setCourseMoodleCourseId(result.moodleCourseId);
-                    } else {
-                      toast.error("Course update failed.");
-                    }
-                  }}
-                ><Save /></Button>
-                <DeleteButton
-                  className="mt-4"
-                  onDelete={async () => {
-                    const result = await deleteCourse(params.courseId);
-                    if (result) {
-                      toast.success("Course deleted.");
-                      router.push("/courses");
-                    }
-                  }}
-                />
               </div>
             </CardContent>
           </Card>
@@ -184,7 +247,8 @@ export default function CoursePage({ params }: { params: { courseId: string } })
                 if (form) {
                   toast.success("Feedback form created.");
                   router.push(`/courses/${course?.id}/feedbackform/${form.id}?is-new=true`);
-                }}
+                }
+              }
               }
             >Create new Feedback Form</Button>
             <Button
@@ -193,7 +257,8 @@ export default function CoursePage({ params }: { params: { courseId: string } })
             >Create new Quiz Form</Button>
           </div>
         </>
-      )}
-    </div>
+      )
+      }
+    </div >
   );
 }
