@@ -7,7 +7,7 @@ import { Label } from "@radix-ui/react-dropdown-menu";
 import { useRouter, useSearchParams } from 'next/navigation'
 import { useState, useEffect, useCallback } from "react";
 import { toast } from "sonner";
-import { CircleArrowLeft, CircleCheck, CircleDashed, Loader2, Save } from 'lucide-react';
+import { CircleArrowLeft, CircleCheck, CircleDashed, Loader2, Save, SlidersHorizontal, SquareCheckBig, Star, TextCursorInput } from 'lucide-react';
 import { hasValidJwtToken } from "@/lib/utils";
 import * as React from "react"
 import {
@@ -236,7 +236,15 @@ export default function FeedbackFormPage({ params }: { params: { courseId: strin
                     router.push(`/courses/${params.courseId}/feedbackform/${params.formId}/question/${question.id}`)
                   }}
                 >
-                  <TableCell>{question.type}</TableCell>
+                  <TableCell>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                      {question?.type === "SLIDER" && <SlidersHorizontal size={16}/>}
+                      {question?.type === "STARS" && <Star size={16}/>}
+                      {question?.type === "SINGLE_CHOICE" && <SquareCheckBig size={16}/>}
+                      {question?.type === "FULLTEXT" && <TextCursorInput size={16}/>}
+                      {question?.type}
+                    </div>
+                  </TableCell>
                   <TableCell className="font-medium">{question.name}</TableCell>
                   <TableCell>{question.description}</TableCell>
                   <TableCell>{question.options?.join(", ")}</TableCell>

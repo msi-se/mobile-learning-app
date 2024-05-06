@@ -212,7 +212,13 @@ export default function FeedbackQuestionPage({ params }: { params: { courseId: s
                 setUserChangedSomething(true);
               }}>
                 <SelectTrigger>
-                  <SelectValue>{feedbackQuestion?.type}</SelectValue>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                    {feedbackQuestion?.type === "SLIDER" && <SlidersHorizontal />}
+                    {feedbackQuestion?.type === "STARS" && <Star />}
+                    {feedbackQuestion?.type === "SINGLE_CHOICE" && <SquareCheckBig />}
+                    {feedbackQuestion?.type === "FULLTEXT" && <TextCursorInput />}
+                    <SelectValue>{feedbackQuestion?.type}</SelectValue>
+                  </div>
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="SLIDER">
