@@ -5,9 +5,9 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@radix-ui/react-dropdown-menu";
 import { useRouter, useSearchParams } from 'next/navigation'
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { toast } from "sonner";
-import { CircleArrowLeft, Loader2, Save } from 'lucide-react';
+import { CircleArrowLeft, CircleCheck, CircleDashed, Loader2, Save } from 'lucide-react';
 import { hasValidJwtToken } from "@/lib/utils";
 import * as React from "react"
 import {
@@ -35,7 +35,7 @@ export default function FeedbackQuestionPage({ params }: { params: { courseId: s
   const router = useRouter();
   const [loading, setLoading] = useState(true);
   const [feedbackQuestion, setFeedbackQuestion] = useState<FeedbackQuestion | null>(null);
-  const [somethingHasChanged, setSomethingHasChanged] = useState(false);
+  const [userChangedSomething, setUserChangedSomething] = useState(false);
   const [isNew, setIsNew] = useState(false);
   const searchParams = useSearchParams()
 
@@ -43,6 +43,21 @@ export default function FeedbackQuestionPage({ params }: { params: { courseId: s
     let isNew = searchParams.get("is-new") === "true"
     setIsNew(isNew);
   }, [searchParams]);
+
+  const save = useCallback(async (logSuccess: boolean = true) => {
+    const result = await updateFeedbackQuestion(params.courseId, params.formId, params.questionId, feedbackQuestion?.name || "", feedbackQuestion?.description || "", feedbackQuestion?.type || "", feedbackQuestion?.options || [], feedbackQuestion?.rangeLow || "", feedbackQuestion?.rangeHigh || "");
+    if (result) {
+      setFeedbackQuestion(result);
+      setUserChangedSomething(false);
+
+      if (logSuccess) {
+        toast.success("Saved.");
+      }
+
+    } else {
+      toast.error("Failed to save.");
+    }
+  }, [feedbackQuestion, params.courseId, params.formId, params.questionId]);
 
   useEffect(() => {
     const loadFeedbackQuestion = async () => {
@@ -59,11 +74,22 @@ export default function FeedbackQuestionPage({ params }: { params: { courseId: s
     loadFeedbackQuestion();
   }, [params.courseId, params.formId, params.questionId, router]);
 
+
+  // setup autosave
+  let autosaveTimeout = React.useRef<NodeJS.Timeout | null>(null);
   useEffect(() => {
-    hasValidJwtToken().then((isValid) => {
-      if (!isValid) router.push("/");
-    });
-  }, [router]);
+    if (autosaveTimeout && autosaveTimeout.current) clearTimeout(autosaveTimeout.current);
+    if (!userChangedSomething) return;
+
+    autosaveTimeout.current = setTimeout(async () => {
+      await save(false);
+    }, 2000);
+
+    return () => {
+      if (autosaveTimeout && autosaveTimeout.current) clearTimeout(autosaveTimeout.current);
+    };
+  }, [save, userChangedSomething]);
+
 
   return (
     <div className="flex flex-col items-center justify-center h-max m-4">
@@ -74,11 +100,62 @@ export default function FeedbackQuestionPage({ params }: { params: { courseId: s
 
       {!loading && (
         <>
-          <Button
-            variant="secondary"
-            className="mb-4 self-start text-sm"
-            onClick={() => router.push(`/courses/${params.courseId}/feedbackform/${params.formId}`)}
-          ><CircleArrowLeft /></Button>
+          <div className="flex justify-between w-full">
+
+            <Button
+              variant="secondary"
+              className="mb-4 self-start text-sm"
+              onClick={() => {
+                if (userChangedSomething) save();
+                router.push(`/courses/${params.courseId}/feedbackform/${params.formId}`)
+              }}
+            >
+              <CircleArrowLeft />
+            </Button>
+            <div className="flex items-center">
+              <DeleteButton
+                className="mb-4 self-end"
+                onDelete={async () => {
+                  const result = await deleteFeedbackQuestion(params.courseId, params.formId, params.questionId);
+                  if (result) {
+                    router.push(`/courses/${params.courseId}/feedbackform/${params.formId}`);
+                    toast.success("FeedbackQuestion deleted.");
+                  }
+                }}
+              />
+              <Button
+                variant="secondary"
+                id="saveIndicator"
+                aria-label="Save"
+                title="Save"
+                onClick={async () => {
+
+                  if (!userChangedSomething) {
+                    toast.success("Already saved.");
+                  } else {
+                    await save();
+                  }
+                }}
+                className="mb-4 self-end text-sm ml-4"
+              >
+
+                {userChangedSomething && (
+                  <CircleDashed className="w-6 h-6" />
+                )}
+
+                {loading && !userChangedSomething && (
+                  <Loader2 className="w-6 h-6 animate-spin" />
+                )}
+
+                {!userChangedSomething && (
+                  <CircleCheck className="w-6 h-6" />
+                )}
+
+              </Button>
+
+            </div>
+
+          </div>
           <h1 className="text-2xl mb-4 font-bold">
             Feedback-Question: {feedbackQuestion?.name}
           </h1>
@@ -100,7 +177,7 @@ export default function FeedbackQuestionPage({ params }: { params: { courseId: s
                     type: feedbackQuestion?.type || "SLIDER",
                     name: e.target.value || ""
                   });
-                  setSomethingHasChanged(true);
+                  setUserChangedSomething(true);
                 }}
                 placeholder="FeedbackQuestion name"
                 className="font-bold bor"
@@ -117,7 +194,7 @@ export default function FeedbackQuestionPage({ params }: { params: { courseId: s
                     type: feedbackQuestion?.type || "SLIDER",
                     description: e.target.value
                   });
-                  setSomethingHasChanged(true);
+                  setUserChangedSomething(true);
                 }}
                 placeholder="FeedbackQuestion description"
               />
@@ -132,7 +209,7 @@ export default function FeedbackQuestionPage({ params }: { params: { courseId: s
                   name: feedbackQuestion?.name || "",
                   description: feedbackQuestion?.description || ""
                 });
-                setSomethingHasChanged(true);
+                setUserChangedSomething(true);
               }}>
                 <SelectTrigger>
                   <SelectValue>{feedbackQuestion?.type}</SelectValue>
@@ -156,7 +233,7 @@ export default function FeedbackQuestionPage({ params }: { params: { courseId: s
                     value={feedbackQuestion?.rangeLow}
                     onChange={(e) => {
                       setFeedbackQuestion({ ...feedbackQuestion, rangeLow: e.target.value });
-                      setSomethingHasChanged(true);
+                      setUserChangedSomething(true);
                     }}
                     placeholder={"Very Bad"}
                   />
@@ -165,40 +242,12 @@ export default function FeedbackQuestionPage({ params }: { params: { courseId: s
                     value={feedbackQuestion?.rangeHigh}
                     onChange={(e) => {
                       setFeedbackQuestion({ ...feedbackQuestion, rangeHigh: e.target.value });
-                      setSomethingHasChanged(true);
+                      setUserChangedSomething(true);
                     }}
                     placeholder={"Very Good"}
                   />
                 </>
               )}
-
-              {/* first button at the left second at the right */}
-              <div className="flex justify-between">
-                <Button
-                  disabled={!somethingHasChanged}
-                  className="mt-4"
-                  onClick={async () => {
-                    const result = await updateFeedbackQuestion(params.courseId, params.formId, params.questionId, feedbackQuestion?.name || "", feedbackQuestion?.description || "", feedbackQuestion?.type || "", feedbackQuestion?.options || [], feedbackQuestion?.rangeLow || "", feedbackQuestion?.rangeHigh || "");
-                    if (result) {
-                      setSomethingHasChanged(false);
-                      setFeedbackQuestion(result);
-                      toast.success("FeedbackQuestion updated.");
-                    } else {
-                      toast.error("FeedbackQuestion could not be updated.");
-                    }
-                  }}
-                ><Save /></Button>
-                <DeleteButton
-                  className="mt-4"
-                  onDelete={async () => {
-                    const result = await deleteFeedbackQuestion(params.courseId, params.formId, params.questionId);
-                    if (result) {
-                      router.push(`/courses/${params.courseId}/feedbackform/${params.formId}`);
-                      toast.success("FeedbackQuestion deleted.");
-                    }
-                  }}
-                />
-              </div>
             </CardContent>
           </Card>
           { /* Options */}
@@ -220,7 +269,7 @@ export default function FeedbackQuestionPage({ params }: { params: { courseId: s
                           value={question}
                           onChange={(e) => {
                             setFeedbackQuestion({ ...feedbackQuestion, options: feedbackQuestion.options?.map((q) => q === question ? e.target.value : q) });
-                            setSomethingHasChanged(true);
+                            setUserChangedSomething(true);
                           }}
                           placeholder="Option"
                         />
@@ -229,7 +278,7 @@ export default function FeedbackQuestionPage({ params }: { params: { courseId: s
                         <Button
                           onClick={() => {
                             setFeedbackQuestion({ ...feedbackQuestion, options: feedbackQuestion.options?.filter((q) => q !== question) });
-                            setSomethingHasChanged(true);
+                            setUserChangedSomething(true);
                           }}
                         >Remove</Button>
                       </TableCell>
@@ -248,7 +297,7 @@ export default function FeedbackQuestionPage({ params }: { params: { courseId: s
                       <Button
                         onClick={() => {
                           setFeedbackQuestion({ ...feedbackQuestion, options: [...feedbackQuestion.options || [], ""] });
-                          setSomethingHasChanged(true);
+                          setUserChangedSomething(true);
                         }}
                       >Add Option</Button>
                     </TableCell>
