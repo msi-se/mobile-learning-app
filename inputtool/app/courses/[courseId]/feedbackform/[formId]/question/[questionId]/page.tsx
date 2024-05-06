@@ -7,7 +7,7 @@ import { Label } from "@radix-ui/react-dropdown-menu";
 import { useRouter, useSearchParams } from 'next/navigation'
 import { useState, useEffect } from "react";
 import { toast } from "sonner";
-import { CircleArrowLeft, Loader2, Save } from 'lucide-react';
+import { CircleArrowLeft, Loader2, Save, SlidersHorizontal, SquareCheckBig, Star, TextCursorInput } from 'lucide-react';
 import { hasValidJwtToken } from "@/lib/utils";
 import * as React from "react"
 import {
@@ -138,14 +138,30 @@ export default function FeedbackQuestionPage({ params }: { params: { courseId: s
                   <SelectValue>{feedbackQuestion?.type}</SelectValue>
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem
-                    value="SLIDER">Slider</SelectItem>
-                  <SelectItem
-                    value="STARS">Stars</SelectItem>
-                  <SelectItem
-                    value="SINGLE_CHOICE">Single Choice</SelectItem>
-                  <SelectItem
-                    value="FULLTEXT">Fulltext</SelectItem>
+                  <SelectItem value="SLIDER">
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                      <SlidersHorizontal />
+                      <span>Slider</span>
+                    </div>
+                  </SelectItem>
+                  <SelectItem value="STARS">
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                      <Star />
+                      <span>Stars</span>
+                    </div>
+                  </SelectItem>
+                  <SelectItem value="SINGLE_CHOICE">
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                      <SquareCheckBig />
+                      <span>Single Choice</span>
+                    </div>
+                  </SelectItem>
+                  <SelectItem value="FULLTEXT">
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                      <TextCursorInput />
+                      <span>Fulltext</span>
+                    </div>
+                  </SelectItem>
                 </SelectContent>
               </Select>
 
