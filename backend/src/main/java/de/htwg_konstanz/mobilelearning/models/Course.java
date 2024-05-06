@@ -64,6 +64,10 @@ public class Course implements Serializable {
         return this.id;
     }
 
+    public void setId(ObjectId id) {
+        this.id = id;
+    }
+
     // name
     public String getName() {
         return this.name;
