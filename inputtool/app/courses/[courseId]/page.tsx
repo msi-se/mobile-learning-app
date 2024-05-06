@@ -172,41 +172,47 @@ export default function CoursePage({ params }: { params: { courseId: string } })
           </h1>
           <Card className="w-full">
             <CardContent>
-              <Label className="mt-6">Name</Label>
-              <Input
-                autoFocus={isNew}
-                onFocus={(e) => {
-                  if (isNew) e.target.select();
-                }}
-                value={courseName}
-                onChange={(e) => {
-                  setCourseName(e.target.value);
-                  setUserChangedSomething(true);
-                }}
-                placeholder="Course name"
-                className="font-bold bor"
-              />
-              <Label className="mt-2">Description</Label>
-              <Input
-                value={courseDescription}
-                onChange={(e) => {
-                  setCourseDescription(e.target.value);
-                  setUserChangedSomething(true);
-                }}
-                placeholder="Course description"
-              />
-              <Label className="mt-2">Moodle Course ID</Label>
-              <Input
-                value={courseMoodleCourseId}
-                onChange={(e) => {
-                  setCourseMoodleCourseId(e.target.value);
-                  setUserChangedSomething(true);
-                }}
-                placeholder="Moodle course ID"
-              />
-              {/* first button at the left second at the right */}
-              <div className="flex justify-between">
+              <div className="flex flex-wrap gap-4 mt-6 w-full justify-stretch">
+                <div className="flex flex-col flex-grow">
+                  <Label className="">Name</Label>
+                  <Input
+                    autoFocus={isNew}
+                    onFocus={(e) => {
+                      if (isNew) e.target.select();
+                    }}
+                    value={courseName}
+                    onChange={(e) => {
+                      setCourseName(e.target.value);
+                      setUserChangedSomething(true);
+                    }}
+                    placeholder="Course name"
+                    className="font-bold"
+                  />
+                </div>
+                <div className="flex flex-col flex-grow">
+                  <Label>Moodle Course ID</Label>
+                  <Input
+                    value={courseMoodleCourseId}
+                    onChange={(e) => {
+                      setCourseMoodleCourseId(e.target.value);
+                      setUserChangedSomething(true);
+                    }}
+                    placeholder="Moodle Course ID"
+                  />
+                </div>
               </div>
+              <div>
+                <Label className="mt-2">Description</Label>
+                <Input
+                  value={courseDescription}
+                  onChange={(e) => {
+                    setCourseDescription(e.target.value);
+                    setUserChangedSomething(true);
+                  }}
+                  placeholder="Course Description"
+                />
+              </div>
+
             </CardContent>
           </Card>
           <h2 className="text-2xl mt-8">Feedback and Quiz Forms</h2>
