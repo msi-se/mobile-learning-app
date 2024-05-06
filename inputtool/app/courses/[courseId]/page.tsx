@@ -5,7 +5,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@radix-ui/react-dropdown-menu";
 import { useRouter, useSearchParams } from 'next/navigation'
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { toast } from "sonner";
 import { Check, Circle, CircleArrowLeft, CircleCheck, CircleDashed, Loader2, Save } from 'lucide-react';
 import { hasValidJwtToken } from "@/lib/utils";
@@ -40,7 +40,7 @@ export default function CoursePage({ params }: { params: { courseId: string } })
 
   const [course, setCourse] = useState<Course>();
 
-  const save = async (logSuccess: boolean = true) => {
+  const save = useCallback(async (logSuccess: boolean = true) => {
     const result = await updateCourse(params.courseId, courseName, courseDescription, courseMoodleCourseId);
     if (result) {
       setCourseName(result.name);
@@ -55,7 +55,7 @@ export default function CoursePage({ params }: { params: { courseId: string } })
     } else {
       toast.error("Failed to save.");
     }
-  }
+  }, [courseDescription, courseMoodleCourseId, courseName, params.courseId]);
 
   useEffect(() => {
     const loadCourse = async () => {
@@ -77,28 +77,20 @@ export default function CoursePage({ params }: { params: { courseId: string } })
 
 
   // setup autosave
-  const [autosaveTimeout, setAutosaveTimeout] = useState<NodeJS.Timeout | null>(null);
+  let autosaveTimeout = React.useRef<NodeJS.Timeout | null>(null);
   useEffect(() => {
+    if (autosaveTimeout && autosaveTimeout.current) clearTimeout(autosaveTimeout.current);
+    if (!userChangedSomething) return;
 
-    if (autosaveTimeout) {
-      clearTimeout(autosaveTimeout);
-    }
-
-    if (!userChangedSomething) {
-      return;
-    }
-
-    setAutosaveTimeout(setTimeout(async () => {
+    autosaveTimeout.current = setTimeout(async () => {
+      console.log("Autosaving...");
       await save(false);
-    }, 2000));
+    }, 2000);
 
     return () => {
-      if (autosaveTimeout) {
-        clearTimeout(autosaveTimeout);
-      }
+      if (autosaveTimeout && autosaveTimeout.current) clearTimeout(autosaveTimeout.current);
     };
-
-  }, [courseName, courseDescription, courseMoodleCourseId]);
+  }, [courseName, courseDescription, courseMoodleCourseId, save, userChangedSomething]);
 
 
   useEffect(() => {
@@ -121,8 +113,13 @@ export default function CoursePage({ params }: { params: { courseId: string } })
             <Button
               variant="secondary"
               className="mb-4 self-start text-sm"
-              onClick={() => router.push(`/courses`)}
-            ><CircleArrowLeft /></Button>
+              onClick={() => {
+                save();
+                router.push(`/courses`)
+              }}
+            >
+              <CircleArrowLeft />
+            </Button>
             <div className="flex items-center">
               <DeleteButton
                 className="mb-4 self-end"
@@ -234,7 +231,6 @@ export default function CoursePage({ params }: { params: { courseId: string } })
               >Create Quiz</Button>
             </div>
           </div>
-          {/* rounded border at table */}
           <Table>
             <TableHeader className="bg-gray-100">
               <TableRow>
