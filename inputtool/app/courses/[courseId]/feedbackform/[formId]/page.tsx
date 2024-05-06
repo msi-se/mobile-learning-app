@@ -33,6 +33,7 @@ export default function FeedbackFormPage({ params }: { params: { courseId: strin
   const [userChangedSomething, setUserChangedSomething] = useState(false);
   const [backendUrl, setBackendUrl] = useState("");
   const [isNew, setIsNew] = useState(false);
+  const [hoversOnCreateRow, setHoversOnCreateRow] = useState(false);
   const searchParams = useSearchParams()
 
   useEffect(() => {
@@ -244,8 +245,21 @@ export default function FeedbackFormPage({ params }: { params: { courseId: strin
                 </TableRow>
               ))}
               {feedbackform?.questions.length === 0 && (
-                <TableRow>
-                  <TableCell colSpan={6} className="text-center">No questions found</TableCell>
+                <TableRow
+                  className="hover:cursor-pointer hover:text-blue-500"
+                  onClick={async () => {
+                    const question = await addFeedbackQuestion(params.courseId, params.formId, "New question", "", "SLIDER", [], "", "");
+                    if (question) {
+                      toast.success("Question created.");
+                      router.push(`/courses/${params.courseId}/feedbackform/${params.formId}/question/${question.id}?is-new=true`);
+                    }
+                  }}
+                  onMouseEnter={() => setHoversOnCreateRow(true)}
+                  onMouseLeave={() => setHoversOnCreateRow(false)}
+                >
+                  <TableCell colSpan={6} className="text-center">
+                    {hoversOnCreateRow ? "Create new question" : "No questions found."}
+                  </TableCell>
                 </TableRow>
               )}
             </TableBody>
