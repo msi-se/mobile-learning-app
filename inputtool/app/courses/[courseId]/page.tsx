@@ -209,7 +209,22 @@ export default function CoursePage({ params }: { params: { courseId: string } })
               </div>
             </CardContent>
           </Card>
-          <h2 className="text-2xl mt-4">Feedback and Quiz Forms</h2>
+          <h2 className="text-2xl mt-8">Feedback and Quiz Forms</h2>
+          <div className="flex items-stretch justify-center flex-wrap gap-4 my-4">
+            <Button
+              onClick={async () => {
+                const form = await addFeedbackForm(course?.id || "", "New feedback form", "");
+                if (form) {
+                  toast.success("Feedback form created.");
+                  router.push(`/courses/${course?.id}/feedbackform/${form.id}?is-new=true`);
+                }
+              }
+              }
+            >Create new Feedback Form</Button>
+            <Button
+              disabled={true}
+            >Create new Quiz Form</Button>
+          </div>
           <Table>
             <TableHeader>
               <TableRow>
@@ -239,23 +254,6 @@ export default function CoursePage({ params }: { params: { courseId: string } })
               )}
             </TableBody>
           </Table>
-          <div className="flex flex-col items-stretch justify-center">
-            <Button
-              className="mt-4"
-              onClick={async () => {
-                const form = await addFeedbackForm(course?.id || "", "New feedback form", "");
-                if (form) {
-                  toast.success("Feedback form created.");
-                  router.push(`/courses/${course?.id}/feedbackform/${form.id}?is-new=true`);
-                }
-              }
-              }
-            >Create new Feedback Form</Button>
-            <Button
-              className="mt-4"
-              disabled={true}
-            >Create new Quiz Form</Button>
-          </div>
         </>
       )
       }
