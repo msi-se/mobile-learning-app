@@ -61,9 +61,9 @@ export default function Courses() {
 
       {!loading && (
         <>
-          <h1 className="text-2xl font-bold">Courses</h1>
+          <h1 className="text-2xl font-bold mb-4">Courses</h1>
           <Table>
-            <TableHeader>
+            <TableHeader className="bg-gray-100">
               <TableRow>
                 <TableHead>Name</TableHead>
                 <TableHead>Description</TableHead>
@@ -71,7 +71,7 @@ export default function Courses() {
             </TableHeader>
             <TableBody>
               {courses.map((course) => (
-                <TableRow key={course.id} className="hover:bg-green-50 hover:cursor-pointer" onClick={() => router.push(`/courses/${course.id}`)}>
+                <TableRow key={course.id} className="hover:cursor-pointer" onClick={() => router.push(`/courses/${course.id}`)}>
                   <TableCell className="font-medium">{course.name}</TableCell>
                   <TableCell>{course.description}</TableCell>
                 </TableRow>
