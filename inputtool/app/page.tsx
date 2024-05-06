@@ -4,18 +4,14 @@ import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@radix-ui/react-dropdown-menu";
-import Image from "next/image";
 import { useRouter } from 'next/navigation'
 import { useState, useEffect } from "react";
-import { toast } from "sonner";
 import { Loader2 } from 'lucide-react';
 import { hasValidJwtToken, login } from "@/lib/utils";
 import HtwgPattern from "@/public/htwg-pattern";
 
 
 export default function Home() {
-
-  const [mounted, setMounted] = useState(false);
 
   const router = useRouter();
   const [username, setUsername] = useState("");
@@ -33,18 +29,6 @@ export default function Home() {
       document.removeEventListener("keydown", handleEnter);
     };
   });
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  if (!mounted) {
-    return <> </>
-  }
-
-  if (typeof window === "undefined") {
-    return null;
-  }
 
   hasValidJwtToken().then((isValid) => {
     if (isValid) router.push("/courses");

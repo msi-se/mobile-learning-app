@@ -27,7 +27,6 @@ import Link from "next/link";
 export default function FeedbackFormPage({ params }: { params: { courseId: string, formId: string } }) {
 
   const router = useRouter();
-  const [mounted, setMounted] = useState(false);
   const [loading, setLoading] = useState(true);
 
   const [feedbackformName, setFeedbackFormName] = useState("");
@@ -66,15 +65,10 @@ export default function FeedbackFormPage({ params }: { params: { courseId: strin
   }, [params.courseId, params.formId, router]);
 
   useEffect(() => {
-    setMounted(true);
     hasValidJwtToken().then((isValid) => {
       if (!isValid) router.push("/");
     });
   }, [router]);
-
-  if (!mounted) {
-    return <> </>
-  }
 
   return (
     <div className="flex flex-col items-center justify-center h-max m-4">

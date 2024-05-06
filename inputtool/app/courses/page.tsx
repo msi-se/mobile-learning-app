@@ -9,9 +9,7 @@ import * as React from "react"
 import {
   Table,
   TableBody,
-  TableCaption,
   TableCell,
-  TableFooter,
   TableHead,
   TableHeader,
   TableRow,
@@ -23,7 +21,6 @@ import { toast } from "sonner";
 export default function Courses() {
 
   const router = useRouter();
-  const [mounted, setMounted] = useState(false);
   const [loading, setLoading] = useState(true);
 
   const [courses, setCourses] = useState<Course[]>([]);
@@ -38,15 +35,10 @@ export default function Courses() {
   }, []);
 
   useEffect(() => {
-    setMounted(true);
     hasValidJwtToken().then((isValid) => {
       if (!isValid) router.push("/");
     });
   }, [router]);
-
-  if (!mounted) {
-    return <> </>
-  }
 
   return (
     <div className="flex flex-col items-center justify-center h-max m-4">

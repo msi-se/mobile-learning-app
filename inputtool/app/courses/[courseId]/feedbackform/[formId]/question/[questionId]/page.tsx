@@ -33,13 +33,12 @@ import { deleteFeedbackQuestion, fetchFeedbackQuestion, updateFeedbackQuestion }
 export default function FeedbackQuestionPage({ params }: { params: { courseId: string, formId: string, questionId: string } }) {
 
   const router = useRouter();
-  const [mounted, setMounted] = useState(false);
   const [loading, setLoading] = useState(true);
-
   const [feedbackQuestion, setFeedbackQuestion] = useState<FeedbackQuestion | null>(null);
   const [somethingHasChanged, setSomethingHasChanged] = useState(false);
   const [isNew, setIsNew] = useState(false);
   const searchParams = useSearchParams()
+
   useEffect(() => {
     let isNew = searchParams.get("is-new") === "true"
     setIsNew(isNew);
@@ -61,15 +60,10 @@ export default function FeedbackQuestionPage({ params }: { params: { courseId: s
   }, [params.courseId, params.formId, params.questionId, router]);
 
   useEffect(() => {
-    setMounted(true);
     hasValidJwtToken().then((isValid) => {
       if (!isValid) router.push("/");
     });
   }, [router]);
-
-  if (!mounted) {
-    return <> </>
-  }
 
   return (
     <div className="flex flex-col items-center justify-center h-max m-4">
