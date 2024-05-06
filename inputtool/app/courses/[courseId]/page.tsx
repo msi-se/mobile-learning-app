@@ -83,21 +83,13 @@ export default function CoursePage({ params }: { params: { courseId: string } })
     if (!userChangedSomething) return;
 
     autosaveTimeout.current = setTimeout(async () => {
-      console.log("Autosaving...");
       await save(false);
     }, 2000);
 
     return () => {
       if (autosaveTimeout && autosaveTimeout.current) clearTimeout(autosaveTimeout.current);
     };
-  }, [courseName, courseDescription, courseMoodleCourseId, save, userChangedSomething]);
-
-
-  useEffect(() => {
-    hasValidJwtToken().then((isValid) => {
-      if (!isValid) router.push("/");
-    });
-  }, [router]);
+  }, [save, userChangedSomething]);
 
   return (
     <div className="flex flex-col items-center justify-center h-max m-4">
@@ -114,7 +106,7 @@ export default function CoursePage({ params }: { params: { courseId: string } })
               variant="secondary"
               className="mb-4 self-start text-sm"
               onClick={() => {
-                save();
+                if (userChangedSomething) save();
                 router.push(`/courses`)
               }}
             >
