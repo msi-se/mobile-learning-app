@@ -38,6 +38,7 @@ export default function FeedbackQuestionPage({ params }: { params: { courseId: s
   const [userChangedSomething, setUserChangedSomething] = useState(false);
   const [isNew, setIsNew] = useState(false);
   const searchParams = useSearchParams()
+  const [hoversOnCreateRow, setHoversOnCreateRow] = useState(false);
 
   useEffect(() => {
     let isNew = searchParams.get("is-new") === "true"
@@ -223,7 +224,7 @@ export default function FeedbackQuestionPage({ params }: { params: { courseId: s
                 <SelectContent>
                   <SelectItem value="SLIDER">
                     <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                      <SlidersHorizontal />
+                      <SlidersHorizontal size={16} />
                       <span>Slider</span>
                     </div>
                   </SelectItem>
@@ -275,12 +276,23 @@ export default function FeedbackQuestionPage({ params }: { params: { courseId: s
           { /* Options */}
           {feedbackQuestion?.type === "SINGLE_CHOICE" && (
             <>
-              <h2 className="text-2xl mt-4">Options</h2>
+              <div className="flex justify-between w-full mb-4 mt-8 flex-grow flex-wrap gap-4">
+                <h2 className="text-2xl">Options</h2>
+                <div className="flex gap-4 justify-end">
+                  <Button
+                    className="flex flex-col self-end"
+                    onClick={() => {
+                      setFeedbackQuestion({ ...feedbackQuestion, options: [...feedbackQuestion.options || [], ""] });
+                      setUserChangedSomething(true);
+                    }}
+                  >Add Option</Button>
+                </div>
+              </div>
               <Table>
-                <TableHeader>
+                <TableHeader className="bg-gray-100">
                   <TableRow>
                     <TableHead>Option</TableHead>
-                    <TableHead>Remove</TableHead>
+                    <TableHead></TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -290,7 +302,10 @@ export default function FeedbackQuestionPage({ params }: { params: { courseId: s
                         <Input
                           value={question}
                           onChange={(e) => {
-                            setFeedbackQuestion({ ...feedbackQuestion, options: feedbackQuestion.options?.map((q) => q === question ? e.target.value : q) });
+                            setFeedbackQuestion({
+                              ...feedbackQuestion,
+                              options: feedbackQuestion.options?.map((q, i) => i === index ? e.target.value : q)
+                            });
                             setUserChangedSomething(true);
                           }}
                           placeholder="Option"
@@ -298,8 +313,13 @@ export default function FeedbackQuestionPage({ params }: { params: { courseId: s
                       </TableCell>
                       <TableCell>
                         <Button
+                          variant="outline"
+                          className="hover:bg-red-500 hover:text-white"
                           onClick={() => {
-                            setFeedbackQuestion({ ...feedbackQuestion, options: feedbackQuestion.options?.filter((q) => q !== question) });
+                            setFeedbackQuestion({
+                              ...feedbackQuestion,
+                              options: feedbackQuestion.options?.filter((q, i) => i !== index)
+                            });
                             setUserChangedSomething(true);
                           }}
                         >Remove</Button>
@@ -308,22 +328,21 @@ export default function FeedbackQuestionPage({ params }: { params: { courseId: s
                   ))}
 
                   {feedbackQuestion?.options?.length === 0 && (
-                    <TableRow>
-                      <TableCell colSpan={2}>
-                        No Options
+
+                    <TableRow
+                      className="hover:cursor-pointer hover:text-blue-500"
+                      onClick={() => {
+                        setFeedbackQuestion({ ...feedbackQuestion, options: [...feedbackQuestion.options || [], ""] });
+                        setUserChangedSomething(true);
+                      }}
+                      onMouseEnter={() => setHoversOnCreateRow(true)}
+                      onMouseLeave={() => setHoversOnCreateRow(false)}
+                    >
+                      <TableCell colSpan={6} className="text-center">
+                        {hoversOnCreateRow ? "Create new option" : "No options found."}
                       </TableCell>
                     </TableRow>
                   )}
-                  <TableRow>
-                    <TableCell colSpan={2}>
-                      <Button
-                        onClick={() => {
-                          setFeedbackQuestion({ ...feedbackQuestion, options: [...feedbackQuestion.options || [], ""] });
-                          setUserChangedSomething(true);
-                        }}
-                      >Add Option</Button>
-                    </TableCell>
-                  </TableRow>
                 </TableBody>
               </Table>
             </>
