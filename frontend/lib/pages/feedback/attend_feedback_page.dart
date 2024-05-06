@@ -264,10 +264,23 @@ class _AttendFeedbackPageState extends AuthState<AttendFeedbackPage> {
       if (_voted) {
         return Scaffold(
           appBar: appbar,
-          body: const Center(
+          body: Center(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
+                Container(
+                    margin: EdgeInsets.only(
+                        top: 0.0,
+                        bottom: 10.0), // specify the top and bottom margin
+
+                    width: 300,
+                    height: 300,
+                    child: RiveAnimation.asset(
+                      'assets/animations/rive/animations.riv',
+                      fit: BoxFit.cover,
+                      artboard: 'High Five',
+                      stateMachines: ['High Five State Machine'],
+                    )),
                 Padding(
                   padding: EdgeInsets.only(left: 20.0, right: 20.0),
                   child: Text("Vielen Dank für Ihr Feedback"),
