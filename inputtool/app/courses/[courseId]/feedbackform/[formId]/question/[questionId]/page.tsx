@@ -348,6 +348,7 @@ export default function FeedbackQuestionPage({ params }: { params: { courseId: s
                       onClick={() => {
                         setFeedbackQuestion({ ...feedbackQuestion, options: [...feedbackQuestion.options || [], ""] });
                         setUserChangedSomething(true);
+                        setFocusLastRow(true);
                       }}
                       onMouseEnter={() => setHoversOnCreateRow(true)}
                       onMouseLeave={() => setHoversOnCreateRow(false)}
