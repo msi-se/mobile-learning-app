@@ -215,21 +215,24 @@ export default function CoursePage({ params }: { params: { courseId: string } })
 
             </CardContent>
           </Card>
-          <h2 className="text-2xl mt-8">Feedback and Quiz Forms</h2>
-          <div className="flex justify-center flex-wrap gap-4 my-4 w-full">
-            <Button
-              className="self-end"
-              onClick={async () => {
-                const form = await addFeedbackForm(course?.id || "", "New feedback form", "");
-                if (form) {
-                  toast.success("Feedback form created.");
-                  router.push(`/courses/${course?.id}/feedbackform/${form.id}?is-new=true`);
-                }
-              }}
-            >Create new Feedback Form</Button>
-            <Button
-              disabled={true}
-            >Create new Quiz Form</Button>
+          <div className="flex justify-between w-full mb-4 mt-8 flex-grow flex-wrap gap-4">
+            <h2 className="text-2xl">Feedbacks and Quizzes</h2>
+            <div className="flex gap-4 justify-end">
+              <Button
+                className="flex flex-col self-end"
+                onClick={async () => {
+                  const form = await addFeedbackForm(course?.id || "", "New feedback form", "");
+                  if (form) {
+                    toast.success("Feedback form created.");
+                    router.push(`/courses/${course?.id}/feedbackform/${form.id}?is-new=true`);
+                  }
+                }}
+              >Create Feedback</Button>
+              <Button
+                className="self-end flex flex-col"
+                disabled={true}
+              >Create Quiz</Button>
+            </div>
           </div>
           {/* rounded border at table */}
           <Table>
@@ -240,7 +243,7 @@ export default function CoursePage({ params }: { params: { courseId: string } })
                 <TableHead>Description</TableHead>
               </TableRow>
             </TableHeader>
-            <TableBody>
+            <TableBody className="overflow-y-auto">
               {[...course?.feedbackForms || [], ...course?.quizForms || []].map((form) => (
                 <TableRow key={form.id} className="hover:cursor-pointer"
                   onClick={() => {
