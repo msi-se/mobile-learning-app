@@ -210,23 +210,24 @@ export default function CoursePage({ params }: { params: { courseId: string } })
             </CardContent>
           </Card>
           <h2 className="text-2xl mt-8">Feedback and Quiz Forms</h2>
-          <div className="flex items-stretch justify-center flex-wrap gap-4 my-4">
+          <div className="flex justify-center flex-wrap gap-4 my-4 w-full">
             <Button
+              className="self-end"
               onClick={async () => {
                 const form = await addFeedbackForm(course?.id || "", "New feedback form", "");
                 if (form) {
                   toast.success("Feedback form created.");
                   router.push(`/courses/${course?.id}/feedbackform/${form.id}?is-new=true`);
                 }
-              }
-              }
+              }}
             >Create new Feedback Form</Button>
             <Button
               disabled={true}
             >Create new Quiz Form</Button>
           </div>
+          {/* rounded border at table */}
           <Table>
-            <TableHeader>
+            <TableHeader className="bg-gray-100">
               <TableRow>
                 <TableHead>Type</TableHead>
                 <TableHead>Name</TableHead>
