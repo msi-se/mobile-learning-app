@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/components/basicButton.dart';
 import 'package:frontend/global.dart';
 import 'package:http/http.dart' as http;
 import 'package:frontend/utils.dart';
@@ -115,29 +116,17 @@ class _ChooseAliasState extends State<ChooseAlias> {
                   ],
                 ),
               ),
-              SizedBox(height: 20),
-              TextButton(
+              const SizedBox(height: 20),
+              BasicButton(
+                type: ButtonType.primary,
+                text: "Zufälliger Alias",
                 onPressed: _onShufflePressed,
-                child: Text('Zufälliger Alias',
-                    style: TextStyle(color: colors.primary)),
-                style: TextButton.styleFrom(
-                  backgroundColor: colors.primaryContainer.withOpacity(0.1),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                ),
               ),
-              SizedBox(height: 20),
-              TextButton(
+              const SizedBox(height: 20),
+              BasicButton(
+                type: ButtonType.primary,
+                text: "Nimm meinen richtigen Namen",
                 onPressed: _onRealNamePressed,
-                child: Text('Nimm meinen richtigen Namen',
-                    style: TextStyle(color: colors.primary)),
-                style: TextButton.styleFrom(
-                  backgroundColor: colors.primaryContainer.withOpacity(0.1),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                ),
               ),
             ],
           ),

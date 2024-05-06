@@ -214,8 +214,10 @@ class _AttendFeedbackPageState extends AuthState<AttendFeedbackPage> {
         ),
       );
     } else if (_fetchResult == 'success') {
+      double screenWidth = MediaQuery.of(context).size.width;
+      double buttonWidth =
+          screenWidth <= 600 ? screenWidth * 0.92 : screenWidth * 0.4;
       final colors = Theme.of(context).colorScheme;
-
       final appbar = AppBar(
         title: Text(_form.name,
             style: const TextStyle(
@@ -262,10 +264,23 @@ class _AttendFeedbackPageState extends AuthState<AttendFeedbackPage> {
       if (_voted) {
         return Scaffold(
           appBar: appbar,
-          body: const Center(
+          body: Center(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
+                Container(
+                    margin: EdgeInsets.only(
+                        top: 0.0,
+                        bottom: 10.0), // specify the top and bottom margin
+
+                    width: 300,
+                    height: 300,
+                    child: RiveAnimation.asset(
+                      'assets/animations/rive/animations.riv',
+                      fit: BoxFit.cover,
+                      artboard: 'High Five',
+                      stateMachines: ['High Five State Machine'],
+                    )),
                 Padding(
                   padding: EdgeInsets.only(left: 20.0, right: 20.0),
                   child: Text("Vielen Dank für Ihr Feedback"),
@@ -361,25 +376,41 @@ class _AttendFeedbackPageState extends AuthState<AttendFeedbackPage> {
                 ),
               ),
             ),
-            ElevatedButton(
-              child: const Text('Senden'),
-              onPressed: () {
-                // Iterate over the feedbackValues Map and send each feedback value to the socket
-                for (var entry in _feedbackValues.entries) {
-                  var message = {
-                    "action": "ADD_RESULT",
-                    "resultElementId": entry.key,
-                    "resultValues": [entry.value],
-                    "role": "STUDENT"
-                  };
-                  _socketChannel?.sink.add(jsonEncode(message));
-                }
-                setState(() {
-                  _voted = true;
-                });
-              },
+            SizedBox(
+              height: 55,
+              width: buttonWidth,
+              child: ElevatedButton(
+                style: ButtonStyle(
+                  elevation: MaterialStateProperty.all<double>(6.0),
+                  shape: MaterialStateProperty.all<OutlinedBorder>(
+                    RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(14.0),
+                    ),
+                  ),
+                  backgroundColor: MaterialStateProperty.all<Color>(
+                      Theme.of(context).colorScheme.surface),
+                  foregroundColor: MaterialStateProperty.all<Color>(
+                      Theme.of(context).colorScheme.primary),
+                ),
+                child: const Text('Senden', style: TextStyle(fontSize: 20)),
+                onPressed: () {
+                  // Iterate over the feedbackValues Map and send each feedback value to the socket
+                  for (var entry in _feedbackValues.entries) {
+                    var message = {
+                      "action": "ADD_RESULT",
+                      "resultElementId": entry.key,
+                      "resultValues": [entry.value],
+                      "role": "STUDENT"
+                    };
+                    _socketChannel?.sink.add(jsonEncode(message));
+                  }
+                  setState(() {
+                    _voted = true;
+                  });
+                },
+              ),
             ),
-            const SizedBox(height: 32),
+            const SizedBox(height: 20),
           ]),
         ),
       );

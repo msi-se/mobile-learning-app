@@ -389,16 +389,18 @@ class _AttendQuizPageState extends AuthState<AttendQuizPage> {
 
   @override
   Widget build(BuildContext context) {
+    double screenWidth = MediaQuery.of(context).size.width;
+    double buttonWidth =
+        screenWidth <= 600 ? screenWidth * 0.9 : screenWidth * 0.4;
     if (_loading) {
       return const Scaffold(
         body: Center(
           child: CircularProgressIndicator(),
         ),
       );
-    } 
-    
-    if (_fetchResult == 'success') {
+    }
 
+    if (_fetchResult == 'success') {
       final appBar = AppBar(
         title: const Text(
             'Einem Quiz beitreten', //_form.name, TODO: find better solution
@@ -429,11 +431,13 @@ class _AttendQuizPageState extends AuthState<AttendQuizPage> {
       }
 
       final int totalQuestions = _form!.questions.length;
-      final double progress = (_form!.currentQuestionIndex + 1) / totalQuestions;
+      final double progress =
+          (_form!.currentQuestionIndex + 1) / totalQuestions;
 
       final appBarWithProgress = AppBar(
         title: Text(_form!.name,
-            style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+            style: const TextStyle(
+                color: Colors.white, fontWeight: FontWeight.bold)),
         backgroundColor: Theme.of(context).colorScheme.primary,
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(10.0),
@@ -442,7 +446,8 @@ class _AttendQuizPageState extends AuthState<AttendQuizPage> {
             child: LinearProgressIndicator(
               value: progress,
               backgroundColor: Colors.grey[300],
-              valueColor: AlwaysStoppedAnimation<Color>(Theme.of(context).colorScheme.secondary),
+              valueColor: AlwaysStoppedAnimation<Color>(
+                  Theme.of(context).colorScheme.secondary),
             ),
           ),
         ),
@@ -467,51 +472,53 @@ class _AttendQuizPageState extends AuthState<AttendQuizPage> {
                   ),
                 ),
               ),
-              Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Column(
-                  children: <Widget>[
-                    Text(
-                      "Quiz beendet",
-                      style: Theme.of(context).textTheme.headlineMedium,
-                    ),
-                    // Container(
-                    //   margin: const EdgeInsets.only(top: 30.0, bottom: 10.0),
-                    //   width: 250,
-                    //   height: 250,
-                    //   child: RiveAnimation.asset(
-                    //     'assets/animations/rive/animations.riv',
-                    //     fit: BoxFit.cover,
-                    //     artboard: 'rigged without bodyparts darker firework',
-                    //     stateMachines: ['State Machine Winner'],
-                    //   ),
-                    // ),
-                    const SizedBox(height: 16),
-                    Center(
-                      child: GestureDetector(
-                        key: scoreboardKey,
-                        onTapUp: (details) {
-                          // get the position of the tap and convert it to a percentage of the total height
-                          final RenderBox box = scoreboardKey.currentContext!
-                              .findRenderObject() as RenderBox;
-                          double x = details.localPosition.dx;
-                          double percentageX = x / box.size.width;
-                          double y = details.localPosition.dy;
-                          double percentageY = y / box.size.height;
-                          throwAtScoreboard(percentageX, percentageY);
-                        },
-                        child: Container(
-                          constraints: const BoxConstraints(maxWidth: 800),
-                          child: Card(
-                            child: Padding(
-                              padding: const EdgeInsets.all(8),
-                              child: QuizScoreboard(scoreboard: _scoreboard),
+              SingleChildScrollView(
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Column(
+                    children: <Widget>[
+                      Text(
+                        "Quiz beendet",
+                        style: Theme.of(context).textTheme.headlineMedium,
+                      ),
+                      // Container(
+                      //   margin: const EdgeInsets.only(top: 30.0, bottom: 10.0),
+                      //   width: 250,
+                      //   height: 250,
+                      //   child: RiveAnimation.asset(
+                      //     'assets/animations/rive/animations.riv',
+                      //     fit: BoxFit.cover,
+                      //     artboard: 'rigged without bodyparts darker firework',
+                      //     stateMachines: ['State Machine Winner'],
+                      //   ),
+                      // ),
+                      const SizedBox(height: 16),
+                      Center(
+                        child: GestureDetector(
+                          key: scoreboardKey,
+                          onTapUp: (details) {
+                            // get the position of the tap and convert it to a percentage of the total height
+                            final RenderBox box = scoreboardKey.currentContext!
+                                .findRenderObject() as RenderBox;
+                            double x = details.localPosition.dx;
+                            double percentageX = x / box.size.width;
+                            double y = details.localPosition.dy;
+                            double percentageY = y / box.size.height;
+                            throwAtScoreboard(percentageX, percentageY);
+                          },
+                          child: Container(
+                            constraints: const BoxConstraints(maxWidth: 800),
+                            child: Card(
+                              child: Padding(
+                                padding: const EdgeInsets.all(8),
+                                child: QuizScoreboard(scoreboard: _scoreboard),
+                              ),
                             ),
                           ),
                         ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
               IgnorePointer(
@@ -556,63 +563,112 @@ class _AttendQuizPageState extends AuthState<AttendQuizPage> {
 
       return Scaffold(
         appBar: appBarWithProgress,
-        body: SizedBox(
-          width: double.infinity,
-          child: Column(
-            children: [
-              Padding(
-                padding:
-                    const EdgeInsets.only(left: 16.0, top: 16.0, right: 16.0),
-                child: Column(
-                  children: <Widget>[
-                    const SizedBox(height: 16),
-                    Text(element.name,
-                        style: const TextStyle(
-                            fontSize: 25, fontWeight: FontWeight.w700)),
-                    Text(element.description,
-                        style: const TextStyle(
-                            fontSize: 20, fontWeight: FontWeight.w500),
-                        textAlign: TextAlign.center),
-                    const SizedBox(height: 16),
-                    Card(
-                      child: Padding(
-                        padding: const EdgeInsets.all(16),
-                        child: element.type == QuestionType.single_choice
-                            ? SingleChoiceQuiz(
-                                correctAnswers: _correctAnswers,
-                                currentQuestionFinished:
-                                    _form!.currentQuestionFinished,
-                                voted: _voted,
-                                value: _value,
-                                options: element.options,
-                                onSelectionChanged: (newValue) {
-                                  setState(() {
-                                    _value = newValue;
-                                  });
-                                },
-                              )
-                            : element.type == QuestionType.yes_no
-                                ? YesNoQuiz(
-                                    correctAnswers: _correctAnswers,
-                                    currentQuestionFinished:
-                                        _form!.currentQuestionFinished,
-                                    voted: _voted,
-                                    value: _value,
-                                    onSelectionChanged: (newValue) {
-                                      setState(() {
-                                        _value = newValue;
-                                      });
-                                    },
-                                  )
-                                : Text(element.type.toString()),
-                      ),
+        body: Column(
+          children: [
+            Padding(
+              padding:
+                  const EdgeInsets.only(left: 16.0, top: 16.0, right: 16.0),
+              child: Column(
+                children: <Widget>[
+                  const SizedBox(height: 16),
+                  Text(element.name,
+                      style: const TextStyle(
+                          fontSize: 25, fontWeight: FontWeight.w700)),
+                  Text(element.description,
+                      style: const TextStyle(
+                          fontSize: 20, fontWeight: FontWeight.w500),
+                      textAlign: TextAlign.center),
+                  const SizedBox(height: 16),
+                  Card(
+                    child: Padding(
+                      padding: const EdgeInsets.all(16),
+                      child: element.type == QuestionType.single_choice
+                          ? SingleChoiceQuiz(
+                              correctAnswers: _correctAnswers,
+                              currentQuestionFinished:
+                                  _form!.currentQuestionFinished,
+                              voted: _voted,
+                              value: _value,
+                              options: element.options,
+                              onSelectionChanged: (newValue) {
+                                setState(() {
+                                  _value = newValue;
+                                });
+                              },
+                            )
+                          : element.type == QuestionType.yes_no
+                              ? YesNoQuiz(
+                                  correctAnswers: _correctAnswers,
+                                  currentQuestionFinished:
+                                      _form!.currentQuestionFinished,
+                                  voted: _voted,
+                                  value: _value,
+                                  onSelectionChanged: (newValue) {
+                                    setState(() {
+                                      _value = newValue;
+                                    });
+                                  },
+                                )
+                              : Text(element.type.toString()),
                     ),
-                  ],
-                ),
+                  ),
+                ],
               ),
-              if (!_form!.currentQuestionFinished && !_voted)
-                ElevatedButton(
-                  child: const Text('Senden'),
+            ),
+            if (!_form!.currentQuestionFinished && _voted)
+              Container(
+                  margin: const EdgeInsets.only(
+                      top: 0.0,
+                      bottom: 10.0), // specify the top and bottom margin
+
+                  width: 130,
+                  height: 130,
+                  child: RiveAnimation.asset(
+                    'assets/animations/rive/animations.riv',
+                    fit: BoxFit.cover,
+                    artboard: 'true & false',
+                    stateMachines: ['tf State Machine'],
+                    onInit: _onRiveInit,
+                  )),
+            if (_form!.currentQuestionFinished && _voted)
+              Container(
+                  margin: const EdgeInsets.only(
+                      top: 0.0,
+                      bottom: 10.0), // specify the top and bottom margin
+
+                  width: 130,
+                  height: 130,
+                  child: RiveAnimation.asset(
+                    'assets/animations/rive/animations.riv',
+                    fit: BoxFit.cover,
+                    artboard: 'true & false',
+                    stateMachines: ['tf State Machine'],
+                    onInit: _onRiveInit,
+                  )),
+            if (_form!.currentQuestionFinished && !_voted)
+              Container(
+                  margin: const EdgeInsets.only(
+                      top: 0.0,
+                      bottom: 10.0), // specify the top and bottom margin
+
+                  width: 130,
+                  height: 130,
+                  child: RiveAnimation.asset(
+                    'assets/animations/rive/animations.riv',
+                    fit: BoxFit.cover,
+                    artboard: 'true & false',
+                    animations: ['nicht abgestimmt'],
+                  )),
+          ],
+        ),
+        floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+        floatingActionButton: (!_form!.currentQuestionFinished && !_voted)
+            ? SizedBox(
+                width: buttonWidth,
+                child: FloatingActionButton(
+                  backgroundColor: Color(0xFFEDF5F3),
+                  foregroundColor: Theme.of(context).colorScheme.primary,
+                  child: const Text('Senden', style: TextStyle(fontSize: 20)),
                   onPressed: () {
                     if (_value == null) {
                       return;
@@ -629,53 +685,8 @@ class _AttendQuizPageState extends AuthState<AttendQuizPage> {
                     });
                   },
                 ),
-              if (!_form!.currentQuestionFinished && _voted)
-                Container(
-                    margin: const EdgeInsets.only(
-                        top: 0.0,
-                        bottom: 10.0), // specify the top and bottom margin
-
-                    width: 130,
-                    height: 130,
-                    child: RiveAnimation.asset(
-                      'assets/animations/rive/animations.riv',
-                      fit: BoxFit.cover,
-                      artboard: 'true & false',
-                      stateMachines: ['tf State Machine'],
-                      onInit: _onRiveInit,
-                    )),
-              if (_form!.currentQuestionFinished && _voted)
-                Container(
-                    margin: const EdgeInsets.only(
-                        top: 0.0,
-                        bottom: 10.0), // specify the top and bottom margin
-
-                    width: 130,
-                    height: 130,
-                    child: RiveAnimation.asset(
-                      'assets/animations/rive/animations.riv',
-                      fit: BoxFit.cover,
-                      artboard: 'true & false',
-                      stateMachines: ['tf State Machine'],
-                      onInit: _onRiveInit,
-                    )),
-              if (_form!.currentQuestionFinished && !_voted)
-                Container(
-                    margin: const EdgeInsets.only(
-                        top: 0.0,
-                        bottom: 10.0), // specify the top and bottom margin
-
-                    width: 130,
-                    height: 130,
-                    child: RiveAnimation.asset(
-                      'assets/animations/rive/animations.riv',
-                      fit: BoxFit.cover,
-                      artboard: 'true & false',
-                      animations: ['nicht abgestimmt'],
-                    )),
-            ],
-          ),
-        ),
+              )
+            : null,
       );
     } else {
       _showErrorDialog(_fetchResult);

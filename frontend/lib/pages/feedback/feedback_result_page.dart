@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:frontend/auth_state.dart';
+import 'package:frontend/components/basicButton.dart';
 import 'package:frontend/components/elements/feedback/fulltext_feedback_result.dart';
 import 'package:frontend/components/elements/feedback/single_choice_feedback_result.dart';
 import 'package:frontend/components/elements/feedback/slider_feedback_result.dart';
@@ -302,17 +303,10 @@ class _FeedbackResultPageState extends AuthState<FeedbackResultPage> {
                 const SizedBox(height: 20),
                 Text('Teilnehmer: $_participantCounter'),
                 const SizedBox(height: 30),
-                ElevatedButton(
+                BasicButton(
+                  type: ButtonType.primary,
+                  text: "Start",
                   onPressed: startForm,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: colors.surfaceTint,
-                  ),
-                  child: const Text(
-                    'Start',
-                    style: TextStyle(
-                      color: Colors.white,
-                    ),
-                  ),
                 ),
                 const SizedBox(height: 50)
               ],
@@ -414,22 +408,24 @@ class _FeedbackResultPageState extends AuthState<FeedbackResultPage> {
                         ),
                       ),
                       if (_form.status == FormStatus.started)
-                        ElevatedButton(
+                        BasicButton(
+                          type: ButtonType.cancel,
+                          text: "Feedback beenden",
                           onPressed: stopForm,
-                          child: const Text('Feedback beenden'),
                         ),
                       if (_form.status == FormStatus.finished)
                         Column(
                           children: [
-                            ElevatedButton(
+                            BasicButton(
+                              type: ButtonType.primary,
+                              text: "Feedback fortsetzen",
                               onPressed: startForm,
-                              child: const Text('Feedback fortsetzen'),
                             ),
                             const SizedBox(height: 8),
-                            ElevatedButton(
+                            BasicButton(
+                              type: ButtonType.cancel,
+                              text: "Feedback zurücksetzen",
                               onPressed: resetForm,
-                              child: Text('Feedback zurücksetzen',
-                                  style: TextStyle(color: colors.error)),
                             ),
                           ],
                         ),

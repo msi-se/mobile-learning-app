@@ -39,7 +39,7 @@ public class ApiService {
         }
 
         // validate input
-        if (courses == null || courses.isEmpty()) {
+        if (courses == null) {
             throw new IllegalArgumentException("Courses must not be empty.");
         }
 
