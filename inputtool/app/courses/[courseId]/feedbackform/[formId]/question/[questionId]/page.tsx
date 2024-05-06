@@ -40,6 +40,7 @@ export default function FeedbackQuestionPage({ params }: { params: { courseId: s
   const searchParams = useSearchParams()
   const [hoversOnCreateRow, setHoversOnCreateRow] = useState(false);
   const iconSize = 16;
+  const [focusLastRow, setFocusLastRow] = useState(false);
 
   useEffect(() => {
     let isNew = searchParams.get("is-new") === "true"
@@ -285,6 +286,7 @@ export default function FeedbackQuestionPage({ params }: { params: { courseId: s
                     onClick={() => {
                       setFeedbackQuestion({ ...feedbackQuestion, options: [...feedbackQuestion.options || [], ""] });
                       setUserChangedSomething(true);
+                      setFocusLastRow(true);
                     }}
                   >Add Option</Button>
                 </div>
@@ -310,7 +312,18 @@ export default function FeedbackQuestionPage({ params }: { params: { courseId: s
                             setUserChangedSomething(true);
                           }}
                           placeholder="Option"
+                          onBlur={() => {
+                            if ((feedbackQuestion?.options?.filter(q => q === "").length || 0) > 0) {
+                              setFeedbackQuestion({
+                                ...feedbackQuestion,
+                                options: feedbackQuestion.options?.filter(q => q !== "")
+                              });
+                              setUserChangedSomething(true);
+                            }
+                          }}
+                          autoFocus={focusLastRow && index === (feedbackQuestion?.options?.length || 0) - 1}
                         />
+
                       </TableCell>
                       <TableCell>
                         <Button
