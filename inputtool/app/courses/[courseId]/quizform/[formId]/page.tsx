@@ -8,7 +8,7 @@ import { useRouter, useSearchParams } from 'next/navigation'
 import { useState, useEffect, useCallback } from "react";
 import { toast } from "sonner";
 import { CircleArrowLeft, CircleCheck, CircleDashed, ListTodo, Loader2, Save, SlidersHorizontal, SquareArrowDown, SquareArrowUp, SquareCheckBig, Star, TextCursorInput, ToggleLeft } from 'lucide-react';
-import { hasValidJwtToken } from "@/lib/utils";
+import { handleEnterPress, hasValidJwtToken } from "@/lib/utils";
 import * as React from "react"
 import {
   Table,
@@ -233,6 +233,7 @@ export default function QuizFormPage({ params }: { params: { courseId: string, f
                 }}
                 placeholder="Quiz Name"
                 className="font-bold bor"
+                onKeyDown={(e) => handleEnterPress(e, save)}
               />
               <Label className="mt-2">Description</Label>
               <Input
@@ -242,6 +243,7 @@ export default function QuizFormPage({ params }: { params: { courseId: string, f
                   setUserChangedSomething(true);
                 }}
                 placeholder="Quiz Description"
+                onKeyDown={(e) => handleEnterPress(e, save)}
               />
             </CardContent>
           </Card>

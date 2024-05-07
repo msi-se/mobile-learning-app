@@ -90,3 +90,22 @@ export async function login(username: string, password: string): Promise<boolean
   localStorage.setItem("jwtToken", jwt);
   return true;
 }
+
+
+export function handleEnterPress(event: React.KeyboardEvent<HTMLInputElement>, callback: () => void) {
+  if (event.key === "Enter" && !event.shiftKey && !event.ctrlKey && !event.altKey && !event.metaKey) {
+    event.preventDefault();
+    event.stopPropagation();
+    event.currentTarget.blur();
+    callback();
+  }
+}
+
+export function listenOnCtrlS(callback: () => void) {
+  document.addEventListener("keydown", (event) => {
+    if (event.key === "s" && (event.ctrlKey || event.metaKey)) {
+      event.preventDefault();
+      callback();
+    }
+  });
+}
