@@ -100,12 +100,3 @@ export function handleEnterPress(event: React.KeyboardEvent<HTMLInputElement>, c
     callback();
   }
 }
-
-export function listenOnCtrlS(callback: () => void) {
-  document.addEventListener("keydown", (event) => {
-    if (event.key === "s" && (event.ctrlKey || event.metaKey)) {
-      event.preventDefault();
-      callback();
-    }
-  });
-}
