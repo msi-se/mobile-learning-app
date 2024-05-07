@@ -7,7 +7,7 @@ import { Label } from "@radix-ui/react-dropdown-menu";
 import { useRouter, useSearchParams } from 'next/navigation'
 import { useState, useEffect, useCallback } from "react";
 import { toast } from "sonner";
-import { CircleArrowLeft, Loader2, Save, SlidersHorizontal, SquareCheckBig, Star, TextCursorInput, CircleCheck, CircleDashed } from 'lucide-react';
+import { CircleArrowLeft, Loader2, Save, SlidersHorizontal, SquareCheckBig, Star, TextCursorInput, CircleCheck, CircleDashed, ToggleLeft, ListTodo } from 'lucide-react';
 import { hasValidJwtToken } from "@/lib/utils";
 import * as React from "react"
 import {
@@ -18,7 +18,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
-import { FeedbackQuestion } from "@/lib/models";
+import { QuizQuestion } from "@/lib/models";
 import { DeleteButton } from "@/components/delete-button";
 import {
   Select,
@@ -27,14 +27,24 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import { deleteFeedbackQuestion, fetchFeedbackQuestion, updateFeedbackQuestion } from "@/lib/requests";
+import { deleteQuizQuestion, fetchQuizQuestion, updateQuizQuestion } from "@/lib/requests";
+import { Checkbox } from "@/components/ui/checkbox";
 
 
-export default function FeedbackQuestionPage({ params }: { params: { courseId: string, formId: string, questionId: string } }) {
+export default function QuizQuestionPage({ params }: { params: { courseId: string, formId: string, questionId: string } }) {
 
   const router = useRouter();
   const [loading, setLoading] = useState(true);
-  const [feedbackQuestion, setFeedbackQuestion] = useState<FeedbackQuestion | null>(null);
+  const [quizQuestion, setQuizQuestion] = useState<QuizQuestion>({
+    id: "",
+    key: "",
+    name: "",
+    description: "",
+    type: "YES_NO",
+    options: [],
+    hasCorrectAnswers: true,
+    correctAnswers: ["yes"]
+  });
   const [userChangedSomething, setUserChangedSomething] = useState(false);
   const [isNew, setIsNew] = useState(false);
   const searchParams = useSearchParams()
@@ -48,9 +58,9 @@ export default function FeedbackQuestionPage({ params }: { params: { courseId: s
   }, [searchParams]);
 
   const save = useCallback(async (logSuccess: boolean = true) => {
-    const result = await updateFeedbackQuestion(params.courseId, params.formId, params.questionId, feedbackQuestion?.name || "", feedbackQuestion?.description || "", feedbackQuestion?.type || "", feedbackQuestion?.options || [], feedbackQuestion?.rangeLow || "", feedbackQuestion?.rangeHigh || "");
+    const result = await updateQuizQuestion(params.courseId, params.formId, params.questionId, quizQuestion?.name, quizQuestion?.description, quizQuestion?.type, quizQuestion?.options || [], quizQuestion?.hasCorrectAnswers, quizQuestion?.correctAnswers || []);
     if (result) {
-      setFeedbackQuestion(result);
+      setQuizQuestion(result);
       setUserChangedSomething(false);
 
       if (logSuccess) {
@@ -60,21 +70,21 @@ export default function FeedbackQuestionPage({ params }: { params: { courseId: s
     } else {
       toast.error("Failed to save.");
     }
-  }, [feedbackQuestion, params.courseId, params.formId, params.questionId]);
+  }, [quizQuestion, params.courseId, params.formId, params.questionId]);
 
   useEffect(() => {
-    const loadFeedbackQuestion = async () => {
+    const loadQuizQuestion = async () => {
       setLoading(true);
-      let feedbackquestion = await fetchFeedbackQuestion(params.courseId, params.formId, params.questionId);
-      if (!feedbackquestion) {
-        toast.error("FeedbackQuestion not found.");
+      let quizquestion = await fetchQuizQuestion(params.courseId, params.formId, params.questionId);
+      if (!quizquestion) {
+        toast.error("QuizQuestion not found.");
         router.back();
         return;
       }
-      setFeedbackQuestion(feedbackquestion);
+      setQuizQuestion(quizquestion);
       setLoading(false);
     };
-    loadFeedbackQuestion();
+    loadQuizQuestion();
   }, [params.courseId, params.formId, params.questionId, router]);
 
 
@@ -110,7 +120,7 @@ export default function FeedbackQuestionPage({ params }: { params: { courseId: s
               className="mb-4 self-start text-sm"
               onClick={() => {
                 if (userChangedSomething) save();
-                router.push(`/courses/${params.courseId}/feedbackform/${params.formId}`)
+                router.push(`/courses/${params.courseId}/quizform/${params.formId}`)
               }}
             >
               <CircleArrowLeft />
@@ -119,10 +129,10 @@ export default function FeedbackQuestionPage({ params }: { params: { courseId: s
               <DeleteButton
                 className="mb-4 self-end"
                 onDelete={async () => {
-                  const result = await deleteFeedbackQuestion(params.courseId, params.formId, params.questionId);
+                  const result = await deleteQuizQuestion(params.courseId, params.formId, params.questionId);
                   if (result) {
-                    router.push(`/courses/${params.courseId}/feedbackform/${params.formId}`);
-                    toast.success("FeedbackQuestion deleted.");
+                    router.push(`/courses/${params.courseId}/quizform/${params.formId}`);
+                    toast.success("QuizQuestion deleted.");
                   }
                 }}
               />
@@ -160,7 +170,7 @@ export default function FeedbackQuestionPage({ params }: { params: { courseId: s
 
           </div>
           <h1 className="text-2xl mb-4 font-bold">
-            Feedback-Question: {feedbackQuestion?.name}
+            Quiz-Question: {quizQuestion?.name}
           </h1>
           <Card className="w-full">
             <CardContent>
@@ -170,113 +180,143 @@ export default function FeedbackQuestionPage({ params }: { params: { courseId: s
                 onFocus={(e) => {
                   if (isNew) e.target.select();
                 }}
-                value={feedbackQuestion?.name}
+                value={quizQuestion?.name}
                 onChange={(e) => {
-                  setFeedbackQuestion({
-                    ...feedbackQuestion,
-                    id: feedbackQuestion?.id || "",
-                    key: feedbackQuestion?.key || "",
-                    description: feedbackQuestion?.description || "",
-                    type: feedbackQuestion?.type || "SLIDER",
+                  setQuizQuestion({
+                    ...quizQuestion,
+                    id: quizQuestion?.id || "",
+                    key: quizQuestion?.key || "",
+                    description: quizQuestion?.description || "",
+                    type: quizQuestion?.type || "YES_NO",
                     name: e.target.value || ""
                   });
                   setUserChangedSomething(true);
                 }}
-                placeholder="FeedbackQuestion name"
+                placeholder="QuizQuestion name"
                 className="font-bold bor"
               />
               <Label className="mt-2">Description</Label>
               <Input
-                value={feedbackQuestion?.description}
+                value={quizQuestion?.description}
                 onChange={(e) => {
-                  setFeedbackQuestion({
-                    ...feedbackQuestion,
-                    id: feedbackQuestion?.id || "",
-                    key: feedbackQuestion?.key || "",
-                    name: feedbackQuestion?.name || "",
-                    type: feedbackQuestion?.type || "SLIDER",
+                  setQuizQuestion({
+                    ...quizQuestion,
+                    id: quizQuestion?.id || "",
+                    key: quizQuestion?.key || "",
+                    name: quizQuestion?.name || "",
+                    type: quizQuestion?.type || "SLIDER",
                     description: e.target.value
                   });
                   setUserChangedSomething(true);
                 }}
-                placeholder="FeedbackQuestion description"
+                placeholder="QuizQuestion description"
               />
-              <Label className="mt-2">Type</Label> {/* "SLIDER"| "STARS"| "SINGLE_CHOICE"| "FULLTEXT" */}
-              <Select defaultValue={feedbackQuestion?.type} onValueChange={(value) => {
+              <Label className="mt-2">Type</Label>
+              <Select defaultValue={quizQuestion?.type} onValueChange={(value) => {
                 console.log("value", value);
-                setFeedbackQuestion({
-                  ...feedbackQuestion,
-                  type: value as "SLIDER" | "STARS" | "SINGLE_CHOICE" | "FULLTEXT",
-                  id: feedbackQuestion?.id || "",
-                  key: feedbackQuestion?.key || "",
-                  name: feedbackQuestion?.name || "",
-                  description: feedbackQuestion?.description || ""
+                setQuizQuestion({
+                  ...quizQuestion,
+                  type: value as "SINGLE_CHOICE" | "YES_NO" | "MULTIPLE_CHOICE" | "FULLTEXT"
                 });
                 setUserChangedSomething(true);
               }}>
                 <SelectTrigger>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                    {feedbackQuestion?.type === "SLIDER" && <SlidersHorizontal size={iconSize}/>}
-                    {feedbackQuestion?.type === "STARS" && <Star size={iconSize}/>}
-                    {feedbackQuestion?.type === "SINGLE_CHOICE" && <SquareCheckBig size={iconSize}/>}
-                    {feedbackQuestion?.type === "FULLTEXT" && <TextCursorInput size={iconSize}/>}
-                    <SelectValue>{feedbackQuestion?.type}</SelectValue>
+                    {quizQuestion?.type === "YES_NO" && <ToggleLeft size={iconSize} />}
+                    {quizQuestion?.type === "MULTIPLE_CHOICE" && <ListTodo size={iconSize} />}
+                    {quizQuestion?.type === "SINGLE_CHOICE" && <SquareCheckBig size={iconSize} />}
+                    {quizQuestion?.type === "FULLTEXT" && <TextCursorInput size={iconSize} />}
+                    <SelectValue>{quizQuestion?.type}</SelectValue>
                   </div>
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="SLIDER">
+                  <SelectItem value="YES_NO">
                     <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                      <SlidersHorizontal size={iconSize} />
-                      <span>Slider</span>
+                      <ToggleLeft size={iconSize} />
+                      <span>Yes/No</span>
                     </div>
                   </SelectItem>
-                  <SelectItem value="STARS">
+                  <SelectItem value="MULTIPLE_CHOICE">
                     <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                      <Star size={iconSize}/>
-                      <span>Stars</span>
+                      <ListTodo size={iconSize} />
+                      <span>Multiple Choice</span>
                     </div>
                   </SelectItem>
                   <SelectItem value="SINGLE_CHOICE">
                     <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                      <SquareCheckBig size={iconSize}/>
+                      <SquareCheckBig size={iconSize} />
                       <span>Single Choice</span>
                     </div>
                   </SelectItem>
                   <SelectItem value="FULLTEXT">
                     <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                      <TextCursorInput size={iconSize}/>
+                      <TextCursorInput size={iconSize} />
                       <span>Fulltext</span>
                     </div>
                   </SelectItem>
                 </SelectContent>
               </Select>
+              <Label className="mt-2">Correct Answers</Label>
+              <div className="flex gap-4">
+              <Checkbox
+                checked={quizQuestion?.hasCorrectAnswers}
+                onCheckedChange={(checked) => {
+                  checked = checked as boolean || false;
+                  setQuizQuestion({
+                    ...quizQuestion,
+                    hasCorrectAnswers: checked
+                  });
+                  setUserChangedSomething(true);
+                }}
+              />
+              <Label>Has Correct Answers</Label>
+              </div>
 
-              {feedbackQuestion?.type === "SLIDER" && (
-                <>
-                  <Label className="mt-2">Range-Low</Label>
-                  <Input
-                    value={feedbackQuestion?.rangeLow}
-                    onChange={(e) => {
-                      setFeedbackQuestion({ ...feedbackQuestion, rangeLow: e.target.value });
+              {/* if yes/no -> display checkboxes for yes and no */}
+              {quizQuestion?.type === "YES_NO" && quizQuestion?.hasCorrectAnswers && (
+                <div className="flex gap-4">
+                  <Checkbox
+                    checked={quizQuestion?.correctAnswers?.includes("yes")}
+                    onCheckedChange={(checked) => {
+                      checked = checked as boolean || false;
+                      let correctAnswers = quizQuestion?.correctAnswers || [];
+                      if (checked) {
+                        correctAnswers.push("yes");
+                      } else {
+                        correctAnswers = correctAnswers.filter(a => a !== "yes");
+                      }
+                      setQuizQuestion({
+                        ...quizQuestion,
+                        correctAnswers: correctAnswers
+                      });
                       setUserChangedSomething(true);
                     }}
-                    placeholder={"Very Bad"}
                   />
-                  <Label className="mt-2">Range-High</Label>
-                  <Input
-                    value={feedbackQuestion?.rangeHigh}
-                    onChange={(e) => {
-                      setFeedbackQuestion({ ...feedbackQuestion, rangeHigh: e.target.value });
+                  <Label>Yes</Label>
+                  <Checkbox
+                    checked={quizQuestion?.correctAnswers?.includes("no")}
+                    onCheckedChange={(checked) => {
+                      checked = checked as boolean || false;
+                      let correctAnswers = quizQuestion?.correctAnswers || [];
+                      if (checked) {
+                        correctAnswers.push("no");
+                      } else {
+                        correctAnswers = correctAnswers.filter(a => a !== "no");
+                      }
+                      setQuizQuestion({
+                        ...quizQuestion,
+                        correctAnswers: correctAnswers
+                      });
                       setUserChangedSomething(true);
                     }}
-                    placeholder={"Very Good"}
                   />
-                </>
+                  <Label>No</Label>
+                </div>
               )}
             </CardContent>
           </Card>
           { /* Options */}
-          {feedbackQuestion?.type === "SINGLE_CHOICE" && (
+          {quizQuestion?.type === "SINGLE_CHOICE" || quizQuestion?.type === "MULTIPLE_CHOICE" && (
             <>
               <div className="flex justify-between w-full mb-4 mt-8 flex-grow flex-wrap gap-4">
                 <h2 className="text-2xl">Options</h2>
@@ -284,7 +324,7 @@ export default function FeedbackQuestionPage({ params }: { params: { courseId: s
                   <Button
                     className="flex flex-col self-end"
                     onClick={() => {
-                      setFeedbackQuestion({ ...feedbackQuestion, options: [...feedbackQuestion.options || [], ""] });
+                      setQuizQuestion({ ...quizQuestion, options: [...quizQuestion.options || [], ""] });
                       setUserChangedSomething(true);
                       setFocusLastRow(true);
                     }}
@@ -295,44 +335,55 @@ export default function FeedbackQuestionPage({ params }: { params: { courseId: s
                 <TableHeader className="bg-gray-100">
                   <TableRow>
                     <TableHead>Option</TableHead>
+
+                    {quizQuestion?.hasCorrectAnswers && (
+                      <TableHead>Correct</TableHead>
+                    )}
+
                     <TableHead></TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {feedbackQuestion?.options?.map((question, index) => (
+                  {quizQuestion?.options?.map((question, index) => (
                     <TableRow key={index}>
                       <TableCell>
                         <Input
                           value={question}
                           onChange={(e) => {
-                            setFeedbackQuestion({
-                              ...feedbackQuestion,
-                              options: feedbackQuestion.options?.map((q, i) => i === index ? e.target.value : q)
+                            setQuizQuestion({
+                              ...quizQuestion,
+                              options: quizQuestion.options?.map((q, i) => i === index ? e.target.value : q)
                             });
                             setUserChangedSomething(true);
                           }}
                           placeholder="Option"
                           onBlur={() => {
-                            if ((feedbackQuestion?.options?.filter(q => q === "").length || 0) > 0) {
-                              setFeedbackQuestion({
-                                ...feedbackQuestion,
-                                options: feedbackQuestion.options?.filter(q => q !== "")
+                            if ((quizQuestion?.options?.filter(q => q === "").length || 0) > 0) {
+                              setQuizQuestion({
+                                ...quizQuestion,
+                                options: quizQuestion.options?.filter(q => q !== "")
                               });
                               setUserChangedSomething(true);
                             }
                           }}
-                          autoFocus={focusLastRow && index === (feedbackQuestion?.options?.length || 0) - 1}
+                          autoFocus={focusLastRow && index === (quizQuestion?.options?.length || 0) - 1}
                         />
 
                       </TableCell>
+
+                      {/* {quizQuestion?.hasCorrectAnswers && (
+                          // TODO: add checkbox
+                          null
+                        )} */}
+
                       <TableCell>
                         <Button
                           variant="outline"
                           className="hover:bg-red-500 hover:text-white"
                           onClick={() => {
-                            setFeedbackQuestion({
-                              ...feedbackQuestion,
-                              options: feedbackQuestion.options?.filter((q, i) => i !== index)
+                            setQuizQuestion({
+                              ...quizQuestion,
+                              options: quizQuestion.options?.filter((q, i) => i !== index)
                             });
                             setUserChangedSomething(true);
                           }}
@@ -341,12 +392,12 @@ export default function FeedbackQuestionPage({ params }: { params: { courseId: s
                     </TableRow>
                   ))}
 
-                  {feedbackQuestion?.options?.length === 0 && (
+                  {quizQuestion?.options?.length === 0 && (
 
                     <TableRow
                       className="hover:cursor-pointer hover:text-blue-500"
                       onClick={() => {
-                        setFeedbackQuestion({ ...feedbackQuestion, options: [...feedbackQuestion.options || [], ""] });
+                        setQuizQuestion({ ...quizQuestion, options: [...quizQuestion.options || [], ""] });
                         setUserChangedSomething(true);
                         setFocusLastRow(true);
                       }}

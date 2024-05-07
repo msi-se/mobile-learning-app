@@ -619,6 +619,7 @@ public class MaintService {
         public String description;
         public String type;
         public List<String> options;
+        public Boolean hasCorrectAnswers;
         public List<String> correctAnswers;
     }
 
@@ -643,6 +644,7 @@ public class MaintService {
         quizQuestion.setName(request.name);
         quizQuestion.setDescription(request.description);
         quizQuestion.setOptions(request.options);
+        quizQuestion.setHasCorrectAnswers(request.hasCorrectAnswers);
         quizQuestion.setCorrectAnswers(request.correctAnswers);
         try {
             quizQuestion.setType(QuizQuestionType.valueOf(request.type));
@@ -658,6 +660,7 @@ public class MaintService {
         public String description;
         public String type;
         public List<String> options;
+        public Boolean hasCorrectAnswers;
         public List<String> correctAnswers;
     }
 
@@ -676,7 +679,7 @@ public class MaintService {
         }
         try {
             QuizQuestionType questionType = QuizQuestionType.valueOf(request.type);
-            QuizQuestion quizQuestion = new QuizQuestion(request.name, request.description, questionType, request.options, true, request.correctAnswers, "");
+            QuizQuestion quizQuestion = new QuizQuestion(request.name, request.description, questionType, request.options, request.hasCorrectAnswers, request.correctAnswers, "");
             course.addQuizQuestion(quizQuestion);
             QuestionWrapper questionWrapper = new QuestionWrapper(quizQuestion.getId(), new ArrayList<>());
             quizForm.addQuestion(questionWrapper);

@@ -1,4 +1,4 @@
-import { Course, FeedbackForm, FeedbackQuestion, QuizForm } from "./models";
+import { Course, FeedbackForm, FeedbackQuestion, QuizForm, QuizQuestion } from "./models";
 import { toast } from "sonner";
 import getBackendUrl from "@/lib/get-backend-url";
 
@@ -391,7 +391,7 @@ export async function deleteQuizForm(courseId: string, formId: string): Promise<
 
 // GET /maint/course/${courseId}/quiz/form/${formId}/question/${questionId}
 // getQuizQuestion(params.courseId, params.formId, params.questionId); -> Error | Name, Description, Type, Options, CorrectAnswers, HasCorrectAnswers
-export async function fetchQuizQuestion(courseId: string, formId: string, questionId: string): Promise<FeedbackQuestion | null> {
+export async function fetchQuizQuestion(courseId: string, formId: string, questionId: string): Promise<QuizQuestion | null> {
     const BACKEND_URL = await getBackendUrl();
     const jwtToken = localStorage.getItem("jwtToken");
     let quizQuestionResponse = await fetch(`${BACKEND_URL}/maint/course/${courseId}/quiz/form/${formId}/question/${questionId}`, {
@@ -410,7 +410,7 @@ export async function fetchQuizQuestion(courseId: string, formId: string, questi
 
 // PUT /maint/course/${courseId}/quiz/form/${formId}/question/${questionId} ({String name, String description, String type, String[] options, boolean hasCorrectAnswers, String[] correctAnswers})
 // updateQuizQuestion(params.courseId, params.formId, params.questionId, quizQuestion?.name, quizQuestion?.description, quizQuestion?.type, quizQuestion?.options, quizQuestion?.hasCorrectAnswers, quizQuestion?.correctAnswers) -> Error | Name, Description, Type, Options, CorrectAnswers, HasCorrectAnswers
-export async function updateQuizQuestion(courseId: string, formId: string, questionId: string, quizQuestionName: string, quizQuestionDescription: string, quizQuestionType: string, quizQuestionOptions: string[], quizQuestionHasCorrectAnswers: boolean, quizQuestionCorrectAnswers: string[]): Promise<FeedbackQuestion | null> {
+export async function updateQuizQuestion(courseId: string, formId: string, questionId: string, quizQuestionName: string, quizQuestionDescription: string, quizQuestionType: string, quizQuestionOptions: string[], quizQuestionHasCorrectAnswers: boolean, quizQuestionCorrectAnswers: string[]): Promise<QuizQuestion | null> {
     const BACKEND_URL = await getBackendUrl();
     const jwtToken = localStorage.getItem("jwtToken");
     let quizQuestionResponse = await fetch(`${BACKEND_URL}/maint/course/${courseId}/quiz/form/${formId}/question/${questionId}`, {
@@ -430,7 +430,7 @@ export async function updateQuizQuestion(courseId: string, formId: string, quest
 
 // POST /maint/course/${courseId}/quiz/form/${formId}/question ({String name, String description, String type, String[] options, boolean hasCorrectAnswers, String[] correctAnswers})
 // addQuizQuestion(params.courseId, params.formId, quizQuestion?.name, quizQuestion?.description, quizQuestion?.type, quizQuestion?.options, quizQuestion?.hasCorrectAnswers, quizQuestion?.correctAnswers) -> Error | Name, Description, Type, Options, CorrectAnswers, HasCorrectAnswers
-export async function addQuizQuestion(courseId: string, formId: string, quizQuestionName: string, quizQuestionDescription: string, quizQuestionType: string, quizQuestionOptions: string[], quizQuestionHasCorrectAnswers: boolean, quizQuestionCorrectAnswers: string[]): Promise<FeedbackQuestion | null> {
+export async function addQuizQuestion(courseId: string, formId: string, quizQuestionName: string, quizQuestionDescription: string, quizQuestionType: string, quizQuestionOptions: string[], quizQuestionHasCorrectAnswers: boolean, quizQuestionCorrectAnswers: string[]): Promise<QuizQuestion | null> {
     const BACKEND_URL = await getBackendUrl();
     const jwtToken = localStorage.getItem("jwtToken");
     let quizQuestionResponse = await fetch(`${BACKEND_URL}/maint/course/${courseId}/quiz/form/${formId}/question`, {
