@@ -278,8 +278,7 @@ export default function QuizFormPage({ params }: { params: { courseId: string, f
                 <TableHead>Name</TableHead>
                 <TableHead>Description</TableHead>
                 <TableHead>Options</TableHead>
-                <TableHead>RangeLow</TableHead>
-                <TableHead>RangeHigh</TableHead>
+                <TableHead>Correct Answers</TableHead>
                 <TableHead>Order</TableHead>
               </TableRow>
             </TableHeader>
@@ -302,6 +301,7 @@ export default function QuizFormPage({ params }: { params: { courseId: string, f
                   <TableCell className="font-medium">{question.name}</TableCell>
                   <TableCell>{question.description}</TableCell>
                   <TableCell>{question.options?.join(", ")}</TableCell>
+                  <TableCell>{question.correctAnswers?.map((a) => `"${a}"`).join(", ")|| "-"}</TableCell>
                   <TableCell className="flex gap-2 flex-col">
                     <Button
                       className="flex flex-col h-8 w-8"

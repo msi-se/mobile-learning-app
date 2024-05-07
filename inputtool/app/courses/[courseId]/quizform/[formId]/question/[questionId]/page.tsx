@@ -315,6 +315,90 @@ export default function QuizQuestionPage({ params }: { params: { courseId: strin
               )}
             </CardContent>
           </Card>
+
+          {(quizQuestion?.type === "FULLTEXT" && quizQuestion?.hasCorrectAnswers) && (
+            <>
+              <div className="flex justify-between w-full mb-4 mt-8 flex-grow flex-wrap gap-4">
+                <h2 className="text-2xl">Correct Answers</h2>
+                <div className="flex gap-4 justify-end">
+                  <Button
+                    className="flex flex-col self-end"
+                    onClick={() => {
+                      setQuizQuestion({ ...quizQuestion, correctAnswers: [...quizQuestion.correctAnswers || [], ""] });
+                      setUserChangedSomething(true);
+                      setFocusLastRow(true);
+                    }}
+                  >Add Correct Answer</Button>
+                </div>
+              </div>
+              <Table>
+                <TableBody>
+                  {quizQuestion?.correctAnswers?.map((answer, index) => (
+                    <TableRow key={index}>
+                      <TableCell>
+                        <Input
+                          value={answer}
+                          onChange={(e) => {
+                            setQuizQuestion({
+                              ...quizQuestion,
+                              correctAnswers: quizQuestion.correctAnswers?.map((a, i) => i === index ? e.target.value : a)
+                            });
+                            setUserChangedSomething(true);
+                          }}
+                          placeholder="Answer"
+                          onBlur={() => {
+                            if ((quizQuestion?.correctAnswers?.filter(q => q === "").length || 0) > 0) {
+                              setQuizQuestion({
+                                ...quizQuestion,
+                                correctAnswers: quizQuestion.correctAnswers?.filter(a => a !== "")
+                              });
+                              setUserChangedSomething(true);
+                            }
+                          }}
+                          autoFocus={focusLastRow && index === (quizQuestion?.correctAnswers?.length || 0) - 1}
+                        />
+
+                      </TableCell>
+
+                      <TableCell>
+                        <Button
+                          variant="outline"
+                          className="hover:bg-red-500 hover:text-white"
+                          onClick={() => {
+                            setQuizQuestion({
+                              ...quizQuestion,
+                              correctAnswers: quizQuestion.correctAnswers?.filter((a, i) => i !== index)
+                            });
+                            setUserChangedSomething(true);
+                          }}
+                        >Remove</Button>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+
+                  {quizQuestion?.correctAnswers?.length === 0 && (
+
+                    <TableRow
+                      className="hover:cursor-pointer hover:text-blue-500"
+                      onClick={() => {
+                        setQuizQuestion({ ...quizQuestion, correctAnswers: [...quizQuestion.correctAnswers || [], ""] });
+                        setUserChangedSomething(true);
+                        setFocusLastRow(true);
+                      }}
+                      onMouseEnter={() => setHoversOnCreateRow(true)}
+                      onMouseLeave={() => setHoversOnCreateRow(false)}
+                    >
+                      <TableCell colSpan={6} className="text-center">
+                        {hoversOnCreateRow ? "Create new correct answer" : "No correct answers found."}
+                      </TableCell>
+                    </TableRow>
+                  )}
+                </TableBody>
+              </Table>
+            </>
+          )}
+
+
           { /* Options */}
           {(quizQuestion?.type === "SINGLE_CHOICE" || quizQuestion?.type === "MULTIPLE_CHOICE") && (
             <>
@@ -374,7 +458,7 @@ export default function QuizQuestionPage({ params }: { params: { courseId: strin
                       <TableCell>
                         {quizQuestion?.hasCorrectAnswers && (
                           <Checkbox
-                            checked={quizQuestion?.correctAnswers?.includes(question)}
+                            checked={quizQuestion?.correctAnswers?.includes(index.toString())}
                             onCheckedChange={(checked) => {
                               checked = checked as boolean || false;
                               let correctAnswers = quizQuestion?.correctAnswers || [];
@@ -385,9 +469,9 @@ export default function QuizQuestionPage({ params }: { params: { courseId: strin
                               }
 
                               if (checked) {
-                                correctAnswers.push(question);
+                                correctAnswers.push(index.toString());
                               } else {
-                                correctAnswers = correctAnswers.filter(a => a !== question);
+                                correctAnswers = correctAnswers.filter(a => a !== index.toString());
                               }
                               setQuizQuestion({
                                 ...quizQuestion,
