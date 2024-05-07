@@ -7,7 +7,7 @@ import { Label } from "@radix-ui/react-dropdown-menu";
 import { useRouter, useSearchParams } from 'next/navigation'
 import { useState, useEffect, useCallback } from "react";
 import { toast } from "sonner";
-import { CircleArrowLeft, CircleCheck, CircleDashed, Loader2, Save, SlidersHorizontal, SquareCheckBig, Star, TextCursorInput } from 'lucide-react';
+import { CircleArrowLeft, CircleCheck, CircleDashed, Loader2, Save, SlidersHorizontal, SquareArrowDown, SquareArrowUp, SquareCheckBig, Star, TextCursorInput } from 'lucide-react';
 import { hasValidJwtToken } from "@/lib/utils";
 import * as React from "react"
 import {
@@ -20,7 +20,7 @@ import {
 } from "@/components/ui/table"
 import { FeedbackForm } from "@/lib/models";
 import { DeleteButton } from "@/components/delete-button";
-import { addFeedbackQuestion, copyFeedbackForm, deleteFeedbackForm, fetchFeedbackForm, updateFeedbackForm } from "@/lib/requests";
+import { addFeedbackQuestion, copyFeedbackForm, deleteFeedbackForm, fetchFeedbackForm, reorderFeedbackFormQuestions, updateFeedbackForm } from "@/lib/requests";
 import getBackendUrl from "@/lib/get-backend-url";
 import Link from "next/link";
 
@@ -28,27 +28,46 @@ export default function FeedbackFormPage({ params }: { params: { courseId: strin
 
   const router = useRouter();
   const [loading, setLoading] = useState(true);
-  const [feedbackformName, setFeedbackFormName] = useState("");
-  const [feedbackformDescription, setFeedbackFormDescription] = useState("");
   const [userChangedSomething, setUserChangedSomething] = useState(false);
   const [backendUrl, setBackendUrl] = useState("");
   const [isNew, setIsNew] = useState(false);
   const [hoversOnCreateRow, setHoversOnCreateRow] = useState(false);
   const searchParams = useSearchParams()
+  const [userChangedOrder, setUserChangedOrder] = useState(false);
 
   useEffect(() => {
     let isNew = searchParams.get("is-new") === "true"
     setIsNew(isNew);
   }, [searchParams]);
 
-  const [feedbackform, setFeedbackForm] = useState<FeedbackForm>();
+  const [feedbackform, setFeedbackForm] = useState<FeedbackForm>({
+    id: "",
+    name: "",
+    key: "",
+    type: "Feedback",
+    description: "",
+    questions: []
+  });
 
+  const save = useCallback(async (logSuccess: boolean = true, orderChanged: boolean = false) => {
+    if (orderChanged) {
+      const result = await reorderFeedbackFormQuestions(params.courseId, params.formId, feedbackform.questions.map(q => q.id));
+      if (result) {
+        setFeedbackForm({ ...feedbackform, questions: result.questions });
+        setUserChangedOrder(false);
+        setUserChangedSomething(false);
+        if (logSuccess) {
+          toast.success("Saved.");
+        }
+      } else {
+        toast.error("Failed to save.");
+      }
+    } 
 
-  const save = useCallback(async (logSuccess: boolean = true) => {
-    const result = await updateFeedbackForm(params.courseId, params.formId, feedbackformName, feedbackformDescription);
+    const result = await updateFeedbackForm(params.courseId, params.formId, feedbackform.name, feedbackform.description);
     if (result) {
-      setFeedbackFormName(result.name);
-      setFeedbackFormDescription(result.description);
+
+      setFeedbackForm({ ...feedbackform, name: result.name, description: result.description });
       setUserChangedSomething(false);
 
       if (logSuccess) {
@@ -58,7 +77,7 @@ export default function FeedbackFormPage({ params }: { params: { courseId: strin
     } else {
       toast.error("Failed to save.");
     }
-  }, [feedbackformDescription, feedbackformName, params.courseId, params.formId]);
+  }, [feedbackform, params.courseId, params.formId]);
 
   useEffect(() => {
     const loadFeedbackForm = async () => {
@@ -70,8 +89,6 @@ export default function FeedbackFormPage({ params }: { params: { courseId: strin
         return;
       }
       setFeedbackForm(feedbackform);
-      setFeedbackFormName(feedbackform.name);
-      setFeedbackFormDescription(feedbackform.description);
 
       let backendUrl = await getBackendUrl();
       setBackendUrl(backendUrl || "");
@@ -89,9 +106,45 @@ export default function FeedbackFormPage({ params }: { params: { courseId: strin
     if (!userChangedSomething) return;
 
     autosaveTimeout.current = setTimeout(() => {
-      save(false);
+      save(false, userChangedOrder);
     }, 2000);
-  }, [save, userChangedSomething]);
+  }, [save, userChangedOrder, userChangedSomething]);
+
+  const moveQuestionUp = async (questionId: string) => {
+    let question = feedbackform?.questions.find(q => q.id === questionId);
+    if (!question) return;
+
+    let index = feedbackform?.questions.indexOf(question);
+    if (index === undefined || index === null) return;
+
+    if (index === 0) return;
+
+    let newQuestions = [...feedbackform?.questions || []];
+    newQuestions.splice(index, 1);
+    newQuestions.splice(index - 1, 0, question);
+
+    setFeedbackForm({ ...feedbackform, questions: newQuestions });
+    setUserChangedSomething(true);
+    setUserChangedOrder(true);
+  }
+
+  const moveQuestionDown = async (questionId: string) => {
+    let question = feedbackform?.questions.find(q => q.id === questionId);
+    if (!question) return;
+
+    let index = feedbackform?.questions.indexOf(question);
+    if (index === undefined || index === null) return;
+
+    if (index === feedbackform?.questions.length - 1) return;
+
+    let newQuestions = [...feedbackform?.questions || []];
+    newQuestions.splice(index, 1);
+    newQuestions.splice(index + 1, 0, question);
+
+    setFeedbackForm({ ...feedbackform, questions: newQuestions });
+    setUserChangedSomething(true);
+    setUserChangedOrder(true);
+  }
 
   return (
     <div className="flex flex-col items-center justify-center h-max m-4">
@@ -166,7 +219,7 @@ export default function FeedbackFormPage({ params }: { params: { courseId: strin
 
           </div>
           <h1 className="text-2xl mb-4 font-bold">
-            Feedback-Form: {feedbackformName}
+            Feedback-Form: {feedbackform.name}
           </h1>
           <Card className="w-full">
             <CardContent>
@@ -176,9 +229,9 @@ export default function FeedbackFormPage({ params }: { params: { courseId: strin
                 onFocus={(e) => {
                   if (isNew) e.target.select();
                 }}
-                value={feedbackformName}
+                value={feedbackform.name}
                 onChange={(e) => {
-                  setFeedbackFormName(e.target.value);
+                  setFeedbackForm({ ...feedbackform, name: e.target.value });
                   setUserChangedSomething(true);
                 }}
                 placeholder="FeedbackForm name"
@@ -186,9 +239,9 @@ export default function FeedbackFormPage({ params }: { params: { courseId: strin
               />
               <Label className="mt-2">Description</Label>
               <Input
-                value={feedbackformDescription}
+                value={feedbackform.description}
                 onChange={(e) => {
-                  setFeedbackFormDescription(e.target.value);
+                  setFeedbackForm({ ...feedbackform, description: e.target.value });
                   setUserChangedSomething(true);
                 }}
                 placeholder="FeedbackForm description"
@@ -227,6 +280,7 @@ export default function FeedbackFormPage({ params }: { params: { courseId: strin
                 <TableHead>Options</TableHead>
                 <TableHead>RangeLow</TableHead>
                 <TableHead>RangeHigh</TableHead>
+                <TableHead>Order</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -250,6 +304,24 @@ export default function FeedbackFormPage({ params }: { params: { courseId: strin
                   <TableCell>{question.options?.join(", ")}</TableCell>
                   <TableCell>{question.rangeLow}</TableCell>
                   <TableCell>{question.rangeHigh}</TableCell>
+                  <TableCell className="flex gap-2 flex-col">
+                    <Button
+                      className="flex flex-col h-8 w-8"
+                      variant="outline"
+                      onClick={async (e) => {
+                        e.stopPropagation();
+                        moveQuestionUp(question.id);
+                      }}
+                    ><SquareArrowUp /></Button>
+                    <Button
+                      className="flex flex-col h-8 w-8"
+                      variant="outline"
+                      onClick={async (e) => {
+                        e.stopPropagation();
+                        moveQuestionDown(question.id);
+                      }}
+                    ><SquareArrowDown /></Button>
+                  </TableCell>
                 </TableRow>
               ))}
               {feedbackform?.questions.length === 0 && (

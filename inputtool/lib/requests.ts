@@ -130,6 +130,25 @@ export async function updateFeedbackForm(courseId: string, formId: string, feedb
     return feedbackForm;
 }
 
+// PUT /maint/course/${courseId}/feedback/form/${formId}/reorder ({String[] questionIds})
+// reorderFeedbackFormQuestions(params.courseId, params.formId, questionIds) -> Error | Name, Description, Questions (Name, Description, Type, Options, RangeLow, RangeHigh)
+export async function reorderFeedbackFormQuestions(courseId: string, formId: string, questionIds: string[]): Promise<FeedbackForm | null> {
+    const BACKEND_URL = await getBackendUrl();
+    const jwtToken = localStorage.getItem("jwtToken");
+    let feedbackFormResponse = await fetch(`${BACKEND_URL}/maint/course/${courseId}/feedback/form/${formId}/reorder`, {
+        method: "PUT",
+        headers: { "AUTHORIZATION": "Bearer " + jwtToken, "Content-Type": "application/json" },
+        body: JSON.stringify({ questionIds })
+    });
+    if (feedbackFormResponse.status !== 200) {
+        toast.error(`Failed to reorder feedback form questions. Please try again. Status: ${feedbackFormResponse.status}`);
+        return null;
+    }
+    let feedbackForm = await feedbackFormResponse.json();
+    feedbackForm.questions = feedbackForm.questions.map((question: any) => { return {...question.questionContent, id: question.id} });
+    return feedbackForm;
+}
+
 // POST /maint/course/${courseId}/feedback/form ({String name, String description})
 // addFeedbackForm(params.courseId, feedbackformName, feedbackformDescription) -> Error | Name, Description, Questions (Name, Description, Type, Options, RangeLow, RangeHigh)
 export async function addFeedbackForm(courseId: string, feedbackformName: string, feedbackformDescription: string): Promise<FeedbackForm | null> {

@@ -220,6 +220,38 @@ public class MaintService {
         return getFeedbackForm(courseId, formId);
     }
 
+    // PUT /maint/course/${courseId}/feedback/form/${formId}/reorder ({String[] questionIds})
+    // reorderFeedbackFormQuestions(params.courseId, params.formId, questionIds) -> Error | Name, Description, Questions (Name, Description, Type, Options, RangeLow, RangeHigh)
+    static class ReorderFeedbackFormQuestionsRequest {
+        public List<String> questionIds;
+    }
+
+    @PUT
+    @Produces(MediaType.APPLICATION_JSON)
+    @RolesAllowed({ UserRole.PROF, UserRole.STUDENT })
+    @Path("/course/{courseId}/feedback/form/{formId}/reorder")
+    public FeedbackForm reorderFeedbackFormQuestions(@RestPath String courseId, @RestPath String formId, ReorderFeedbackFormQuestionsRequest request) {
+        Course course = courseRepository.findById(new ObjectId(courseId));
+        if (!isOwner(course)) {
+            throw new NotFoundException();
+        }
+        FeedbackForm feedbackForm = course.getFeedbackFormById(new ObjectId(formId));
+        if (feedbackForm == null) {
+            throw new NotFoundException();
+        }
+        List<QuestionWrapper> reorderedQuestions = new ArrayList<>();
+        for (String questionId : request.questionIds) {
+            QuestionWrapper questionWrapper = feedbackForm.getQuestionById(new ObjectId(questionId));
+            if (questionWrapper == null) {
+                throw new NotFoundException();
+            }
+            reorderedQuestions.add(questionWrapper);
+        }
+        feedbackForm.setQuestions(reorderedQuestions);
+        courseRepository.update(course);
+        return getFeedbackForm(courseId, formId);
+    }
+
     static class AddFeedbackFormRequest {
         public String name;
         public String description;
