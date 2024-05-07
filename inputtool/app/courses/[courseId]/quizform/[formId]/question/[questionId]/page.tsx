@@ -8,7 +8,7 @@ import { useRouter, useSearchParams } from 'next/navigation'
 import { useState, useEffect, useCallback } from "react";
 import { toast } from "sonner";
 import { CircleArrowLeft, Loader2, Save, SlidersHorizontal, SquareCheckBig, Star, TextCursorInput, CircleCheck, CircleDashed, ToggleLeft, ListTodo } from 'lucide-react';
-import { hasValidJwtToken } from "@/lib/utils";
+import { handleEnterPress, hasValidJwtToken } from "@/lib/utils";
 import * as React from "react"
 import {
   Table,
@@ -194,6 +194,7 @@ export default function QuizQuestionPage({ params }: { params: { courseId: strin
                 }}
                 placeholder="QuizQuestion name"
                 className="font-bold bor"
+                onKeyDown={(e) => handleEnterPress(e, save)}
               />
               <Label className="mt-2">Description</Label>
               <Input
@@ -210,6 +211,7 @@ export default function QuizQuestionPage({ params }: { params: { courseId: strin
                   setUserChangedSomething(true);
                 }}
                 placeholder="QuizQuestion description"
+                onKeyDown={(e) => handleEnterPress(e, save)}
               />
               <Label className="mt-2">Type</Label>
               <Select defaultValue={quizQuestion?.type} onValueChange={(value) => {
@@ -236,12 +238,13 @@ export default function QuizQuestionPage({ params }: { params: { courseId: strin
                       <span>Yes/No</span>
                     </div>
                   </SelectItem>
-                  <SelectItem value="MULTIPLE_CHOICE">
+                  {/* NOT YET SUPPORTED */}
+                  {/* <SelectItem value="MULTIPLE_CHOICE">
                     <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                       <ListTodo size={iconSize} />
                       <span>Multiple Choice</span>
                     </div>
-                  </SelectItem>
+                  </SelectItem> */}
                   <SelectItem value="SINGLE_CHOICE">
                     <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                       <SquareCheckBig size={iconSize} />
@@ -356,6 +359,7 @@ export default function QuizQuestionPage({ params }: { params: { courseId: strin
                             }
                           }}
                           autoFocus={focusLastRow && index === (quizQuestion?.correctAnswers?.length || 0) - 1}
+                          onKeyDown={(e) => handleEnterPress(e, save)}
                         />
 
                       </TableCell>
@@ -451,6 +455,7 @@ export default function QuizQuestionPage({ params }: { params: { courseId: strin
                             }
                           }}
                           autoFocus={focusLastRow && index === (quizQuestion?.options?.length || 0) - 1}
+                          onKeyDown={(e) => handleEnterPress(e, save)}
                         />
 
                       </TableCell>

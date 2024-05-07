@@ -10,7 +10,7 @@ export function cn(...inputs: ClassValue[]) {
 }
 
 export async function hasValidJwtToken(): Promise<boolean> {
-  const jwtToken = localStorage.getItem("jwtToken");
+  const jwtToken = localStorage?.getItem("jwtToken");
   if (!jwtToken) {
     return false;
   }
@@ -89,4 +89,14 @@ export async function login(username: string, password: string): Promise<boolean
   }
   localStorage.setItem("jwtToken", jwt);
   return true;
+}
+
+
+export function handleEnterPress(event: React.KeyboardEvent<HTMLInputElement>, callback: () => void) {
+  if (event.key === "Enter" && !event.shiftKey && !event.ctrlKey && !event.altKey && !event.metaKey) {
+    event.preventDefault();
+    event.stopPropagation();
+    event.currentTarget.blur();
+    callback();
+  }
 }

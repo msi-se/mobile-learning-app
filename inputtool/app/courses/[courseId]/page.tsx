@@ -8,7 +8,7 @@ import { useRouter, useSearchParams } from 'next/navigation'
 import { useState, useEffect, useCallback } from "react";
 import { toast } from "sonner";
 import { Check, Circle, CircleArrowLeft, CircleCheck, CircleDashed, Loader2, Save } from 'lucide-react';
-import { hasValidJwtToken } from "@/lib/utils";
+import { handleEnterPress, hasValidJwtToken } from "@/lib/utils";
 import * as React from "react"
 import {
   Table,
@@ -176,6 +176,7 @@ export default function CoursePage({ params }: { params: { courseId: string } })
                     }}
                     placeholder="Course name"
                     className="font-bold"
+                    onKeyDown={(e) => handleEnterPress(e, save)}
                   />
                 </div>
                 <div className="flex flex-col flex-grow">
@@ -187,6 +188,7 @@ export default function CoursePage({ params }: { params: { courseId: string } })
                       setUserChangedSomething(true);
                     }}
                     placeholder="Moodle Course ID"
+                    onKeyDown={(e) => handleEnterPress(e, save)}
                   />
                 </div>
               </div>
@@ -199,6 +201,7 @@ export default function CoursePage({ params }: { params: { courseId: string } })
                     setUserChangedSomething(true);
                   }}
                   placeholder="Course Description"
+                  onKeyDown={(e) => handleEnterPress(e, save)}
                 />
               </div>
 
