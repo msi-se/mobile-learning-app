@@ -4,12 +4,14 @@ class MenuCard extends StatefulWidget {
   final String title;
   final String description;
   final List<RowData> rowData;
+  final Color cardColor;
 
   const MenuCard({
     Key? key,
     required this.title,
     required this.description,
     required this.rowData,
+    required this.cardColor,
   }) : super(key: key);
 
   @override
@@ -45,7 +47,7 @@ class _MenuCardState extends State<MenuCard>
         padding: const EdgeInsets.all(2),
         child: Card(
           // Replace Container with Card
-          color: colors.onPrimary,
+          color: widget.cardColor,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(20),
           ),
@@ -60,13 +62,13 @@ class _MenuCardState extends State<MenuCard>
                     widget.title == 'Seezeit-Teller'
                         ? Icons.restaurant
                         : widget.title == 'hin&weg'
-                            ? Icons.arrow_circle_down
+                            ? Icons.texture
                             : widget.title == 'KombinierBar'
-                                ? Icons.bar_chart
+                                ? Icons.join_full
                                 : widget.title == 'Pasta'
-                                    ? Icons.paste
+                                    ? Icons.rice_bowl
                                     : widget.title == 'Pasta vegetarisch'
-                                        ? Icons.paste
+                                        ? Icons.rice_bowl
                                         : widget.title == 'Sättigung 1'
                                             ? Icons.house
                                             : widget.title == 'Sättigung 2'

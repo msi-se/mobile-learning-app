@@ -21,6 +21,12 @@ class _MenuPageState extends AuthState<MenuPage> with TickerProviderStateMixin {
   TabController? _tabController;
   int? initialTabIndex;
 
+  List<String> iconsVegan = ['24'];
+  List<String> iconsPescetarian = ['50'];
+  List<String> iconsVegetarian = ['51'];
+  List<String> iconsNotVegetarian = ['45', '46', '49', '23'];
+  List<String> iconsToTest = [];
+
   @override
   void initState() {
     super.initState();
@@ -56,8 +62,10 @@ class _MenuPageState extends AuthState<MenuPage> with TickerProviderStateMixin {
     }
 
     for (int i = 0; i < days.length; i++) {
-      final dayDate = DateTime.fromMillisecondsSinceEpoch(int.parse(days[i].timestamp) * 1000);
-      if (DateFormat('yyyy-MM-dd').format(adjustedNow) == DateFormat('yyyy-MM-dd').format(dayDate)) {
+      final dayDate = DateTime.fromMillisecondsSinceEpoch(
+          int.parse(days[i].timestamp) * 1000);
+      if (DateFormat('yyyy-MM-dd').format(adjustedNow) ==
+          DateFormat('yyyy-MM-dd').format(dayDate)) {
         return i;
       }
     }
@@ -65,11 +73,31 @@ class _MenuPageState extends AuthState<MenuPage> with TickerProviderStateMixin {
   }
 
   void _initTabController(int length, int initialIndex) {
-    _tabController = TabController(length: length, vsync: this, initialIndex: initialIndex);
+    _tabController =
+        TabController(length: length, vsync: this, initialIndex: initialIndex);
+  }
+
+  Color getColorBasedOnIcon(String icon) {
+    iconsToTest = icon.split(',');
+    print(iconsToTest);
+    for (var i in iconsToTest) {
+      if (iconsVegan.contains(i)) {
+        return Colors.green;
+      } else if (iconsPescetarian.contains(i)) {
+        return Colors.blue;
+      } else if (iconsVegetarian.contains(i)) {
+        return Colors.orange;
+      } else if (iconsNotVegetarian.contains(i)) {
+        return Colors.red;
+      }
+      return Theme.of(context).colorScheme.onPrimary;
+    }
+    return Theme.of(context).colorScheme.onPrimary;
   }
 
   @override
   Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
     return Scaffold(
       appBar: AppBar(
         title: const Text("Mensa Speiseplan",
@@ -80,11 +108,17 @@ class _MenuPageState extends AuthState<MenuPage> with TickerProviderStateMixin {
       body: FutureBuilder<MenuState>(
         future: menuStateFuture,
         builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.done && snapshot.hasData) {
-            if (_tabController == null || _tabController!.length != snapshot.data!.menu.days.length) {
+          if (snapshot.connectionState == ConnectionState.done &&
+              snapshot.hasData) {
+            if (_tabController == null ||
+                _tabController!.length != snapshot.data!.menu.days.length) {
               setState(() {
-                initialTabIndex = _findIndexOfCurrentDay(snapshot.data!.menu.days);
-                _tabController = TabController(vsync: this, length: snapshot.data!.menu.days.length, initialIndex: initialTabIndex!);
+                initialTabIndex =
+                    _findIndexOfCurrentDay(snapshot.data!.menu.days);
+                _tabController = TabController(
+                    vsync: this,
+                    length: snapshot.data!.menu.days.length,
+                    initialIndex: initialTabIndex!);
               });
             }
             return Column(
@@ -98,6 +132,30 @@ class _MenuPageState extends AuthState<MenuPage> with TickerProviderStateMixin {
                   indicatorColor: Theme.of(context).colorScheme.primary,
                   labelColor: Colors.black,
                 ),
+                Container(
+                  padding: EdgeInsets.all(8.0),
+                  child: const Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      LegendItem(
+                        color: Colors.green,
+                        description: 'Vegan',
+                      ),
+                      LegendItem(
+                        color: Colors.orange,
+                        description: 'Vegetarisch',
+                      ),
+                      LegendItem(
+                        color: Colors.red,
+                        description: 'Nicht vegetarisch',
+                      ),
+                      LegendItem(
+                        color: Colors.blue,
+                        description: 'Pesketarisch',
+                      ),
+                    ],
+                  ),
+                ),
                 Expanded(
                   child: TabBarView(
                     controller: _tabController,
@@ -107,11 +165,14 @@ class _MenuPageState extends AuthState<MenuPage> with TickerProviderStateMixin {
                         itemBuilder: (context, index) {
                           final item = day.items[index];
                           return MenuCard(
+                            cardColor: getColorBasedOnIcon(item.icons),
                             title: item.category,
                             description: item.title,
                             rowData: [
-                              RowData(label: 'Studierende:', value: item.preis1),
-                              RowData(label: 'Mitarbeiter:', value: item.preis2),
+                              RowData(
+                                  label: 'Studierende:', value: item.preis1),
+                              RowData(
+                                  label: 'Mitarbeiter:', value: item.preis2),
                               RowData(label: 'Gäste:', value: item.preis3),
                             ],
                           );
@@ -136,5 +197,34 @@ class _MenuPageState extends AuthState<MenuPage> with TickerProviderStateMixin {
   void dispose() {
     _tabController?.dispose();
     super.dispose();
+  }
+}
+
+class LegendItem extends StatelessWidget {
+  final Color color;
+  final String description;
+
+  const LegendItem({
+    required this.color,
+    required this.description,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        Container(
+          width: 20,
+          height: 20,
+          color: color,
+        ),
+        SizedBox(width: 5),
+        Text(
+          description,
+          style: TextStyle(fontSize: 10),
+        ),
+        SizedBox(width: 15),
+      ],
+    );
   }
 }
