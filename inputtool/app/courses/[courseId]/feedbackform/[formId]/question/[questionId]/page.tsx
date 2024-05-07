@@ -8,7 +8,7 @@ import { useRouter, useSearchParams } from 'next/navigation'
 import { useState, useEffect, useCallback } from "react";
 import { toast } from "sonner";
 import { CircleArrowLeft, Loader2, Save, SlidersHorizontal, SquareCheckBig, Star, TextCursorInput, CircleCheck, CircleDashed } from 'lucide-react';
-import { hasValidJwtToken } from "@/lib/utils";
+import { handleEnterPress, hasValidJwtToken } from "@/lib/utils";
 import * as React from "react"
 import {
   Table,
@@ -184,6 +184,7 @@ export default function FeedbackQuestionPage({ params }: { params: { courseId: s
                 }}
                 placeholder="FeedbackQuestion name"
                 className="font-bold bor"
+                onKeyDown={(e) => handleEnterPress(e, save)}
               />
               <Label className="mt-2">Description</Label>
               <Input
@@ -200,6 +201,7 @@ export default function FeedbackQuestionPage({ params }: { params: { courseId: s
                   setUserChangedSomething(true);
                 }}
                 placeholder="FeedbackQuestion description"
+                onKeyDown={(e) => handleEnterPress(e, save)}
               />
               <Label className="mt-2">Type</Label> {/* "SLIDER"| "STARS"| "SINGLE_CHOICE"| "FULLTEXT" */}
               <Select defaultValue={feedbackQuestion?.type} onValueChange={(value) => {
@@ -261,6 +263,7 @@ export default function FeedbackQuestionPage({ params }: { params: { courseId: s
                       setUserChangedSomething(true);
                     }}
                     placeholder={"Very Bad"}
+                    onKeyDown={(e) => handleEnterPress(e, save)}
                   />
                   <Label className="mt-2">Range-High</Label>
                   <Input
@@ -270,6 +273,7 @@ export default function FeedbackQuestionPage({ params }: { params: { courseId: s
                       setUserChangedSomething(true);
                     }}
                     placeholder={"Very Good"}
+                    onKeyDown={(e) => handleEnterPress(e, save)}
                   />
                 </>
               )}
@@ -322,6 +326,7 @@ export default function FeedbackQuestionPage({ params }: { params: { courseId: s
                             }
                           }}
                           autoFocus={focusLastRow && index === (feedbackQuestion?.options?.length || 0) - 1}
+                          onKeyDown={(e) => handleEnterPress(e, save)}
                         />
 
                       </TableCell>

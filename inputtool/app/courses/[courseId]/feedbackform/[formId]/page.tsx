@@ -8,7 +8,7 @@ import { useRouter, useSearchParams } from 'next/navigation'
 import { useState, useEffect, useCallback } from "react";
 import { toast } from "sonner";
 import { CircleArrowLeft, CircleCheck, CircleDashed, Loader2, Save, SlidersHorizontal, SquareArrowDown, SquareArrowUp, SquareCheckBig, Star, TextCursorInput } from 'lucide-react';
-import { hasValidJwtToken } from "@/lib/utils";
+import { handleEnterPress, hasValidJwtToken } from "@/lib/utils";
 import * as React from "react"
 import {
   Table,
@@ -234,8 +234,9 @@ export default function FeedbackFormPage({ params }: { params: { courseId: strin
                   setFeedbackForm({ ...feedbackform, name: e.target.value });
                   setUserChangedSomething(true);
                 }}
-                placeholder="FeedbackForm name"
+                placeholder="Feedback Form Name"
                 className="font-bold bor"
+                onKeyDown={(e) => handleEnterPress(e, save)}
               />
               <Label className="mt-2">Description</Label>
               <Input
@@ -244,7 +245,8 @@ export default function FeedbackFormPage({ params }: { params: { courseId: strin
                   setFeedbackForm({ ...feedbackform, description: e.target.value });
                   setUserChangedSomething(true);
                 }}
-                placeholder="FeedbackForm description"
+                placeholder="Feedback Form Description"
+                onKeyDown={(e) => handleEnterPress(e, save)}
               />
             </CardContent>
           </Card>
