@@ -84,16 +84,13 @@ export default function QuizFormPage({ params }: { params: { courseId: string, f
       setLoading(true);
       let quizform = await fetchQuizForm(params.courseId, params.formId);
       if (!quizform) {
-        toast.error("QuizForm not found.");
+        toast.error("Quiz Form not found.");
         router.back();
         return;
       }
       setQuizForm(quizform);
-
       let backendUrl = await getBackendUrl();
       setBackendUrl(backendUrl || "");
-      console.log(backendUrl);
-
       setLoading(false);
     };
     loadQuizForm();
@@ -181,7 +178,7 @@ export default function QuizFormPage({ params }: { params: { courseId: string, f
                 onDelete={async () => {
                   const result = await deleteQuizForm(params.courseId, params.formId);
                   if (result) {
-                    toast.success("QuizForm deleted.");
+                    toast.success("Quiz Form deleted.");
                     router.push(`/courses/${params.courseId}`);
                   }
                 }}
@@ -234,7 +231,7 @@ export default function QuizFormPage({ params }: { params: { courseId: string, f
                   setQuizForm({ ...quizform, name: e.target.value });
                   setUserChangedSomething(true);
                 }}
-                placeholder="QuizForm name"
+                placeholder="Quiz Name"
                 className="font-bold bor"
               />
               <Label className="mt-2">Description</Label>
@@ -244,7 +241,7 @@ export default function QuizFormPage({ params }: { params: { courseId: string, f
                   setQuizForm({ ...quizform, description: e.target.value });
                   setUserChangedSomething(true);
                 }}
-                placeholder="QuizForm description"
+                placeholder="Quiz Description"
               />
             </CardContent>
           </Card>
@@ -301,7 +298,15 @@ export default function QuizFormPage({ params }: { params: { courseId: string, f
                   <TableCell className="font-medium">{question.name}</TableCell>
                   <TableCell>{question.description}</TableCell>
                   <TableCell>{question.options?.join(", ")}</TableCell>
-                  <TableCell>{question.correctAnswers?.map((a) => `"${a}"`).join(", ")|| "-"}</TableCell>
+                  { (question?.type === "MULTIPLE_CHOICE" || question?.type === "SINGLE_CHOICE") && (
+                    <TableCell>{question.correctAnswers?.map((a) => {
+                      // find in options ["0"] -> "Option 1"
+                      let option = question.options?.find((o, i) => i.toString() === a);
+                      return option ? `"${option}"` : a;
+                    }).join(", ") || "-"}</TableCell>
+                  ) || (
+                    <TableCell>{question.correctAnswers?.map((a) => `"${a}"`).join(", ")|| "-"}</TableCell>
+                  )}
                   <TableCell className="flex gap-2 flex-col">
                     <Button
                       className="flex flex-col h-8 w-8"
