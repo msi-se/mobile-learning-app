@@ -238,12 +238,13 @@ export default function QuizQuestionPage({ params }: { params: { courseId: strin
                       <span>Yes/No</span>
                     </div>
                   </SelectItem>
-                  <SelectItem value="MULTIPLE_CHOICE">
+                  {/* NOT YET SUPPORTED */}
+                  {/* <SelectItem value="MULTIPLE_CHOICE">
                     <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                       <ListTodo size={iconSize} />
                       <span>Multiple Choice</span>
                     </div>
-                  </SelectItem>
+                  </SelectItem> */}
                   <SelectItem value="SINGLE_CHOICE">
                     <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                       <SquareCheckBig size={iconSize} />
