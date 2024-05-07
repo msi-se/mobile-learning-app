@@ -32,7 +32,7 @@ export type QuizQuestion = {
     key: string;
     name: string;
     description: string;
-    type: "YES_NO"| "SINGLE_CHOICE"| "MULTIPLE_CHOICE"| "WORD_CLOUD"| "FULLTEXT";
+    type: "YES_NO"| "SINGLE_CHOICE"| "MULTIPLE_CHOICE" | "FULLTEXT";
     options?: string[];
     hasCorrectAnswers: boolean;
     correctAnswers?: string[];

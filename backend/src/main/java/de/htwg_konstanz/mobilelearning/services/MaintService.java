@@ -10,6 +10,7 @@ import org.jboss.resteasy.reactive.RestPath;
 
 import de.htwg_konstanz.mobilelearning.enums.FeedbackQuestionType;
 import de.htwg_konstanz.mobilelearning.enums.FormStatus;
+import de.htwg_konstanz.mobilelearning.enums.QuizQuestionType;
 import de.htwg_konstanz.mobilelearning.helper.moodle.MoodleCourse;
 import de.htwg_konstanz.mobilelearning.helper.moodle.MoodleInterface;
 import de.htwg_konstanz.mobilelearning.models.Course;
@@ -20,6 +21,7 @@ import de.htwg_konstanz.mobilelearning.models.auth.UserRole;
 import de.htwg_konstanz.mobilelearning.models.feedback.FeedbackForm;
 import de.htwg_konstanz.mobilelearning.models.feedback.FeedbackQuestion;
 import de.htwg_konstanz.mobilelearning.models.quiz.QuizForm;
+import de.htwg_konstanz.mobilelearning.models.quiz.QuizQuestion;
 import de.htwg_konstanz.mobilelearning.repositories.CourseRepository;
 import de.htwg_konstanz.mobilelearning.repositories.UserRepository;
 import jakarta.annotation.security.RolesAllowed;
@@ -220,6 +222,38 @@ public class MaintService {
         return getFeedbackForm(courseId, formId);
     }
 
+    // PUT /maint/course/${courseId}/feedback/form/${formId}/reorder ({String[] questionIds})
+    // reorderFeedbackFormQuestions(params.courseId, params.formId, questionIds) -> Error | Name, Description, Questions (Name, Description, Type, Options, RangeLow, RangeHigh)
+    static class ReorderFeedbackFormQuestionsRequest {
+        public List<String> questionIds;
+    }
+
+    @PUT
+    @Produces(MediaType.APPLICATION_JSON)
+    @RolesAllowed({ UserRole.PROF, UserRole.STUDENT })
+    @Path("/course/{courseId}/feedback/form/{formId}/reorder")
+    public FeedbackForm reorderFeedbackFormQuestions(@RestPath String courseId, @RestPath String formId, ReorderFeedbackFormQuestionsRequest request) {
+        Course course = courseRepository.findById(new ObjectId(courseId));
+        if (!isOwner(course)) {
+            throw new NotFoundException();
+        }
+        FeedbackForm feedbackForm = course.getFeedbackFormById(new ObjectId(formId));
+        if (feedbackForm == null) {
+            throw new NotFoundException();
+        }
+        List<QuestionWrapper> reorderedQuestions = new ArrayList<>();
+        for (String questionId : request.questionIds) {
+            QuestionWrapper questionWrapper = feedbackForm.getQuestionById(new ObjectId(questionId));
+            if (questionWrapper == null) {
+                throw new NotFoundException();
+            }
+            reorderedQuestions.add(questionWrapper);
+        }
+        feedbackForm.setQuestions(reorderedQuestions);
+        courseRepository.update(course);
+        return getFeedbackForm(courseId, formId);
+    }
+
     static class AddFeedbackFormRequest {
         public String name;
         public String description;
@@ -415,4 +449,274 @@ public class MaintService {
         courseRepository.update(course);
         return Response.ok().build();
     }
+
+
+    // NOW THE SAME FOR QUIZ FORMS
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    @RolesAllowed({ UserRole.PROF, UserRole.STUDENT })
+    @Path("/course/{courseId}/quiz/form/{formId}")
+    public QuizForm getQuizForm(@RestPath String courseId, @RestPath String formId) {
+        Course course = courseRepository.findById(new ObjectId(courseId));
+        if (!isOwner(course)) {
+            throw new NotFoundException();
+        }
+        QuizForm quizForm = course.getQuizFormById(new ObjectId(formId));
+        if (quizForm == null) {
+            throw new NotFoundException();
+        }
+        QuizForm quizFormWithQuestionContents = quizForm.copyWithoutResultsAndParticipantsButWithQuestionContents(course);
+        return quizFormWithQuestionContents;
+    }
+
+    static class UpdateQuizFormRequest {
+        public String name;
+        public String description;
+    }
+
+    @PUT
+    @Produces(MediaType.APPLICATION_JSON)
+    @RolesAllowed({ UserRole.PROF, UserRole.STUDENT })
+    @Path("/course/{courseId}/quiz/form/{formId}")
+    public QuizForm updateQuizForm(@RestPath String courseId, @RestPath String formId, UpdateQuizFormRequest request) {
+        Course course = courseRepository.findById(new ObjectId(courseId));
+        if (!isOwner(course)) {
+            throw new NotFoundException();
+        }
+        QuizForm quizForm = course.getQuizFormById(new ObjectId(formId));
+        if (quizForm == null) {
+            throw new NotFoundException();
+        }
+        quizForm.setName(request.name);
+        quizForm.setDescription(request.description);
+        courseRepository.update(course);
+        return getQuizForm(courseId, formId);
+    }
+
+    static class ReorderQuizFormQuestionsRequest {
+        public List<String> questionIds;
+    }
+
+    @PUT
+    @Produces(MediaType.APPLICATION_JSON)
+    @RolesAllowed({ UserRole.PROF, UserRole.STUDENT })
+    @Path("/course/{courseId}/quiz/form/{formId}/reorder")
+    public QuizForm reorderQuizFormQuestions(@RestPath String courseId, @RestPath String formId, ReorderQuizFormQuestionsRequest request) {
+        Course course = courseRepository.findById(new ObjectId(courseId));
+        if (!isOwner(course)) {
+            throw new NotFoundException();
+        }
+        QuizForm quizForm = course.getQuizFormById(new ObjectId(formId));
+        if (quizForm == null) {
+            throw new NotFoundException();
+        }
+        List<QuestionWrapper> reorderedQuestions = new ArrayList<>();
+        for (String questionId : request.questionIds) {
+            QuestionWrapper questionWrapper = quizForm.getQuestionById(new ObjectId(questionId));
+            if (questionWrapper == null) {
+                throw new NotFoundException();
+            }
+            reorderedQuestions.add(questionWrapper);
+        }
+        quizForm.setQuestions(reorderedQuestions);
+        courseRepository.update(course);
+        return getQuizForm(courseId, formId);
+    }
+
+    static class AddQuizFormRequest {
+        public String name;
+        public String description;
+    }
+
+    @POST
+    @Produces(MediaType.APPLICATION_JSON)
+    @RolesAllowed({ UserRole.PROF, UserRole.STUDENT })
+    @Path("/course/{courseId}/quiz/form")
+    public QuizForm addQuizForm(@RestPath String courseId, AddQuizFormRequest request) {
+        Course course = courseRepository.findById(new ObjectId(courseId));
+        if (!isOwner(course)) {
+            throw new NotFoundException();
+        }
+        QuizForm quizForm = new QuizForm(course.getId(), request.name, request.description, new ArrayList<>(), FormStatus.NOT_STARTED, 0, false);
+        course.addQuizForm(quizForm);
+        courseRepository.update(course);
+        return quizForm;
+    }
+
+    @POST
+    @Produces(MediaType.APPLICATION_JSON)
+    @RolesAllowed({ UserRole.PROF, UserRole.STUDENT })
+    @Path("/course/{courseId}/quiz/form/{formId}/copy")
+    public QuizForm copyQuizForm(@RestPath String courseId, @RestPath String formId) {
+        Course course = courseRepository.findById(new ObjectId(courseId));
+        if (!isOwner(course)) {
+            throw new NotFoundException();
+        }
+        QuizForm quizForm = course.getQuizFormById(new ObjectId(formId));
+        if (quizForm == null) {
+            throw new NotFoundException();
+        }
+        QuizForm copiedQuizForm = new QuizForm(course.getId(), quizForm.getName() + (" (Copy)"), quizForm.getDescription(), new ArrayList<>(), FormStatus.NOT_STARTED, 0, false);
+
+    // TODO: check if this is the correct way to copy questions (sync or copy)
+        for (QuestionWrapper questionWrapper : quizForm.getQuestions()) {
+            QuizQuestion quizQuestion = course.getQuizQuestionById(questionWrapper.getQuestionId());
+            copiedQuizForm.addQuestion(new QuestionWrapper(quizQuestion.getId(), new ArrayList<>()));
+        }
+
+        course.addQuizForm(copiedQuizForm);
+        courseRepository.update(course);
+
+        return getQuizForm(courseId, copiedQuizForm.getId().toString());
+
+    }
+
+    @DELETE
+    @Produces(MediaType.APPLICATION_JSON)
+    @RolesAllowed({ UserRole.PROF, UserRole.STUDENT })
+    @Path("/course/{courseId}/quiz/form/{formId}")
+    public Response deleteQuizForm(@RestPath String courseId, @RestPath String formId) {
+        Course course = courseRepository.findById(new ObjectId(courseId));
+        if (!isOwner(course)) {
+            throw new NotFoundException();
+        }
+        QuizForm quizForm = course.getQuizFormById(new ObjectId(formId));
+        if (quizForm == null) {
+            throw new NotFoundException();
+        }
+        course.removeQuizForm(quizForm);
+        courseRepository.update(course);
+        return Response.ok().build();
+    }
+
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    @RolesAllowed({ UserRole.PROF, UserRole.STUDENT })
+    @Path("/course/{courseId}/quiz/form/{formId}/question/{questionId}")
+    public QuestionWrapper getQuizQuestion(@RestPath String courseId, @RestPath String formId, @RestPath String questionId) {
+        Course course = courseRepository.findById(new ObjectId(courseId));
+        if (!isOwner(course)) {
+            throw new NotFoundException();
+        }
+        QuizForm quizForm = course.getQuizFormById(new ObjectId(formId));
+        if (quizForm == null) {
+            throw new NotFoundException();
+        }
+        QuestionWrapper questionWrapper = quizForm.getQuestionById(new ObjectId(questionId));
+        if (questionWrapper == null) {
+            throw new NotFoundException();
+        }
+        QuizQuestion quizQuestion = course.getQuizQuestionById(questionWrapper.getQuestionId());
+        if (quizQuestion == null) {
+            throw new NotFoundException();
+        }
+        questionWrapper.setQuestionContent(quizQuestion);
+        return questionWrapper;
+    }
+
+    static class UpdateQuizQuestionRequest {
+        public String name;
+        public String description;
+        public String type;
+        public List<String> options;
+        public Boolean hasCorrectAnswers;
+        public List<String> correctAnswers;
+    }
+
+    @PUT
+    @Produces(MediaType.APPLICATION_JSON)
+    @RolesAllowed({ UserRole.PROF, UserRole.STUDENT })
+    @Path("/course/{courseId}/quiz/form/{formId}/question/{questionId}")
+    public QuestionWrapper updateQuizQuestion(@RestPath String courseId, @RestPath String formId, @RestPath String questionId, UpdateQuizQuestionRequest request) {
+        Course course = courseRepository.findById(new ObjectId(courseId));
+        if (!isOwner(course)) {
+            throw new NotFoundException();
+        }
+        QuizForm quizForm = course.getQuizFormById(new ObjectId(formId));
+        if (quizForm == null) {
+            throw new NotFoundException();
+        }
+        QuestionWrapper questionWrapper = quizForm.getQuestionById(new ObjectId(questionId));
+        if (questionWrapper == null) {
+            throw new NotFoundException();
+        }
+        QuizQuestion quizQuestion = course.getQuizQuestionById(questionWrapper.getQuestionId());
+        quizQuestion.setName(request.name);
+        quizQuestion.setDescription(request.description);
+        quizQuestion.setOptions(request.options);
+        quizQuestion.setHasCorrectAnswers(request.hasCorrectAnswers);
+        quizQuestion.setCorrectAnswers(request.correctAnswers);
+        try {
+            quizQuestion.setType(QuizQuestionType.valueOf(request.type));
+        } catch (IllegalArgumentException e) {
+            throw new NotFoundException();
+        }
+        courseRepository.update(course);
+        return getQuizQuestion(courseId, formId, questionId);
+    }
+
+    static class AddQuizQuestionRequest {
+        public String name;
+        public String description;
+        public String type;
+        public List<String> options;
+        public Boolean hasCorrectAnswers;
+        public List<String> correctAnswers;
+    }
+
+    @POST
+    @Produces(MediaType.APPLICATION_JSON)
+    @RolesAllowed({ UserRole.PROF, UserRole.STUDENT })
+    @Path("/course/{courseId}/quiz/form/{formId}/question")
+    public QuestionWrapper addQuizQuestion(@RestPath String courseId, @RestPath String formId, AddQuizQuestionRequest request) {
+        Course course = courseRepository.findById(new ObjectId(courseId));
+        if (!isOwner(course)) {
+            throw new NotFoundException();
+        }
+        QuizForm quizForm = course.getQuizFormById(new ObjectId(formId));
+        if (quizForm == null) {
+            throw new NotFoundException();
+        }
+        try {
+            QuizQuestionType questionType = QuizQuestionType.valueOf(request.type);
+            QuizQuestion quizQuestion = new QuizQuestion(request.name, request.description, questionType, request.options, request.hasCorrectAnswers, request.correctAnswers, "");
+            course.addQuizQuestion(quizQuestion);
+            QuestionWrapper questionWrapper = new QuestionWrapper(quizQuestion.getId(), new ArrayList<>());
+            quizForm.addQuestion(questionWrapper);
+            courseRepository.update(course);
+
+            questionWrapper.setQuestionContent(quizQuestion);
+            return questionWrapper;
+        } catch (IllegalArgumentException e) {
+            throw new NotFoundException();
+        }
+    }
+
+    @DELETE
+    @Produces(MediaType.APPLICATION_JSON)
+    @RolesAllowed({ UserRole.PROF, UserRole.STUDENT })
+    @Path("/course/{courseId}/quiz/form/{formId}/question/{questionId}")
+    public Response deleteQuizQuestion(@RestPath String courseId, @RestPath String formId, @RestPath String questionId) {
+        Course course = courseRepository.findById(new ObjectId(courseId));
+        if (!isOwner(course)) {
+            throw new NotFoundException();
+        }
+        QuizForm quizForm = course.getQuizFormById(new ObjectId(formId));
+        if (quizForm == null) {
+            throw new NotFoundException();
+        }
+        QuestionWrapper questionWrapper = quizForm.getQuestionById(new ObjectId(questionId));
+        if (questionWrapper == null) {
+            throw new NotFoundException();
+        }
+        QuizQuestion quizQuestion = course.getQuizQuestionById(questionWrapper.getQuestionId());
+        if (quizQuestion == null) {
+            throw new NotFoundException();
+        }
+        course.removeQuizQuestion(quizQuestion);
+        quizForm.removeQuestion(questionWrapper);
+        courseRepository.update(course);
+        return Response.ok().build();
+    }
+
 }
