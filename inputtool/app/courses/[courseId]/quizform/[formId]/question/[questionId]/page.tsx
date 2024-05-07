@@ -316,7 +316,7 @@ export default function QuizQuestionPage({ params }: { params: { courseId: strin
             </CardContent>
           </Card>
           { /* Options */}
-          {quizQuestion?.type === "SINGLE_CHOICE" || quizQuestion?.type === "MULTIPLE_CHOICE" && (
+          {(quizQuestion?.type === "SINGLE_CHOICE" || quizQuestion?.type === "MULTIPLE_CHOICE") && (
             <>
               <div className="flex justify-between w-full mb-4 mt-8 flex-grow flex-wrap gap-4">
                 <h2 className="text-2xl">Options</h2>
@@ -371,10 +371,33 @@ export default function QuizQuestionPage({ params }: { params: { courseId: strin
 
                       </TableCell>
 
-                      {/* {quizQuestion?.hasCorrectAnswers && (
-                          // TODO: add checkbox
-                          null
-                        )} */}
+                      <TableCell>
+                        {quizQuestion?.hasCorrectAnswers && (
+                          <Checkbox
+                            checked={quizQuestion?.correctAnswers?.includes(question)}
+                            onCheckedChange={(checked) => {
+                              checked = checked as boolean || false;
+                              let correctAnswers = quizQuestion?.correctAnswers || [];
+
+                              // if single choice, remove all other correct answers
+                              if (quizQuestion?.type === "SINGLE_CHOICE") {
+                                correctAnswers = [];
+                              }
+
+                              if (checked) {
+                                correctAnswers.push(question);
+                              } else {
+                                correctAnswers = correctAnswers.filter(a => a !== question);
+                              }
+                              setQuizQuestion({
+                                ...quizQuestion,
+                                correctAnswers: correctAnswers
+                              });
+                              setUserChangedSomething(true);
+                            }}
+                          />
+                        )}
+                      </TableCell>
 
                       <TableCell>
                         <Button
