@@ -6,11 +6,15 @@ import org.bson.types.ObjectId;
 import org.eclipse.microprofile.jwt.JsonWebToken;
 import org.jboss.resteasy.reactive.RestPath;
 import org.jboss.resteasy.reactive.RestResponse;
+import org.jose4j.jwt.consumer.InvalidJwtException;
 
 import de.htwg_konstanz.mobilelearning.models.Course;
+import de.htwg_konstanz.mobilelearning.models.auth.User;
 import de.htwg_konstanz.mobilelearning.models.auth.UserRole;
 import de.htwg_konstanz.mobilelearning.models.quiz.QuizForm;
 import de.htwg_konstanz.mobilelearning.repositories.CourseRepository;
+import de.htwg_konstanz.mobilelearning.repositories.UserRepository;
+import de.htwg_konstanz.mobilelearning.services.auth.JwtService;
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.DefaultValue;
@@ -33,6 +37,12 @@ public class QuizFormService {
 
     @Inject
     JsonWebToken jwt;
+
+    @Inject
+    UserRepository userRepository;
+
+    @Inject
+    JwtService jwtService;
 
     /**
      * Returns all quiz forms of a course.
@@ -122,11 +132,29 @@ public class QuizFormService {
     @Path("/{formId}/downloadresults")
     @GET
     @Produces(MediaType.APPLICATION_OCTET_STREAM)
-    @RolesAllowed({ UserRole.STUDENT, UserRole.PROF })
-    public Response downloadResults(@RestPath String courseId, @RestPath String formId) {
+    public Response downloadResultsWithToken(@RestPath String courseId, @RestPath String formId, @QueryParam("token") String token) {
+
+        User user = userRepository.findByUsername(jwt.getName());
+        if (user == null) {
+            try {
+                user = userRepository.findById(new ObjectId(jwtService.getJwtClaims(token).getSubject()));
+            } catch (InvalidJwtException e) {
+            }
+        }
+
+        if (user == null) {
+            return Response.status(Response.Status.FORBIDDEN).build();
+        }
+        
         Course course = courseRepository.findById(new ObjectId(courseId));
+
+        if (!course.isOwner(user.getId())) {
+            return Response.status(Response.Status.FORBIDDEN).build();
+        }
+
         QuizForm quizForm = course.getQuizFormById(new ObjectId(formId));
         return Response.ok(quizForm.getResultsAsCsv(course)).header("Content-Disposition", "attachment; filename=results_" + quizForm.name + ".csv").build();
     }
+
 
 }
