@@ -26,6 +26,10 @@ class _MenuPageState extends AuthState<MenuPage> with TickerProviderStateMixin {
   List<String> iconsVegetarian = ['51'];
   List<String> iconsNotVegetarian = ['45', '46', '49', '23'];
   List<String> iconsToTest = [];
+  final Color veganColor = Color.fromARGB(255, 144, 228, 147);
+  final Color pescetarianColor = Color.fromARGB(255, 115, 184, 240);
+  final Color vegetarianColor = Color.fromARGB(255, 248, 184, 88);
+  final Color notVegetarianColor = Color.fromARGB(255, 248, 109, 99);
 
   @override
   void initState() {
@@ -79,16 +83,16 @@ class _MenuPageState extends AuthState<MenuPage> with TickerProviderStateMixin {
 
   Color getColorBasedOnIcon(String icon) {
     iconsToTest = icon.split(',');
-    print(iconsToTest);
+    //print(iconsToTest);
     for (var i in iconsToTest) {
       if (iconsVegan.contains(i)) {
-        return Colors.green;
+        return veganColor;
       } else if (iconsPescetarian.contains(i)) {
-        return Colors.blue;
+        return pescetarianColor;
       } else if (iconsVegetarian.contains(i)) {
-        return Colors.orange;
+        return vegetarianColor;
       } else if (iconsNotVegetarian.contains(i)) {
-        return Colors.red;
+        return notVegetarianColor;
       }
       return Theme.of(context).colorScheme.onPrimary;
     }
@@ -97,6 +101,9 @@ class _MenuPageState extends AuthState<MenuPage> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
+    double screenWidth = MediaQuery.of(context).size.width;
+    double buttonWidth =
+        screenWidth <= 600 ? screenWidth * 0.92 : screenWidth * 0.4;
     final colors = Theme.of(context).colorScheme;
     return Scaffold(
       appBar: AppBar(
@@ -134,23 +141,23 @@ class _MenuPageState extends AuthState<MenuPage> with TickerProviderStateMixin {
                 ),
                 Container(
                   padding: EdgeInsets.all(8.0),
-                  child: const Row(
+                  child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
                       LegendItem(
-                        color: Colors.green,
+                        color: veganColor,
                         description: 'Vegan',
                       ),
                       LegendItem(
-                        color: Colors.orange,
+                        color: vegetarianColor,
                         description: 'Vegetarisch',
                       ),
                       LegendItem(
-                        color: Colors.red,
+                        color: notVegetarianColor,
                         description: 'Nicht vegetarisch',
                       ),
                       LegendItem(
-                        color: Colors.blue,
+                        color: pescetarianColor,
                         description: 'Pesketarisch',
                       ),
                     ],
@@ -170,10 +177,17 @@ class _MenuPageState extends AuthState<MenuPage> with TickerProviderStateMixin {
                             description: item.title,
                             rowData: [
                               RowData(
-                                  label: 'Studierende:', value: item.preis1),
+                                label: 'Studierende:',
+                                value: item.preis1.isEmpty ? '?' : item.preis1,
+                              ),
                               RowData(
-                                  label: 'Mitarbeiter:', value: item.preis2),
-                              RowData(label: 'Gäste:', value: item.preis3),
+                                label: 'Mitarbeiter:',
+                                value: item.preis2.isEmpty ? '?' : item.preis2,
+                              ),
+                              RowData(
+                                label: 'Gäste:',
+                                value: item.preis3.isEmpty ? '?' : item.preis3,
+                              ),
                             ],
                           );
                         },
@@ -181,6 +195,30 @@ class _MenuPageState extends AuthState<MenuPage> with TickerProviderStateMixin {
                     }).toList(),
                   ),
                 ),
+                // SizedBox(
+                //   height: 55,
+                //   width: buttonWidth,
+                //   child: ElevatedButton(
+                //     style: ButtonStyle(
+                //       elevation: MaterialStateProperty.all<double>(6.0),
+                //       shape: MaterialStateProperty.all<OutlinedBorder>(
+                //         RoundedRectangleBorder(
+                //           borderRadius: BorderRadius.circular(14.0),
+                //         ),
+                //       ),
+                //       backgroundColor: MaterialStateProperty.all<Color>(
+                //           Theme.of(context).colorScheme.surface),
+                //       foregroundColor: MaterialStateProperty.all<Color>(
+                //           Theme.of(context).colorScheme.primary),
+                //     ),
+                //     child:
+                //         const Text('Beilagen', style: TextStyle(fontSize: 20)),
+                //     onPressed: () {
+                //       print('Test');
+                //     },
+                //   ),
+                // ),
+                // const SizedBox(height: 20),
               ],
             );
           } else if (snapshot.hasError) {

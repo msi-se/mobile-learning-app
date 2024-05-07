@@ -69,36 +69,54 @@ class _MenuCardState extends State<MenuCard>
                                     ? Icons.rice_bowl
                                     : widget.title == 'Pasta vegetarisch'
                                         ? Icons.rice_bowl
-                                        : widget.title == 'Sättigung 1'
-                                            ? Icons.house
-                                            : widget.title == 'Sättigung 2'
-                                                ? Icons.house_siding_rounded
-                                                : widget.title == 'Gemüse 1'
-                                                    ? Icons.view_agenda
-                                                    : widget.title == 'Salat 1'
-                                                        ? Icons.save_alt_rounded
-                                                        : Icons
-                                                            .no_meals_rounded, // Default icon
+                                        : widget.title == 'Sättigung I'
+                                            ? Icons.fastfood
+                                            : widget.title == 'Sättigung II'
+                                                ? Icons.fastfood
+                                                : widget.title == 'Gemüse I'
+                                                    ? Icons.restaurant_menu
+                                                    : widget.title == 'Salat I'
+                                                        ? Icons.restaurant_menu
+                                                        : widget.title ==
+                                                                'Salat II'
+                                                            ? Icons
+                                                                .restaurant_menu
+                                                            : widget.title ==
+                                                                    'Dessert I'
+                                                                ? Icons
+                                                                    .restaurant_menu
+                                                                : Icons
+                                                                    .no_meals_rounded, // Default icon
                   ),
                   title: Padding(
                     padding: const EdgeInsets.all(5),
-                    child: Text(
-                      widget.title,
-                      style: const TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                      ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          widget.title,
+                          style: const TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        Icon(Icons.favorite_border),
+                      ],
                     ),
                   ),
+
                   subtitle: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Padding(
                         padding: const EdgeInsets.all(5),
-                        child: Text(widget.description),
+                        child: Text(
+                          widget.description,
+                          style: TextStyle(fontWeight: FontWeight.w600),
+                        ),
                       ),
                       Padding(
-                        padding: const EdgeInsets.all(5),
+                        padding: const EdgeInsets.all(0),
                         child: Row(
                           mainAxisSize: MainAxisSize.max,
                           children: widget.rowData
@@ -108,12 +126,12 @@ class _MenuCardState extends State<MenuCard>
                       ),
                     ],
                   ),
-                  trailing: InkWell(
-                    onTap: () {
-                      print("like");
-                    },
-                    child: const Icon(Icons.favorite_border),
-                  ),
+                  // trailing: InkWell(
+                  //   onTap: () {
+                  //     print("like");
+                  //   },
+                  //   child: const Icon(Icons.favorite_border),
+                  // ),
                 ),
               ),
             ],
@@ -142,12 +160,12 @@ class RowData {
   Widget build() {
     return Flexible(
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 4.0),
+        padding: const EdgeInsets.symmetric(horizontal: 2),
         child: Text(
           '$label $value',
           style: const TextStyle(
             fontSize: 12,
-            fontWeight: FontWeight.w300,
+            fontWeight: FontWeight.w500,
           ),
           overflow: TextOverflow.ellipsis,
         ),
