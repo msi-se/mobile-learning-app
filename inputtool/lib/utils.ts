@@ -10,7 +10,7 @@ export function cn(...inputs: ClassValue[]) {
 }
 
 export async function hasValidJwtToken(): Promise<boolean> {
-  const jwtToken = localStorage.getItem("jwtToken");
+  const jwtToken = localStorage?.getItem("jwtToken");
   if (!jwtToken) {
     return false;
   }
