@@ -7,7 +7,7 @@ import { Label } from "@radix-ui/react-dropdown-menu";
 import { useRouter, useSearchParams } from 'next/navigation'
 import { useState, useEffect, useCallback } from "react";
 import { toast } from "sonner";
-import { CircleArrowLeft, CircleCheck, CircleDashed, Loader2, Save, SlidersHorizontal, SquareArrowDown, SquareArrowUp, SquareCheckBig, Star, TextCursorInput } from 'lucide-react';
+import { CircleArrowLeft, CircleCheck, CircleDashed, ListTodo, Loader2, Save, SlidersHorizontal, SquareArrowDown, SquareArrowUp, SquareCheckBig, Star, TextCursorInput, ToggleLeft } from 'lucide-react';
 import { hasValidJwtToken } from "@/lib/utils";
 import * as React from "react"
 import {
@@ -18,13 +18,13 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
-import { FeedbackForm } from "@/lib/models";
+import { QuizForm } from "@/lib/models";
 import { DeleteButton } from "@/components/delete-button";
-import { addFeedbackQuestion, copyFeedbackForm, deleteFeedbackForm, fetchFeedbackForm, reorderFeedbackFormQuestions, updateFeedbackForm } from "@/lib/requests";
+import { addQuizQuestion, copyQuizForm, deleteQuizForm, fetchQuizForm, reorderQuizFormQuestions, updateQuizForm } from "@/lib/requests";
 import getBackendUrl from "@/lib/get-backend-url";
 import Link from "next/link";
 
-export default function FeedbackFormPage({ params }: { params: { courseId: string, formId: string } }) {
+export default function QuizFormPage({ params }: { params: { courseId: string, formId: string } }) {
 
   const router = useRouter();
   const [loading, setLoading] = useState(true);
@@ -40,20 +40,20 @@ export default function FeedbackFormPage({ params }: { params: { courseId: strin
     setIsNew(isNew);
   }, [searchParams]);
 
-  const [feedbackform, setFeedbackForm] = useState<FeedbackForm>({
+  const [quizform, setQuizForm] = useState<QuizForm>({
     id: "",
     name: "",
     key: "",
-    type: "Feedback",
+    type: "Quiz",
     description: "",
     questions: []
   });
 
   const save = useCallback(async (logSuccess: boolean = true, orderChanged: boolean = false) => {
     if (orderChanged) {
-      const result = await reorderFeedbackFormQuestions(params.courseId, params.formId, feedbackform.questions.map(q => q.id));
+      const result = await reorderQuizFormQuestions(params.courseId, params.formId, quizform.questions.map(q => q.id));
       if (result) {
-        setFeedbackForm({ ...feedbackform, questions: result.questions });
+        setQuizForm({ ...quizform, questions: result.questions });
         setUserChangedOrder(false);
         setUserChangedSomething(false);
         if (logSuccess) {
@@ -64,10 +64,10 @@ export default function FeedbackFormPage({ params }: { params: { courseId: strin
       }
     } 
 
-    const result = await updateFeedbackForm(params.courseId, params.formId, feedbackform.name, feedbackform.description);
+    const result = await updateQuizForm(params.courseId, params.formId, quizform.name, quizform.description);
     if (result) {
 
-      setFeedbackForm({ ...feedbackform, name: result.name, description: result.description });
+      setQuizForm({ ...quizform, name: result.name, description: result.description });
       setUserChangedSomething(false);
 
       if (logSuccess) {
@@ -77,26 +77,23 @@ export default function FeedbackFormPage({ params }: { params: { courseId: strin
     } else {
       toast.error("Failed to save.");
     }
-  }, [feedbackform, params.courseId, params.formId]);
+  }, [quizform, params.courseId, params.formId]);
 
   useEffect(() => {
-    const loadFeedbackForm = async () => {
+    const loadQuizForm = async () => {
       setLoading(true);
-      let feedbackform = await fetchFeedbackForm(params.courseId, params.formId);
-      if (!feedbackform) {
-        toast.error("FeedbackForm not found.");
+      let quizform = await fetchQuizForm(params.courseId, params.formId);
+      if (!quizform) {
+        toast.error("Quiz Form not found.");
         router.back();
         return;
       }
-      setFeedbackForm(feedbackform);
-
+      setQuizForm(quizform);
       let backendUrl = await getBackendUrl();
       setBackendUrl(backendUrl || "");
-      console.log(backendUrl);
-
       setLoading(false);
     };
-    loadFeedbackForm();
+    loadQuizForm();
   }, [params.courseId, params.formId, router]);
 
   // setup autosave
@@ -111,37 +108,37 @@ export default function FeedbackFormPage({ params }: { params: { courseId: strin
   }, [save, userChangedOrder, userChangedSomething]);
 
   const moveQuestionUp = async (questionId: string) => {
-    let question = feedbackform?.questions.find(q => q.id === questionId);
+    let question = quizform?.questions.find(q => q.id === questionId);
     if (!question) return;
 
-    let index = feedbackform?.questions.indexOf(question);
+    let index = quizform?.questions.indexOf(question);
     if (index === undefined || index === null) return;
 
     if (index === 0) return;
 
-    let newQuestions = [...feedbackform?.questions || []];
+    let newQuestions = [...quizform?.questions || []];
     newQuestions.splice(index, 1);
     newQuestions.splice(index - 1, 0, question);
 
-    setFeedbackForm({ ...feedbackform, questions: newQuestions });
+    setQuizForm({ ...quizform, questions: newQuestions });
     setUserChangedSomething(true);
     setUserChangedOrder(true);
   }
 
   const moveQuestionDown = async (questionId: string) => {
-    let question = feedbackform?.questions.find(q => q.id === questionId);
+    let question = quizform?.questions.find(q => q.id === questionId);
     if (!question) return;
 
-    let index = feedbackform?.questions.indexOf(question);
+    let index = quizform?.questions.indexOf(question);
     if (index === undefined || index === null) return;
 
-    if (index === feedbackform?.questions.length - 1) return;
+    if (index === quizform?.questions.length - 1) return;
 
-    let newQuestions = [...feedbackform?.questions || []];
+    let newQuestions = [...quizform?.questions || []];
     newQuestions.splice(index, 1);
     newQuestions.splice(index + 1, 0, question);
 
-    setFeedbackForm({ ...feedbackform, questions: newQuestions });
+    setQuizForm({ ...quizform, questions: newQuestions });
     setUserChangedSomething(true);
     setUserChangedOrder(true);
   }
@@ -169,19 +166,19 @@ export default function FeedbackFormPage({ params }: { params: { courseId: strin
                 className="mb-4 self-end ml-4"
                 variant="outline"
                 onClick={async () => {
-                  const result = await copyFeedbackForm(params.courseId, params.formId);
+                  const result = await copyQuizForm(params.courseId, params.formId);
                   if (result) {
-                    toast.success("Feedback Form Copied.");
-                    router.push(`/courses/${params.courseId}/feedbackform/${result.id}?is-new=true`);
+                    toast.success("Quiz Form Copied.");
+                    router.push(`/courses/${params.courseId}/quizform/${result.id}?is-new=true`);
                   }
                 }}
               >Copy Form</Button>
               <DeleteButton
                 className="mb-4 self-end ml-4"
                 onDelete={async () => {
-                  const result = await deleteFeedbackForm(params.courseId, params.formId);
+                  const result = await deleteQuizForm(params.courseId, params.formId);
                   if (result) {
-                    toast.success("FeedbackForm deleted.");
+                    toast.success("Quiz Form deleted.");
                     router.push(`/courses/${params.courseId}`);
                   }
                 }}
@@ -219,7 +216,7 @@ export default function FeedbackFormPage({ params }: { params: { courseId: strin
 
           </div>
           <h1 className="text-2xl mb-4 font-bold">
-            Feedback-Form: {feedbackform.name}
+            Quiz-Form: {quizform.name}
           </h1>
           <Card className="w-full">
             <CardContent>
@@ -229,22 +226,22 @@ export default function FeedbackFormPage({ params }: { params: { courseId: strin
                 onFocus={(e) => {
                   if (isNew) e.target.select();
                 }}
-                value={feedbackform.name}
+                value={quizform.name}
                 onChange={(e) => {
-                  setFeedbackForm({ ...feedbackform, name: e.target.value });
+                  setQuizForm({ ...quizform, name: e.target.value });
                   setUserChangedSomething(true);
                 }}
-                placeholder="FeedbackForm name"
+                placeholder="Quiz Name"
                 className="font-bold bor"
               />
               <Label className="mt-2">Description</Label>
               <Input
-                value={feedbackform.description}
+                value={quizform.description}
                 onChange={(e) => {
-                  setFeedbackForm({ ...feedbackform, description: e.target.value });
+                  setQuizForm({ ...quizform, description: e.target.value });
                   setUserChangedSomething(true);
                 }}
-                placeholder="FeedbackForm description"
+                placeholder="Quiz Description"
               />
             </CardContent>
           </Card>
@@ -255,17 +252,17 @@ export default function FeedbackFormPage({ params }: { params: { courseId: strin
                 className="flex flex-col self-end"
                 variant="outline"
               >
-                <Link href={`${backendUrl}/course/${params.courseId}/feedback/form/${params.formId}/downloadresults?token=${localStorage.getItem("jwtToken")}`}>
+                <Link href={`${backendUrl}/course/${params.courseId}/quiz/form/${params.formId}/downloadresults?token=${localStorage.getItem("jwtToken")}`}>
                   Download Results
                 </Link>
               </Button>
               <Button
                 className="flex flex-col self-end"
                 onClick={async () => {
-                  const question = await addFeedbackQuestion(params.courseId, params.formId, "New question", "", "SLIDER", [], "", "");
+                  const question = await addQuizQuestion(params.courseId, params.formId, "New question", "", "YES_NO", [], true, []);
                   if (question) {
                     toast.success("Question created.");
-                    router.push(`/courses/${params.courseId}/feedbackform/${params.formId}/question/${question.id}?is-new=true`);
+                    router.push(`/courses/${params.courseId}/quizform/${params.formId}/question/${question.id}?is-new=true`);
                   }
                 }}
               >Add New Question</Button>
@@ -278,22 +275,21 @@ export default function FeedbackFormPage({ params }: { params: { courseId: strin
                 <TableHead>Name</TableHead>
                 <TableHead>Description</TableHead>
                 <TableHead>Options</TableHead>
-                <TableHead>RangeLow</TableHead>
-                <TableHead>RangeHigh</TableHead>
+                <TableHead>Correct Answers</TableHead>
                 <TableHead>Order</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              {feedbackform?.questions.map((question) => (
+              {quizform?.questions.map((question) => (
                 <TableRow key={question.id} className="hover:cursor-pointer"
                   onClick={() => {
-                    router.push(`/courses/${params.courseId}/feedbackform/${params.formId}/question/${question.id}`)
+                    router.push(`/courses/${params.courseId}/quizform/${params.formId}/question/${question.id}`)
                   }}
                 >
                   <TableCell>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                      {question?.type === "SLIDER" && <SlidersHorizontal size={16}/>}
-                      {question?.type === "STARS" && <Star size={16}/>}
+                      {question?.type === "YES_NO" && <ToggleLeft size={16}/>}
+                      {question?.type === "MULTIPLE_CHOICE" && <ListTodo size={16}/>}
                       {question?.type === "SINGLE_CHOICE" && <SquareCheckBig size={16}/>}
                       {question?.type === "FULLTEXT" && <TextCursorInput size={16}/>}
                       {question?.type}
@@ -302,8 +298,15 @@ export default function FeedbackFormPage({ params }: { params: { courseId: strin
                   <TableCell className="font-medium">{question.name}</TableCell>
                   <TableCell>{question.description}</TableCell>
                   <TableCell>{question.options?.join(", ")}</TableCell>
-                  <TableCell>{question.rangeLow}</TableCell>
-                  <TableCell>{question.rangeHigh}</TableCell>
+                  { (question?.type === "MULTIPLE_CHOICE" || question?.type === "SINGLE_CHOICE") && (
+                    <TableCell>{question.correctAnswers?.map((a) => {
+                      // find in options ["0"] -> "Option 1"
+                      let option = question.options?.find((o, i) => i.toString() === a);
+                      return option ? `"${option}"` : a;
+                    }).join(", ") || "-"}</TableCell>
+                  ) || (
+                    <TableCell>{question.correctAnswers?.map((a) => `"${a}"`).join(", ")|| "-"}</TableCell>
+                  )}
                   <TableCell className="flex gap-2 flex-col">
                     <Button
                       className="flex flex-col h-8 w-8"
@@ -324,14 +327,14 @@ export default function FeedbackFormPage({ params }: { params: { courseId: strin
                   </TableCell>
                 </TableRow>
               ))}
-              {feedbackform?.questions.length === 0 && (
+              {quizform?.questions.length === 0 && (
                 <TableRow
                   className="hover:cursor-pointer hover:text-blue-500"
                   onClick={async () => {
-                    const question = await addFeedbackQuestion(params.courseId, params.formId, "New question", "", "SLIDER", [], "", "");
+                    const question = await addQuizQuestion(params.courseId, params.formId, "New question", "", "YES_NO", [], true, []);
                     if (question) {
                       toast.success("Question created.");
-                      router.push(`/courses/${params.courseId}/feedbackform/${params.formId}/question/${question.id}?is-new=true`);
+                      router.push(`/courses/${params.courseId}/quizform/${params.formId}/question/${question.id}?is-new=true`);
                     }
                   }}
                   onMouseEnter={() => setHoversOnCreateRow(true)}

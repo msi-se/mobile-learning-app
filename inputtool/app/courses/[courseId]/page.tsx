@@ -20,7 +20,7 @@ import {
 } from "@/components/ui/table"
 import { Course } from "@/lib/models";
 import { DeleteButton } from "@/components/delete-button";
-import { addFeedbackForm, deleteCourse, fetchCourse, updateCourse } from "@/lib/requests";
+import { addFeedbackForm, addQuizForm, deleteCourse, fetchCourse, updateCourse } from "@/lib/requests";
 
 export default function CoursePage({ params }: { params: { courseId: string } }) {
 
@@ -219,7 +219,13 @@ export default function CoursePage({ params }: { params: { courseId: string } })
               >Create Feedback</Button>
               <Button
                 className="self-end flex flex-col"
-                disabled={true}
+                onClick={async () => {
+                  const form = await addQuizForm(course?.id || "", "New quiz", "");
+                  if (form) {
+                    toast.success("Quiz created.");
+                    router.push(`/courses/${course?.id}/quizform/${form.id}?is-new=true`);
+                  }
+                }}
               >Create Quiz</Button>
             </div>
           </div>

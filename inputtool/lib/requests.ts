@@ -1,4 +1,4 @@
-import { Course, FeedbackForm, FeedbackQuestion } from "./models";
+import { Course, FeedbackForm, FeedbackQuestion, QuizForm, QuizQuestion } from "./models";
 import { toast } from "sonner";
 import getBackendUrl from "@/lib/get-backend-url";
 
@@ -123,6 +123,25 @@ export async function updateFeedbackForm(courseId: string, formId: string, feedb
     });
     if (feedbackFormResponse.status !== 200) {
         toast.error(`Failed to update feedback form. Please try again. Status: ${feedbackFormResponse.status}`);
+        return null;
+    }
+    let feedbackForm = await feedbackFormResponse.json();
+    feedbackForm.questions = feedbackForm.questions.map((question: any) => { return {...question.questionContent, id: question.id} });
+    return feedbackForm;
+}
+
+// PUT /maint/course/${courseId}/feedback/form/${formId}/reorder ({String[] questionIds})
+// reorderFeedbackFormQuestions(params.courseId, params.formId, questionIds) -> Error | Name, Description, Questions (Name, Description, Type, Options, RangeLow, RangeHigh)
+export async function reorderFeedbackFormQuestions(courseId: string, formId: string, questionIds: string[]): Promise<FeedbackForm | null> {
+    const BACKEND_URL = await getBackendUrl();
+    const jwtToken = localStorage.getItem("jwtToken");
+    let feedbackFormResponse = await fetch(`${BACKEND_URL}/maint/course/${courseId}/feedback/form/${formId}/reorder`, {
+        method: "PUT",
+        headers: { "AUTHORIZATION": "Bearer " + jwtToken, "Content-Type": "application/json" },
+        body: JSON.stringify({ questionIds })
+    });
+    if (feedbackFormResponse.status !== 200) {
+        toast.error(`Failed to reorder feedback form questions. Please try again. Status: ${feedbackFormResponse.status}`);
         return null;
     }
     let feedbackForm = await feedbackFormResponse.json();
@@ -257,3 +276,191 @@ export async function deleteFeedbackQuestion(courseId: string, formId: string, q
     }
     return true;
 }
+
+
+// NOW THE SAME FOR QUIZ FORMS
+
+// GET /maint/course/${courseId}/quiz/form/${formId}
+// getQuizForm(params.courseId, params.formId); -> Error | Name, Description, Questions (Name, Description, Type, Options, HasCorrectAnswers, CorrectAnswers )
+export async function fetchQuizForm(courseId: string, formId: string): Promise<QuizForm | null> {
+    const BACKEND_URL = await getBackendUrl();
+    const jwtToken = localStorage.getItem("jwtToken");
+    let quizFormResponse = await fetch(`${BACKEND_URL}/maint/course/${courseId}/quiz/form/${formId}`, {
+        method: "GET",
+        headers: { "AUTHORIZATION": "Bearer " + jwtToken }
+    });
+    if (quizFormResponse.status !== 200) {
+        toast.error(`Failed to get quiz form. Please try again. Status: ${quizFormResponse.status}`);
+        return null;
+    }
+    let quizForm = await quizFormResponse.json();
+    quizForm.questions = quizForm.questions.map((question: any) => { return {...question.questionContent, id: question.id} });
+    return quizForm;
+}
+
+// PUT /maint/course/${courseId}/quiz/form/${formId} ({String name, String description})
+// updateQuizForm(params.courseId, params.formId, quizformName, quizformDescription) -> Error | Name, Description, Questions (Name, Description, Type, Options, HasCorrectAnswers, CorrectAnswers)
+export async function updateQuizForm(courseId: string, formId: string, quizformName: string, quizformDescription: string): Promise<QuizForm | null> {
+    const BACKEND_URL = await getBackendUrl();
+    const jwtToken = localStorage.getItem("jwtToken");
+    let quizFormResponse = await fetch(`${BACKEND_URL}/maint/course/${courseId}/quiz/form/${formId}`, {
+        method: "PUT",
+        headers: { "AUTHORIZATION": "Bearer " + jwtToken, "Content-Type": "application/json" },
+        body: JSON.stringify({ name: quizformName, description: quizformDescription })
+    });
+    if (quizFormResponse.status !== 200) {
+        toast.error(`Failed to update quiz form. Please try again. Status: ${quizFormResponse.status}`);
+        return null;
+    }
+    let quizForm = await quizFormResponse.json();
+    quizForm.questions = quizForm.questions.map((question: any) => { return {...question.questionContent, id: question.id} });
+    return quizForm;
+}
+
+// PUT /maint/course/${courseId}/quiz/form/${formId}/reorder ({String[] questionIds})
+// reorderQuizFormQuestions(params.courseId, params.formId, questionIds) -> Error | Name, Description, Questions (Name, Description, Type, Options, HasCorrectAnswers, CorrectAnswers)
+export async function reorderQuizFormQuestions(courseId: string, formId: string, questionIds: string[]): Promise<QuizForm | null> {
+    const BACKEND_URL = await getBackendUrl();
+    const jwtToken = localStorage.getItem("jwtToken");
+    let quizFormResponse = await fetch(`${BACKEND_URL}/maint/course/${courseId}/quiz/form/${formId}/reorder`, {
+        method: "PUT",
+        headers: { "AUTHORIZATION": "Bearer " + jwtToken, "Content-Type": "application/json" },
+        body: JSON.stringify({ questionIds })
+    });
+    if (quizFormResponse.status !== 200) {
+        toast.error(`Failed to reorder quiz form questions. Please try again. Status: ${quizFormResponse.status}`);
+        return null;
+    }
+    let quizForm = await quizFormResponse.json();
+    quizForm.questions = quizForm.questions.map((question: any) => { return {...question.questionContent, id: question.id} });
+    return quizForm;
+}
+
+// POST /maint/course/${courseId}/quiz/form ({String name, String description})
+// addQuizForm(params.courseId, quizformName, quizformDescription) -> Error | Name, Description, Questions (Name, Description, Type, Options, HasCorrectAnswers, CorrectAnswe)
+export async function addQuizForm(courseId: string, quizformName: string, quizformDescription: string): Promise<QuizForm | null> {
+    const BACKEND_URL = await getBackendUrl();
+    const jwtToken = localStorage.getItem("jwtToken");
+    let quizFormResponse = await fetch(`${BACKEND_URL}/maint/course/${courseId}/quiz/form`, {
+        method: "POST",
+        headers: { "AUTHORIZATION": "Bearer " + jwtToken, "Content-Type": "application/json" },
+        body: JSON.stringify({ name: quizformName, description: quizformDescription })
+    });
+    if (quizFormResponse.status !== 200) {
+        toast.error(`Failed to add quiz form. Please try again. Status: ${quizFormResponse.status}`);
+        return null;
+    }
+    let quizForm = await quizFormResponse.json();
+    quizForm.questions = quizForm.questions.map((question: any) => { return {...question.questionContent, id: question.id} });
+    return quizForm;
+}
+
+// POST /maint/course/${courseId}/quiz/form/${formId}/copy
+// copyQuizForm(params.courseId, params.formId) -> Error | Name, Description, Questions (Name, Description, Type, Options, HasCorrectAnswers, CorrectAnswers )
+export async function copyQuizForm(courseId: string, formId: string): Promise<QuizForm | null> {
+    const BACKEND_URL = await getBackendUrl();
+    const jwtToken = localStorage.getItem("jwtToken");
+    let quizFormResponse = await fetch(`${BACKEND_URL}/maint/course/${courseId}/quiz/form/${formId}/copy`, {
+        method: "POST",
+        headers: { "AUTHORIZATION": "Bearer " + jwtToken }
+    });
+    if (quizFormResponse.status !== 200) {
+        toast.error(`Failed to copy quiz form. Please try again. Status: ${quizFormResponse.status}`);
+        return null;
+    }
+    let quizForm = await quizFormResponse.json();
+    quizForm.questions = quizForm.questions.map((question: any) => { return {...question.questionContent, id: question.id} });
+    return quizForm;
+}
+
+// DELETE /maint/course/${courseId}/quiz/form/${formId}
+// deleteQuizForm(params.courseId, params.formId) -> Error | Success
+export async function deleteQuizForm(courseId: string, formId: string): Promise<boolean> {
+    const BACKEND_URL = await getBackendUrl();
+    const jwtToken = localStorage.getItem("jwtToken");
+    let quizFormResponse = await fetch(`${BACKEND_URL}/maint/course/${courseId}/quiz/form/${formId}`, {
+        method: "DELETE",
+        headers: { "AUTHORIZATION": "Bearer " + jwtToken }
+    });
+    if (quizFormResponse.status !== 200) {
+        toast.error(`Failed to delete quiz form. Please try again. Status: ${quizFormResponse.status}`);
+        return false;
+    }
+    return true;
+}
+
+// GET /maint/course/${courseId}/quiz/form/${formId}/question/${questionId}
+// getQuizQuestion(params.courseId, params.formId, params.questionId); -> Error | Name, Description, Type, Options, CorrectAnswers, HasCorrectAnswers
+export async function fetchQuizQuestion(courseId: string, formId: string, questionId: string): Promise<QuizQuestion | null> {
+    const BACKEND_URL = await getBackendUrl();
+    const jwtToken = localStorage.getItem("jwtToken");
+    let quizQuestionResponse = await fetch(`${BACKEND_URL}/maint/course/${courseId}/quiz/form/${formId}/question/${questionId}`, {
+        method: "GET",
+        headers: { "AUTHORIZATION": "Bearer " + jwtToken }
+    });
+    if (quizQuestionResponse.status !== 200) {
+        toast.error(`Failed to get quiz question. Please try again. Status: ${quizQuestionResponse.status}`);
+        return null;
+    }
+    let quizQuestion = await quizQuestionResponse.json();
+    quizQuestion = { ...quizQuestion.questionContent, id: quizQuestion.id };
+    
+    return quizQuestion;
+}
+
+// PUT /maint/course/${courseId}/quiz/form/${formId}/question/${questionId} ({String name, String description, String type, String[] options, boolean hasCorrectAnswers, String[] correctAnswers})
+// updateQuizQuestion(params.courseId, params.formId, params.questionId, quizQuestion?.name, quizQuestion?.description, quizQuestion?.type, quizQuestion?.options, quizQuestion?.hasCorrectAnswers, quizQuestion?.correctAnswers) -> Error | Name, Description, Type, Options, CorrectAnswers, HasCorrectAnswers
+export async function updateQuizQuestion(courseId: string, formId: string, questionId: string, quizQuestionName: string, quizQuestionDescription: string, quizQuestionType: string, quizQuestionOptions: string[], quizQuestionHasCorrectAnswers: boolean, quizQuestionCorrectAnswers: string[]): Promise<QuizQuestion | null> {
+    const BACKEND_URL = await getBackendUrl();
+    const jwtToken = localStorage.getItem("jwtToken");
+    let quizQuestionResponse = await fetch(`${BACKEND_URL}/maint/course/${courseId}/quiz/form/${formId}/question/${questionId}`, {
+        method: "PUT",
+        headers: { "AUTHORIZATION": "Bearer " + jwtToken, "Content-Type": "application/json" },
+        body: JSON.stringify({ name: quizQuestionName, description: quizQuestionDescription, type: quizQuestionType, options: quizQuestionOptions, hasCorrectAnswers: quizQuestionHasCorrectAnswers, correctAnswers: quizQuestionCorrectAnswers })
+    });
+    if (quizQuestionResponse.status !== 200) {
+        toast.error(`Failed to update quiz question. Please try again. Status: ${quizQuestionResponse.status}`);
+        return null;
+    }
+    let quizQuestion = await quizQuestionResponse.json();
+    quizQuestion = { ...quizQuestion.questionContent, id: quizQuestion.id };
+
+    return quizQuestion;
+}
+
+// POST /maint/course/${courseId}/quiz/form/${formId}/question ({String name, String description, String type, String[] options, boolean hasCorrectAnswers, String[] correctAnswers})
+// addQuizQuestion(params.courseId, params.formId, quizQuestion?.name, quizQuestion?.description, quizQuestion?.type, quizQuestion?.options, quizQuestion?.hasCorrectAnswers, quizQuestion?.correctAnswers) -> Error | Name, Description, Type, Options, CorrectAnswers, HasCorrectAnswers
+export async function addQuizQuestion(courseId: string, formId: string, quizQuestionName: string, quizQuestionDescription: string, quizQuestionType: string, quizQuestionOptions: string[], quizQuestionHasCorrectAnswers: boolean, quizQuestionCorrectAnswers: string[]): Promise<QuizQuestion | null> {
+    const BACKEND_URL = await getBackendUrl();
+    const jwtToken = localStorage.getItem("jwtToken");
+    let quizQuestionResponse = await fetch(`${BACKEND_URL}/maint/course/${courseId}/quiz/form/${formId}/question`, {
+        method: "POST",
+        headers: { "AUTHORIZATION": "Bearer " + jwtToken, "Content-Type": "application/json" },
+        body: JSON.stringify({ name: quizQuestionName, description: quizQuestionDescription, type: quizQuestionType, options: quizQuestionOptions, hasCorrectAnswers: quizQuestionHasCorrectAnswers, correctAnswers: quizQuestionCorrectAnswers })
+    });
+    if (quizQuestionResponse.status !== 200) {
+        toast.error(`Failed to add quiz question. Please try again. Status: ${quizQuestionResponse.status}`);
+        return null;
+    }
+    let quizQuestion = await quizQuestionResponse.json();
+    quizQuestion = { ...quizQuestion.questionContent, id: quizQuestion.id };
+
+    return quizQuestion;
+}
+
+// DELETE /maint/course/${courseId}/quiz/form/${formId}/question/${questionId}
+// deleteQuizQuestion(params.courseId, params.formId, params.questionId) -> Error | Success
+export async function deleteQuizQuestion(courseId: string, formId: string, questionId: string): Promise<boolean> {
+    const BACKEND_URL = await getBackendUrl();
+    const jwtToken = localStorage.getItem("jwtToken");
+    let quizQuestionResponse = await fetch(`${BACKEND_URL}/maint/course/${courseId}/quiz/form/${formId}/question/${questionId}`, {
+        method: "DELETE",
+        headers: { "AUTHORIZATION": "Bearer " + jwtToken }
+    });
+    if (quizQuestionResponse.status !== 200) {
+        toast.error(`Failed to delete quiz question. Please try again. Status: ${quizQuestionResponse.status}`);
+        return false;
+    }
+    return true;
+}
+
