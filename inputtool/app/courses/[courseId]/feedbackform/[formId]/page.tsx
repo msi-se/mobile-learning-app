@@ -146,6 +146,36 @@ export default function FeedbackFormPage({ params }: { params: { courseId: strin
     setUserChangedOrder(true);
   }
 
+
+  // save on page leave
+  useEffect(() => {
+    const handleBeforeUnload = async (e: BeforeUnloadEvent) => {
+      if (userChangedSomething) {
+        e.preventDefault();
+        await save();
+        toast.info("Saved. (You should give the app a few seconds to save your changes next time.)");
+      }
+    };
+    window.addEventListener("beforeunload", handleBeforeUnload);
+    return () => {
+      window.removeEventListener("beforeunload", handleBeforeUnload);
+    };
+  }, [userChangedSomething, save]);
+
+  // direct save
+  useEffect(() => {
+    const handleSave = async (e: KeyboardEvent) => {
+      if (e.key === "s" && (e.ctrlKey || e.metaKey)) {
+        e.preventDefault();
+        save();
+      }
+    };
+    document.addEventListener("keydown", handleSave);
+    return () => {
+      document.removeEventListener("keydown", handleSave);
+    };
+  }, [save]);
+
   return (
     <div className="flex flex-col items-center justify-center h-max m-4">
 
