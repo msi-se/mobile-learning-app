@@ -21,8 +21,8 @@ services:
       - ME_CONFIG_MONGODB_SERVER=mobile-learning-mongo
       - ME_CONFIG_MONGODB_PORT=27017
       - ME_CONFIG_SITE_BASEURL=/mongo
-      - ME_CONFIG_BASICAUTH_USERNAME=admin
-      - ME_CONFIG_BASICAUTH_PASSWORD=admin
+      - ME_CONFIG_BASICAUTH_USERNAME=${MONGO_EXPRESS_USERNAME}
+      - ME_CONFIG_BASICAUTH_PASSWORD=${MONGO_EXPRESS_PASSWORD}
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.mongo-express.entrypoints=websecure"
