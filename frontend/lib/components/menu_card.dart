@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:rive/rive.dart';
 
 class MenuCard extends StatefulWidget {
   final String title;
@@ -58,35 +59,21 @@ class _MenuCardState extends State<MenuCard>
               Padding(
                 padding: const EdgeInsets.all(5),
                 child: ListTile(
-                  leading: Icon(
-                    widget.title == 'Seezeit-Teller'
-                        ? Icons.restaurant
-                        : widget.title == 'hin&weg'
-                            ? Icons.texture
-                            : widget.title == 'KombinierBar'
-                                ? Icons.join_full
-                                : widget.title == 'Pasta'
-                                    ? Icons.rice_bowl
-                                    : widget.title == 'Pasta vegetarisch'
-                                        ? Icons.rice_bowl
-                                        : widget.title == 'Sättigung I'
-                                            ? Icons.fastfood
-                                            : widget.title == 'Sättigung II'
-                                                ? Icons.fastfood
-                                                : widget.title == 'Gemüse I'
-                                                    ? Icons.restaurant_menu
-                                                    : widget.title == 'Salat I'
-                                                        ? Icons.restaurant_menu
-                                                        : widget.title ==
-                                                                'Salat II'
-                                                            ? Icons
-                                                                .restaurant_menu
-                                                            : widget.title ==
-                                                                    'Dessert I'
-                                                                ? Icons
-                                                                    .restaurant_menu
-                                                                : Icons
-                                                                    .no_meals_rounded, // Default icon
+                  leading: Container(
+                    width: 100,
+                    height: 100,
+                    child: RiveAnimation.asset(
+                      'assets/animations/rive/animations.riv',
+                      fit: BoxFit.cover,
+                      artboard: widget.title == 'Seezeit-Teller'
+                          ? 'Seezeit'
+                          : widget.title == 'hin&weg'
+                              ? 'hin&weg'
+                              : widget.title == 'KombinierBar'
+                                  ? 'Kombinierbar'
+                                  : 'Default',
+                      stateMachines: ['State Machine'],
+                    ),
                   ),
                   title: Padding(
                     padding: const EdgeInsets.all(5),
