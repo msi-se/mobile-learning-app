@@ -33,6 +33,8 @@ import { Checkbox } from "@/components/ui/checkbox";
 
 export default function QuizQuestionPage({ params }: { params: { courseId: string, formId: string, questionId: string } }) {
 
+  const OPTION_LIMIT = 5;
+
   const router = useRouter();
   const [loading, setLoading] = useState(true);
   const [quizQuestion, setQuizQuestion] = useState<QuizQuestion>({
@@ -439,9 +441,11 @@ export default function QuizQuestionPage({ params }: { params: { courseId: strin
           {(quizQuestion?.type === "SINGLE_CHOICE" || quizQuestion?.type === "MULTIPLE_CHOICE") && (
             <>
               <div className="flex justify-between w-full mb-4 mt-8 flex-grow flex-wrap gap-4">
-                <h2 className="text-2xl">Options</h2>
+                <h2 className="text-2xl">Options ({quizQuestion?.options?.length || 0}/{OPTION_LIMIT})</h2>
                 <div className="flex gap-4 justify-end">
                   <Button
+                    title={ (quizQuestion?.options?.length || 0) >= OPTION_LIMIT ? "Option limit reached" : "Add Option"}
+                    disabled={(quizQuestion?.options?.length || 0) >= OPTION_LIMIT}
                     className="flex flex-col self-end"
                     onClick={() => {
                       setQuizQuestion({ ...quizQuestion, options: [...quizQuestion.options || [], ""] });
