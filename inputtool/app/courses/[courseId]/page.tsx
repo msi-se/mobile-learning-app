@@ -21,6 +21,7 @@ import {
 import { Course } from "@/lib/models";
 import { DeleteButton } from "@/components/delete-button";
 import { addFeedbackForm, addQuizForm, deleteCourse, fetchCourse, updateCourse } from "@/lib/requests";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 
 export default function CoursePage({ params }: { params: { courseId: string } }) {
 
@@ -210,7 +211,31 @@ export default function CoursePage({ params }: { params: { courseId: string } })
                   />
                 </div>
                 <div className="flex flex-col flex-grow">
-                  <Label>Moodle Course ID</Label>
+                  <div className="flex gap-2">
+                    <Label>Moodle Course ID</Label>
+                    <Dialog>
+                      <DialogTrigger>
+                        <div
+                          className="text-gray-400 cursor-pointer"
+                          title="Moodle Course ID"
+                        >?</div>
+                      </DialogTrigger>
+                      <DialogContent>
+                        <DialogHeader>
+                          <DialogTitle>Moodle Course ID</DialogTitle>
+                          <DialogDescription>
+                            {/* https://moodle.htwg-konstanz.de/moodle/course/view.php?id=793 */}
+                            By entering a Moodle Course ID, the students enrolled in the course will be added directly to your course on this platform.
+                            <br />
+                            You can find the ID in the Moodle URL:
+                            <br />
+                            <span className="text-blue-500">https://moodle.htwg-konstanz.de/moodle/course/view.php?id=</span>
+                            <span className="text-blue-500 font-bold">793</span>
+                          </DialogDescription>
+                        </DialogHeader>
+                      </DialogContent>
+                    </Dialog>
+                  </div>
                   <Input
                     value={courseMoodleCourseId}
                     onChange={(e) => {
