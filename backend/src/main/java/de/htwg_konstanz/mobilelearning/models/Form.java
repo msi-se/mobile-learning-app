@@ -18,6 +18,7 @@ public class Form {
     public Integer connectCode;
     public String key;
     public Date startTimestamp;
+    public Date lastModified;
 
     public Form() {
     }
@@ -31,6 +32,7 @@ public class Form {
         this.status = status;
         this.startTimestamp = null;
         this.key = "";
+        this.lastModified = new Date();
 
         // generate 6-digit connect code (100000 - 999999)
         this.connectCode = (int) (Math.random() * 899999) + 100000;
@@ -125,6 +127,19 @@ public class Form {
 
     public Date getStartTimestamp() {
         return this.startTimestamp;
+    }
+
+    public Date wasUpdated() {
+        this.lastModified = new Date();
+        return this.lastModified;
+    }
+
+    public Date getLastModified() {
+        return this.lastModified;
+    }
+
+    public void setLastModified(Date lastModified) {
+        this.lastModified = lastModified;
     }
 
 

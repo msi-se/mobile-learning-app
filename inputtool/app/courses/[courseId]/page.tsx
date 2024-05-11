@@ -293,10 +293,11 @@ export default function CoursePage({ params }: { params: { courseId: string } })
                 <TableHead>Type</TableHead>
                 <TableHead>Name</TableHead>
                 <TableHead>Description</TableHead>
+                <TableHead>Last Modified</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody className="overflow-y-auto">
-              {[...course?.feedbackForms || [], ...course?.quizForms || []].map((form) => (
+              {[...course?.feedbackForms || [], ...course?.quizForms || []].sort((a, b) => a.lastModified > b.lastModified ? -1 : 1).map(form => (
                 <TableRow key={form.id} className="hover:cursor-pointer"
                   onClick={() => {
                     toast.dismiss();
@@ -307,6 +308,7 @@ export default function CoursePage({ params }: { params: { courseId: string } })
                   <TableCell>{form.type}</TableCell>
                   <TableCell className="font-medium">{form.name}</TableCell>
                   <TableCell>{form.description}</TableCell>
+                  <TableCell>{new Date(form.lastModified).toLocaleString()}</TableCell>
                 </TableRow>
               ))}
               {course?.feedbackForms.length === 0 && course?.quizForms.length === 0 && (
