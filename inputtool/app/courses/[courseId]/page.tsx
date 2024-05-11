@@ -317,8 +317,7 @@ export default function CoursePage({ params }: { params: { courseId: string } })
             </TableBody>
           </Table>
         </>
-      )
-      }
+      )}
     </div >
   );
 }

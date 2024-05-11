@@ -46,4 +46,5 @@ export type Course = {
     moodleCourseId: string;
     feedbackForms: FeedbackForm[];
     quizForms: QuizForm[];
+    lastModified: Date;
 }

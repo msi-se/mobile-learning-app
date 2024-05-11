@@ -117,6 +117,7 @@ public class MaintService {
         courseWithLessData.setName(course.getName());
         courseWithLessData.setDescription(course.getDescription());
         courseWithLessData.setMoodleCourseId(course.getMoodleCourseId());
+        courseWithLessData.setLastModified(course.getLastModified());
         courseWithLessData.setFeedbackForms(course.getFeedbackForms().stream().map(feedbackForm -> {
             FeedbackForm feedbackFormWithLessData = new FeedbackForm();
             feedbackFormWithLessData.setId(feedbackForm.getId());
