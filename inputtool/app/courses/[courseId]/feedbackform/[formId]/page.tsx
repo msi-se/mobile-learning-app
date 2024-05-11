@@ -46,7 +46,8 @@ export default function FeedbackFormPage({ params }: { params: { courseId: strin
     key: "",
     type: "Feedback",
     description: "",
-    questions: []
+    questions: [],
+    lastModified: new Date(),
   });
 
   const save = useCallback(async (logSuccess: boolean = true, orderChanged: boolean = false) => {
