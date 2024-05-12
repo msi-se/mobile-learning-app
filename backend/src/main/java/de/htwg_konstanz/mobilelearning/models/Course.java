@@ -1,6 +1,7 @@
 package de.htwg_konstanz.mobilelearning.models;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import org.bson.types.ObjectId;
@@ -31,6 +32,7 @@ public class Course implements Serializable {
     public String key;
     public String moodleCourseId;
     public Boolean isLinkedToMoodle;
+    public Date lastModified;
 
     // feedback
     public List<FeedbackForm> feedbackForms;
@@ -57,6 +59,7 @@ public class Course implements Serializable {
         this.key = "";
         this.moodleCourseId = "";
         this.isLinkedToMoodle = false;
+        this.lastModified = new Date();
     }
 
     // id
@@ -498,6 +501,19 @@ public class Course implements Serializable {
             form.clearParticipants();
         });
         return this;
+    }
+
+    public Date wasUpdated() {
+        this.lastModified = new Date();
+        return this.lastModified;
+    }
+
+    public Date getLastModified() {
+        return this.lastModified;
+    }
+
+    public void setLastModified(Date lastModified) {
+        this.lastModified = lastModified;
     }
 
 

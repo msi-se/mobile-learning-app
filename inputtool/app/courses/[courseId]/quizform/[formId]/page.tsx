@@ -46,7 +46,8 @@ export default function QuizFormPage({ params }: { params: { courseId: string, f
     key: "",
     type: "Quiz",
     description: "",
-    questions: []
+    questions: [],
+    lastModified: new Date(),
   });
 
   const save = useCallback(async (logSuccess: boolean = true, orderChanged: boolean = false) => {
