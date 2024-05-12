@@ -760,4 +760,40 @@ public class MaintService {
         return Response.ok().build();
     }
 
+    static class ChangeCourseOfFormRequest {
+        public String newCourseId;
+    }
+
+    @PUT
+    @Produces(MediaType.APPLICATION_JSON)
+    @RolesAllowed({ UserRole.PROF, UserRole.STUDENT })
+    @Path("/course/{courseId}/form/{formId}/change-course")
+    public Boolean changeCourseOfForm(@RestPath String courseId, @RestPath String formId, ChangeCourseOfFormRequest request) {
+        Course course = courseRepository.findById(new ObjectId(courseId));
+        if (!isOwner(course)) {
+            throw new NotFoundException();
+        }
+        Course newCourse = courseRepository.findById(new ObjectId(request.newCourseId));
+        if (!isOwner(newCourse)) {
+            throw new NotFoundException();
+        }
+        FeedbackForm feedbackForm = course.getFeedbackFormById(new ObjectId(formId));
+        if (feedbackForm == null) {
+            QuizForm quizForm = course.getQuizFormById(new ObjectId(formId));
+            if (quizForm == null) {
+                throw new NotFoundException();
+            }
+            course.removeQuizForm(quizForm);
+            newCourse.addQuizForm(quizForm);
+        } else {
+            course.removeFeedbackForm(feedbackForm);
+            newCourse.addFeedbackForm(feedbackForm);
+        }
+        course.wasUpdated();
+        newCourse.wasUpdated();
+        courseRepository.update(course);
+        courseRepository.update(newCourse);
+        return true;
+    }
+
 }
