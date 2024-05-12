@@ -313,7 +313,7 @@ export default function CoursePage({ params }: { params: { courseId: string } })
               ))}
               {course?.feedbackForms.length === 0 && course?.quizForms.length === 0 && (
                 <TableRow>
-                  <TableCell colSpan={3} className="text-center">No forms found.</TableCell>
+                  <TableCell colSpan={4} className="text-center">No forms found.</TableCell>
                 </TableRow>
               )}
             </TableBody>

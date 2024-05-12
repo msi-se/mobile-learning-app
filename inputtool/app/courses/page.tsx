@@ -79,8 +79,8 @@ export default function Courses() {
                 </TableRow>
               ))}
               {courses.length === 0 && (
-                <TableRow>
-                  <TableCell colSpan={2}>No courses found.</TableCell>
+                <TableRow className="text-center">
+                  <TableCell colSpan={3}>No courses found.</TableCell>
                 </TableRow>
               )}
             </TableBody>
