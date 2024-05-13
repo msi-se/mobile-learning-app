@@ -10,9 +10,10 @@ import 'package:url_launcher/url_launcher.dart';
 
 class ChooseForm extends StatefulWidget {
   final Course course;
+  final RiveFile? riveFile;
   final Function(String id, FormType type) choose;
 
-  const ChooseForm({super.key, required this.course, required this.choose});
+  const ChooseForm({super.key, required this.course, required this.choose, required this.riveFile});
 
   @override
   State<ChooseForm> createState() => _ChooseFormState();
@@ -260,8 +261,8 @@ class _ChooseFormState extends State<ChooseForm> {
               margin: const EdgeInsets.only(top: 20.0, bottom: 100.0),
               width: 250,
               height: 250,
-              child: RiveAnimation.asset(
-                'assets/animations/rive/animations.riv',
+              child: RiveAnimation.direct(
+                widget.riveFile!,
                 fit: BoxFit.cover,
                 artboard: 'Sleeping Mascot',
                 stateMachines: ['Sleeping State Machine'],
