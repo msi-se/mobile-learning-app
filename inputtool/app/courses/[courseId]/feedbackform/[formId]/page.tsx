@@ -200,6 +200,13 @@ export default function FeedbackFormPage({ params }: { params: { courseId: strin
                 className="mb-4 self-end ml-4"
                 variant="outline"
                 onClick={async () => {
+                  router.push(`/courses/${params.courseId}/feedbackform/${params.formId}/change-course`);
+                }}
+              >Change Course</Button>
+              <Button
+                className="mb-4 self-end ml-4"
+                variant="outline"
+                onClick={async () => {
                   const result = await copyFeedbackForm(params.courseId, params.formId);
                   if (result) {
                     toast.success("Feedback Form Copied.");
