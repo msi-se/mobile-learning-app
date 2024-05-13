@@ -84,13 +84,20 @@ public class MaintService {
     @RolesAllowed({ UserRole.PROF, UserRole.STUDENT })
     @Path("/courses")
     public List<Course> listCourses() {
-        List<Course> courses = courseRepository.findAll().list().stream().filter(course -> isOwner(course)).toList();
+        List<Course> courses = courseRepository
+            .findAll()
+            .list()
+            .stream()
+            .filter(course -> isOwner(course))
+            .sorted((c1, c2) -> -c1.getLastModified().compareTo(c2.getLastModified()))
+            .toList();
         List<Course> coursesWithLessData = courses.stream().map(course -> {
             Course courseWithLessData = new Course();
             courseWithLessData.setId(course.getId());
             courseWithLessData.setName(course.getName());
             courseWithLessData.setDescription(course.getDescription());
             courseWithLessData.setMoodleCourseId(course.getMoodleCourseId());
+            courseWithLessData.setLastModified(course.getLastModified());
             return courseWithLessData;
         }).toList();
         return coursesWithLessData;
@@ -110,20 +117,25 @@ public class MaintService {
         courseWithLessData.setName(course.getName());
         courseWithLessData.setDescription(course.getDescription());
         courseWithLessData.setMoodleCourseId(course.getMoodleCourseId());
+        courseWithLessData.setLastModified(course.getLastModified());
         courseWithLessData.setFeedbackForms(course.getFeedbackForms().stream().map(feedbackForm -> {
             FeedbackForm feedbackFormWithLessData = new FeedbackForm();
             feedbackFormWithLessData.setId(feedbackForm.getId());
             feedbackFormWithLessData.setName(feedbackForm.getName());
             feedbackFormWithLessData.setDescription(feedbackForm.getDescription());
+            feedbackFormWithLessData.setStatus(feedbackForm.getStatus());
+            feedbackFormWithLessData.setLastModified(feedbackForm.getLastModified());
             return feedbackFormWithLessData;
-        }).toList());
+        }).sorted((f1, f2) -> -f1.getLastModified().compareTo(f2.getLastModified())).toList());
         courseWithLessData.setQuizForms(course.getQuizForms().stream().map(quizForm -> {
             QuizForm quizFormWithLessData = new QuizForm();
             quizFormWithLessData.setId(quizForm.getId());
             quizFormWithLessData.setName(quizForm.getName());
             quizFormWithLessData.setDescription(quizForm.getDescription());
+            quizFormWithLessData.setStatus(quizForm.getStatus());
+            quizFormWithLessData.setLastModified(quizForm.getLastModified());
             return quizFormWithLessData;
-        }).toList());
+        }).sorted((f1, f2) -> -f1.getLastModified().compareTo(f2.getLastModified())).toList());
         return courseWithLessData;
     }
 
@@ -145,6 +157,7 @@ public class MaintService {
         course.setName(request.name);
         course.setDescription(request.description);
         course.setMoodleCourseId(request.moodleCourseId);
+        course.wasUpdated();
         courseRepository.update(course);
 
         return getCourse(courseId);
@@ -218,6 +231,8 @@ public class MaintService {
         }
         feedbackForm.setName(request.name);
         feedbackForm.setDescription(request.description);
+        feedbackForm.wasUpdated();
+        course.wasUpdated();
         courseRepository.update(course);
         return getFeedbackForm(courseId, formId);
     }
@@ -250,6 +265,8 @@ public class MaintService {
             reorderedQuestions.add(questionWrapper);
         }
         feedbackForm.setQuestions(reorderedQuestions);
+        feedbackForm.wasUpdated();
+        course.wasUpdated();
         courseRepository.update(course);
         return getFeedbackForm(courseId, formId);
     }
@@ -270,6 +287,7 @@ public class MaintService {
         }
         FeedbackForm feedbackForm = new FeedbackForm(course.getId(), request.name, request.description, new ArrayList<>(), FormStatus.NOT_STARTED);
         course.addFeedbackForm(feedbackForm);
+        course.wasUpdated();
         courseRepository.update(course);
         return feedbackForm;
     }
@@ -295,6 +313,8 @@ public class MaintService {
             copiedFeedbackForm.addQuestion(new QuestionWrapper(feedbackQuestion.getId(), new ArrayList<>()));
         }
         course.addFeedbackForm(copiedFeedbackForm);
+        feedbackForm.wasUpdated();
+        course.wasUpdated();
         courseRepository.update(course);
 
         return getFeedbackForm(courseId, copiedFeedbackForm.getId().toString());
@@ -314,6 +334,7 @@ public class MaintService {
             throw new NotFoundException();
         }
         course.removeFeedbackForm(feedbackForm);
+        course.wasUpdated();
         courseRepository.update(course);
         return Response.ok().build();
     }
@@ -374,6 +395,7 @@ public class MaintService {
         feedbackQuestion.setDescription(request.description);
         feedbackQuestion.setOptions(request.options);
         feedbackQuestion.setRangeLow(request.rangeLow);
+        feedbackQuestion.setRangeHigh(request.rangeHigh);
 
         try {
             feedbackQuestion.setType(FeedbackQuestionType.valueOf(request.type));
@@ -381,6 +403,8 @@ public class MaintService {
             throw new NotFoundException();
         }
 
+        feedbackForm.wasUpdated();
+        course.wasUpdated();
         courseRepository.update(course);
         return getFeedbackQuestion(courseId, formId, questionId);
     }
@@ -414,6 +438,8 @@ public class MaintService {
             course.addFeedbackQuestion(feedbackQuestion);
             QuestionWrapper questionWrapper = new QuestionWrapper(feedbackQuestion.getId(), new ArrayList<>());
             feedbackForm.addQuestion(questionWrapper);
+            feedbackForm.wasUpdated();
+            course.wasUpdated();
             courseRepository.update(course);
 
             questionWrapper.setQuestionContent(feedbackQuestion);
@@ -446,6 +472,8 @@ public class MaintService {
         }
         course.removeFeedbackQuestion(feedbackQuestion);
         feedbackForm.removeQuestion(questionWrapper);
+        feedbackForm.wasUpdated();
+        course.wasUpdated();
         courseRepository.update(course);
         return Response.ok().build();
     }
@@ -489,6 +517,8 @@ public class MaintService {
         }
         quizForm.setName(request.name);
         quizForm.setDescription(request.description);
+        quizForm.wasUpdated();
+        course.wasUpdated();
         courseRepository.update(course);
         return getQuizForm(courseId, formId);
     }
@@ -519,6 +549,8 @@ public class MaintService {
             reorderedQuestions.add(questionWrapper);
         }
         quizForm.setQuestions(reorderedQuestions);
+        quizForm.wasUpdated();
+        course.wasUpdated();
         courseRepository.update(course);
         return getQuizForm(courseId, formId);
     }
@@ -539,6 +571,7 @@ public class MaintService {
         }
         QuizForm quizForm = new QuizForm(course.getId(), request.name, request.description, new ArrayList<>(), FormStatus.NOT_STARTED, 0, false);
         course.addQuizForm(quizForm);
+        course.wasUpdated();
         courseRepository.update(course);
         return quizForm;
     }
@@ -564,7 +597,9 @@ public class MaintService {
             copiedQuizForm.addQuestion(new QuestionWrapper(quizQuestion.getId(), new ArrayList<>()));
         }
 
+        copiedQuizForm.wasUpdated();
         course.addQuizForm(copiedQuizForm);
+        course.wasUpdated();
         courseRepository.update(course);
 
         return getQuizForm(courseId, copiedQuizForm.getId().toString());
@@ -585,6 +620,7 @@ public class MaintService {
             throw new NotFoundException();
         }
         course.removeQuizForm(quizForm);
+        course.wasUpdated();
         courseRepository.update(course);
         return Response.ok().build();
     }
@@ -651,6 +687,8 @@ public class MaintService {
         } catch (IllegalArgumentException e) {
             throw new NotFoundException();
         }
+        quizForm.wasUpdated();
+        course.wasUpdated();
         courseRepository.update(course);
         return getQuizQuestion(courseId, formId, questionId);
     }
@@ -683,8 +721,9 @@ public class MaintService {
             course.addQuizQuestion(quizQuestion);
             QuestionWrapper questionWrapper = new QuestionWrapper(quizQuestion.getId(), new ArrayList<>());
             quizForm.addQuestion(questionWrapper);
+            course.wasUpdated();
+            quizForm.wasUpdated();
             courseRepository.update(course);
-
             questionWrapper.setQuestionContent(quizQuestion);
             return questionWrapper;
         } catch (IllegalArgumentException e) {
@@ -715,6 +754,8 @@ public class MaintService {
         }
         course.removeQuizQuestion(quizQuestion);
         quizForm.removeQuestion(questionWrapper);
+        quizForm.wasUpdated();
+        course.wasUpdated();
         courseRepository.update(course);
         return Response.ok().build();
     }

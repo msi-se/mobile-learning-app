@@ -10,7 +10,12 @@ export function cn(...inputs: ClassValue[]) {
 }
 
 export async function hasValidJwtToken(): Promise<boolean> {
-  const jwtToken = localStorage?.getItem("jwtToken");
+
+  if (typeof window === 'undefined') {
+    return false;
+  }
+
+  const jwtToken = localStorage ? localStorage.getItem("jwtToken") : null;
   if (!jwtToken) {
     return false;
   }
@@ -60,35 +65,40 @@ export async function hasValidJwtToken(): Promise<boolean> {
 }
 
 export async function login(username: string, password: string): Promise<boolean> {
-  // if (!username || !password) {
-  //   console.error("Username and password are required.");
-  //   toast.error("Username and password are required.");
-  //   return false;
-  // }
-  // DEBUG: password is not required
+
   if (!username) {
-    console.error("Username is required.");
+    // console.error("Username is required.");
     toast.error("Username is required.");
     return false;
   }
 
   const BACKEND_URL = await getBackendUrl();
-
-  let loginResponse = await fetch(`${BACKEND_URL}/user/login`, {
-    method: "POST",
-    headers: {
-      "AUTHORIZATION": "Basic " + btoa(`${username}:${password}`)
-    }
-  });
-  let jwt = await loginResponse.text();
+  const abortController = new AbortController();
+  setTimeout(() => abortController.abort(), 3000);
+  let loginResponse = null
+  try {
+    loginResponse = await fetch(`${BACKEND_URL}/user/login`, {
+      method: "POST",
+      headers: {
+        "AUTHORIZATION": "Basic " + btoa(`${username}:${password}`)
+      },
+      signal: abortController.signal
+    });
+  } catch (error) {
+    // console.error(`Failed to login. Error: ${error}`);
+    toast.error("Failed to login. Please check your credentials and your network connection.");
+    return false;
+  }
+  let jwt = await loginResponse?.text();
   if (loginResponse.status !== 200) {
     // console.error(`Failed to login. Status: ${loginResponse.status}`);
     // console.error(loginResponse);
     toast.error("Failed to login. Please check your credentials.");
     return false;
+  } else {
+    localStorage.setItem("jwtToken", jwt);
+    return true;
   }
-  localStorage.setItem("jwtToken", jwt);
-  return true;
 }
 
 

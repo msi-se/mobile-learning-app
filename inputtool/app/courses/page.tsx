@@ -67,6 +67,7 @@ export default function Courses() {
               <TableRow>
                 <TableHead>Name</TableHead>
                 <TableHead>Description</TableHead>
+                <TableHead>Last Modified</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -74,11 +75,12 @@ export default function Courses() {
                 <TableRow key={course.id} className="hover:cursor-pointer" onClick={() => router.push(`/courses/${course.id}`)}>
                   <TableCell className="font-medium">{course.name}</TableCell>
                   <TableCell>{course.description}</TableCell>
+                  <TableCell>{new Date(course.lastModified).toLocaleString()}</TableCell>
                 </TableRow>
               ))}
               {courses.length === 0 && (
-                <TableRow>
-                  <TableCell colSpan={2}>No courses found.</TableCell>
+                <TableRow className="text-center">
+                  <TableCell colSpan={3}>No courses found.</TableCell>
                 </TableRow>
               )}
             </TableBody>

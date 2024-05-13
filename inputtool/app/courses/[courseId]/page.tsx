@@ -21,6 +21,7 @@ import {
 import { Course } from "@/lib/models";
 import { DeleteButton } from "@/components/delete-button";
 import { addFeedbackForm, addQuizForm, deleteCourse, fetchCourse, updateCourse } from "@/lib/requests";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 
 export default function CoursePage({ params }: { params: { courseId: string } }) {
 
@@ -90,6 +91,36 @@ export default function CoursePage({ params }: { params: { courseId: string } })
       if (autosaveTimeout && autosaveTimeout.current) clearTimeout(autosaveTimeout.current);
     };
   }, [save, userChangedSomething]);
+
+
+  // save on page leave
+  useEffect(() => {
+    const handleBeforeUnload = async (e: BeforeUnloadEvent) => {
+      if (userChangedSomething) {
+        e.preventDefault();
+        await save();
+        toast.info("Saved. (You should give the app a few seconds to save your changes next time.)");
+      }
+    };
+    window.addEventListener("beforeunload", handleBeforeUnload);
+    return () => {
+      window.removeEventListener("beforeunload", handleBeforeUnload);
+    };
+  }, [userChangedSomething, save]);
+
+  // direct save
+  useEffect(() => {
+    const handleSave = async (e: KeyboardEvent) => {
+      if (e.key === "s" && (e.ctrlKey || e.metaKey)) {
+        e.preventDefault();
+        save();
+      }
+    };
+    document.addEventListener("keydown", handleSave);
+    return () => {
+      document.removeEventListener("keydown", handleSave);
+    };
+  }, [save]);
 
   return (
     <div className="flex flex-col items-center justify-center h-max m-4">
@@ -180,7 +211,31 @@ export default function CoursePage({ params }: { params: { courseId: string } })
                   />
                 </div>
                 <div className="flex flex-col flex-grow">
-                  <Label>Moodle Course ID</Label>
+                  <div className="flex gap-2">
+                    <Label>Moodle Course ID</Label>
+                    <Dialog>
+                      <DialogTrigger>
+                        <div
+                          className="text-gray-400 cursor-pointer"
+                          title="Moodle Course ID"
+                        >?</div>
+                      </DialogTrigger>
+                      <DialogContent>
+                        <DialogHeader>
+                          <DialogTitle>Moodle Course ID</DialogTitle>
+                          <DialogDescription>
+                            {/* https://moodle.htwg-konstanz.de/moodle/course/view.php?id=793 */}
+                            By entering a Moodle Course ID, the students enrolled in the course will be added directly to your course on this platform.
+                            <br />
+                            You can find the ID in the Moodle URL:
+                            <br />
+                            <span className="text-blue-500">https://moodle.htwg-konstanz.de/moodle/course/view.php?id=</span>
+                            <span className="text-blue-500 font-bold">793</span>
+                          </DialogDescription>
+                        </DialogHeader>
+                      </DialogContent>
+                    </Dialog>
+                  </div>
                   <Input
                     value={courseMoodleCourseId}
                     onChange={(e) => {
@@ -238,10 +293,11 @@ export default function CoursePage({ params }: { params: { courseId: string } })
                 <TableHead>Type</TableHead>
                 <TableHead>Name</TableHead>
                 <TableHead>Description</TableHead>
+                <TableHead>Last Modified</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody className="overflow-y-auto">
-              {[...course?.feedbackForms || [], ...course?.quizForms || []].map((form) => (
+              {[...course?.feedbackForms || [], ...course?.quizForms || []].sort((a, b) => a.lastModified > b.lastModified ? -1 : 1).map(form => (
                 <TableRow key={form.id} className="hover:cursor-pointer"
                   onClick={() => {
                     toast.dismiss();
@@ -252,18 +308,18 @@ export default function CoursePage({ params }: { params: { courseId: string } })
                   <TableCell>{form.type}</TableCell>
                   <TableCell className="font-medium">{form.name}</TableCell>
                   <TableCell>{form.description}</TableCell>
+                  <TableCell>{new Date(form.lastModified).toLocaleString()}</TableCell>
                 </TableRow>
               ))}
               {course?.feedbackForms.length === 0 && course?.quizForms.length === 0 && (
                 <TableRow>
-                  <TableCell colSpan={3} className="text-center">No forms found.</TableCell>
+                  <TableCell colSpan={4} className="text-center">No forms found.</TableCell>
                 </TableRow>
               )}
             </TableBody>
           </Table>
         </>
-      )
-      }
+      )}
     </div >
   );
 }

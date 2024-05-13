@@ -5,6 +5,7 @@ export type FeedbackForm = {
     description: string;
     questions: FeedbackQuestion[];
     type: "Feedback";
+    lastModified: Date;
 }
 
 export type FeedbackQuestion = {
@@ -25,6 +26,7 @@ export type QuizForm = {
     description: string;
     questions: QuizQuestion[];
     type: "Quiz";
+    lastModified: Date;
 }
 
 export type QuizQuestion = {
@@ -46,4 +48,5 @@ export type Course = {
     moodleCourseId: string;
     feedbackForms: FeedbackForm[];
     quizForms: QuizForm[];
+    lastModified: Date;
 }

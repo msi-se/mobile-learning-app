@@ -27,9 +27,10 @@ import 'package:rive/rive.dart';
 class QuizControlPage extends StatefulWidget {
   final String courseId;
   final String formId;
+  final RiveFile? riveFile;
 
   const QuizControlPage(
-      {super.key, required this.courseId, required this.formId});
+      {super.key, required this.courseId, required this.formId, required this.riveFile});
 
   @override
   State<QuizControlPage> createState() => _QuizControlPageState();
@@ -513,8 +514,8 @@ class _QuizControlPageState extends AuthState<QuizControlPage> {
                         margin: const EdgeInsets.only(top: 30.0, bottom: 10.0),
                         width: 250,
                         height: 250,
-                        child: RiveAnimation.asset(
-                          'assets/animations/rive/animations.riv',
+                        child: RiveAnimation.direct(
+                          widget.riveFile!,
                           fit: BoxFit.cover,
                           artboard: 'rigged without bodyparts darker firework',
                           stateMachines: ['State Machine Winner'],

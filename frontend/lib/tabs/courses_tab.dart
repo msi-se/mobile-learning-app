@@ -17,8 +17,9 @@ import 'package:rive/rive.dart';
 
 class CoursesTab extends StatefulWidget {
   final Function(Function?) setPopFunction;
+  final RiveFile? riveFile;
 
-  const CoursesTab({super.key, required this.setPopFunction});
+  const CoursesTab({super.key, required this.setPopFunction, required this.riveFile});
 
   @override
   State<CoursesTab> createState() => _CoursesTabState();
@@ -158,8 +159,8 @@ class _CoursesTabState extends State<CoursesTab> {
             margin: EdgeInsets.only(top: 20.0, bottom: 100.0),
             width: 250,
             height: 250,
-            child: RiveAnimation.asset(
-              'assets/animations/rive/animations.riv',
+            child: RiveAnimation.direct(
+              widget.riveFile!,
               fit: BoxFit.cover,
               artboard: 'Sleeping Mascot',
               stateMachines: ['Sleeping State Machine'],
@@ -236,7 +237,7 @@ class _CoursesTabState extends State<CoursesTab> {
                       }
                     }
                   },
-                ),
+                riveFile: widget.riveFile,),
         );
       }
     } else {

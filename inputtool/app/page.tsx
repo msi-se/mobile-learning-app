@@ -3,12 +3,13 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { Label } from "@radix-ui/react-dropdown-menu";
+import { Label, Separator } from "@radix-ui/react-dropdown-menu";
 import { useRouter } from 'next/navigation'
 import { useState, useEffect } from "react";
 import { Loader2 } from 'lucide-react';
 import { hasValidJwtToken, login } from "@/lib/utils";
 import HtwgPattern from "@/public/htwg-pattern";
+import HtwgConnectLogo from "@/public/htwg-connect-logo";
 
 
 export default function Home() {
@@ -47,7 +48,15 @@ export default function Home() {
       <div className="flex flex-col items-center justify-center h-screen">
         <Card className="w-[350px]">
           <CardHeader>
-            <CardTitle>Login</CardTitle>
+            <div className="flex items-center">
+              <HtwgConnectLogo className="m-5" style={{ height: '100px', width: '100px' }} />
+              <div className="row">
+                <span className="font-extrabold text-primary text-xl block" >HTWG Connect</span>
+                <span className="font-bold text-lg block" >Input Tool</span>
+              </div>
+            </div>
+            <Separator className="my-5"/>
+            <CardTitle className="text-center font-bold">Login</CardTitle>
           </CardHeader>
           <CardContent>
             <Label>HTWG-Username</Label>
@@ -55,7 +64,7 @@ export default function Home() {
             <Label className="mt-2">Password</Label>
             <Input type="password" value={password} onChange={(e) => setPassword(e.target.value)} onSubmit={handleLogin} />
             <Button
-              className="mt-4"
+              className="mt-4 w-full"
               onClick={handleLogin}
               disabled={!username}
             >{loading ? <Loader2 className="w-6 h-6 animate-spin" /> : "Login"}</Button>

@@ -33,6 +33,8 @@ import { Checkbox } from "@/components/ui/checkbox";
 
 export default function QuizQuestionPage({ params }: { params: { courseId: string, formId: string, questionId: string } }) {
 
+  const OPTION_LIMIT = 5;
+
   const router = useRouter();
   const [loading, setLoading] = useState(true);
   const [quizQuestion, setQuizQuestion] = useState<QuizQuestion>({
@@ -103,6 +105,34 @@ export default function QuizQuestionPage({ params }: { params: { courseId: strin
     };
   }, [save, userChangedSomething]);
 
+  // save on page leave
+  useEffect(() => {
+    const handleBeforeUnload = async (e: BeforeUnloadEvent) => {
+      if (userChangedSomething) {
+        e.preventDefault();
+        await save();
+        toast.info("Saved. (You should give the app a few seconds to save your changes next time.)");
+      }
+    };
+    window.addEventListener("beforeunload", handleBeforeUnload);
+    return () => {
+      window.removeEventListener("beforeunload", handleBeforeUnload);
+    };
+  }, [userChangedSomething, save]);
+
+  // direct save
+  useEffect(() => {
+    const handleSave = async (e: KeyboardEvent) => {
+      if (e.key === "s" && (e.ctrlKey || e.metaKey)) {
+        e.preventDefault();
+        save();
+      }
+    };
+    document.addEventListener("keydown", handleSave);
+    return () => {
+      document.removeEventListener("keydown", handleSave);
+    };
+  }, [save]);
 
   return (
     <div className="flex flex-col items-center justify-center h-max m-4">
@@ -259,61 +289,65 @@ export default function QuizQuestionPage({ params }: { params: { courseId: strin
                   </SelectItem>
                 </SelectContent>
               </Select>
-              <Label className="mt-2">Correct Answers</Label>
-              <div className="flex gap-4">
-              <Checkbox
-                checked={quizQuestion?.hasCorrectAnswers}
-                onCheckedChange={(checked) => {
-                  checked = checked as boolean || false;
-                  setQuizQuestion({
-                    ...quizQuestion,
-                    hasCorrectAnswers: checked
-                  });
-                  setUserChangedSomething(true);
-                }}
-              />
-              <Label>Has Correct Answers</Label>
+              <div className="mt-2 flex gap-4 items-center">
+                <Label>Has Correct Answers</Label>
+                <Checkbox
+                  checked={quizQuestion?.hasCorrectAnswers}
+                  onCheckedChange={(checked) => {
+                    checked = checked as boolean || false;
+                    setQuizQuestion({
+                      ...quizQuestion,
+                      hasCorrectAnswers: checked
+                    });
+                    setUserChangedSomething(true);
+                  }}
+                />
               </div>
 
               {/* if yes/no -> display checkboxes for yes and no */}
               {quizQuestion?.type === "YES_NO" && quizQuestion?.hasCorrectAnswers && (
-                <div className="flex gap-4">
-                  <Checkbox
-                    checked={quizQuestion?.correctAnswers?.includes("yes")}
-                    onCheckedChange={(checked) => {
-                      checked = checked as boolean || false;
-                      let correctAnswers = quizQuestion?.correctAnswers || [];
-                      if (checked) {
-                        correctAnswers.push("yes");
-                      } else {
-                        correctAnswers = correctAnswers.filter(a => a !== "yes");
-                      }
-                      setQuizQuestion({
-                        ...quizQuestion,
-                        correctAnswers: correctAnswers
-                      });
-                      setUserChangedSomething(true);
-                    }}
-                  />
-                  <Label>Yes</Label>
-                  <Checkbox
-                    checked={quizQuestion?.correctAnswers?.includes("no")}
-                    onCheckedChange={(checked) => {
-                      checked = checked as boolean || false;
-                      let correctAnswers = quizQuestion?.correctAnswers || [];
-                      if (checked) {
-                        correctAnswers.push("no");
-                      } else {
-                        correctAnswers = correctAnswers.filter(a => a !== "no");
-                      }
-                      setQuizQuestion({
-                        ...quizQuestion,
-                        correctAnswers: correctAnswers
-                      });
-                      setUserChangedSomething(true);
-                    }}
-                  />
-                  <Label>No</Label>
+                <div className="flex gap-4 items-center bg-gray-100 p-4 rounded-md">
+                  <div className="flex gap-4 items-center">
+                    <Checkbox
+                      checked={quizQuestion?.correctAnswers?.includes("yes")}
+                      onCheckedChange={(checked) => {
+                        checked = checked as boolean || false;
+                        let correctAnswers = quizQuestion?.correctAnswers || [];
+                        if (checked) {
+                          correctAnswers.push("yes");
+                        } else {
+                          correctAnswers = correctAnswers.filter(a => a !== "yes");
+                        }
+                        setQuizQuestion({
+                          ...quizQuestion,
+                          correctAnswers: correctAnswers
+                        });
+                        setUserChangedSomething(true);
+                      }}
+                    />
+                    <Label>Yes</Label>
+                  </div>
+                  <div className="flex gap-4 items-center">
+
+                    <Checkbox
+                      checked={quizQuestion?.correctAnswers?.includes("no")}
+                      onCheckedChange={(checked) => {
+                        checked = checked as boolean || false;
+                        let correctAnswers = quizQuestion?.correctAnswers || [];
+                        if (checked) {
+                          correctAnswers.push("no");
+                        } else {
+                          correctAnswers = correctAnswers.filter(a => a !== "no");
+                        }
+                        setQuizQuestion({
+                          ...quizQuestion,
+                          correctAnswers: correctAnswers
+                        });
+                        setUserChangedSomething(true);
+                      }}
+                    />
+                    <Label>No</Label>
+                  </div>
                 </div>
               )}
             </CardContent>
@@ -407,9 +441,11 @@ export default function QuizQuestionPage({ params }: { params: { courseId: strin
           {(quizQuestion?.type === "SINGLE_CHOICE" || quizQuestion?.type === "MULTIPLE_CHOICE") && (
             <>
               <div className="flex justify-between w-full mb-4 mt-8 flex-grow flex-wrap gap-4">
-                <h2 className="text-2xl">Options</h2>
+                <h2 className="text-2xl">Options ({quizQuestion?.options?.length || 0}/{OPTION_LIMIT})</h2>
                 <div className="flex gap-4 justify-end">
                   <Button
+                    title={ (quizQuestion?.options?.length || 0) >= OPTION_LIMIT ? "Option limit reached" : "Add Option"}
+                    disabled={(quizQuestion?.options?.length || 0) >= OPTION_LIMIT}
                     className="flex flex-col self-end"
                     onClick={() => {
                       setQuizQuestion({ ...quizQuestion, options: [...quizQuestion.options || [], ""] });
@@ -460,8 +496,8 @@ export default function QuizQuestionPage({ params }: { params: { courseId: strin
 
                       </TableCell>
 
-                      <TableCell>
-                        {quizQuestion?.hasCorrectAnswers && (
+                      {quizQuestion?.hasCorrectAnswers && (
+                        <TableCell>
                           <Checkbox
                             checked={quizQuestion?.correctAnswers?.includes(index.toString())}
                             onCheckedChange={(checked) => {
@@ -485,8 +521,8 @@ export default function QuizQuestionPage({ params }: { params: { courseId: strin
                               setUserChangedSomething(true);
                             }}
                           />
-                        )}
-                      </TableCell>
+                        </TableCell>
+                      )}
 
                       <TableCell>
                         <Button
