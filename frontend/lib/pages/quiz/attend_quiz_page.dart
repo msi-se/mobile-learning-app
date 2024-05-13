@@ -23,8 +23,9 @@ import 'package:rive/rive.dart';
 
 class AttendQuizPage extends StatefulWidget {
   final String code;
+  final RiveFile? riveFile;
 
-  const AttendQuizPage({super.key, required this.code});
+  const AttendQuizPage({super.key, required this.code, required this.riveFile});
 
   @override
   State<AttendQuizPage> createState() => _AttendQuizPageState();
@@ -464,8 +465,8 @@ class _AttendQuizPageState extends AuthState<AttendQuizPage> {
                   margin: const EdgeInsets.only(top: 100.0, bottom: 100.0),
                   width: 400,
                   height: 400,
-                  child: RiveAnimation.asset(
-                    'assets/animations/rive/animations.riv',
+                  child: RiveAnimation.direct(
+                    widget.riveFile!,
                     fit: BoxFit.cover,
                     artboard: 'firework',
                     stateMachines: ['Firework State Machine'],
@@ -546,8 +547,8 @@ class _AttendQuizPageState extends AuthState<AttendQuizPage> {
                   margin: const EdgeInsets.only(top: 100.0, bottom: 100.0),
                   width: 150,
                   height: 150,
-                  child: RiveAnimation.asset(
-                    'assets/animations/rive/animations.riv',
+                  child: RiveAnimation.direct(
+                    widget.riveFile!,
                     fit: BoxFit.cover,
                     artboard: 'Waiting with coffee shorter arm',
                     stateMachines: ['Waiting State Machine'],
@@ -623,8 +624,8 @@ class _AttendQuizPageState extends AuthState<AttendQuizPage> {
 
                   width: 130,
                   height: 130,
-                  child: RiveAnimation.asset(
-                    'assets/animations/rive/animations.riv',
+                  child: RiveAnimation.direct(
+                    widget.riveFile!,
                     fit: BoxFit.cover,
                     artboard: 'true & false',
                     stateMachines: ['tf State Machine'],
@@ -638,8 +639,8 @@ class _AttendQuizPageState extends AuthState<AttendQuizPage> {
 
                   width: 130,
                   height: 130,
-                  child: RiveAnimation.asset(
-                    'assets/animations/rive/animations.riv',
+                  child: RiveAnimation.direct(
+                    widget.riveFile!,
                     fit: BoxFit.cover,
                     artboard: 'true & false',
                     stateMachines: ['tf State Machine'],
@@ -653,8 +654,8 @@ class _AttendQuizPageState extends AuthState<AttendQuizPage> {
 
                   width: 130,
                   height: 130,
-                  child: RiveAnimation.asset(
-                    'assets/animations/rive/animations.riv',
+                  child: RiveAnimation.direct(
+                    widget.riveFile!,
                     fit: BoxFit.cover,
                     artboard: 'true & false',
                     animations: ['nicht abgestimmt'],
