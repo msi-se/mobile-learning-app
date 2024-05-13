@@ -21,8 +21,9 @@ import 'package:rive/rive.dart';
 
 class AttendFeedbackPage extends StatefulWidget {
   final String code;
+  final RiveFile? riveFile;
 
-  const AttendFeedbackPage({super.key, required this.code});
+  const AttendFeedbackPage({super.key, required this.code, required this.riveFile});
 
   @override
   State<AttendFeedbackPage> createState() => _AttendFeedbackPageState();
@@ -248,8 +249,8 @@ class _AttendFeedbackPageState extends AuthState<AttendFeedbackPage> {
                   margin: const EdgeInsets.only(top: 100.0, bottom: 100.0),
                   width: 150,
                   height: 150,
-                  child: RiveAnimation.asset(
-                    'assets/animations/rive/animations.riv',
+                  child: RiveAnimation.direct(
+                    widget.riveFile!,
                     fit: BoxFit.cover,
                     artboard: 'Waiting with coffee shorter arm',
                     stateMachines: ['Waiting State Machine'],
@@ -264,10 +265,23 @@ class _AttendFeedbackPageState extends AuthState<AttendFeedbackPage> {
       if (_voted) {
         return Scaffold(
           appBar: appbar,
-          body: const Center(
+          body: Center(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
+                Container(
+                    margin: EdgeInsets.only(
+                        top: 0.0,
+                        bottom: 10.0), // specify the top and bottom margin
+
+                    width: 300,
+                    height: 300,
+                    child: RiveAnimation.direct(
+                      widget.riveFile!,
+                      fit: BoxFit.cover,
+                      artboard: 'High Five',
+                      stateMachines: ['High Five State Machine'],
+                    )),
                 Padding(
                   padding: EdgeInsets.only(left: 20.0, right: 20.0),
                   child: Text("Vielen Dank für Ihr Feedback"),

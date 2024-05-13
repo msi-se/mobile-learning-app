@@ -21,8 +21,8 @@ services:
       - ME_CONFIG_MONGODB_SERVER=mobile-learning-mongo
       - ME_CONFIG_MONGODB_PORT=27017
       - ME_CONFIG_SITE_BASEURL=/mongo
-      - ME_CONFIG_BASICAUTH_USERNAME=admin
-      - ME_CONFIG_BASICAUTH_PASSWORD=admin
+      - ME_CONFIG_BASICAUTH_USERNAME=${MONGO_EXPRESS_USERNAME}
+      - ME_CONFIG_BASICAUTH_PASSWORD=${MONGO_EXPRESS_PASSWORD}
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.mongo-express.entrypoints=websecure"
@@ -78,6 +78,25 @@ services:
       - "traefik.docker.network=proxy"
     networks:
       - proxy
+
+  # nextjs maintenance frontend (inputtool)
+  mobile-learning-inputtool:
+    restart: always
+    container_name: mobile-learning-inputtool
+    build:
+      context: ./inputtool
+      dockerfile: Dockerfile
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.input.entrypoints=websecure"
+      - "traefik.http.routers.input.rule=Host(`${DOMAIN}`) && PathPrefix(`/input`)"
+      # - "traefik.http.routers.input.middlewares=input-stripprefix"
+      - "traefik.http.middlewares.input-stripprefix.stripprefix.prefixes=/input"
+      # - "traefik.http.middlewares.input-stripprefix.stripprefix.forceSlash=false"
+      - "traefik.docker.network=proxy"
+    networks:
+      - proxy
+
 
   traefik-proxy:
     container_name: traefik-proxy
