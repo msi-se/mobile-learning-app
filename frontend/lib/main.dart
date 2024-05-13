@@ -21,9 +21,9 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await initPreferences();
 
-
-  // Preload Rive animation here
+  // Preload Rive animation
   RiveFile? riveFile;
+  await RiveFile.initializeText();
   await rootBundle.load('assets/animations/rive/animations.riv').then((data) {
     riveFile = RiveFile.import(data);
   });
@@ -32,10 +32,9 @@ void main() async {
 }
 
 class MyApp extends StatelessWidget {
-
   final RiveFile? riveFile;
 
-  const MyApp({Key? key, this.riveFile});
+  const MyApp({Key? key, required this.riveFile});
 
   @override
   Widget build(BuildContext context) {
