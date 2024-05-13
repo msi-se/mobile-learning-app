@@ -6,13 +6,15 @@ class MenuCard extends StatefulWidget {
   final String description;
   final List<RowData> rowData;
   final Color cardColor;
+  final RiveFile? riveFile;
 
   const MenuCard({
     Key? key,
     required this.title,
     required this.description,
     required this.rowData,
-    required this.cardColor,
+    required this.cardColor, 
+    required this.riveFile,
   }) : super(key: key);
 
   @override
@@ -62,8 +64,8 @@ class _MenuCardState extends State<MenuCard>
                   leading: Container(
                     width: 100,
                     height: 100,
-                    child: RiveAnimation.asset(
-                      'assets/animations/rive/animations.riv',
+                    child: RiveAnimation.direct(
+                      widget.riveFile!,
                       fit: BoxFit.cover,
                       artboard: widget.title == 'Seezeit-Teller'
                           ? 'Seezeit'

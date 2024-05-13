@@ -8,9 +8,13 @@ import 'package:frontend/models/menu/menuState.dart';
 import 'package:frontend/models/menu/day.dart';
 import 'package:frontend/utils.dart';
 import 'package:http/http.dart' as http;
+import 'package:rive/src/rive_file.dart';
 
 class MenuPage extends StatefulWidget {
-  const MenuPage({super.key});
+
+  final RiveFile? riveFile;
+
+  const MenuPage({super.key, required this.riveFile});
 
   @override
   State<MenuPage> createState() => _MenuPageState();
@@ -189,6 +193,7 @@ class _MenuPageState extends AuthState<MenuPage> with TickerProviderStateMixin {
                                 value: item.preis3.isEmpty ? '?' : item.preis3,
                               ),
                             ],
+                            riveFile: widget.riveFile!,
                           );
                         },
                       );

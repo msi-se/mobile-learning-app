@@ -10,7 +10,7 @@ class MainPage extends StatefulWidget {
 
   final RiveFile? riveFile;
 
-  const MainPage({Key? key, this.riveFile});
+  const MainPage({Key? key, required this.riveFile});
 
   @override
   State<MainPage> createState() => _MainPageState();
