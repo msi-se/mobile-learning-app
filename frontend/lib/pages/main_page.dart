@@ -4,9 +4,13 @@ import 'package:frontend/tabs/courses_tab.dart';
 import 'package:frontend/tabs/live_tab.dart';
 import 'package:frontend/tabs/home_tab.dart';
 import 'package:frontend/theme/assets.dart';
+import 'package:rive/rive.dart';
 
 class MainPage extends StatefulWidget {
-  const MainPage({super.key});
+
+  final RiveFile? riveFile;
+
+  const MainPage({Key? key, this.riveFile});
 
   @override
   State<MainPage> createState() => _MainPageState();
@@ -60,7 +64,7 @@ class _MainPageState extends AuthState<MainPage> {
             setState(() {
               this.popFunction = popFunction;
             });
-          }),
+          }, riveFile: widget.riveFile),
           const LiveTab(),
         ][_tabIndex],
       ),
