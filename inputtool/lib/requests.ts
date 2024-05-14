@@ -464,3 +464,17 @@ export async function deleteQuizQuestion(courseId: string, formId: string, quest
     return true;
 }
 
+export async function changeCourseOfForm(courseId: string, formId: string, newCourseId: string): Promise<boolean> {
+    const BACKEND_URL = await getBackendUrl();
+    const jwtToken = localStorage.getItem("jwtToken");
+    let changeCourseResponse = await fetch(`${BACKEND_URL}/maint/course/${courseId}/form/${formId}/change-course`, {
+        method: "PUT",
+        headers: { "AUTHORIZATION": "Bearer " + jwtToken, "Content-Type": "application/json" },
+        body: JSON.stringify({ newCourseId })
+    });
+    if (changeCourseResponse.status !== 200) {
+        toast.error(`Failed to change course of form. Please try again. Status: ${changeCourseResponse.status}`);
+        return false;
+    }
+    return true;
+}

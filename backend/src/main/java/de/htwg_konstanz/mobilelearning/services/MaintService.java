@@ -1,7 +1,7 @@
 package de.htwg_konstanz.mobilelearning.services;
 
-
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import org.bson.types.ObjectId;
@@ -14,6 +14,7 @@ import de.htwg_konstanz.mobilelearning.enums.QuizQuestionType;
 import de.htwg_konstanz.mobilelearning.helper.moodle.MoodleCourse;
 import de.htwg_konstanz.mobilelearning.helper.moodle.MoodleInterface;
 import de.htwg_konstanz.mobilelearning.models.Course;
+import de.htwg_konstanz.mobilelearning.models.Form;
 import de.htwg_konstanz.mobilelearning.models.Question;
 import de.htwg_konstanz.mobilelearning.models.QuestionWrapper;
 import de.htwg_konstanz.mobilelearning.models.auth.User;
@@ -42,28 +43,48 @@ import jakarta.ws.rs.core.Response;
  * 
  * 
  * // ENDPOINTS:
-
-    // listCourses(); -> Name, Description
-
-    // getCourse(params.courseId); -> Name, Description, MoodleCourseId, FeedbackForms (Name, Description), QuizForms (Name, Description)
-    // updateCourse(params.courseId, courseName, courseDescription, courseMoodleCourseId); -> Error | Name, Description, MoodleCourseId, FeedbackForms (Name, Description), QuizForms (Name, Description)
-    // addCourse(courseName, courseDescription); -> Error | Name, Description, MoodleCourseId, FeedbackForms (Name, Description), QuizForms (Name, Description)
-    // deleteCourse(params.courseId); -> Error | Success
-
-    // getFeedbackForm(params.courseId, params.formId); -> Error | Name, Description, Questions (Name, Description, Type, Options, RangeLow, RangeHigh)
-    // updateFeedbackForm(params.courseId, params.formId, feedbackformName, feedbackformDescription) -> Error | Name, Description, Questions (Name, Description, Type, Options, RangeLow, RangeHigh)
-    // addFeedbackForm(params.courseId, feedbackformName, feedbackformDescription) -> Error | Name, Description, Questions (Name, Description, Type, Options, RangeLow, RangeHigh)
-    // deleteFeedbackForm(params.courseId, params.formId) -> Error | Success
-
-    // getFeedbackQuestion(params.courseId, params.formId, params.questionId); -> Error | Name, Description, Type, Options, RangeLow, RangeHigh
-    // updateFeedbackQuestion(params.courseId, params.formId, params.questionId, feedbackQuestion?.name, feedbackQuestion?.description, feedbackQuestion?.type, feedbackQuestion?.options, feedbackQuestion?.rangeLow, feedbackQuestion?.rangeHigh) -> Error | Name, Description, Type, Options, RangeLow, RangeHigh
-    // addFeedbackQuestion(params.courseId, params.formId, feedbackQuestion?.name, feedbackQuestion?.description, feedbackQuestion?.type, feedbackQuestion?.options, feedbackQuestion?.rangeLow, feedbackQuestion?.rangeHigh) -> Error | Name, Description, Type, Options, RangeLow, RangeHigh
-    // deleteFeedbackQuestion(params.courseId, params.formId, params.questionId) -> Error | Success
-
+ * 
+ * // listCourses(); -> Name, Description
+ * 
+ * // getCourse(params.courseId); -> Name, Description, MoodleCourseId,
+ * FeedbackForms (Name, Description), QuizForms (Name, Description)
+ * // updateCourse(params.courseId, courseName, courseDescription,
+ * courseMoodleCourseId); -> Error | Name, Description, MoodleCourseId,
+ * FeedbackForms (Name, Description), QuizForms (Name, Description)
+ * // addCourse(courseName, courseDescription); -> Error | Name, Description,
+ * MoodleCourseId, FeedbackForms (Name, Description), QuizForms (Name,
+ * Description)
+ * // deleteCourse(params.courseId); -> Error | Success
+ * 
+ * // getFeedbackForm(params.courseId, params.formId); -> Error | Name,
+ * Description, Questions (Name, Description, Type, Options, RangeLow,
+ * RangeHigh)
+ * // updateFeedbackForm(params.courseId, params.formId, feedbackformName,
+ * feedbackformDescription) -> Error | Name, Description, Questions (Name,
+ * Description, Type, Options, RangeLow, RangeHigh)
+ * // addFeedbackForm(params.courseId, feedbackformName,
+ * feedbackformDescription) -> Error | Name, Description, Questions (Name,
+ * Description, Type, Options, RangeLow, RangeHigh)
+ * // deleteFeedbackForm(params.courseId, params.formId) -> Error | Success
+ * 
+ * // getFeedbackQuestion(params.courseId, params.formId, params.questionId); ->
+ * Error | Name, Description, Type, Options, RangeLow, RangeHigh
+ * // updateFeedbackQuestion(params.courseId, params.formId, params.questionId,
+ * feedbackQuestion?.name, feedbackQuestion?.description,
+ * feedbackQuestion?.type, feedbackQuestion?.options,
+ * feedbackQuestion?.rangeLow, feedbackQuestion?.rangeHigh) -> Error | Name,
+ * Description, Type, Options, RangeLow, RangeHigh
+ * // addFeedbackQuestion(params.courseId, params.formId,
+ * feedbackQuestion?.name, feedbackQuestion?.description,
+ * feedbackQuestion?.type, feedbackQuestion?.options,
+ * feedbackQuestion?.rangeLow, feedbackQuestion?.rangeHigh) -> Error | Name,
+ * Description, Type, Options, RangeLow, RangeHigh
+ * // deleteFeedbackQuestion(params.courseId, params.formId, params.questionId)
+ * -> Error | Success
+ * 
  */
 @Path("/maint")
 public class MaintService {
-
 
     @Inject
     private CourseRepository courseRepository;
@@ -85,12 +106,12 @@ public class MaintService {
     @Path("/courses")
     public List<Course> listCourses() {
         List<Course> courses = courseRepository
-            .findAll()
-            .list()
-            .stream()
-            .filter(course -> isOwner(course))
-            .sorted((c1, c2) -> -c1.getLastModified().compareTo(c2.getLastModified()))
-            .toList();
+                .findAll()
+                .list()
+                .stream()
+                .filter(course -> isOwner(course))
+                .sorted((c1, c2) -> -c1.getLastModified().compareTo(c2.getLastModified()))
+                .toList();
         List<Course> coursesWithLessData = courses.stream().map(course -> {
             Course courseWithLessData = new Course();
             courseWithLessData.setId(course.getId());
@@ -142,7 +163,7 @@ public class MaintService {
     static class UpdateCourseRequest {
         public String name;
         public String description;
-        public String moodleCourseId;        
+        public String moodleCourseId;
     }
 
     @PUT
@@ -166,7 +187,7 @@ public class MaintService {
     static class AddCourseRequest {
         public String name;
         public String description;
-        public String moodleCourseId;        
+        public String moodleCourseId;
     }
 
     @POST
@@ -207,7 +228,7 @@ public class MaintService {
         if (feedbackForm == null) {
             throw new NotFoundException();
         }
-        FeedbackForm feedbackFormWithQuestionContents =feedbackForm.copyWithQuestionContents(course);
+        FeedbackForm feedbackFormWithQuestionContents = feedbackForm.copyWithQuestionContents(course);
         return feedbackFormWithQuestionContents;
     }
 
@@ -220,7 +241,8 @@ public class MaintService {
     @Produces(MediaType.APPLICATION_JSON)
     @RolesAllowed({ UserRole.PROF, UserRole.STUDENT })
     @Path("/course/{courseId}/feedback/form/{formId}")
-    public FeedbackForm updateFeedbackForm(@RestPath String courseId, @RestPath String formId, UpdateFeedbackFormRequest request) {
+    public FeedbackForm updateFeedbackForm(@RestPath String courseId, @RestPath String formId,
+            UpdateFeedbackFormRequest request) {
         Course course = courseRepository.findById(new ObjectId(courseId));
         if (!isOwner(course)) {
             throw new NotFoundException();
@@ -237,8 +259,11 @@ public class MaintService {
         return getFeedbackForm(courseId, formId);
     }
 
-    // PUT /maint/course/${courseId}/feedback/form/${formId}/reorder ({String[] questionIds})
-    // reorderFeedbackFormQuestions(params.courseId, params.formId, questionIds) -> Error | Name, Description, Questions (Name, Description, Type, Options, RangeLow, RangeHigh)
+    // PUT /maint/course/${courseId}/feedback/form/${formId}/reorder ({String[]
+    // questionIds})
+    // reorderFeedbackFormQuestions(params.courseId, params.formId, questionIds) ->
+    // Error | Name, Description, Questions (Name, Description, Type, Options,
+    // RangeLow, RangeHigh)
     static class ReorderFeedbackFormQuestionsRequest {
         public List<String> questionIds;
     }
@@ -247,7 +272,8 @@ public class MaintService {
     @Produces(MediaType.APPLICATION_JSON)
     @RolesAllowed({ UserRole.PROF, UserRole.STUDENT })
     @Path("/course/{courseId}/feedback/form/{formId}/reorder")
-    public FeedbackForm reorderFeedbackFormQuestions(@RestPath String courseId, @RestPath String formId, ReorderFeedbackFormQuestionsRequest request) {
+    public FeedbackForm reorderFeedbackFormQuestions(@RestPath String courseId, @RestPath String formId,
+            ReorderFeedbackFormQuestionsRequest request) {
         Course course = courseRepository.findById(new ObjectId(courseId));
         if (!isOwner(course)) {
             throw new NotFoundException();
@@ -285,7 +311,8 @@ public class MaintService {
         if (!isOwner(course)) {
             throw new NotFoundException();
         }
-        FeedbackForm feedbackForm = new FeedbackForm(course.getId(), request.name, request.description, new ArrayList<>(), FormStatus.NOT_STARTED);
+        FeedbackForm feedbackForm = new FeedbackForm(course.getId(), request.name, request.description,
+                new ArrayList<>(), FormStatus.NOT_STARTED);
         course.addFeedbackForm(feedbackForm);
         course.wasUpdated();
         courseRepository.update(course);
@@ -305,7 +332,8 @@ public class MaintService {
         if (feedbackForm == null) {
             throw new NotFoundException();
         }
-        FeedbackForm copiedFeedbackForm = new FeedbackForm(course.getId(), feedbackForm.getName() + (" (Copy)"), feedbackForm.getDescription(), new ArrayList<>(), FormStatus.NOT_STARTED);
+        FeedbackForm copiedFeedbackForm = new FeedbackForm(course.getId(), feedbackForm.getName() + (" (Copy)"),
+                feedbackForm.getDescription(), new ArrayList<>(), FormStatus.NOT_STARTED);
 
         // TODO: check if this is the correct way to copy questions (sync or copy)
         for (QuestionWrapper questionWrapper : feedbackForm.getQuestions()) {
@@ -343,7 +371,8 @@ public class MaintService {
     @Produces(MediaType.APPLICATION_JSON)
     @RolesAllowed({ UserRole.PROF, UserRole.STUDENT })
     @Path("/course/{courseId}/feedback/form/{formId}/question/{questionId}")
-    public QuestionWrapper getFeedbackQuestion(@RestPath String courseId, @RestPath String formId, @RestPath String questionId) {
+    public QuestionWrapper getFeedbackQuestion(@RestPath String courseId, @RestPath String formId,
+            @RestPath String questionId) {
         Course course = courseRepository.findById(new ObjectId(courseId));
         if (!isOwner(course)) {
             throw new NotFoundException();
@@ -377,7 +406,8 @@ public class MaintService {
     @Produces(MediaType.APPLICATION_JSON)
     @RolesAllowed({ UserRole.PROF, UserRole.STUDENT })
     @Path("/course/{courseId}/feedback/form/{formId}/question/{questionId}")
-    public QuestionWrapper updateFeedbackQuestion(@RestPath String courseId, @RestPath String formId, @RestPath String questionId, UpdateFeedbackQuestionRequest request) {
+    public QuestionWrapper updateFeedbackQuestion(@RestPath String courseId, @RestPath String formId,
+            @RestPath String questionId, UpdateFeedbackQuestionRequest request) {
         Course course = courseRepository.findById(new ObjectId(courseId));
         if (!isOwner(course)) {
             throw new NotFoundException();
@@ -417,12 +447,13 @@ public class MaintService {
         public String rangeLow;
         public String rangeHigh;
     }
-    
+
     @POST
     @Produces(MediaType.APPLICATION_JSON)
     @RolesAllowed({ UserRole.PROF, UserRole.STUDENT })
     @Path("/course/{courseId}/feedback/form/{formId}/question")
-    public QuestionWrapper addFeedbackQuestion(@RestPath String courseId, @RestPath String formId, AddFeedbackQuestionRequest request) {
+    public QuestionWrapper addFeedbackQuestion(@RestPath String courseId, @RestPath String formId,
+            AddFeedbackQuestionRequest request) {
         Course course = courseRepository.findById(new ObjectId(courseId));
         if (!isOwner(course)) {
             throw new NotFoundException();
@@ -431,10 +462,11 @@ public class MaintService {
         if (feedbackForm == null) {
             throw new NotFoundException();
         }
-        
+
         try {
             FeedbackQuestionType questionType = FeedbackQuestionType.valueOf(request.type);
-            FeedbackQuestion feedbackQuestion = new FeedbackQuestion(request.name, request.description, questionType, request.options, "", request.rangeLow, request.rangeHigh);
+            FeedbackQuestion feedbackQuestion = new FeedbackQuestion(request.name, request.description, questionType,
+                    request.options, "", request.rangeLow, request.rangeHigh);
             course.addFeedbackQuestion(feedbackQuestion);
             QuestionWrapper questionWrapper = new QuestionWrapper(feedbackQuestion.getId(), new ArrayList<>());
             feedbackForm.addQuestion(questionWrapper);
@@ -453,7 +485,8 @@ public class MaintService {
     @Produces(MediaType.APPLICATION_JSON)
     @RolesAllowed({ UserRole.PROF, UserRole.STUDENT })
     @Path("/course/{courseId}/feedback/form/{formId}/question/{questionId}")
-    public Response deleteFeedbackQuestion(@RestPath String courseId, @RestPath String formId, @RestPath String questionId) {
+    public Response deleteFeedbackQuestion(@RestPath String courseId, @RestPath String formId,
+            @RestPath String questionId) {
         Course course = courseRepository.findById(new ObjectId(courseId));
         if (!isOwner(course)) {
             throw new NotFoundException();
@@ -478,7 +511,6 @@ public class MaintService {
         return Response.ok().build();
     }
 
-
     // NOW THE SAME FOR QUIZ FORMS
     @GET
     @Produces(MediaType.APPLICATION_JSON)
@@ -493,7 +525,8 @@ public class MaintService {
         if (quizForm == null) {
             throw new NotFoundException();
         }
-        QuizForm quizFormWithQuestionContents = quizForm.copyWithoutResultsAndParticipantsButWithQuestionContents(course);
+        QuizForm quizFormWithQuestionContents = quizForm
+                .copyWithoutResultsAndParticipantsButWithQuestionContents(course);
         return quizFormWithQuestionContents;
     }
 
@@ -531,7 +564,8 @@ public class MaintService {
     @Produces(MediaType.APPLICATION_JSON)
     @RolesAllowed({ UserRole.PROF, UserRole.STUDENT })
     @Path("/course/{courseId}/quiz/form/{formId}/reorder")
-    public QuizForm reorderQuizFormQuestions(@RestPath String courseId, @RestPath String formId, ReorderQuizFormQuestionsRequest request) {
+    public QuizForm reorderQuizFormQuestions(@RestPath String courseId, @RestPath String formId,
+            ReorderQuizFormQuestionsRequest request) {
         Course course = courseRepository.findById(new ObjectId(courseId));
         if (!isOwner(course)) {
             throw new NotFoundException();
@@ -569,7 +603,8 @@ public class MaintService {
         if (!isOwner(course)) {
             throw new NotFoundException();
         }
-        QuizForm quizForm = new QuizForm(course.getId(), request.name, request.description, new ArrayList<>(), FormStatus.NOT_STARTED, 0, false);
+        QuizForm quizForm = new QuizForm(course.getId(), request.name, request.description, new ArrayList<>(),
+                FormStatus.NOT_STARTED, 0, false);
         course.addQuizForm(quizForm);
         course.wasUpdated();
         courseRepository.update(course);
@@ -589,9 +624,10 @@ public class MaintService {
         if (quizForm == null) {
             throw new NotFoundException();
         }
-        QuizForm copiedQuizForm = new QuizForm(course.getId(), quizForm.getName() + (" (Copy)"), quizForm.getDescription(), new ArrayList<>(), FormStatus.NOT_STARTED, 0, false);
+        QuizForm copiedQuizForm = new QuizForm(course.getId(), quizForm.getName() + (" (Copy)"),
+                quizForm.getDescription(), new ArrayList<>(), FormStatus.NOT_STARTED, 0, false);
 
-    // TODO: check if this is the correct way to copy questions (sync or copy)
+        // TODO: check if this is the correct way to copy questions (sync or copy)
         for (QuestionWrapper questionWrapper : quizForm.getQuestions()) {
             QuizQuestion quizQuestion = course.getQuizQuestionById(questionWrapper.getQuestionId());
             copiedQuizForm.addQuestion(new QuestionWrapper(quizQuestion.getId(), new ArrayList<>()));
@@ -629,7 +665,8 @@ public class MaintService {
     @Produces(MediaType.APPLICATION_JSON)
     @RolesAllowed({ UserRole.PROF, UserRole.STUDENT })
     @Path("/course/{courseId}/quiz/form/{formId}/question/{questionId}")
-    public QuestionWrapper getQuizQuestion(@RestPath String courseId, @RestPath String formId, @RestPath String questionId) {
+    public QuestionWrapper getQuizQuestion(@RestPath String courseId, @RestPath String formId,
+            @RestPath String questionId) {
         Course course = courseRepository.findById(new ObjectId(courseId));
         if (!isOwner(course)) {
             throw new NotFoundException();
@@ -663,7 +700,8 @@ public class MaintService {
     @Produces(MediaType.APPLICATION_JSON)
     @RolesAllowed({ UserRole.PROF, UserRole.STUDENT })
     @Path("/course/{courseId}/quiz/form/{formId}/question/{questionId}")
-    public QuestionWrapper updateQuizQuestion(@RestPath String courseId, @RestPath String formId, @RestPath String questionId, UpdateQuizQuestionRequest request) {
+    public QuestionWrapper updateQuizQuestion(@RestPath String courseId, @RestPath String formId,
+            @RestPath String questionId, UpdateQuizQuestionRequest request) {
         Course course = courseRepository.findById(new ObjectId(courseId));
         if (!isOwner(course)) {
             throw new NotFoundException();
@@ -706,7 +744,8 @@ public class MaintService {
     @Produces(MediaType.APPLICATION_JSON)
     @RolesAllowed({ UserRole.PROF, UserRole.STUDENT })
     @Path("/course/{courseId}/quiz/form/{formId}/question")
-    public QuestionWrapper addQuizQuestion(@RestPath String courseId, @RestPath String formId, AddQuizQuestionRequest request) {
+    public QuestionWrapper addQuizQuestion(@RestPath String courseId, @RestPath String formId,
+            AddQuizQuestionRequest request) {
         Course course = courseRepository.findById(new ObjectId(courseId));
         if (!isOwner(course)) {
             throw new NotFoundException();
@@ -717,7 +756,8 @@ public class MaintService {
         }
         try {
             QuizQuestionType questionType = QuizQuestionType.valueOf(request.type);
-            QuizQuestion quizQuestion = new QuizQuestion(request.name, request.description, questionType, request.options, request.hasCorrectAnswers, request.correctAnswers, "");
+            QuizQuestion quizQuestion = new QuizQuestion(request.name, request.description, questionType,
+                    request.options, request.hasCorrectAnswers, request.correctAnswers, "");
             course.addQuizQuestion(quizQuestion);
             QuestionWrapper questionWrapper = new QuestionWrapper(quizQuestion.getId(), new ArrayList<>());
             quizForm.addQuestion(questionWrapper);
@@ -735,7 +775,8 @@ public class MaintService {
     @Produces(MediaType.APPLICATION_JSON)
     @RolesAllowed({ UserRole.PROF, UserRole.STUDENT })
     @Path("/course/{courseId}/quiz/form/{formId}/question/{questionId}")
-    public Response deleteQuizQuestion(@RestPath String courseId, @RestPath String formId, @RestPath String questionId) {
+    public Response deleteQuizQuestion(@RestPath String courseId, @RestPath String formId,
+            @RestPath String questionId) {
         Course course = courseRepository.findById(new ObjectId(courseId));
         if (!isOwner(course)) {
             throw new NotFoundException();
@@ -758,6 +799,83 @@ public class MaintService {
         course.wasUpdated();
         courseRepository.update(course);
         return Response.ok().build();
+    }
+
+    static class ChangeCourseOfFormRequest {
+        public String newCourseId;
+    }
+
+    @PUT
+    @Produces(MediaType.APPLICATION_JSON)
+    @RolesAllowed({ UserRole.PROF, UserRole.STUDENT })
+    @Path("/course/{courseId}/form/{formId}/change-course")
+    public Boolean changeCourseOfForm(@RestPath String courseId, @RestPath String formId,
+            ChangeCourseOfFormRequest request) {
+        Course course = courseRepository.findById(new ObjectId(courseId));
+        if (!isOwner(course)) {
+            throw new NotFoundException();
+        }
+        Course newCourse = courseRepository.findById(new ObjectId(request.newCourseId));
+        if (!isOwner(newCourse)) {
+            throw new NotFoundException();
+        }
+
+        Form form = course.getFormById(new ObjectId(formId));
+        if (form == null) {
+            throw new NotFoundException();
+        }
+
+        if (form instanceof QuizForm) {
+            QuizForm quizForm = (QuizForm) form;
+            course.removeQuizForm(quizForm);
+
+            // copy the question contents
+            List<QuestionWrapper> questions = new ArrayList<>();
+            for (QuestionWrapper questionWrapper : quizForm.getQuestions()) {
+                QuizQuestion quizQuestion = course.getQuizQuestionById(questionWrapper.getQuestionId());
+                QuizQuestion copiedQuizQuestion = new QuizQuestion(
+                        quizQuestion.getName(),
+                        quizQuestion.getDescription(),
+                        quizQuestion.getType(),
+                        quizQuestion.getOptions(),
+                        quizQuestion.getHasCorrectAnswers(),
+                        quizQuestion.getCorrectAnswers(),
+                        "");
+                newCourse.addQuizQuestion(copiedQuizQuestion);
+                questions.add(new QuestionWrapper(copiedQuizQuestion.getId(), new ArrayList<>()));
+            }
+
+            quizForm.setQuestions(questions);
+            newCourse.addQuizForm(quizForm);
+        } else {
+
+            FeedbackForm feedbackForm = (FeedbackForm) form;
+            course.removeFeedbackForm(feedbackForm);
+
+            // copy the question contents
+            List<QuestionWrapper> questions = new ArrayList<>();
+            for (QuestionWrapper questionWrapper : feedbackForm.getQuestions()) {
+                FeedbackQuestion feedbackQuestion = course.getFeedbackQuestionById(questionWrapper.getQuestionId());
+                FeedbackQuestion copiedFeedbackQuestion = new FeedbackQuestion(
+                        feedbackQuestion.getName(),
+                        feedbackQuestion.getDescription(),
+                        feedbackQuestion.getType(),
+                        feedbackQuestion.getOptions(),
+                        "",
+                        feedbackQuestion.getRangeLow(),
+                        feedbackQuestion.getRangeHigh());
+                newCourse.addFeedbackQuestion(copiedFeedbackQuestion);
+                questions.add(new QuestionWrapper(copiedFeedbackQuestion.getId(), new ArrayList<>()));
+            }
+            feedbackForm.setQuestions(questions);
+            newCourse.addFeedbackForm(feedbackForm);
+        }
+        Date oneSecondAgo = new Date(System.currentTimeMillis() - 1000);
+        course.setLastModified(oneSecondAgo);
+        newCourse.wasUpdated();
+        courseRepository.update(course);
+        courseRepository.update(newCourse);
+        return true;
     }
 
 }
