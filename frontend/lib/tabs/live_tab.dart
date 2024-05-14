@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
@@ -49,7 +50,7 @@ class _LiveTabState extends State<LiveTab> {
 
   late List<FormShell> _forms;
 
-  bool _loading = false;
+  bool _loading = true;
   String _fetchResult = '';
 
   @override
@@ -61,15 +62,22 @@ class _LiveTabState extends State<LiveTab> {
       FormStatus.waiting.toString(): Colors.green,
       FormStatus.started.toString(): Colors.orange,
     };
-
-    fetchForms();
-  }
-
-  Future fetchForms() async {
     setState(() {
       _loading = true;
       _fetchResult = '';
     });
+    // fetch forms every 5 seconds
+    Timer.periodic(const Duration(seconds: 5), (timer) {
+      if (!mounted) {
+        timer.cancel();
+      } else {
+        fetchForms();
+      }
+    });
+    fetchForms();
+  }
+
+  Future fetchForms() async {
     try {
       final response = await http.get(
         Uri.parse("${getBackendUrl()}/live"),
@@ -83,7 +91,7 @@ class _LiveTabState extends State<LiveTab> {
         var data = jsonDecode(response.body);
         setState(() {
           _loading = false;
-          _forms = _forms + getFormShellsFromJson(data);
+          _forms = getFormShellsFromJson(data);
           _fetchResult = 'success';
         });
       }
