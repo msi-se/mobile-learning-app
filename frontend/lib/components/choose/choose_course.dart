@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:frontend/components/layout/sliver_layout.dart';
+import 'package:frontend/global.dart';
 import 'package:frontend/models/course.dart';
 import 'package:frontend/theme/assets.dart';
 import 'package:frontend/components/elements/course/JoinCourseDialog.dart';
@@ -66,6 +67,10 @@ class _ChooseCourseState extends State<ChooseCourse> {
                 return Card(
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(10.0),
+                    side: widget.courses[index].isOwner ? BorderSide(
+                      color: colors.primary,
+                      width: 2.0,
+                    ) : BorderSide.none,
                   ),
                   elevation: 1.0,
                   surfaceTintColor: Colors.white,
