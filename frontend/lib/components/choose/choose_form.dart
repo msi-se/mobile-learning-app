@@ -117,10 +117,11 @@ class _ChooseFormState extends State<ChooseForm> {
                         ),
                         overflow: TextOverflow.ellipsis,
                       ),
-                      IconButton(
-                        icon: Icon(Icons.info_outline, color: colors.onSurface),
-                        onPressed: _showInfoDialog,
-                      ),
+                      if (widget.course.isOwner)
+                        IconButton(
+                          icon: Icon(Icons.info_outline, color: colors.onSurface),
+                          onPressed: _showInfoDialog,
+                        ),
                     ],
                   )),
             );
