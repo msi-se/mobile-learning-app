@@ -38,4 +38,16 @@ public class FeedbackQuestion extends Question {
     public void setRangeHigh(String rangeHigh) {
         this.rangeHigh = rangeHigh;
     }
+
+    public FeedbackQuestionType getType() {
+        return this.type;
+    }
+
+    public String getRangeLow() {
+        return this.rangeLow;
+    }
+
+    public String getRangeHigh() {
+        return this.rangeHigh;
+    }
 }
