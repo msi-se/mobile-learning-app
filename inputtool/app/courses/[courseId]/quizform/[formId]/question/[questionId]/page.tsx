@@ -281,12 +281,13 @@ export default function QuizQuestionPage({ params }: { params: { courseId: strin
                       <span>Single Choice</span>
                     </div>
                   </SelectItem>
-                  <SelectItem value="FULLTEXT">
+                  {/* NOT YET SUPPORTED */}
+                  {/* <SelectItem value="FULLTEXT">
                     <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                       <TextCursorInput size={iconSize} />
                       <span>Fulltext</span>
                     </div>
-                  </SelectItem>
+                  </SelectItem> */}
                 </SelectContent>
               </Select>
               <div className="mt-2 flex gap-4 items-center">

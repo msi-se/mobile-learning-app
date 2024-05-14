@@ -58,4 +58,8 @@ public class QuizQuestion extends Question {
     public void setType(QuizQuestionType type) {
         this.type = type;
     }
+
+    public QuizQuestionType getType() {
+        return this.type;
+    }
 }
