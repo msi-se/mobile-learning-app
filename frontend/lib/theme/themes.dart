@@ -75,6 +75,13 @@ ThemeData getTheme(ColorScheme colorScheme) {
     useMaterial3: true,
     fontFamily: 'NunitoSans',
     colorScheme: colorScheme,
+    cardTheme: CardTheme(
+      surfaceTintColor: colorScheme.surfaceTint,
+    ),
+    navigationBarTheme: NavigationBarThemeData(
+      surfaceTintColor: colorScheme.secondary,
+    ),
+    applyElevationOverlayColor: true,
     visualDensity: VisualDensity.standard,
   );
 }
