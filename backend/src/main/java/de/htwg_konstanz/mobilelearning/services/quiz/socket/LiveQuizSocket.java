@@ -431,6 +431,17 @@ public class LiveQuizSocket {
         }
         if (question.getHasCorrectAnswers()) {
             Integer gainedPoints = question.checkAnswer(quizSocketMessage.resultValues);
+
+            // if the user was the first to answer correctly, increase the score by 5, second by 4, ...
+            if (gainedPoints > 0) {
+                Integer participantsAnsweredCorrectly = form.getParticipantsAnsweredCorrectly(questionwrapper.getId());
+                if (participantsAnsweredCorrectly < 5) {
+                    gainedPoints += 5 - participantsAnsweredCorrectly;
+                }
+            }
+
+            // update the result with the gained points and increase the score of the user
+            result.setGainedPoints(gainedPoints);
             form.increaseScoreOfParticipant(user.getId(), gainedPoints);
         }
 
