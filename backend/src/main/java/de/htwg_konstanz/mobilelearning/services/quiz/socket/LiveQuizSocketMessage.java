@@ -31,6 +31,7 @@ public class LiveQuizSocketMessage {
     public Boolean userHasAnsweredCorrectly;
     public List<String> correctAnswers;
     public List<String> userAnswers;
+    public Integer gainedPoints;
 
     public LiveQuizSocketMessage(String message) {
 
