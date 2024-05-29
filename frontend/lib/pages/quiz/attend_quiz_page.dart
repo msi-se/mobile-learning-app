@@ -52,6 +52,7 @@ class _AttendQuizPageState extends AuthState<AttendQuizPage> {
   dynamic _value;
   bool _voted = false;
   dynamic _userHasAnsweredCorrectly = false;
+  int _gainedPoints = 0;
   List<dynamic> _correctAnswers = [];
 
   bool _loading = false;
@@ -241,6 +242,7 @@ class _AttendQuizPageState extends AuthState<AttendQuizPage> {
         _value = null;
         _voted = false;
         _userHasAnsweredCorrectly = false;
+        _gainedPoints = 0;
         _correctAnswers = [];
       }
       if (data["action"] == "FORM_STATUS_CHANGED") {
@@ -270,6 +272,7 @@ class _AttendQuizPageState extends AuthState<AttendQuizPage> {
         }
         if (data["action"] == "CLOSED_QUESTION") {
           _userHasAnsweredCorrectly = data["userHasAnsweredCorrectly"];
+          _gainedPoints = data["gainedPoints"];
           _correctAnswers = data["correctAnswers"];
           _hitBump();
           if (!_voted) {
@@ -660,6 +663,15 @@ class _AttendQuizPageState extends AuthState<AttendQuizPage> {
                     artboard: 'true & false',
                     animations: ['nicht abgestimmt'],
                   )),
+            // if the user gained point, show them
+            if (_form!.currentQuestionFinished &&
+                _voted &&
+                _userHasAnsweredCorrectly)
+              Text(
+                "Du hast $_gainedPoints Punkte erhalten.",
+                style:
+                    const TextStyle(fontSize: 20, fontWeight: FontWeight.w700),
+              ),
           ],
         ),
         floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
