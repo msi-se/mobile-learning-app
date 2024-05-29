@@ -459,4 +459,20 @@ public class QuizForm extends Form {
         return sw.toString();
     }
 
+        public Integer getParticipantsAnsweredCorrectly(ObjectId id) {
+            Integer count = 0;
+            for (QuestionWrapper questionWrapper : this.questions) {
+                if (questionWrapper.getId().equals(id)) {
+                    for (Result result : questionWrapper.getResults()) {
+                        if (result.getGainedPoints() > 0) {
+                            count++;
+                        }
+                        break;
+                    }
+                    break;
+                }
+            }
+            return count;
+        }
+
 }

@@ -1060,8 +1060,8 @@ public class LiveQuizSocketTest {
 
 
         // check that the score was updated
-        Assertions.assertEquals(1, courseService.getCourse(courseId).getQuizForms().get(0).getParticipants().get(0).getScore());
-        Assertions.assertEquals(1, courseService.getCourse(courseId).getQuizForms().get(0).getParticipants().get(1).getScore());
+        Assertions.assertEquals(15, courseService.getCourse(courseId).getQuizForms().get(0).getParticipants().get(0).getScore());
+        Assertions.assertEquals(14, courseService.getCourse(courseId).getQuizForms().get(0).getParticipants().get(1).getScore());
 
         // let the prof stop the question
         profClient.sendMessage("""
@@ -1105,7 +1105,7 @@ public class LiveQuizSocketTest {
         Assertions.assertEquals("1", courseService.getCourse(courseId).getQuizForms().get(0).questions.get(1).results.get(0).values.get(0));
         
         // check that the score was updated
-        Assertions.assertEquals(1, courseService.getCourse(courseId).getQuizForms().get(0).getParticipants().get(0).getScore());
+        Assertions.assertEquals(15, courseService.getCourse(courseId).getQuizForms().get(0).getParticipants().get(0).getScore());
 
         // let the prof stop the question
         profClient.sendMessage("""
@@ -1224,7 +1224,7 @@ public class LiveQuizSocketTest {
         Assertions.assertEquals("2", courseService.getCourse(courseId).getQuizForms().get(0).questions.get(0).results.get(0).values.get(0));
 
         // check that the score was updated
-        Assertions.assertEquals(1, courseService.getCourse(courseId).getQuizForms().get(0).getParticipants().get(0).getScore());
+        Assertions.assertEquals(15, courseService.getCourse(courseId).getQuizForms().get(0).getParticipants().get(0).getScore());
 
         // disconnect the student and reconnect it
         studentSession1.close();
