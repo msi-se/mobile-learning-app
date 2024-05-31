@@ -18,7 +18,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
-import { FeedbackQuestion } from "@/lib/models";
+import { FeedbackQuestion, FormResult } from "@/lib/models";
 import { DeleteButton } from "@/components/delete-button";
 import {
   Select,
@@ -27,7 +27,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import { deleteFeedbackQuestion, fetchFeedbackQuestion, updateFeedbackQuestion } from "@/lib/requests";
+import { deleteFeedbackQuestion, fetchFeedbackQuestion, fetchFeedbackQuestionResults, updateFeedbackQuestion } from "@/lib/requests";
 
 
 export default function FeedbackQuestionPage({ params }: { params: { courseId: string, formId: string, questionId: string } }) {
@@ -37,6 +37,7 @@ export default function FeedbackQuestionPage({ params }: { params: { courseId: s
   const router = useRouter();
   const [loading, setLoading] = useState(true);
   const [feedbackQuestion, setFeedbackQuestion] = useState<FeedbackQuestion | null>(null);
+  const [results, setResults] = useState<FormResult[]>([]);
   const [userChangedSomething, setUserChangedSomething] = useState(false);
   const [isNew, setIsNew] = useState(false);
   const searchParams = useSearchParams()
@@ -73,7 +74,10 @@ export default function FeedbackQuestionPage({ params }: { params: { courseId: s
         router.back();
         return;
       }
+
+      let results = await fetchFeedbackQuestionResults(params.courseId, params.formId, params.questionId);
       setFeedbackQuestion(feedbackquestion);
+      setResults(results || []);
       setLoading(false);
     };
     loadFeedbackQuestion();
@@ -249,10 +253,10 @@ export default function FeedbackQuestionPage({ params }: { params: { courseId: s
               }}>
                 <SelectTrigger>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                    {feedbackQuestion?.type === "SLIDER" && <SlidersHorizontal size={iconSize}/>}
-                    {feedbackQuestion?.type === "STARS" && <Star size={iconSize}/>}
-                    {feedbackQuestion?.type === "SINGLE_CHOICE" && <SquareCheckBig size={iconSize}/>}
-                    {feedbackQuestion?.type === "FULLTEXT" && <TextCursorInput size={iconSize}/>}
+                    {feedbackQuestion?.type === "SLIDER" && <SlidersHorizontal size={iconSize} />}
+                    {feedbackQuestion?.type === "STARS" && <Star size={iconSize} />}
+                    {feedbackQuestion?.type === "SINGLE_CHOICE" && <SquareCheckBig size={iconSize} />}
+                    {feedbackQuestion?.type === "FULLTEXT" && <TextCursorInput size={iconSize} />}
                     <SelectValue>{feedbackQuestion?.type}</SelectValue>
                   </div>
                 </SelectTrigger>
@@ -265,19 +269,19 @@ export default function FeedbackQuestionPage({ params }: { params: { courseId: s
                   </SelectItem>
                   <SelectItem value="STARS">
                     <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                      <Star size={iconSize}/>
+                      <Star size={iconSize} />
                       <span>Stars</span>
                     </div>
                   </SelectItem>
                   <SelectItem value="SINGLE_CHOICE">
                     <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                      <SquareCheckBig size={iconSize}/>
+                      <SquareCheckBig size={iconSize} />
                       <span>Single Choice</span>
                     </div>
                   </SelectItem>
                   <SelectItem value="FULLTEXT">
                     <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                      <TextCursorInput size={iconSize}/>
+                      <TextCursorInput size={iconSize} />
                       <span>Fulltext</span>
                     </div>
                   </SelectItem>
@@ -397,8 +401,29 @@ export default function FeedbackQuestionPage({ params }: { params: { courseId: s
                   )}
                 </TableBody>
               </Table>
+
             </>
           )}
+          {/* RESULTS */}
+          <div className="flex justify-between w-full mb-4 mt-8 flex-grow flex-wrap gap-4">
+            <h2 className="text-2xl">Results</h2>
+          </div>
+          <Table>
+            <TableHeader className="bg-gray-100">
+              <TableRow>
+                <TableHead>User</TableHead>
+                <TableHead>Value</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {results.map((result, index) => (
+                <TableRow key={index}>
+                  <TableCell>{index}</TableCell>
+                  <TableCell>{result.values.join(", ")}</TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
         </>
       )}
     </div>
