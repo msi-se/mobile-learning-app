@@ -14,6 +14,7 @@ public class Result {
     public ObjectId userId;
     public List<String> values;
     public String hashedUserId;
+    public Integer gainedPoints;
 
     public Result() {
     }
@@ -23,6 +24,7 @@ public class Result {
         this.userId = userId;
         this.values = values;
         this.hashedUserId = null;
+        this.gainedPoints = 0;
     }
 
     public Result(String hashedUserId, List<String> values) {
@@ -30,6 +32,7 @@ public class Result {
         this.hashedUserId = hashedUserId;
         this.values = values;
         this.userId = null;
+        this.gainedPoints = 0;
     }
 
     public ObjectId getId() {
@@ -52,12 +55,21 @@ public class Result {
         this.values = values;
     }
 
+    public void setGainedPoints(Integer gainedPoints) {
+        this.gainedPoints = gainedPoints;
+    }
+
+    public Integer getGainedPoints() {
+        return this.gainedPoints;
+    }
+
     public Result deepCopy() {
         Result copy = new Result();
         copy.id = this.id;
         copy.userId = this.userId;
         copy.values = new ArrayList<String>(this.values);
         copy.hashedUserId = this.hashedUserId;
+        copy.gainedPoints = this.gainedPoints;
         return copy;
     }
 }
