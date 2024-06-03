@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
+import 'package:frontend/theme/assets.dart';
 import 'package:rive/rive.dart';
 
 class MenuCard extends StatefulWidget {
   final String title;
   final String description;
   final List<RowData> rowData;
-  final Color cardColor;
+  final String cardIcon;
   final RiveFile? riveFile;
 
   const MenuCard({
@@ -13,7 +15,7 @@ class MenuCard extends StatefulWidget {
     required this.title,
     required this.description,
     required this.rowData,
-    required this.cardColor, 
+    required this.cardIcon,
     required this.riveFile,
   }) : super(key: key);
 
@@ -50,7 +52,7 @@ class _MenuCardState extends State<MenuCard>
         padding: const EdgeInsets.all(2),
         child: Card(
           // Replace Container with Card
-          color: widget.cardColor,
+          color: Colors.white,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(20),
           ),
@@ -89,7 +91,8 @@ class _MenuCardState extends State<MenuCard>
                             fontWeight: FontWeight.bold,
                           ),
                         ),
-                        Icon(Icons.favorite_border),
+                        SvgPicture.asset(widget.cardIcon,
+                            width: 20, height: 20),
                       ],
                     ),
                   ),
@@ -104,15 +107,6 @@ class _MenuCardState extends State<MenuCard>
                           style: TextStyle(fontWeight: FontWeight.w600),
                         ),
                       ),
-                      Padding(
-                        padding: const EdgeInsets.all(0),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.max,
-                          children: widget.rowData
-                              .map((data) => data.build())
-                              .toList(),
-                        ),
-                      ),
                     ],
                   ),
                   // trailing: InkWell(
@@ -121,6 +115,14 @@ class _MenuCardState extends State<MenuCard>
                   //   },
                   //   child: const Icon(Icons.favorite_border),
                   // ),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.only(left: 10, right: 10, bottom: 10),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: widget.rowData.map((data) => data.build()).toList(),
                 ),
               ),
             ],
@@ -149,11 +151,11 @@ class RowData {
   Widget build() {
     return Flexible(
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 2),
+        padding: const EdgeInsets.symmetric(horizontal: 5),
         child: Text(
-          '$label $value',
+          '$label $value€',
           style: const TextStyle(
-            fontSize: 12,
+            fontSize: 13,
             fontWeight: FontWeight.w500,
           ),
           overflow: TextOverflow.ellipsis,

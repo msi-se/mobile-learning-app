@@ -1,6 +1,8 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:frontend/auth_state.dart';
+import 'package:frontend/theme/assets.dart';
 import 'package:intl/intl.dart';
 import 'package:frontend/components/menu_card.dart';
 import 'package:frontend/global.dart';
@@ -11,7 +13,6 @@ import 'package:http/http.dart' as http;
 import 'package:rive/src/rive_file.dart';
 
 class MenuPage extends StatefulWidget {
-
   final RiveFile? riveFile;
 
   const MenuPage({super.key, required this.riveFile});
@@ -25,11 +26,10 @@ class _MenuPageState extends AuthState<MenuPage> with TickerProviderStateMixin {
   TabController? _tabController;
   int? initialTabIndex;
 
-  List<String> iconsVegan = ['24'];
-  List<String> iconsPescetarian = ['50'];
-  List<String> iconsVegetarian = ['51'];
-  List<String> iconsNotVegetarian = ['45', '46', '49', '23'];
-  List<String> iconsToTest = [];
+  List<num> iconsVegan = [24];
+  List<num> iconsPescetarian = [50];
+  List<num> iconsVegetarian = [51];
+  List<num> iconsNotVegetarian = [45, 46, 47, 49];
   final Color veganColor = Color.fromARGB(255, 144, 228, 147);
   final Color pescetarianColor = Color.fromARGB(255, 115, 184, 240);
   final Color vegetarianColor = Color.fromARGB(255, 248, 184, 88);
@@ -85,22 +85,24 @@ class _MenuPageState extends AuthState<MenuPage> with TickerProviderStateMixin {
         TabController(length: length, vsync: this, initialIndex: initialIndex);
   }
 
-  Color getColorBasedOnIcon(String icon) {
-    iconsToTest = icon.split(',');
-    //print(iconsToTest);
-    for (var i in iconsToTest) {
+  String getIconBasedOnInfo(String icon) {
+    List<String> iconsToTest = icon.split(',');
+    List<int> intIconsToTest = iconsToTest.map(int.parse).toList();
+    for (int i in intIconsToTest) {
       if (iconsVegan.contains(i)) {
-        return veganColor;
+        return vegan;
       } else if (iconsPescetarian.contains(i)) {
-        return pescetarianColor;
+        return pescetarian;
       } else if (iconsVegetarian.contains(i)) {
-        return vegetarianColor;
+        return vegetarian;
       } else if (iconsNotVegetarian.contains(i)) {
-        return notVegetarianColor;
+        if (i == 47) {
+          break;
+        }
+        return notVegetarian;
       }
-      return Theme.of(context).colorScheme.onPrimary;
     }
-    return Theme.of(context).colorScheme.onPrimary;
+    return '';
   }
 
   @override
@@ -149,19 +151,19 @@ class _MenuPageState extends AuthState<MenuPage> with TickerProviderStateMixin {
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
                       LegendItem(
-                        color: veganColor,
+                        icon: vegan,
                         description: 'Vegan',
                       ),
                       LegendItem(
-                        color: vegetarianColor,
+                        icon: vegetarian,
                         description: 'Vegetarisch',
                       ),
                       LegendItem(
-                        color: notVegetarianColor,
+                        icon: notVegetarian,
                         description: 'Nicht vegetarisch',
                       ),
                       LegendItem(
-                        color: pescetarianColor,
+                        icon: pescetarian,
                         description: 'Pesketarisch',
                       ),
                     ],
@@ -176,7 +178,7 @@ class _MenuPageState extends AuthState<MenuPage> with TickerProviderStateMixin {
                         itemBuilder: (context, index) {
                           final item = day.items[index];
                           return MenuCard(
-                            cardColor: getColorBasedOnIcon(item.icons),
+                            cardIcon: getIconBasedOnInfo(item.icons),
                             title: item.category,
                             description: item.title,
                             rowData: [
@@ -244,29 +246,24 @@ class _MenuPageState extends AuthState<MenuPage> with TickerProviderStateMixin {
 }
 
 class LegendItem extends StatelessWidget {
-  final Color color;
   final String description;
+  final String icon;
 
   const LegendItem({
-    required this.color,
+    required this.icon,
     required this.description,
   });
 
   @override
   Widget build(BuildContext context) {
-    return Row(
+    return Column(
       children: [
-        Container(
-          width: 20,
-          height: 20,
-          color: color,
-        ),
-        SizedBox(width: 5),
+        SvgPicture.asset(icon, width: 20, height: 20),
+        SizedBox(height: 5),
         Text(
           description,
           style: TextStyle(fontSize: 10),
         ),
-        SizedBox(width: 15),
       ],
     );
   }
