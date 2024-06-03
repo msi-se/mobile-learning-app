@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/components/animations/throw.dart';
+import 'package:frontend/components/general/quiz/animated_scoreboard.dart';
 import 'package:rive/rive.dart';
 
 class TestPage extends StatefulWidget {
@@ -28,36 +29,8 @@ class _TestPageState extends State<TestPage> with TickerProviderStateMixin {
         centerTitle: true,
         backgroundColor: colors.primary,
       ),
-      body: SafeArea(
-        child: GestureDetector(
-          onTapUp: (details) {
-            print("ADD ANIMATION");
-            setState(() {
-              _animations.insert(0, Throw(
-                  key: UniqueKey(),
-                  // throwType: ThrowType.paperPlane,
-                  // throwType: ThrowType.stone,
-                  // throwType: ThrowType.dart,
-                  throwType: ThrowType.ball,
-                  clickX: details.localPosition.dx,
-                  clickY: details.localPosition.dy));
-              print(_animations.length);
-            });
-            Future.delayed(const Duration(milliseconds: 2500), () {
-              if (!mounted) return;
-              setState(() {
-                _animations.removeLast();
-              });
-            });
-          },
-          child: Stack(children: [
-            Container(
-                color: Colors
-                    .transparent), // This container takes up the whole screen
-            ..._animations,
-          ]),
-        ),
-      ),
+      body: AnimatedScoreboard(
+          scoreboard: []), // This container takes up the whole screen
     );
   }
 }

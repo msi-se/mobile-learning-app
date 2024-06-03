@@ -59,77 +59,20 @@ class _AnimatedScoreboardState extends State<AnimatedScoreboard> {
 
     return SingleChildScrollView(
       child: Padding(
-        padding: EdgeInsets.all(10.0),
+        padding: const EdgeInsets.all(10.0),
         child: Card(
           borderOnForeground: true,
           color: Colors.white,
           shadowColor: Colors.grey[100],
           elevation: 4.0,
           child: Padding(
-            padding: EdgeInsets.all(10.0),
-            child: ListView.separated(
-              shrinkWrap: true,
-              itemCount: _scoreboard.length,
-              separatorBuilder: (BuildContext context, int index) => Divider(),
-              itemBuilder: (BuildContext context, int index) {
-                if (index == 0) {
-                  // This is the header
-                  return const Padding(
-                    padding: EdgeInsets.all(5.0),
-                    child: SizedBox(
-                      height: 30.0, // Set the height of the card
-                      child: Row(
-                        children: [
-                          Expanded(
-                            flex: 1,
-                            child: Align(
-                              alignment: Alignment.centerLeft,
-                              child: Padding(
-                                padding: EdgeInsets.only(left: 20.0),
-                                child: FittedBox(
-                                  fit: BoxFit.none,
-                                  child: Text(
-                                    'Platzierung',
-                                    style: TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 20),
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
-                          Expanded(
-                            flex: 2,
-                            child: Center(
-                              child: Text('Name',
-                                  style: TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 20)),
-                            ),
-                          ),
-                          Expanded(
-                            flex: 1,
-                            child: Align(
-                              alignment: Alignment.centerRight,
-                              child: Padding(
-                                padding: EdgeInsets.only(right: 20.0),
-                                child: Text('Punkte',
-                                    style: TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 20)),
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  );
-                }
-                index -= 1; // Subtract one for the header
-                return Padding(
-                  padding: const EdgeInsets.all(5.0),
+            padding: const EdgeInsets.all(10.0),
+            child: Column(
+              children: [
+                const Padding(
+                  padding: EdgeInsets.all(5.0),
                   child: SizedBox(
-                    height: 25.0, // Set the height of the card
+                    height: 30.0, // Set the height of the card
                     child: Row(
                       children: [
                         Expanded(
@@ -137,11 +80,15 @@ class _AnimatedScoreboardState extends State<AnimatedScoreboard> {
                           child: Align(
                             alignment: Alignment.centerLeft,
                             child: Padding(
-                              padding: const EdgeInsets.only(left: 20.0),
-                              child: Text(
-                                _scoreboard[index]["rank"].toString(),
-                                style: const TextStyle(
-                                    fontWeight: FontWeight.bold, fontSize: 20),
+                              padding: EdgeInsets.only(left: 20.0),
+                              child: FittedBox(
+                                fit: BoxFit.none,
+                                child: Text(
+                                  'Platzierung',
+                                  style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 20),
+                                ),
                               ),
                             ),
                           ),
@@ -149,7 +96,9 @@ class _AnimatedScoreboardState extends State<AnimatedScoreboard> {
                         Expanded(
                           flex: 2,
                           child: Center(
-                            child: Text(_scoreboard[index]["userAlias"]),
+                            child: Text('Name',
+                                style: TextStyle(
+                                    fontWeight: FontWeight.bold, fontSize: 20)),
                           ),
                         ),
                         Expanded(
@@ -157,20 +106,74 @@ class _AnimatedScoreboardState extends State<AnimatedScoreboard> {
                           child: Align(
                             alignment: Alignment.centerRight,
                             child: Padding(
-                              padding: const EdgeInsets.only(right: 20.0),
-                              child: Text(
-                                _scoreboard[index]["score"].toString(),
-                                style: const TextStyle(
-                                    fontWeight: FontWeight.bold, fontSize: 20),
-                              ),
+                              padding: EdgeInsets.only(right: 20.0),
+                              child: Text('Punkte',
+                                  style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 20)),
                             ),
                           ),
                         ),
                       ],
                     ),
                   ),
-                );
-              },
+                ),
+                const Divider(),
+                ListView.separated(
+                  shrinkWrap: true,
+                  itemCount: _scoreboard.length,
+                  separatorBuilder: (BuildContext context, int index) =>
+                      const Divider(),
+                  itemBuilder: (BuildContext context, int index) {
+                    return Padding(
+                      padding: const EdgeInsets.all(5.0),
+                      child: SizedBox(
+                        height: 25.0, // Set the height of the card
+                        child: Row(
+                          children: [
+                            Expanded(
+                              flex: 1,
+                              child: Align(
+                                alignment: Alignment.centerLeft,
+                                child: Padding(
+                                  padding: const EdgeInsets.only(left: 20.0),
+                                  child: Text(
+                                    _scoreboard[index]["rank"].toString(),
+                                    style: const TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 20),
+                                  ),
+                                ),
+                              ),
+                            ),
+                            Expanded(
+                              flex: 2,
+                              child: Center(
+                                child: Text(_scoreboard[index]["userAlias"]),
+                              ),
+                            ),
+                            Expanded(
+                              flex: 1,
+                              child: Align(
+                                alignment: Alignment.centerRight,
+                                child: Padding(
+                                  padding: const EdgeInsets.only(right: 20.0),
+                                  child: Text(
+                                    _scoreboard[index]["score"].toString(),
+                                    style: const TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 20),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    );
+                  },
+                )
+              ],
             ),
           ),
         ),
