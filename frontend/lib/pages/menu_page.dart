@@ -102,15 +102,30 @@ class _MenuPageState extends AuthState<MenuPage> with TickerProviderStateMixin {
         return notVegetarian;
       }
     }
-    return '';
+    return unknown;
   }
+
+  final List<LegendItem> rowData = [
+    LegendItem(
+      icon: vegan,
+      description: 'Vegan',
+    ),
+    LegendItem(
+      icon: vegetarian,
+      description: 'Vegetarisch',
+    ),
+    LegendItem(
+      icon: notVegetarian,
+      description: 'Nicht vegetarisch',
+    ),
+    LegendItem(
+      icon: pescetarian,
+      description: 'Pesketarisch',
+    ),
+  ];
 
   @override
   Widget build(BuildContext context) {
-    double screenWidth = MediaQuery.of(context).size.width;
-    double buttonWidth =
-        screenWidth <= 600 ? screenWidth * 0.92 : screenWidth * 0.4;
-    final colors = Theme.of(context).colorScheme;
     return Scaffold(
       appBar: AppBar(
         title: const Text("Mensa Speiseplan",
@@ -146,27 +161,15 @@ class _MenuPageState extends AuthState<MenuPage> with TickerProviderStateMixin {
                   labelColor: Colors.black,
                 ),
                 Container(
-                  padding: EdgeInsets.all(8.0),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      LegendItem(
-                        icon: vegan,
-                        description: 'Vegan',
-                      ),
-                      LegendItem(
-                        icon: vegetarian,
-                        description: 'Vegetarisch',
-                      ),
-                      LegendItem(
-                        icon: notVegetarian,
-                        description: 'Nicht vegetarisch',
-                      ),
-                      LegendItem(
-                        icon: pescetarian,
-                        description: 'Pesketarisch',
-                      ),
-                    ],
+                  padding: EdgeInsets.only(top: 10, bottom: 5),
+                  child: Padding(
+                    padding: const EdgeInsets.all(15),
+                    child: Wrap(
+                      alignment: WrapAlignment.spaceEvenly,
+                      spacing: 20,
+                      runSpacing: 20,
+                      children: rowData,
+                    ),
                   ),
                 ),
                 Expanded(
@@ -202,30 +205,6 @@ class _MenuPageState extends AuthState<MenuPage> with TickerProviderStateMixin {
                     }).toList(),
                   ),
                 ),
-                // SizedBox(
-                //   height: 55,
-                //   width: buttonWidth,
-                //   child: ElevatedButton(
-                //     style: ButtonStyle(
-                //       elevation: MaterialStateProperty.all<double>(6.0),
-                //       shape: MaterialStateProperty.all<OutlinedBorder>(
-                //         RoundedRectangleBorder(
-                //           borderRadius: BorderRadius.circular(14.0),
-                //         ),
-                //       ),
-                //       backgroundColor: MaterialStateProperty.all<Color>(
-                //           Theme.of(context).colorScheme.surface),
-                //       foregroundColor: MaterialStateProperty.all<Color>(
-                //           Theme.of(context).colorScheme.primary),
-                //     ),
-                //     child:
-                //         const Text('Beilagen', style: TextStyle(fontSize: 20)),
-                //     onPressed: () {
-                //       print('Test');
-                //     },
-                //   ),
-                // ),
-                // const SizedBox(height: 20),
               ],
             );
           } else if (snapshot.hasError) {
@@ -256,13 +235,15 @@ class LegendItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    double iconWidth = icon == 'pescetarian' ? 20 : 38;
+    double iconHeight = icon == 'pescetarian' ? 20 : 38;
     return Column(
       children: [
-        SvgPicture.asset(icon, width: 20, height: 20),
-        SizedBox(height: 5),
+        SvgPicture.asset(icon, width: iconWidth, height: iconHeight),
+        SizedBox(height: 7),
         Text(
           description,
-          style: TextStyle(fontSize: 10),
+          style: TextStyle(fontSize: 11),
         ),
       ],
     );

@@ -62,3 +62,4 @@ const String vegan = 'assets/icons/menu/vegan.svg';
 const String vegetarian = 'assets/icons/menu/vegetarian.svg';
 const String pescetarian = 'assets/icons/menu/fish.svg';
 const String notVegetarian = 'assets/icons/menu/meat.svg';
+const String unknown = 'assets/icons/menu/unknown.svg';

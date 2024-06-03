@@ -45,7 +45,8 @@ class _MenuCardState extends State<MenuCard>
 
   @override
   Widget build(BuildContext context) {
-    final colors = Theme.of(context).colorScheme;
+    double iconWidth = widget.cardIcon == 'pescetarian' ? 10 : 25;
+    double iconHeight = widget.cardIcon == 'pescetarian' ? 10 : 25;
     return FadeTransition(
       opacity: _opacityAnimation,
       child: Padding(
@@ -81,8 +82,10 @@ class _MenuCardState extends State<MenuCard>
                   ),
                   title: Padding(
                     padding: const EdgeInsets.all(5),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    child: Wrap(
+                      alignment: WrapAlignment.spaceBetween,
+                      spacing: 40,
+                      runSpacing: 20,
                       children: [
                         Text(
                           widget.title,
@@ -92,7 +95,7 @@ class _MenuCardState extends State<MenuCard>
                           ),
                         ),
                         SvgPicture.asset(widget.cardIcon,
-                            width: 20, height: 20),
+                            width: iconWidth, height: iconHeight),
                       ],
                     ),
                   ),
