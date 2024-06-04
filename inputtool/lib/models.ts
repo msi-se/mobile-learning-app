@@ -50,3 +50,11 @@ export type Course = {
     quizForms: QuizForm[];
     lastModified: Date;
 }
+
+export type FormResult = {
+    id: string;
+    userId: string;
+    values: string[];
+    hashedUserId: string;
+    gainedPoints: number;
+}

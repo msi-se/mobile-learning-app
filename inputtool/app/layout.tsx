@@ -7,7 +7,7 @@ const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
   title: "Connect Input Tool",
-  description: "Online tool to create and edit courses in HTWG Connect.",
+  description: "Online tool to create and edit courses for the HTWG-Connect app.",
 };
 
 export default function RootLayout({
