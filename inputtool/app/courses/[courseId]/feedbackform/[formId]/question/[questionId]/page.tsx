@@ -419,7 +419,11 @@ export default function FeedbackQuestionPage({ params }: { params: { courseId: s
               {results.map((result, index) => (
                 <TableRow key={index}>
                   <TableCell>{index}</TableCell>
-                  <TableCell>{result.values.join(", ")}</TableCell>
+                  { feedbackQuestion?.type === "SINGLE_CHOICE" && (
+                    <TableCell>{feedbackQuestion.options?.filter((o, i) => result.values.includes(i.toString())).join(", ")}</TableCell>
+                  ) || (
+                    <TableCell>{result.values.join(", ")}</TableCell>
+                  )}
                 </TableRow>
               ))}
             </TableBody>
