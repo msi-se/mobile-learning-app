@@ -45,8 +45,6 @@ class _MenuCardState extends State<MenuCard>
 
   @override
   Widget build(BuildContext context) {
-    double iconWidth = widget.cardIcon == 'pescetarian' ? 10 : 25;
-    double iconHeight = widget.cardIcon == 'pescetarian' ? 10 : 25;
     return FadeTransition(
       opacity: _opacityAnimation,
       child: Padding(
@@ -95,7 +93,7 @@ class _MenuCardState extends State<MenuCard>
                           ),
                         ),
                         SvgPicture.asset(widget.cardIcon,
-                            width: iconWidth, height: iconHeight),
+                            width: 15, height: 15),
                       ],
                     ),
                   ),

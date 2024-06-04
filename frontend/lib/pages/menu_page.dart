@@ -235,11 +235,9 @@ class LegendItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    double iconWidth = icon == 'pescetarian' ? 20 : 38;
-    double iconHeight = icon == 'pescetarian' ? 20 : 38;
     return Column(
       children: [
-        SvgPicture.asset(icon, width: iconWidth, height: iconHeight),
+        SvgPicture.asset(icon, width: 25, height: 25),
         SizedBox(height: 7),
         Text(
           description,
