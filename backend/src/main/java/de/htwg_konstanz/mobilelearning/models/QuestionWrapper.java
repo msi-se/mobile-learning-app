@@ -96,6 +96,19 @@ public class QuestionWrapper {
         return userResults;
     }
 
+    public Result getResultByUserId(ObjectId userId) {
+        for (Result result : this.results) {
+            String hashedUserId = Hasher.hash(userId.toString());
+            if (result.userId != null && result.userId.equals(userId)) {
+                return result;
+            }
+            else if (result.hashedUserId != null && result.hashedUserId.equals(hashedUserId)) {
+                return result;
+            }
+        }
+        return null;
+    }
+
     public QuestionWrapper deepCopy() {
         QuestionWrapper copy = new QuestionWrapper();
         copy.id = this.id;
