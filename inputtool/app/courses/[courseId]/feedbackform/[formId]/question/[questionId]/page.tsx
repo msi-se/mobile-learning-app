@@ -405,29 +405,33 @@ export default function FeedbackQuestionPage({ params }: { params: { courseId: s
             </>
           )}
           {/* RESULTS */}
-          <div className="flex justify-between w-full mb-4 mt-8 flex-grow flex-wrap gap-4">
-            <h2 className="text-2xl">Results</h2>
-          </div>
-          <Table>
-            <TableHeader className="bg-gray-100">
-              <TableRow>
-                <TableHead>User</TableHead>
-                <TableHead>Value</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {results.map((result, index) => (
-                <TableRow key={index}>
-                  <TableCell>{index}</TableCell>
-                  { feedbackQuestion?.type === "SINGLE_CHOICE" && (
-                    <TableCell>{feedbackQuestion.options?.filter((o, i) => result.values.includes(i.toString())).join(", ")}</TableCell>
-                  ) || (
-                    <TableCell>{result.values.join(", ")}</TableCell>
-                  )}
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
+          {results.length > 0 && (
+            <>
+              <div className="flex justify-between w-full mb-4 mt-8 flex-grow flex-wrap gap-4">
+                <h2 className="text-2xl">Results</h2>
+              </div>
+              <Table>
+                <TableHeader className="bg-gray-100">
+                  <TableRow>
+                    <TableHead>User</TableHead>
+                    <TableHead>Value</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {results.map((result, index) => (
+                    <TableRow key={index}>
+                      <TableCell>{index}</TableCell>
+                      { feedbackQuestion?.type === "SINGLE_CHOICE" && (
+                        <TableCell>{feedbackQuestion.options?.filter((o, i) => result.values.includes(i.toString())).join(", ")}</TableCell>
+                      ) || (
+                        <TableCell>{result.values.join(", ")}</TableCell>
+                      )}
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </>
+          )}
         </>
       )}
     </div>
