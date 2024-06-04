@@ -226,7 +226,7 @@ export default function QuizQuestionPage({ params }: { params: { courseId: strin
                   });
                   setUserChangedSomething(true);
                 }}
-                placeholder="QuizQuestion name"
+                placeholder="Quiz Question Name"
                 className="font-bold bor"
                 onKeyDown={(e) => handleEnterPress(e, save)}
               />
@@ -244,7 +244,7 @@ export default function QuizQuestionPage({ params }: { params: { courseId: strin
                   });
                   setUserChangedSomething(true);
                 }}
-                placeholder="QuizQuestion description"
+                placeholder="Quiz Question Description"
                 onKeyDown={(e) => handleEnterPress(e, save)}
               />
               <Label className="mt-2">Type</Label>
@@ -432,7 +432,7 @@ export default function QuizQuestionPage({ params }: { params: { courseId: strin
                       onMouseLeave={() => setHoversOnCreateRow(false)}
                     >
                       <TableCell colSpan={6} className="text-center">
-                        {hoversOnCreateRow ? "Create new correct answer" : "No correct answers found."}
+                        {hoversOnCreateRow ? "Create new correct answer!" : "No correct answers found."}
                       </TableCell>
                     </TableRow>
                   )}
@@ -558,7 +558,7 @@ export default function QuizQuestionPage({ params }: { params: { courseId: strin
                       onMouseLeave={() => setHoversOnCreateRow(false)}
                     >
                       <TableCell colSpan={6} className="text-center">
-                        {hoversOnCreateRow ? "Create new option" : "No options found."}
+                        {hoversOnCreateRow ? "Create new option!" : "No options found."}
                       </TableCell>
                     </TableRow>
                   )}

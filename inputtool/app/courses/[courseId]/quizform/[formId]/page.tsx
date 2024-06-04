@@ -371,7 +371,7 @@ export default function QuizFormPage({ params }: { params: { courseId: string, f
                 <TableRow
                   className="hover:cursor-pointer hover:text-blue-500"
                   onClick={async () => {
-                    const question = await addQuizQuestion(params.courseId, params.formId, "New question", "", "YES_NO", [], true, []);
+                    const question = await addQuizQuestion(params.courseId, params.formId, "New Question", "", "YES_NO", [], true, []);
                     if (question) {
                       toast.success("Question created.");
                       router.push(`/courses/${params.courseId}/quizform/${params.formId}/question/${question.id}?is-new=true`);
@@ -381,7 +381,7 @@ export default function QuizFormPage({ params }: { params: { courseId: string, f
                   onMouseLeave={() => setHoversOnCreateRow(false)}
                 >
                   <TableCell colSpan={6} className="text-center">
-                    {hoversOnCreateRow ? "Create new question" : "No questions found."}
+                    {hoversOnCreateRow ? "Create new question!" : "No questions found."}
                   </TableCell>
                 </TableRow>
               )}

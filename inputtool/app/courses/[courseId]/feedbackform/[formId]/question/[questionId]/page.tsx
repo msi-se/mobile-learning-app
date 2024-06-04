@@ -217,7 +217,7 @@ export default function FeedbackQuestionPage({ params }: { params: { courseId: s
                   });
                   setUserChangedSomething(true);
                 }}
-                placeholder="FeedbackQuestion name"
+                placeholder="Feedback Question Name"
                 className="font-bold bor"
                 onKeyDown={(e) => handleEnterPress(e, save)}
               />
@@ -235,7 +235,7 @@ export default function FeedbackQuestionPage({ params }: { params: { courseId: s
                   });
                   setUserChangedSomething(true);
                 }}
-                placeholder="FeedbackQuestion description"
+                placeholder="Feedback Question Description"
                 onKeyDown={(e) => handleEnterPress(e, save)}
               />
               <Label className="mt-2">Type</Label> {/* "SLIDER"| "STARS"| "SINGLE_CHOICE"| "FULLTEXT" */}
@@ -395,7 +395,7 @@ export default function FeedbackQuestionPage({ params }: { params: { courseId: s
                       onMouseLeave={() => setHoversOnCreateRow(false)}
                     >
                       <TableCell colSpan={6} className="text-center">
-                        {hoversOnCreateRow ? "Create new option" : "No options found."}
+                        {hoversOnCreateRow ? "Create new option!" : "No options found."}
                       </TableCell>
                     </TableRow>
                   )}
