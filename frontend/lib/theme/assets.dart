@@ -56,3 +56,10 @@ const String helloDark = 'assets/titles/hello-dark.svg';
 const String helloLight = 'assets/titles/hello-light.svg';
 const String joinDark = 'assets/titles/join-dark.svg';
 const String joinLight = 'assets/titles/join-light.svg';
+
+//Menu Plan Assets
+const String vegan = 'assets/icons/menu/vegan.svg';
+const String vegetarian = 'assets/icons/menu/vegetarian.svg';
+const String pescetarian = 'assets/icons/menu/fish.svg';
+const String notVegetarian = 'assets/icons/menu/meat.svg';
+const String unknown = 'assets/icons/menu/unknown.svg';
