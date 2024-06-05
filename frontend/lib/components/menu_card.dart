@@ -74,7 +74,29 @@ class _MenuCardState extends State<MenuCard>
                               ? 'hin&weg'
                               : widget.title == 'KombinierBar'
                                   ? 'Kombinierbar'
-                                  : 'Default',
+                                  : widget.title == 'Sättigung I'
+                                      ? 'saettigung i'
+                                      : widget.title == 'Sättigung II'
+                                          ? 'saettigung ii'
+                                          : widget.title == 'Gemüse I'
+                                              ? 'vegetables'
+                                              : widget.title == 'Salat I'
+                                                  ? 'salad i'
+                                                  : widget.title == 'Salat II'
+                                                      ? 'salad ii'
+                                                      : widget.title ==
+                                                              'Dessert I'
+                                                          ? 'dessert'
+                                                          : widget.title ==
+                                                                  'Pasta'
+                                                              ? 'pasta meat'
+                                                              : widget.title ==
+                                                                      'Pasta vegetarisch'
+                                                                  ? 'pasta veggie'
+                                                                  : widget.title ==
+                                                                          'koeriwerk'
+                                                                      ? 'currywurst'
+                                                                      : 'Default',
                       stateMachines: ['State Machine'],
                     ),
                   ),
@@ -93,7 +115,7 @@ class _MenuCardState extends State<MenuCard>
                           ),
                         ),
                         SvgPicture.asset(widget.cardIcon,
-                            width: 15, height: 15),
+                            width: 20, height: 20),
                       ],
                     ),
                   ),
