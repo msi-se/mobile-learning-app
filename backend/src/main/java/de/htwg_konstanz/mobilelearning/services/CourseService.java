@@ -207,14 +207,15 @@ public class CourseService {
         
         // case 1: the user was added to a new course (-> add the course to the user and the student to the course)
         for (MoodleCourse moodleCourse : moodleCourses) {
-            Course course = courseRepository.findByMoodleCourseId(moodleCourse.getId());
-            if (course == null) {
-                continue;
-            }
-            if (!user.hasCourse(course.getId()) || !course.isStudent(user.getId())) {
-                user.addCourse(course.getId());
-                course.addStudent(user.getId());
-                courseRepository.update(course);
+
+            // find all courses with the moodle course id
+            List<Course> courses = courseRepository.listAllByMoodleCourseId(moodleCourse.getId());
+            for (Course course : courses) {
+                if (!user.hasCourse(course.getId()) || !course.isStudent(user.getId())) {
+                    user.addCourse(course.getId());
+                    course.addStudent(user.getId());
+                    courseRepository.update(course);
+                }
             }
         };
 

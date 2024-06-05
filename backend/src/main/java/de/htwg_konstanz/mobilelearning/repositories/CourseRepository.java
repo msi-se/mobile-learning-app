@@ -32,6 +32,10 @@ public class CourseRepository implements PanacheMongoRepository<Course> {
         return find("moodleCourseId", moodleCourseId).firstResult();
     }
 
+    public List<Course> listAllByMoodleCourseId(String moodleCourseId) {
+        return find("moodleCourseId", moodleCourseId).list();
+    }
+
     public Course findByFormConnectCode(Integer connectCode) {
         // TODO: make this more efficient
         Course course = findByFeedbackFormConnectCode(connectCode);
