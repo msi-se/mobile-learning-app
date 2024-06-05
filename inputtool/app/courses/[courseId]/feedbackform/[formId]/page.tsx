@@ -318,8 +318,8 @@ export default function FeedbackFormPage({ params }: { params: { courseId: strin
                 <TableHead>Name</TableHead>
                 <TableHead>Description</TableHead>
                 <TableHead>Options</TableHead>
-                <TableHead>RangeLow</TableHead>
-                <TableHead>RangeHigh</TableHead>
+                <TableHead>Range Low</TableHead>
+                <TableHead>Range High</TableHead>
                 <TableHead>Order</TableHead>
               </TableRow>
             </TableHeader>
@@ -368,7 +368,7 @@ export default function FeedbackFormPage({ params }: { params: { courseId: strin
                 <TableRow
                   className="hover:cursor-pointer hover:text-blue-500"
                   onClick={async () => {
-                    const question = await addFeedbackQuestion(params.courseId, params.formId, "New question", "", "SLIDER", [], "", "");
+                    const question = await addFeedbackQuestion(params.courseId, params.formId, "New Question", "", "SLIDER", [], "", "");
                     if (question) {
                       toast.success("Question created.");
                       router.push(`/courses/${params.courseId}/feedbackform/${params.formId}/question/${question.id}?is-new=true`);
@@ -378,7 +378,7 @@ export default function FeedbackFormPage({ params }: { params: { courseId: strin
                   onMouseLeave={() => setHoversOnCreateRow(false)}
                 >
                   <TableCell colSpan={6} className="text-center">
-                    {hoversOnCreateRow ? "Create new question" : "No questions found."}
+                    {hoversOnCreateRow ? "Create new question!" : "No questions found."}
                   </TableCell>
                 </TableRow>
               )}

@@ -74,6 +74,7 @@ flutter:
     - assets/icons/
     - assets/icons/mobile/
     - assets/icons/web/
+    - assets/icons/menu/
     - assets/images/
     - assets/titles/
     - assets/logo/

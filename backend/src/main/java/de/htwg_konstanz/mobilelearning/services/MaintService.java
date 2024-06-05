@@ -17,6 +17,7 @@ import de.htwg_konstanz.mobilelearning.models.Course;
 import de.htwg_konstanz.mobilelearning.models.Form;
 import de.htwg_konstanz.mobilelearning.models.Question;
 import de.htwg_konstanz.mobilelearning.models.QuestionWrapper;
+import de.htwg_konstanz.mobilelearning.models.Result;
 import de.htwg_konstanz.mobilelearning.models.auth.User;
 import de.htwg_konstanz.mobilelearning.models.auth.UserRole;
 import de.htwg_konstanz.mobilelearning.models.feedback.FeedbackForm;
@@ -876,6 +877,50 @@ public class MaintService {
         courseRepository.update(course);
         courseRepository.update(newCourse);
         return true;
+    }
+
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    @RolesAllowed({ UserRole.PROF, UserRole.STUDENT })
+    @Path("/course/{courseId}/feedback/form/{formId}/question/{questionId}/results")
+    public List<Result> getFeedbackQuestionResults(@RestPath String courseId, @RestPath String formId,
+            @RestPath String questionId) {
+        Course course = courseRepository.findById(new ObjectId(courseId));
+        if (!isOwner(course)) {
+            throw new NotFoundException();
+        }
+        FeedbackForm feedbackForm = course.getFeedbackFormById(new ObjectId(formId));
+        if (feedbackForm == null) {
+            throw new NotFoundException();
+        }
+        QuestionWrapper questionWrapper = feedbackForm.getQuestionById(new ObjectId(questionId));
+        if (questionWrapper == null) {
+            throw new NotFoundException();
+        }
+        List<Result> results = questionWrapper.getResults();
+        return results;
+    }
+
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    @RolesAllowed({ UserRole.PROF, UserRole.STUDENT })
+    @Path("/course/{courseId}/quiz/form/{formId}/question/{questionId}/results")
+    public List<Result> getQuizQuestionResults(@RestPath String courseId, @RestPath String formId,
+            @RestPath String questionId) {
+        Course course = courseRepository.findById(new ObjectId(courseId));
+        if (!isOwner(course)) {
+            throw new NotFoundException();
+        }
+        QuizForm quizForm = course.getQuizFormById(new ObjectId(formId));
+        if (quizForm == null) {
+            throw new NotFoundException();
+        }
+        QuestionWrapper questionWrapper = quizForm.getQuestionById(new ObjectId(questionId));
+        if (questionWrapper == null) {
+            throw new NotFoundException();
+        }
+        List<Result> results = questionWrapper.getResults();
+        return results;
     }
 
 }

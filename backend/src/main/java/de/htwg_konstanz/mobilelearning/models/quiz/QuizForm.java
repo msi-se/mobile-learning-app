@@ -21,7 +21,8 @@ import de.htwg_konstanz.mobilelearning.services.api.models.ApiQuizForm;
 
 /**
  * Type of form for quizzes.
- * Contains index of current question that is shown in the session and whether it is finished.
+ * Contains index of current question that is shown in the session and whether
+ * it is finished.
  */
 public class QuizForm extends Form {
 
@@ -222,7 +223,8 @@ public class QuizForm extends Form {
         }
 
         // create quiz questions
-        List<QuestionWrapper> questionWrappers = QuizForm.questionWrappersFromApiQuizQuestions(apiQuizForm.getQuestions(),
+        List<QuestionWrapper> questionWrappers = QuizForm.questionWrappersFromApiQuizQuestions(
+                apiQuizForm.getQuestions(),
                 course);
 
         // add quiz form to course
@@ -295,8 +297,7 @@ public class QuizForm extends Form {
                     apiQuizQuestion.getOptions(),
                     apiQuizQuestion.getHasCorrectAnswers(),
                     apiQuizQuestion.getCorrectAnswers(),
-                    apiQuizQuestion.getKey()
-                    );
+                    apiQuizQuestion.getKey());
 
             course.addQuizQuestion(quizQuestion);
             quizQuestionIds.add(quizQuestion.getId());
@@ -328,7 +329,8 @@ public class QuizForm extends Form {
         }
 
         // update quiz questions
-        List<QuestionWrapper> questionWrappers = QuizForm.questionWrappersFromApiQuizQuestions(apiQuizForm.getQuestions(),
+        List<QuestionWrapper> questionWrappers = QuizForm.questionWrappersFromApiQuizQuestions(
+                apiQuizForm.getQuestions(),
                 course);
         this.setQuestions(questionWrappers);
 
@@ -379,16 +381,17 @@ public class QuizForm extends Form {
         return copy;
     }
 
-        public Object getResultsAsCsv(Course course) {
+    public Object getResultsAsCsv(Course course) {
 
         /*
-        
-        userId; question1; question2; question3; ...
-        userX; 1; 2; 3; ...
-        userY; 2; 3; 4; ...
-        userY; ""; ""; 3; ... (important: if a user adds more than one result for a question, add a new row for each result (the rest of the row is empty)
-        userZ; 7; 8; 9; ...
-        */
+         * 
+         * userId; question1; question2; question3; ...
+         * userX; 1; 2; 3; ...
+         * userY; 2; 3; 4; ...
+         * userY; ""; ""; 3; ... (important: if a user adds more than one result for a
+         * question, add a new row for each result (the rest of the row is empty)
+         * userZ; 7; 8; 9; ...
+         */
 
         List<String> headers = new ArrayList<String>();
         headers.add("user");
@@ -402,8 +405,8 @@ public class QuizForm extends Form {
 
         StringWriter sw = new StringWriter();
         CSVFormat csvFormat = CSVFormat.DEFAULT.builder()
-            .setHeader(HEADERS)
-            .build();
+                .setHeader(HEADERS)
+                .build();
 
         class ResultWithQuestion {
             public Result result;
@@ -423,16 +426,16 @@ public class QuizForm extends Form {
 
                 // get all results for this user
                 List<ResultWithQuestion> userResults = this.questions.stream()
-                    .flatMap(questionWrapper -> questionWrapper.getResults().stream()
-                        .filter(result -> result.getHashedUserId().equals(hashedUserId))
-                        .map(result -> new ResultWithQuestion(result, questionWrapper.getId())))
-                    .collect(Collectors.toList());
+                        .flatMap(questionWrapper -> questionWrapper.getResults().stream()
+                                .filter(result -> result.getHashedUserId().equals(hashedUserId))
+                                .map(result -> new ResultWithQuestion(result, questionWrapper.getId())))
+                        .collect(Collectors.toList());
 
                 // check how many rows we need for this user
                 Integer maxResults = userResults.stream()
-                    .map(result -> result.result.getValues().size())
-                    .max(Integer::compareTo)
-                    .orElse(0);
+                        .map(result -> result.result.getValues().size())
+                        .max(Integer::compareTo)
+                        .orElse(0);
 
                 // add rows
                 for (Integer rowIndex = 0; rowIndex < maxResults; rowIndex++) {
@@ -442,12 +445,13 @@ public class QuizForm extends Form {
 
                     // add question results
                     this.questions.stream()
-                        .map(questionWrapper -> userResults.stream()
-                            .filter(result -> result.questionId.equals(questionWrapper.getId()) && result.result.getValues().size() > finalRowIndex)
-                            .map(result -> result.result.getValues().get(finalRowIndex))
-                            .findFirst()
-                            .orElse(""))
-                        .forEach(record::add);
+                            .map(questionWrapper -> userResults.stream()
+                                    .filter(result -> result.questionId.equals(questionWrapper.getId())
+                                            && result.result.getValues().size() > finalRowIndex)
+                                    .map(result -> result.result.getValues().get(finalRowIndex))
+                                    .findFirst()
+                                    .orElse(""))
+                            .forEach(record::add);
                     printer.printRecord(record);
                 }
                 userIndex++;
@@ -459,20 +463,20 @@ public class QuizForm extends Form {
         return sw.toString();
     }
 
-        public Integer getParticipantsAnsweredCorrectly(ObjectId id) {
-            Integer count = 0;
-            for (QuestionWrapper questionWrapper : this.questions) {
-                if (questionWrapper.getId().equals(id)) {
-                    for (Result result : questionWrapper.getResults()) {
-                        if (result.getGainedPoints() > 0) {
-                            count++;
-                        }
-                        break;
+    public Integer getParticipantsAnsweredCorrectly(ObjectId id) {
+        Integer count = 0;
+        for (QuestionWrapper questionWrapper : this.questions) {
+            if (questionWrapper.getId().equals(id)) {
+                for (Result result : questionWrapper.getResults()) {
+                    if (result.getGainedPoints() > 0) {
+                        count++;
                     }
                     break;
                 }
+                break;
             }
-            return count;
         }
+        return count;
+    }
 
 }

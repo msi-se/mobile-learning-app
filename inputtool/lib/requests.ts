@@ -1,4 +1,4 @@
-import { Course, FeedbackForm, FeedbackQuestion, QuizForm, QuizQuestion } from "./models";
+import { Course, FeedbackForm, FeedbackQuestion, FormResult, QuizForm, QuizQuestion } from "./models";
 import { toast } from "sonner";
 import getBackendUrl from "@/lib/get-backend-url";
 
@@ -477,4 +477,38 @@ export async function changeCourseOfForm(courseId: string, formId: string, newCo
         return false;
     }
     return true;
+}
+
+// GET /maint/course/${courseId}/feedback/form/${formId}/question/${questionId}/results
+// getFeedbackQuestionResults(params.courseId, params.formId, params.questionId); -> Error | Results
+export async function fetchFeedbackQuestionResults(courseId: string, formId: string, questionId: string): Promise<FormResult[] | null> {
+    const BACKEND_URL = await getBackendUrl();
+    const jwtToken = localStorage.getItem("jwtToken");//             /course/ {courseId}/feedback/form/ {formId}/question/ {questionId}/results
+    let feedbackQuestionResultsResponse = await fetch(`${BACKEND_URL}/maint/course/${courseId}/feedback/form/${formId}/question/${questionId}/results`, {
+        method: "GET",
+        headers: { "AUTHORIZATION": "Bearer " + jwtToken }
+    });
+    if (feedbackQuestionResultsResponse.status !== 200) {
+        toast.error(`Failed to get feedback question results. Please try again. Status: ${feedbackQuestionResultsResponse.status}`);
+        return null;
+    }
+    let feedbackQuestionResults = await feedbackQuestionResultsResponse.json();
+    return feedbackQuestionResults;
+}
+
+// GET /maint/course/${courseId}/quiz/form/${formId}/question/${questionId}/results
+// getQuizQuestionResults(params.courseId, params.formId, params.questionId); -> Error | Results
+export async function fetchQuizQuestionResults(courseId: string, formId: string, questionId: string): Promise<FormResult[] | null> {
+    const BACKEND_URL = await getBackendUrl();
+    const jwtToken = localStorage.getItem("jwtToken");
+    let quizQuestionResultsResponse = await fetch(`${BACKEND_URL}/maint/course/${courseId}/quiz/form/${formId}/question/${questionId}/results`, {
+        method: "GET",
+        headers: { "AUTHORIZATION": "Bearer " + jwtToken }
+    });
+    if (quizQuestionResultsResponse.status !== 200) {
+        toast.error(`Failed to get quiz question results. Please try again. Status: ${quizQuestionResultsResponse.status}`);
+        return null;
+    }
+    let quizQuestionResults = await quizQuestionResultsResponse.json();
+    return quizQuestionResults;
 }

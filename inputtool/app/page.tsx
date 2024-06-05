@@ -60,7 +60,7 @@ export default function Home() {
           </CardHeader>
           <CardContent>
             <Label>HTWG-Username</Label>
-            <Input autoFocus type="text" value={username} onChange={(e) => setUsername(e.target.value)} placeholder="jo871bra" />
+            <Input autoFocus type="text" value={username} onChange={(e) => setUsername(e.target.value)} placeholder="ma871mus" />
             <Label className="mt-2">Password</Label>
             <Input type="password" value={password} onChange={(e) => setPassword(e.target.value)} onSubmit={handleLogin} />
             <Button
@@ -68,6 +68,13 @@ export default function Home() {
               onClick={handleLogin}
               disabled={!username}
             >{loading ? <Loader2 className="w-6 h-6 animate-spin" /> : "Login"}</Button>
+            <Separator className="my-5"/>
+            <p className="text-sm">
+            This web interface allows lecturers at HTWG Konstanz to create courses and content for the “HTWG-Connect” app.
+            The HTWG-Connect app is designed for more digital interaction during lectures.
+            Teachers can create feedback surveys and quizzes for students and conduct them live in the lecture.
+            This tool is exactly for this preparation process.
+            </p>
           </CardContent>
         </Card>
       </div>

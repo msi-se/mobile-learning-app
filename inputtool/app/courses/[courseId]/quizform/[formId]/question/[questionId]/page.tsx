@@ -18,7 +18,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
-import { QuizQuestion } from "@/lib/models";
+import { FormResult, QuizQuestion } from "@/lib/models";
 import { DeleteButton } from "@/components/delete-button";
 import {
   Select,
@@ -27,7 +27,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import { deleteQuizQuestion, fetchQuizQuestion, updateQuizQuestion } from "@/lib/requests";
+import { deleteQuizQuestion, fetchQuizQuestion, fetchQuizQuestionResults, updateQuizQuestion } from "@/lib/requests";
 import { Checkbox } from "@/components/ui/checkbox";
 
 
@@ -47,6 +47,7 @@ export default function QuizQuestionPage({ params }: { params: { courseId: strin
     hasCorrectAnswers: true,
     correctAnswers: ["yes"]
   });
+  const [results, setResults] = useState<FormResult[]>([]);
   const [userChangedSomething, setUserChangedSomething] = useState(false);
   const [isNew, setIsNew] = useState(false);
   const searchParams = useSearchParams()
@@ -83,6 +84,9 @@ export default function QuizQuestionPage({ params }: { params: { courseId: strin
         router.back();
         return;
       }
+
+      let results = await fetchQuizQuestionResults(params.courseId, params.formId, params.questionId);
+      setResults(results || []);
       setQuizQuestion(quizquestion);
       setLoading(false);
     };
@@ -222,7 +226,7 @@ export default function QuizQuestionPage({ params }: { params: { courseId: strin
                   });
                   setUserChangedSomething(true);
                 }}
-                placeholder="QuizQuestion name"
+                placeholder="Quiz Question Name"
                 className="font-bold bor"
                 onKeyDown={(e) => handleEnterPress(e, save)}
               />
@@ -240,7 +244,7 @@ export default function QuizQuestionPage({ params }: { params: { courseId: strin
                   });
                   setUserChangedSomething(true);
                 }}
-                placeholder="QuizQuestion description"
+                placeholder="Quiz Question Description"
                 onKeyDown={(e) => handleEnterPress(e, save)}
               />
               <Label className="mt-2">Type</Label>
@@ -428,7 +432,7 @@ export default function QuizQuestionPage({ params }: { params: { courseId: strin
                       onMouseLeave={() => setHoversOnCreateRow(false)}
                     >
                       <TableCell colSpan={6} className="text-center">
-                        {hoversOnCreateRow ? "Create new correct answer" : "No correct answers found."}
+                        {hoversOnCreateRow ? "Create new correct answer!" : "No correct answers found."}
                       </TableCell>
                     </TableRow>
                   )}
@@ -554,10 +558,38 @@ export default function QuizQuestionPage({ params }: { params: { courseId: strin
                       onMouseLeave={() => setHoversOnCreateRow(false)}
                     >
                       <TableCell colSpan={6} className="text-center">
-                        {hoversOnCreateRow ? "Create new option" : "No options found."}
+                        {hoversOnCreateRow ? "Create new option!" : "No options found."}
                       </TableCell>
                     </TableRow>
                   )}
+                </TableBody>
+              </Table>
+            </>
+          )}
+          {/* RESULTS */}
+          {results.length > 0 && (
+            <>
+              <div className="flex justify-between w-full mb-4 mt-8 flex-grow flex-wrap gap-4">
+                <h2 className="text-2xl">Results</h2>
+              </div>
+              <Table>
+                <TableHeader className="bg-gray-100">
+                  <TableRow>
+                    <TableHead>User</TableHead>
+                    <TableHead>Value</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {results.map((result, index) => (
+                    <TableRow key={index}>
+                      <TableCell>{index}</TableCell>
+                      { quizQuestion?.type === "SINGLE_CHOICE" && (
+                        <TableCell>{quizQuestion.options?.filter((o, i) => result.values.includes(i.toString())).join(", ")}</TableCell>
+                      ) || (
+                        <TableCell>{result.values.join(", ")}</TableCell>
+                      )}
+                    </TableRow>
+                  ))}
                 </TableBody>
               </Table>
             </>

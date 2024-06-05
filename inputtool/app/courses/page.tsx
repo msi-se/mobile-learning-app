@@ -89,7 +89,7 @@ export default function Courses() {
             <Button
               className="mt-4"
               onClick={async () => {
-                const course = await addCourse("New course", "", "");
+                const course = await addCourse("New Course", "", "");
                 if (course) {
                   toast.success("Course created.");
                   router.push(`/courses/${course.id}?is-new=true`);
