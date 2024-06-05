@@ -174,6 +174,7 @@ class _QuizControlPageState extends AuthState<QuizControlPage> {
           data["action"] == "OPENED_NEXT_QUESTION") {
         var form = QuizForm.fromJson(data["form"]);
         setState(() {
+          _showLeaderboard = false;
           _form.currentQuestionIndex = form.currentQuestionIndex;
           _form.currentQuestionFinished = form.currentQuestionFinished;
         });
