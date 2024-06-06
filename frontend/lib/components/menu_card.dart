@@ -74,29 +74,47 @@ class _MenuCardState extends State<MenuCard>
                               ? 'hin&weg'
                               : widget.title == 'KombinierBar'
                                   ? 'Kombinierbar'
-                                  : widget.title == 'Sättigung I'
-                                      ? 'saettigung i'
-                                      : widget.title == 'Sättigung II'
-                                          ? 'saettigung ii'
-                                          : widget.title == 'Gemüse I'
-                                              ? 'vegetables'
-                                              : widget.title == 'Salat I'
-                                                  ? 'salad i'
-                                                  : widget.title == 'Salat II'
-                                                      ? 'salad ii'
+                                  : widget.title == 'Gemüse I'
+                                      ? 'vegetables'
+                                      : widget.title == 'Salat I'
+                                          ? 'salad i'
+                                          : widget.title == 'Salat II'
+                                              ? 'salad ii'
+                                              : widget.title == 'Dessert I'
+                                                  ? 'dessert'
+                                                  : widget.title == 'Pasta'
+                                                      ? 'pasta meat'
                                                       : widget.title ==
-                                                              'Dessert I'
-                                                          ? 'dessert'
+                                                              'Pasta vegetarisch'
+                                                          ? 'pasta veggie'
                                                           : widget.title ==
-                                                                  'Pasta'
-                                                              ? 'pasta meat'
-                                                              : widget.title ==
-                                                                      'Pasta vegetarisch'
-                                                                  ? 'pasta veggie'
-                                                                  : widget.title ==
-                                                                          'koeriwerk'
-                                                                      ? 'currywurst'
-                                                                      : 'Default',
+                                                                  'koeriwerk'
+                                                              ? 'currywurst'
+                                                              : widget.description
+                                                                          .toLowerCase()
+                                                                          .contains(
+                                                                              'penne') ||
+                                                                      widget
+                                                                          .description
+                                                                          .toLowerCase()
+                                                                          .contains(
+                                                                              'nudel')
+                                                                  ? 'pasta'
+                                                                  : widget.description.toLowerCase().contains(
+                                                                              'potato') ||
+                                                                          widget
+                                                                              .description
+                                                                              .toLowerCase()
+                                                                              .contains(
+                                                                                  'kartoffel')
+                                                                      ? 'potato'
+                                                                      : widget.description
+                                                                              .toLowerCase()
+                                                                              .contains('reis')
+                                                                          ? 'reis'
+                                                                          : widget.description.toLowerCase().contains('pommes')
+                                                                              ? 'pommes'
+                                                                              : 'Default',
                       stateMachines: ['State Machine'],
                     ),
                   ),
