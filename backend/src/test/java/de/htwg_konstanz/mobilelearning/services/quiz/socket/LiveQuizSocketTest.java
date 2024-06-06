@@ -940,15 +940,17 @@ public class LiveQuizSocketTest {
         List<Course> courses = Helper.createCourse("Prof-1");
         Course course = courses.get(0);
 
-        // make 1 prof and 1 student
+        // make 1 prof and 3 students
         MockUser prof = Helper.createMockUser("Prof-1");
         MockUser student1 = Helper.createMockUser("Student-1");
         MockUser student2 = Helper.createMockUser("Student-2");
+        MockUser student3 = Helper.createMockUser("Student-3");
 
         // call the get courses endpoint for each user to update the course-user relation
         given().header("Authorization", "Bearer " + prof.getJwt()).when().get("/course").then().statusCode(200);
         given().header("Authorization", "Bearer " + student1.getJwt()).when().get("/course").then().statusCode(200);
         given().header("Authorization", "Bearer " + student2.getJwt()).when().get("/course").then().statusCode(200);
+        given().header("Authorization", "Bearer " + student3.getJwt()).when().get("/course").then().statusCode(200);
         
         // get course and quiz form id
         String courseId = course.getId().toString();
@@ -958,6 +960,7 @@ public class LiveQuizSocketTest {
         SocketClient profClient = new SocketClient();
         SocketClient studentClient1 = new SocketClient();
         SocketClient studentClient2 = new SocketClient();
+        SocketClient studentClient3 = new SocketClient();
 
         // connect the prof to the quiz form
         Session profSession = ContainerProvider.getWebSocketContainer().connectToServer(
@@ -1010,17 +1013,34 @@ public class LiveQuizSocketTest {
         Thread.sleep(100);
         Assertions.assertTrue(studentSession2.isOpen());
 
+        Response response3 = given()
+                                .header("Authorization", "Bearer " + student3.getJwt())
+                                .pathParam("courseId", courseId)
+                                .pathParam("formId", formId)
+                                .body("alias-student-3")
+                                .when()
+                                .post("/course/{courseId}/quiz/form/{formId}/participate");
+        Thread.sleep(100);
+        Assertions.assertEquals(200, response3.getStatusCode());
+        Session studentSession3 = ContainerProvider.getWebSocketContainer().connectToServer(
+            studentClient3,
+            URI.create("ws://localhost:8081/course/" + courseId + "/quiz/form/" + formId + "/subscribe/" + student3.getId() + "/" + student3.getJwt())
+        );
+        Thread.sleep(100);
+        Assertions.assertTrue(studentSession3.isOpen());
 
         // check if the quiz has now participants
-        Assertions.assertEquals(2, courseService.getCourse(courseId).getQuizForms().get(0).getParticipants().size());
+        Assertions.assertEquals(3, courseService.getCourse(courseId).getQuizForms().get(0).getParticipants().size());
 
         // check if the prof received the "PARTICIPANT_JOINED" messages and got the right amount of participants
         Assertions.assertEquals("PARTICIPANT_JOINED", LiveQuizSocketMessage.getByJsonWithForm(profClient.getMessageQueue().get(profClient.getMessageQueue().size() - 1)).action);
-        Assertions.assertEquals(2, LiveQuizSocketMessage.getByJsonWithForm(profClient.getMessageQueue().get(profClient.getMessageQueue().size() - 1)).form.participants.size());
+        Assertions.assertEquals(3, LiveQuizSocketMessage.getByJsonWithForm(profClient.getMessageQueue().get(profClient.getMessageQueue().size() - 1)).form.participants.size());
         Assertions.assertEquals("PARTICIPANT_JOINED", LiveQuizSocketMessage.getByJsonWithForm(profClient.getMessageQueue().get(profClient.getMessageQueue().size() - 2)).action);
-        Assertions.assertEquals(1, LiveQuizSocketMessage.getByJsonWithForm(profClient.getMessageQueue().get(profClient.getMessageQueue().size() - 2)).form.participants.size());
-        Assertions.assertEquals("FORM_STATUS_CHANGED", LiveQuizSocketMessage.getByJsonWithForm(profClient.getMessageQueue().get(profClient.getMessageQueue().size() - 3)).action);
-        Assertions.assertEquals(0, LiveQuizSocketMessage.getByJsonWithForm(profClient.getMessageQueue().get(profClient.getMessageQueue().size() - 3)).form.participants.size());
+        Assertions.assertEquals(2, LiveQuizSocketMessage.getByJsonWithForm(profClient.getMessageQueue().get(profClient.getMessageQueue().size() - 2)).form.participants.size());
+        Assertions.assertEquals("PARTICIPANT_JOINED", LiveQuizSocketMessage.getByJsonWithForm(profClient.getMessageQueue().get(profClient.getMessageQueue().size() - 3)).action);
+        Assertions.assertEquals(1, LiveQuizSocketMessage.getByJsonWithForm(profClient.getMessageQueue().get(profClient.getMessageQueue().size() - 3)).form.participants.size());
+        Assertions.assertEquals("FORM_STATUS_CHANGED", LiveQuizSocketMessage.getByJsonWithForm(profClient.getMessageQueue().get(profClient.getMessageQueue().size() - 4)).action);
+        Assertions.assertEquals(0, LiveQuizSocketMessage.getByJsonWithForm(profClient.getMessageQueue().get(profClient.getMessageQueue().size() - 4)).form.participants.size());
         
         // change the form status to "STARTED" and check if it was set
         profClient.sendMessage("""
@@ -1052,16 +1072,26 @@ public class LiveQuizSocketTest {
             }
         """.formatted(course.getQuizForms().get(0).questions.get(0).getId().toString()));
         Thread.sleep(100);
+        studentClient3.sendMessage("""
+            {
+                "action": "ADD_RESULT",
+                "resultElementId": %s,
+                "resultValues": ["2"]
+            }
+        """.formatted(course.getQuizForms().get(0).questions.get(0).getId().toString()));
+        Thread.sleep(100);
 
         // check that the result was added
-        Assertions.assertEquals(2, courseService.getCourse(courseId).getQuizForms().get(0).questions.get(0).results.size());
+        Assertions.assertEquals(3, courseService.getCourse(courseId).getQuizForms().get(0).questions.get(0).results.size());
         Assertions.assertEquals("2", courseService.getCourse(courseId).getQuizForms().get(0).questions.get(0).results.get(0).values.get(0));
         Assertions.assertEquals("2", courseService.getCourse(courseId).getQuizForms().get(0).questions.get(0).results.get(1).values.get(0));
+        Assertions.assertEquals("2", courseService.getCourse(courseId).getQuizForms().get(0).questions.get(0).results.get(2).values.get(0));
 
 
         // check that the score was updated
         Assertions.assertEquals(15, courseService.getCourse(courseId).getQuizForms().get(0).getParticipants().get(0).getScore());
         Assertions.assertEquals(14, courseService.getCourse(courseId).getQuizForms().get(0).getParticipants().get(1).getScore());
+        Assertions.assertEquals(13, courseService.getCourse(courseId).getQuizForms().get(0).getParticipants().get(2).getScore());
 
         // let the prof stop the question
         profClient.sendMessage("""
@@ -1080,7 +1110,8 @@ public class LiveQuizSocketTest {
         Assertions.assertTrue(LiveQuizSocketMessage.getByJsonWithForm(studentClient1.getMessageQueue().get(studentClient1.getMessageQueue().size() - 1)).userHasAnsweredCorrectly);
         Assertions.assertEquals("CLOSED_QUESTION", LiveQuizSocketMessage.getByJsonWithForm(studentClient2.getMessageQueue().get(studentClient2.getMessageQueue().size() - 1)).action);
         Assertions.assertTrue(LiveQuizSocketMessage.getByJsonWithForm(studentClient2.getMessageQueue().get(studentClient2.getMessageQueue().size() - 1)).userHasAnsweredCorrectly);
-
+        Assertions.assertEquals("CLOSED_QUESTION", LiveQuizSocketMessage.getByJsonWithForm(studentClient3.getMessageQueue().get(studentClient3.getMessageQueue().size() - 1)).action);
+        Assertions.assertTrue(LiveQuizSocketMessage.getByJsonWithForm(studentClient3.getMessageQueue().get(studentClient3.getMessageQueue().size() - 1)).userHasAnsweredCorrectly);
 
         // let the prof start the next question
         profClient.sendMessage("""
@@ -1126,7 +1157,6 @@ public class LiveQuizSocketTest {
         // close the websocket connections
         profSession.close();
         studentSession1.close();
-
     }
 
     @Test

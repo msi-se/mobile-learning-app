@@ -471,7 +471,6 @@ public class QuizForm extends Form {
                     if (result.getGainedPoints() > 0) {
                         count++;
                     }
-                    break;
                 }
                 break;
             }
