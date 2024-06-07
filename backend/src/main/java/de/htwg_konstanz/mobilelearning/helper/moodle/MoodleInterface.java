@@ -1,14 +1,15 @@
 package de.htwg_konstanz.mobilelearning.helper.moodle;
 
+import java.net.URLEncoder;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Moodle service that returns moodle courses of a user.
@@ -35,8 +36,9 @@ public class MoodleInterface {
             // get the token from
             // https://moodle.htwg-konstanz.de/moodle/login/token.php?username=USERNAME&password=PASSWORD&service=SERVICESHORTNAME
             CloseableHttpClient client = HttpClients.createDefault();
-            HttpGet request = new HttpGet("https://moodle.htwg-konstanz.de/moodle/login/token.php?username="
-                    + this.username + "&password=" + this.password + "&service=moodle_mobile_app");
+            String unencodedUrl = "https://moodle.htwg-konstanz.de/moodle/login/token.php?username=" + this.username + "&password=" + this.password + "&service=moodle_mobile_app";
+            String encodedUrl = URLEncoder.encode(unencodedUrl, "UTF-8");
+            HttpGet request = new HttpGet(encodedUrl);
             MoodleTokenResponse tokenResponse = mapper.readValue(client.execute(request).getEntity().getContent(),
                     MoodleTokenResponse.class);
             this.token = tokenResponse.token;
