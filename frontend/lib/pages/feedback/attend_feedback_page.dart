@@ -124,6 +124,9 @@ class _AttendFeedbackPageState extends AuthState<AttendFeedbackPage> {
             case QuestionType.single_choice:
               _feedbackValues[element.id] = 0;
               break;
+            case QuestionType.fulltext:
+              _feedbackValues[element.id] = "";
+              break;
             default:
               _feedbackValues[element.id] = 0;
               break;
