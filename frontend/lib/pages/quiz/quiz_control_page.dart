@@ -604,52 +604,64 @@ class _QuizControlPageState extends AuthState<QuizControlPage> {
                                       fontSize: 20, fontWeight: FontWeight.w500),
                                   textAlign: TextAlign.center),
                               const SizedBox(height: 16),
-                              if (_form.currentQuestionFinished == true)
-                                if (_showLeaderboard)
-                                  Center(
-                                      child: Container(
-                                    constraints:
-                                        const BoxConstraints(maxWidth: 800),
-                                    child: Card(
-                                      child: Padding(
-                                        padding: const EdgeInsets.all(8),
-                                        child: QuizScoreboard(
-                                            scoreboard: _scoreboard),
-                                      ),
-                                    ),
-                                  ))
-                                else
-                                  Card(
+                              if (_showLeaderboard)
+                                Center(
+                                    child: Container(
+                                  constraints:
+                                      const BoxConstraints(maxWidth: 800),
+                                  child: Card(
                                     child: Padding(
-                                      padding: const EdgeInsets.all(16),
-                                      child: element.type ==
-                                              QuestionType.single_choice
-                                          ? SingleChoiceQuizResult(
-                                              results: values
-                                                  .map((e) => int.parse(e))
-                                                  .toList()
-                                                  .cast<int>(),
-                                              options: element.options,
-                                              correctAnswer:
-                                                  element.correctAnswers[0],
-                                            )
-                                          : element.type == QuestionType.yes_no
-                                              ? SingleChoiceQuizResult(
-                                                  results: values
-                                                      .map((e) =>
-                                                          e == "yes" ? 0 : 1)
-                                                      .toList()
-                                                      .cast<int>(),
-                                                  options: const ["Ja", "Nein"],
-                                                  correctAnswer:
-                                                      element.correctAnswers[0] ==
-                                                              "yes"
-                                                          ? "0"
-                                                          : "1",
-                                                )
-                                              : Text(element.type.toString()),
+                                      padding: const EdgeInsets.all(8),
+                                      child: QuizScoreboard(
+                                          scoreboard: _scoreboard),
                                     ),
                                   ),
+                                ))
+                              else
+                                Card(
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(16),
+                                    child: element.type ==
+                                            QuestionType.single_choice
+                                        ? SingleChoiceQuizResult(
+                                            results:
+                                                (_form.currentQuestionFinished ==
+                                                        true)
+                                                    ? values
+                                                        .map(
+                                                            (e) => int.parse(e))
+                                                        .toList()
+                                                        .cast<int>()
+                                                    : [],
+                                            options: element.options,
+                                            questionFinished: _form.currentQuestionFinished,
+                                            correctAnswer:
+                                                element.correctAnswers[0],
+                                          )
+                                        : element.type == QuestionType.yes_no
+                                            ? SingleChoiceQuizResult(
+                                                results:
+                                                    (_form.currentQuestionFinished ==
+                                                            true)
+                                                        ? values
+                                                            .map((e) =>
+                                                                e == "yes"
+                                                                    ? 0
+                                                                    : 1)
+                                                            .toList()
+                                                            .cast<int>()
+                                                        : [],
+                                                options: const ["Ja", "Nein"],
+                                                questionFinished: _form.currentQuestionFinished,
+                                                correctAnswer:
+                                                    element.correctAnswers[0] ==
+                                                            "yes"
+                                                        ? "0"
+                                                        : "1",
+                                              )
+                                            : Text(element.type.toString()),
+                                  ),
+                                ),
                             ],
                           ),
                         ),
