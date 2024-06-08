@@ -700,9 +700,6 @@ class _QuizControlPageState extends AuthState<QuizControlPage> {
                   child: Row(
                     children: <Widget>[
                       Expanded(
-                        child: Container(), // Empty container to take up space
-                      ),
-                      Expanded(
                         child: Text(
                           "${_form.connectCode.substring(0, 3)} ${_form.connectCode.substring(3, 6)}",
                           style: Theme.of(context).textTheme.headlineSmall,
@@ -713,8 +710,9 @@ class _QuizControlPageState extends AuthState<QuizControlPage> {
                         child: Padding(
                           padding: const EdgeInsets.only(right: 8.0),
                           child: Row(
-                            mainAxisAlignment: MainAxisAlignment.end,
+                            mainAxisAlignment: MainAxisAlignment.center,
                             children: <Widget>[
+                              Text("Abgestimmt:"),
                               const Icon(Icons.person),
                               Text(
                                 "${values.length}/$_participantCounter",
