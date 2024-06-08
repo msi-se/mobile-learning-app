@@ -567,7 +567,8 @@ class _AttendQuizPageState extends AuthState<AttendQuizPage> {
 
       return Scaffold(
         appBar: appBarWithProgress,
-        body: Column(
+        body: SingleChildScrollView(
+            child: Column(
           children: [
             Padding(
               padding:
@@ -672,34 +673,48 @@ class _AttendQuizPageState extends AuthState<AttendQuizPage> {
                 style:
                     const TextStyle(fontSize: 20, fontWeight: FontWeight.w700),
               ),
+            const SizedBox(height: 10),
+            (!_form!.currentQuestionFinished && !_voted)
+                ? SizedBox(
+                    height: 55,
+                    width: buttonWidth,
+                    child: ElevatedButton(
+                      style: ButtonStyle(
+                        elevation: MaterialStateProperty.all<double>(6.0),
+                        shape: MaterialStateProperty.all<OutlinedBorder>(
+                          RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(14.0),
+                          ),
+                        ),
+                        backgroundColor: MaterialStateProperty.all<Color>(
+                            Theme.of(context).colorScheme.surface),
+                        foregroundColor: MaterialStateProperty.all<Color>(
+                            Theme.of(context).colorScheme.primary),
+                      ),
+                      child:
+                          const Text('Senden', style: TextStyle(fontSize: 20)),
+                      onPressed: () {
+                        if (_value == null) {
+                          return;
+                        }
+                        var message = {
+                          "action": "ADD_RESULT",
+                          "resultElementId": element.id,
+                          "resultValues": [_value],
+                          "role": "STUDENT"
+                        };
+                        _socketChannel?.sink.add(jsonEncode(message));
+                        setState(() {
+                          _voted = true;
+                        });
+                      },
+                    ),
+                  )
+                : Container(),
+
+            const SizedBox(height: 20),
           ],
-        ),
-        floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
-        floatingActionButton: (!_form!.currentQuestionFinished && !_voted)
-            ? SizedBox(
-                width: buttonWidth,
-                child: FloatingActionButton(
-                  backgroundColor: Color(0xFFEDF5F3),
-                  foregroundColor: Theme.of(context).colorScheme.primary,
-                  child: const Text('Senden', style: TextStyle(fontSize: 20)),
-                  onPressed: () {
-                    if (_value == null) {
-                      return;
-                    }
-                    var message = {
-                      "action": "ADD_RESULT",
-                      "resultElementId": element.id,
-                      "resultValues": [_value],
-                      "role": "STUDENT"
-                    };
-                    _socketChannel?.sink.add(jsonEncode(message));
-                    setState(() {
-                      _voted = true;
-                    });
-                  },
-                ),
-              )
-            : null,
+        )),
       );
     } else {
       _showErrorDialog(_fetchResult);
