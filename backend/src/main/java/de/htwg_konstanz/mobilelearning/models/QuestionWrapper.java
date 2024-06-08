@@ -48,9 +48,11 @@ public class QuestionWrapper {
         // check if the user already submitted a result
         for (Result r : this.results) {
             if (r.hashedUserId != null && r.hashedUserId.equals(result.hashedUserId)) {
+                System.out.println("User already submitted a result for this question.");
                 return false;
             }
             if (r.userId != null && r.userId.equals(result.userId)) {
+                System.out.println("User already submitted a result for this question.");
                 return false;
             }
         }
