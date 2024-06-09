@@ -405,6 +405,7 @@ class _AttendQuizPageState extends AuthState<AttendQuizPage> {
     }
 
     if (_fetchResult == 'success') {
+      final colors = Theme.of(context).colorScheme;
       final appBar = AppBar(
         title: const Text(
             'Einem Quiz beitreten', //_form.name, TODO: find better solution
@@ -515,7 +516,7 @@ class _AttendQuizPageState extends AuthState<AttendQuizPage> {
                             child: Card(
                               child: Padding(
                                 padding: const EdgeInsets.all(8),
-                                child: QuizScoreboard(scoreboard: _scoreboard),
+                                child: QuizScoreboard(scoreboard: _scoreboard, alias: _alias),
                               ),
                             ),
                           ),
@@ -570,6 +571,25 @@ class _AttendQuizPageState extends AuthState<AttendQuizPage> {
         body: SingleChildScrollView(
             child: Column(
           children: [
+            Positioned(
+              top: 0,
+              left: 0,
+              right: 0,
+              child: Container(
+                color: colors.surfaceVariant,
+                child: Row(
+                  children: <Widget>[
+                    Expanded(
+                      child: Text(
+                        "Dein Alias: ${_alias}",
+                        style: Theme.of(context).textTheme.headlineSmall,
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
             Padding(
               padding:
                   const EdgeInsets.only(left: 16.0, top: 16.0, right: 16.0),
