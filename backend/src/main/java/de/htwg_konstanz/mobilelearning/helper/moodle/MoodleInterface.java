@@ -87,6 +87,7 @@ public class MoodleInterface {
             for (Integer i = 1; i <= 1000; i++) {
                 courses.add(new MoodleCourse(i.toString()));
             }
+            return courses;
         }
 
         // if courses are already set return them if not fetch them 
