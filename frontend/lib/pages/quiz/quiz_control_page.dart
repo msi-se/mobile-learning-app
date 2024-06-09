@@ -541,7 +541,7 @@ class _QuizControlPageState extends AuthState<QuizControlPage> {
                             child: Card(
                               child: Padding(
                                 padding: const EdgeInsets.all(8),
-                                child: QuizScoreboard(scoreboard: _scoreboard, alias: ""),
+                                child: QuizScoreboard(scoreboard: _scoreboard),
                               ),
                             ),
                           ),
@@ -613,8 +613,7 @@ class _QuizControlPageState extends AuthState<QuizControlPage> {
                                     child: Padding(
                                       padding: const EdgeInsets.all(8),
                                       child: QuizScoreboard(
-                                        scoreboard: _scoreboard,
-                                        alias: "",
+                                        scoreboard: _scoreboard
                                       ),
                                     ),
                                   ),

@@ -516,7 +516,7 @@ class _AttendQuizPageState extends AuthState<AttendQuizPage> {
                             child: Card(
                               child: Padding(
                                 padding: const EdgeInsets.all(8),
-                                child: QuizScoreboard(scoreboard: _scoreboard, alias: _alias),
+                                child: QuizScoreboard(scoreboard: _scoreboard),
                               ),
                             ),
                           ),
