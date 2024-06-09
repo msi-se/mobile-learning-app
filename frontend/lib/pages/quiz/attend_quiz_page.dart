@@ -569,173 +569,175 @@ class _AttendQuizPageState extends AuthState<AttendQuizPage> {
       return Scaffold(
         appBar: appBarWithProgress,
         body: Stack(children: [
-          Positioned(
-                top: 0,
-                left: 0,
-                right: 0,
-                child: Container(
-                  color: colors.surfaceVariant,
-                  child: Row(
-                    children: <Widget>[
-                      Expanded(
-                        child: Text(
-                          "Dein Alias: ${_alias}",
-                          style: Theme.of(context).textTheme.headlineSmall,
-                          textAlign: TextAlign.center,
+          SingleChildScrollView(
+              child: SizedBox(
+                  width: double.infinity,
+                  child: Column(
+                    children: [
+                      Container(
+                        color: colors.surfaceVariant,
+                        child: Row(
+                          children: <Widget>[
+                            Expanded(
+                              child: Text(
+                                "Dein Alias: ${_alias}",
+                                style: Theme.of(context).textTheme.headlineSmall,
+                                textAlign: TextAlign.center,
+                              ),
+                            ),
+                          ],
                         ),
                       ),
-                    ],
-                  ),
-                ),
-              ),
-          SingleChildScrollView(
-              child: Column(
-            children: [
-              Padding(
-                padding:
-                    const EdgeInsets.only(left: 16.0, top: 16.0, right: 16.0),
-                child: Column(
-                  children: <Widget>[
-                    const SizedBox(height: 16),
-                    Text(element.name,
-                        style: const TextStyle(
-                            fontSize: 25, fontWeight: FontWeight.w700)),
-                    Text(element.description,
-                        style: const TextStyle(
-                            fontSize: 20, fontWeight: FontWeight.w500),
-                        textAlign: TextAlign.center),
-                    const SizedBox(height: 16),
-                    Card(
-                      child: Padding(
-                        padding: const EdgeInsets.all(16),
-                        child: element.type == QuestionType.single_choice
-                            ? SingleChoiceQuiz(
-                                correctAnswers: _correctAnswers,
-                                currentQuestionFinished:
-                                    _form!.currentQuestionFinished,
-                                voted: _voted,
-                                value: _value,
-                                options: element.options,
-                                onSelectionChanged: (newValue) {
+                      Padding(
+                        padding: 
+                            const EdgeInsets.only(left: 16.0, top: 4.0, right: 16.0),
+                        child: Column(
+                          children: <Widget>[
+                            const SizedBox(height: 16),
+                            Text(element.name,
+                                style: const TextStyle(
+                                    fontSize: 25, fontWeight: FontWeight.w700)),
+                            Text(element.description,
+                                style: const TextStyle(
+                                    fontSize: 20, fontWeight: FontWeight.w500),
+                                textAlign: TextAlign.center),
+                            const SizedBox(height: 16),
+                            Card(
+                              child: Padding(
+                                padding: const EdgeInsets.all(16),
+                                child: element.type == QuestionType.single_choice
+                                    ? SingleChoiceQuiz(
+                                        correctAnswers: _correctAnswers,
+                                        currentQuestionFinished:
+                                            _form!.currentQuestionFinished,
+                                        voted: _voted,
+                                        value: _value,
+                                        options: element.options,
+                                        onSelectionChanged: (newValue) {
+                                          setState(() {
+                                            _value = newValue;
+                                          });
+                                        },
+                                      )
+                                    : element.type == QuestionType.yes_no
+                                        ? YesNoQuiz(
+                                            correctAnswers: _correctAnswers,
+                                            currentQuestionFinished:
+                                                _form!.currentQuestionFinished,
+                                            voted: _voted,
+                                            value: _value,
+                                            onSelectionChanged: (newValue) {
+                                              setState(() {
+                                                _value = newValue;
+                                              });
+                                            },
+                                          )
+                                        : Text(element.type.toString()),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      if (!_form!.currentQuestionFinished && _voted)
+                        Container(
+                            margin: const EdgeInsets.only(
+                                top: 0.0,
+                                bottom:
+                                    10.0), // specify the top and bottom margin
+
+                            width: 130,
+                            height: 130,
+                            child: RiveAnimation.direct(
+                              widget.riveFile!,
+                              fit: BoxFit.cover,
+                              artboard: 'true & false',
+                              stateMachines: ['tf State Machine'],
+                              onInit: _onRiveInit,
+                            )),
+                      if (_form!.currentQuestionFinished && _voted)
+                        Container(
+                            margin: const EdgeInsets.only(
+                                top: 0.0,
+                                bottom: 10.0), // specify the top and bottom margin
+
+                            width: 130,
+                            height: 130,
+                            child: RiveAnimation.direct(
+                              widget.riveFile!,
+                              fit: BoxFit.cover,
+                              artboard: 'true & false',
+                              stateMachines: ['tf State Machine'],
+                              onInit: _onRiveInit,
+                            )),
+                      if (_form!.currentQuestionFinished && !_voted)
+                        Container(
+                            margin: const EdgeInsets.only(
+                                top: 0.0,
+                                bottom: 10.0), // specify the top and bottom margin
+
+                            width: 130,
+                            height: 130,
+                            child: RiveAnimation.direct(
+                              widget.riveFile!,
+                              fit: BoxFit.cover,
+                              artboard: 'true & false',
+                              animations: ['nicht abgestimmt'],
+                            )),
+                      // if the user gained point, show them
+                      if (_form!.currentQuestionFinished &&
+                          _voted &&
+                          _userHasAnsweredCorrectly)
+                        Text(
+                          "Du hast $_gainedPoints Punkte erhalten.",
+                          style: const TextStyle(
+                              fontSize: 20, fontWeight: FontWeight.w700),
+                        ),
+                      const SizedBox(height: 10),
+                      (!_form!.currentQuestionFinished && !_voted)
+                          ? SizedBox(
+                              height: 55,
+                              width: buttonWidth,
+                              child: ElevatedButton(
+                                style: ButtonStyle(
+                                  elevation:
+                                      MaterialStateProperty.all<double>(6.0),
+                                  shape:
+                                      MaterialStateProperty.all<OutlinedBorder>(
+                                    RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(14.0),
+                                    ),
+                                  ),
+                                  backgroundColor: MaterialStateProperty.all<
+                                          Color>(
+                                      Theme.of(context).colorScheme.surface),
+                                  foregroundColor: MaterialStateProperty.all<
+                                          Color>(
+                                      Theme.of(context).colorScheme.primary),
+                                ),
+                                child: const Text('Senden',
+                                    style: TextStyle(fontSize: 20)),
+                                onPressed: () {
+                                  if (_value == null) {
+                                    return;
+                                  }
+                                  var message = {
+                                    "action": "ADD_RESULT",
+                                    "resultElementId": element.id,
+                                    "resultValues": [_value],
+                                    "role": "STUDENT"
+                                  };
+                                  _socketChannel?.sink.add(jsonEncode(message));
                                   setState(() {
-                                    _value = newValue;
+                                    _voted = true;
                                   });
                                 },
-                              )
-                            : element.type == QuestionType.yes_no
-                                ? YesNoQuiz(
-                                    correctAnswers: _correctAnswers,
-                                    currentQuestionFinished:
-                                        _form!.currentQuestionFinished,
-                                    voted: _voted,
-                                    value: _value,
-                                    onSelectionChanged: (newValue) {
-                                      setState(() {
-                                        _value = newValue;
-                                      });
-                                    },
-                                  )
-                                : Text(element.type.toString()),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              if (!_form!.currentQuestionFinished && _voted)
-                Container(
-                    margin: const EdgeInsets.only(
-                        top: 0.0,
-                        bottom: 10.0), // specify the top and bottom margin
+                              ),
+                            )
+                          : Container(),
 
-                    width: 130,
-                    height: 130,
-                    child: RiveAnimation.direct(
-                      widget.riveFile!,
-                      fit: BoxFit.cover,
-                      artboard: 'true & false',
-                      stateMachines: ['tf State Machine'],
-                      onInit: _onRiveInit,
-                    )),
-              if (_form!.currentQuestionFinished && _voted)
-                Container(
-                    margin: const EdgeInsets.only(
-                        top: 0.0,
-                        bottom: 10.0), // specify the top and bottom margin
-
-                    width: 130,
-                    height: 130,
-                    child: RiveAnimation.direct(
-                      widget.riveFile!,
-                      fit: BoxFit.cover,
-                      artboard: 'true & false',
-                      stateMachines: ['tf State Machine'],
-                      onInit: _onRiveInit,
-                    )),
-              if (_form!.currentQuestionFinished && !_voted)
-                Container(
-                    margin: const EdgeInsets.only(
-                        top: 0.0,
-                        bottom: 10.0), // specify the top and bottom margin
-
-                    width: 130,
-                    height: 130,
-                    child: RiveAnimation.direct(
-                      widget.riveFile!,
-                      fit: BoxFit.cover,
-                      artboard: 'true & false',
-                      animations: ['nicht abgestimmt'],
-                    )),
-              // if the user gained point, show them
-              if (_form!.currentQuestionFinished &&
-                  _voted &&
-                  _userHasAnsweredCorrectly)
-                Text(
-                  "Du hast $_gainedPoints Punkte erhalten.",
-                  style: const TextStyle(
-                      fontSize: 20, fontWeight: FontWeight.w700),
-                ),
-              const SizedBox(height: 10),
-              (!_form!.currentQuestionFinished && !_voted)
-                  ? SizedBox(
-                      height: 55,
-                      width: buttonWidth,
-                      child: ElevatedButton(
-                        style: ButtonStyle(
-                          elevation: MaterialStateProperty.all<double>(6.0),
-                          shape: MaterialStateProperty.all<OutlinedBorder>(
-                            RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(14.0),
-                            ),
-                          ),
-                          backgroundColor: MaterialStateProperty.all<Color>(
-                              Theme.of(context).colorScheme.surface),
-                          foregroundColor: MaterialStateProperty.all<Color>(
-                              Theme.of(context).colorScheme.primary),
-                        ),
-                        child: const Text('Senden',
-                            style: TextStyle(fontSize: 20)),
-                        onPressed: () {
-                          if (_value == null) {
-                            return;
-                          }
-                          var message = {
-                            "action": "ADD_RESULT",
-                            "resultElementId": element.id,
-                            "resultValues": [_value],
-                            "role": "STUDENT"
-                          };
-                          _socketChannel?.sink.add(jsonEncode(message));
-                          setState(() {
-                            _voted = true;
-                          });
-                        },
-                      ),
-                    )
-                  : Container(),
-
-              const SizedBox(height: 20),
-            ],
-          ))
+                      const SizedBox(height: 20),
+                    ],
+                  ))),
         ]),
       );
     } else {
