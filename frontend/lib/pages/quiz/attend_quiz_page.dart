@@ -516,7 +516,7 @@ class _AttendQuizPageState extends AuthState<AttendQuizPage> {
                             child: Card(
                               child: Padding(
                                 padding: const EdgeInsets.all(8),
-                                child: QuizScoreboard(scoreboard: _scoreboard),
+                                child: QuizScoreboard(scoreboard: _scoreboard, alias: _alias),
                               ),
                             ),
                           ),
@@ -570,24 +570,24 @@ class _AttendQuizPageState extends AuthState<AttendQuizPage> {
         appBar: appBarWithProgress,
         body: Stack(children: [
           Positioned(
-            top: 0,
-            left: 0,
-            right: 0,
-            child: Container(
-              color: colors.surfaceVariant,
-              child: Row(
-                children: <Widget>[
-                  Expanded(
-                    child: Text(
-                      "Dein Alias: ${_alias}",
-                      style: Theme.of(context).textTheme.headlineSmall,
-                      textAlign: TextAlign.center,
-                    ),
+                top: 0,
+                left: 0,
+                right: 0,
+                child: Container(
+                  color: colors.surfaceVariant,
+                  child: Row(
+                    children: <Widget>[
+                      Expanded(
+                        child: Text(
+                          "Dein Alias: ${_alias}",
+                          style: Theme.of(context).textTheme.headlineSmall,
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
+                    ],
                   ),
-                ],
+                ),
               ),
-            ),
-          ),
           SingleChildScrollView(
               child: Column(
             children: [
