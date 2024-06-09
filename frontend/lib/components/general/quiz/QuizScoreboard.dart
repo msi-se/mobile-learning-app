@@ -44,7 +44,7 @@ class _QuizScoreboardState extends State<QuizScoreboard> {
       itemBuilder: (BuildContext context, int index) {
         return Container(
             decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(0.0),
+              borderRadius: BorderRadius.circular(20.0),
               border: (_scoreboard[index]["userAlias"] == widget.alias)
                   ? Border.all(
                       color: colors
