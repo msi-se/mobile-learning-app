@@ -48,7 +48,7 @@ class MyApp extends StatelessWidget {
         '/login': (context) => const LoginPage(),
         '/main': (context) => MainPage(riveFile: riveFile),
         '/profile': (context) => const ProfilePage(),
-        '/menu': (context) => const MenuPage(),
+        '/menu': (context) => MenuPage(riveFile: riveFile),
         '/datenschutz': (context) => const PrivacyPage(),
         '/test': (context) => const TestPage(),
         '/feedback-info': (context) {

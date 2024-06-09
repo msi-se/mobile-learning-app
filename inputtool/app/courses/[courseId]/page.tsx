@@ -205,7 +205,7 @@ export default function CoursePage({ params }: { params: { courseId: string } })
                       setCourseName(e.target.value);
                       setUserChangedSomething(true);
                     }}
-                    placeholder="Course name"
+                    placeholder="Course Name"
                     className="font-bold"
                     onKeyDown={(e) => handleEnterPress(e, save)}
                   />
@@ -268,7 +268,7 @@ export default function CoursePage({ params }: { params: { courseId: string } })
               <Button
                 className="flex flex-col self-end"
                 onClick={async () => {
-                  const form = await addFeedbackForm(course?.id || "", "New feedback form", "");
+                  const form = await addFeedbackForm(course?.id || "", "New Feedback Form", "");
                   if (form) {
                     toast.success("Feedback form created.");
                     router.push(`/courses/${course?.id}/feedbackform/${form.id}?is-new=true`);
@@ -278,9 +278,9 @@ export default function CoursePage({ params }: { params: { courseId: string } })
               <Button
                 className="self-end flex flex-col"
                 onClick={async () => {
-                  const form = await addQuizForm(course?.id || "", "New quiz", "");
+                  const form = await addQuizForm(course?.id || "", "New Quiz Form", "");
                   if (form) {
-                    toast.success("Quiz created.");
+                    toast.success("Quiz form created.");
                     router.push(`/courses/${course?.id}/quizform/${form.id}?is-new=true`);
                   }
                 }}

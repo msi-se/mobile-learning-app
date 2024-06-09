@@ -253,12 +253,13 @@ public class LiveQuizSocket {
             // if the action is "CLOSED_QUESTION" all participants should have filled the userHasAnsweredCorrectly field
             if (messageToSend.action.equals("CLOSED_QUESTION") && connection.getType().equals(SocketConnectionType.PARTICIPANT)) {
                 
-                // check if user has answered correctly (TODO: maybe do this differntly later)
+                // check if user has answered correctly
                 Integer currentQuestionIndex = message.form.currentQuestionIndex;
-                QuestionWrapper questionWrapper = message.form.getQuestionById(message.form.questions.get(currentQuestionIndex).getId());
+                QuestionWrapper questionWrapper = message.form.questions.get(currentQuestionIndex);
                 QuizQuestion question = course.getQuizQuestionById(questionWrapper.getQuestionId());
-                Boolean userHasAnsweredCorrectly = question.checkAnswer(message.form.getResultsOfParticipant(connection.getUserId(), questionWrapper.getId())) > 0;
-                messageToSend.userHasAnsweredCorrectly = userHasAnsweredCorrectly;
+                Result userResult = questionWrapper.getResultByUserId(connection.getUserId());
+                messageToSend.userHasAnsweredCorrectly = userResult != null && userResult.getGainedPoints() > 0;
+                messageToSend.gainedPoints = userResult != null ? userResult.getGainedPoints() : 0;
 
                 // also append the correct answers
                 messageToSend.correctAnswers = question.getCorrectAnswers();
@@ -431,6 +432,17 @@ public class LiveQuizSocket {
         }
         if (question.getHasCorrectAnswers()) {
             Integer gainedPoints = question.checkAnswer(quizSocketMessage.resultValues);
+
+            // if the user was the first to answer correctly, increase the score by 5, second by 4, ...
+            if (gainedPoints > 0) {
+                Integer participantsAnsweredCorrectly = form.getParticipantsAnsweredCorrectly(questionwrapper.getId());
+                if (participantsAnsweredCorrectly < 5) {
+                    gainedPoints += 5 - participantsAnsweredCorrectly;
+                }
+            }
+
+            // update the result with the gained points and increase the score of the user
+            result.setGainedPoints(gainedPoints);
             form.increaseScoreOfParticipant(user.getId(), gainedPoints);
         }
 

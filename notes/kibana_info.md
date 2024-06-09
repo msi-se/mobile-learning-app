@@ -26,5 +26,8 @@ aber man installiert es bei sich selbst
 - Port 5601
 
 
-## Elasticsearch
-Daten können sehr schnell indexiert werden.
+# Fazit zur Verwendung von Kibana
+Durch Kibana in Verbindung mit Elasticsearch können Nutzungsdaten über die App über eine WebGUI dargestellt werden,
+dies bringt aber in der aktuellen Phase des Projekts keinen nennenswerten Mehrwert, da die Benutzerzahl zu gering ist.
+Außerdem würde die Verwendung von Elasticsearch auch erst Sinn ergeben, wenn weitaus mehr Daten vorhanden sind.
+Wenn die App eine große Verwendung gefunden hat, dann kann natürlich der Einsatz der genannten Tools im Hinblick auf die Auswertung in Erwägung gezogen werden.

@@ -49,7 +49,7 @@ public class QuizQuestion extends Question {
 
         // add more complicated answer checking here later (fulltext comparison by AI, ...)
         if (this.correctAnswers.equals(answer)) {
-            return 1;
+            return 10;
         } else {
             return 0;
         }
@@ -57,5 +57,9 @@ public class QuizQuestion extends Question {
 
     public void setType(QuizQuestionType type) {
         this.type = type;
+    }
+
+    public QuizQuestionType getType() {
+        return this.type;
     }
 }

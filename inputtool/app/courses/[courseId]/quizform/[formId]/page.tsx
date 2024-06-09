@@ -63,7 +63,7 @@ export default function QuizFormPage({ params }: { params: { courseId: string, f
       } else {
         toast.error("Failed to save.");
       }
-    } 
+    }
 
     const result = await updateQuizForm(params.courseId, params.formId, quizform.name, quizform.description);
     if (result) {
@@ -197,6 +197,13 @@ export default function QuizFormPage({ params }: { params: { courseId: string, f
                 className="mb-4 self-end ml-4"
                 variant="outline"
                 onClick={async () => {
+                  router.push(`/courses/${params.courseId}/quizform/${params.formId}/change-course`);
+                }}
+              >Change Course</Button>
+              <Button
+                className="mb-4 self-end ml-4"
+                variant="outline"
+                onClick={async () => {
                   const result = await copyQuizForm(params.courseId, params.formId);
                   if (result) {
                     toast.success("Quiz Form Copied.");
@@ -321,25 +328,25 @@ export default function QuizFormPage({ params }: { params: { courseId: string, f
                 >
                   <TableCell>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                      {question?.type === "YES_NO" && <ToggleLeft size={16}/>}
-                      {question?.type === "MULTIPLE_CHOICE" && <ListTodo size={16}/>}
-                      {question?.type === "SINGLE_CHOICE" && <SquareCheckBig size={16}/>}
-                      {question?.type === "FULLTEXT" && <TextCursorInput size={16}/>}
+                      {question?.type === "YES_NO" && <ToggleLeft size={16} />}
+                      {question?.type === "MULTIPLE_CHOICE" && <ListTodo size={16} />}
+                      {question?.type === "SINGLE_CHOICE" && <SquareCheckBig size={16} />}
+                      {question?.type === "FULLTEXT" && <TextCursorInput size={16} />}
                       {question?.type}
                     </div>
                   </TableCell>
                   <TableCell className="font-medium">{question.name}</TableCell>
                   <TableCell>{question.description}</TableCell>
                   <TableCell>{question.options?.join(", ")}</TableCell>
-                  { (question?.type === "MULTIPLE_CHOICE" || question?.type === "SINGLE_CHOICE") && (
+                  {(question?.type === "MULTIPLE_CHOICE" || question?.type === "SINGLE_CHOICE") && (
                     <TableCell>{question.correctAnswers?.map((a) => {
                       // find in options ["0"] -> "Option 1"
                       let option = question.options?.find((o, i) => i.toString() === a);
                       return option ? `"${option}"` : a;
                     }).join(", ") || "-"}</TableCell>
                   ) || (
-                    <TableCell>{question.correctAnswers?.map((a) => `"${a}"`).join(", ")|| "-"}</TableCell>
-                  )}
+                      <TableCell>{question.correctAnswers?.map((a) => `"${a}"`).join(", ") || "-"}</TableCell>
+                    )}
                   <TableCell className="flex gap-2 flex-col">
                     <Button
                       className="flex flex-col h-8 w-8"
@@ -364,7 +371,7 @@ export default function QuizFormPage({ params }: { params: { courseId: string, f
                 <TableRow
                   className="hover:cursor-pointer hover:text-blue-500"
                   onClick={async () => {
-                    const question = await addQuizQuestion(params.courseId, params.formId, "New question", "", "YES_NO", [], true, []);
+                    const question = await addQuizQuestion(params.courseId, params.formId, "New Question", "", "YES_NO", [], true, []);
                     if (question) {
                       toast.success("Question created.");
                       router.push(`/courses/${params.courseId}/quizform/${params.formId}/question/${question.id}?is-new=true`);
@@ -374,7 +381,7 @@ export default function QuizFormPage({ params }: { params: { courseId: string, f
                   onMouseLeave={() => setHoversOnCreateRow(false)}
                 >
                   <TableCell colSpan={6} className="text-center">
-                    {hoversOnCreateRow ? "Create new question" : "No questions found."}
+                    {hoversOnCreateRow ? "Create new question!" : "No questions found."}
                   </TableCell>
                 </TableRow>
               )}
