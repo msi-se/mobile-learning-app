@@ -83,7 +83,10 @@ public class MoodleInterface {
 
         // TEMP: mock the special users (Prof, Student, Admin)
         if (this.username.startsWith("Prof") || this.username.startsWith("Student") || this.username.startsWith("Admin")) {
-            return List.of(new MoodleCourse("1"), new MoodleCourse("2"), new MoodleCourse("3"), new MoodleCourse("940"));
+            List<MoodleCourse> courses = new ArrayList<MoodleCourse>();
+            for (Integer i = 1; i <= 1000; i++) {
+                courses.add(new MoodleCourse(i.toString()));
+            }
         }
 
         // if courses are already set return them if not fetch them 
