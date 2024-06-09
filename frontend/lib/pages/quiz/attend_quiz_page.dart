@@ -573,71 +573,61 @@ class _AttendQuizPageState extends AuthState<AttendQuizPage> {
               child: SizedBox(
                   width: double.infinity,
                   child: Column(
-                    children: [
-                      Container(
-                        color: colors.surfaceVariant,
-                        child: Row(
-                          children: <Widget>[
-                            Expanded(
-                              child: Text(
-                                "Dein Alias: ${_alias}",
-                                style: Theme.of(context).textTheme.headlineSmall,
-                                textAlign: TextAlign.center,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
+                    children: <Widget>[
+                      const SizedBox(height: 32),
                       Padding(
-                        padding: 
-                            const EdgeInsets.only(left: 16.0, top: 4.0, right: 16.0),
-                        child: Column(
-                          children: <Widget>[
-                            const SizedBox(height: 16),
-                            Text(element.name,
-                                style: const TextStyle(
-                                    fontSize: 25, fontWeight: FontWeight.w700)),
-                            Text(element.description,
-                                style: const TextStyle(
-                                    fontSize: 20, fontWeight: FontWeight.w500),
-                                textAlign: TextAlign.center),
-                            const SizedBox(height: 16),
-                            Card(
-                              child: Padding(
-                                padding: const EdgeInsets.all(16),
-                                child: element.type == QuestionType.single_choice
-                                    ? SingleChoiceQuiz(
-                                        correctAnswers: _correctAnswers,
-                                        currentQuestionFinished:
-                                            _form!.currentQuestionFinished,
-                                        voted: _voted,
-                                        value: _value,
-                                        options: element.options,
-                                        onSelectionChanged: (newValue) {
-                                          setState(() {
-                                            _value = newValue;
-                                          });
-                                        },
-                                      )
-                                    : element.type == QuestionType.yes_no
-                                        ? YesNoQuiz(
+                          padding: const EdgeInsets.all(16),
+                          child: Container(
+                            constraints: const BoxConstraints(maxWidth: 800),
+                            child: Column(
+                              children: <Widget>[
+                                Text(element.name,
+                                    style: const TextStyle(
+                                        fontSize: 25,
+                                        fontWeight: FontWeight.w700)),
+                                Text(element.description,
+                                    style: const TextStyle(
+                                        fontSize: 20,
+                                        fontWeight: FontWeight.w500),
+                                    textAlign: TextAlign.center),
+                                const SizedBox(height: 16),
+                                Card(
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(16),
+                                    child: element.type ==
+                                            QuestionType.single_choice
+                                        ? SingleChoiceQuiz(
                                             correctAnswers: _correctAnswers,
                                             currentQuestionFinished:
                                                 _form!.currentQuestionFinished,
                                             voted: _voted,
                                             value: _value,
+                                            options: element.options,
                                             onSelectionChanged: (newValue) {
                                               setState(() {
                                                 _value = newValue;
                                               });
                                             },
                                           )
-                                        : Text(element.type.toString()),
-                              ),
+                                        : element.type == QuestionType.yes_no
+                                            ? YesNoQuiz(
+                                                correctAnswers: _correctAnswers,
+                                                currentQuestionFinished: _form!
+                                                    .currentQuestionFinished,
+                                                voted: _voted,
+                                                value: _value,
+                                                onSelectionChanged: (newValue) {
+                                                  setState(() {
+                                                    _value = newValue;
+                                                  });
+                                                },
+                                              )
+                                            : Text(element.type.toString()),
+                                  ),
+                                ),
+                              ],
                             ),
-                          ],
-                        ),
-                      ),
+                          )),
                       if (!_form!.currentQuestionFinished && _voted)
                         Container(
                             margin: const EdgeInsets.only(
@@ -738,6 +728,24 @@ class _AttendQuizPageState extends AuthState<AttendQuizPage> {
                       const SizedBox(height: 20),
                     ],
                   ))),
+          Positioned(
+              top: 0,
+              left: 0,
+              right: 0,
+              child: Container(
+                color: colors.surfaceVariant,
+                child: Row(
+                  children: <Widget>[
+                    Expanded(
+                      child: Text(
+                        "Dein Alias: ${_alias}",
+                        style: Theme.of(context).textTheme.headlineSmall,
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                  ],
+                ),
+              )),
         ]),
       );
     } else {
