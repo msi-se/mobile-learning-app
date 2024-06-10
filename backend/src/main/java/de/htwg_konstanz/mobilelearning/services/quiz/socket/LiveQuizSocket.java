@@ -201,6 +201,7 @@ public class LiveQuizSocket {
     @OnClose
     public void onClose(Session session, @PathParam("courseId") String courseId, @PathParam("formId") String formId,
             @PathParam("userId") String userId) {
+        log(String.format("User %s disconnected", userId));
         connections.remove(session.getId());
     }
 
