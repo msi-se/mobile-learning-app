@@ -1,14 +1,15 @@
 package de.htwg_konstanz.mobilelearning.helper.moodle;
 
+import java.net.URLEncoder;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Moodle service that returns moodle courses of a user.
@@ -35,13 +36,12 @@ public class MoodleInterface {
             // get the token from
             // https://moodle.htwg-konstanz.de/moodle/login/token.php?username=USERNAME&password=PASSWORD&service=SERVICESHORTNAME
             CloseableHttpClient client = HttpClients.createDefault();
-            HttpGet request = new HttpGet("https://moodle.htwg-konstanz.de/moodle/login/token.php?username="
-                    + this.username + "&password=" + this.password + "&service=moodle_mobile_app");
+            HttpGet request = new HttpGet("https://moodle.htwg-konstanz.de/moodle/login/token.php?username=" + this.username + "&password=" + URLEncoder.encode(this.password, "UTF-8") + "&service=moodle_mobile_app");
             MoodleTokenResponse tokenResponse = mapper.readValue(client.execute(request).getEntity().getContent(),
                     MoodleTokenResponse.class);
             this.token = tokenResponse.token;
-            // System.out.println("Successfully logged in as " + this.username + " with
-            // token " + this.token.substring(0, 5) + "...");
+            System.out.println("Successfully logged in as " + this.username + " with token " + this.token.substring(0, 5) + "...");
+            System.out.println(tokenResponse);
 
             // get user id
             String wsFunction = "core_webservice_get_site_info";
@@ -65,6 +65,7 @@ public class MoodleInterface {
 
         } catch (Exception e) {
             System.out.println("Error while logging into moodle: " + e.getMessage());
+            System.out.println(e);
             return false;
         }
 
@@ -82,7 +83,11 @@ public class MoodleInterface {
 
         // TEMP: mock the special users (Prof, Student, Admin)
         if (this.username.startsWith("Prof") || this.username.startsWith("Student") || this.username.startsWith("Admin")) {
-            return List.of(new MoodleCourse("1"), new MoodleCourse("2"), new MoodleCourse("3"), new MoodleCourse("940"));
+            List<MoodleCourse> courses = new ArrayList<MoodleCourse>();
+            for (Integer i = 1; i <= 1000; i++) {
+                courses.add(new MoodleCourse(i.toString()));
+            }
+            return courses;
         }
 
         // if courses are already set return them if not fetch them 
