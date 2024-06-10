@@ -57,6 +57,10 @@ public class LiveQuizSocket {
     @Inject
     StatsService statsService;
 
+    private void log(String message) {
+        System.out.println("LiveQuizSocket: " + message);
+    }
+
     /**
      * Method called when a new connection is opened.
      * User has to either (student & participant of the session) or owner of the
@@ -81,6 +85,7 @@ public class LiveQuizSocket {
         // userId from Jwt has to match userId from path
         if (!jwtService.getJwtClaims(jwt).getSubject().equals(userId)) {
             connections.remove(session.getId());
+            log(String.format("User %s not authorized (jwt does not match userId)", userId));
             session.close(new CloseReason(CloseReason.CloseCodes.VIOLATED_POLICY, "User not authorized"));
             return;
         }
@@ -88,26 +93,26 @@ public class LiveQuizSocket {
         // check if course, form and user exist
         Course course = courseRepository.findById(new ObjectId(courseId));
         if (course == null) {
-            System.out.println("Course not found");
+            log(String.format("Course %s not found", courseId));
             session.close(new CloseReason(CloseReason.CloseCodes.VIOLATED_POLICY, "Course not found"));
             return;
         }
         QuizForm form = course.getQuizFormById(new ObjectId(formId));
         if (form == null) {
-            System.out.println("Form not found");
+            log(String.format("Form %s not found", formId));
             session.close(new CloseReason(CloseReason.CloseCodes.VIOLATED_POLICY, "Form not found"));
             return;
         }
         User user = userRepository.findById(new ObjectId(userId));
         if (user == null) {
-            System.out.println("User not found");
+            log(String.format("User %s not found", userId));
             session.close(new CloseReason(CloseReason.CloseCodes.VIOLATED_POLICY, "User not found"));
             return;
         }
 
         // check if user is student of the course
         if (!course.isStudent(userId) && !course.isOwner(userId)) {
-            System.out.println("User is not a student of the course");
+            log(String.format("User %s is not a student of the course %s", user.getUsername(), course.getName()));
             session.close(new CloseReason(CloseReason.CloseCodes.VIOLATED_POLICY, "User is not a student of the course"));
             return;
         }
@@ -116,7 +121,7 @@ public class LiveQuizSocket {
         Boolean isParticipant = form.isParticipant(userId);
         Boolean isOwner = course.isOwner(userId);
         if (!isParticipant && !isOwner) {
-            System.out.println(String.format("User %s is not a participant or owner of the form", user.getUsername()));
+            log(String.format("User %s is not a participant or owner of the form", user.getUsername()));
             session.close(new CloseReason(CloseReason.CloseCodes.VIOLATED_POLICY, String.format("User %s is not a participant or owner of the form", user.getUsername())));
             return;
         }
@@ -126,6 +131,7 @@ public class LiveQuizSocket {
 
         // add the connection to the list
         SocketConnection socketMember = new SocketConnection(session, courseId, formId, userId, type);
+        log(String.format("User %s connected as %s", user.getUsername(), type));
         connections.put(session.getId(), socketMember);
 
         // send a message to the owner to notify that a new participant has joined
@@ -275,6 +281,7 @@ public class LiveQuizSocket {
 
             // send the message
             String messageString = messageToSend.toJson();
+            log("SEND: " + messageString);
             connection.session.getAsyncRemote().sendObject(messageString, result ->  {
                 if (result.getException() != null) {
                     System.out.println("Unable to send message: " + result.getException());
@@ -287,20 +294,31 @@ public class LiveQuizSocket {
 
         // evaluate action
         if (quizSocketMessage.action == null || quizSocketMessage.action.equals("")) {
-            System.out.println("Action is null");
+            log("Action is invalid");
             return false;
         }
         
         if (quizSocketMessage.action.equals("FUN")) {
             return this.fun(quizSocketMessage, formId);
         }
+                
+        log("RECEIVED: " + quizSocketMessage.toJson());
 
         // if the user is not an owner or participant, return
         User user = userRepository.findById(new ObjectId(userId));
-        if (user == null) { return false; }
+        if (user == null) {
+            log(String.format("User %s not found", userId));
+            return false;
+        }
         Course course = courseRepository.findById(new ObjectId(courseId));
-        if (course == null) { return false; }
-        if (!course.isOwner(userId) && !course.isStudent(userId)) { return false; }
+        if (course == null) {
+            log(String.format("Course %s not found", courseId));
+            return false;
+        }
+        if (!course.isOwner(userId) && !course.isStudent(userId)) {
+            log(String.format("User %s is not a student or owner of the course", user.getUsername()));
+            return false;
+        }
 
         if (quizSocketMessage.action.equals("CHANGE_FORM_STATUS")) {
             return this.changeFormStatus(quizSocketMessage, course, formId, user);
@@ -319,37 +337,36 @@ public class LiveQuizSocket {
 
     private Boolean changeFormStatus(LiveQuizSocketMessage quizSocketMessage, Course course, String formId, User user) {
 
-        System.out.println("Change form status");
-
         // user must be owner of the course
         if (!course.isOwner(user.getId())) {
-            System.out.println("User is not owner of the course");
+            log(String.format("User %s is not owner of the course", user.getUsername()));
             return false;
         }
 
         // evaluate formStatus
         if (quizSocketMessage.formStatus == null || quizSocketMessage.formStatus.equals("")
                 || FormStatus.valueOf(quizSocketMessage.formStatus) == null) {
-            System.out.println("Form status is invalid");
+            log(String.format("Form status %s is invalid", quizSocketMessage.formStatus));
             return false;
         }
 
         // get the enum value of the formStatus
         FormStatus formStatusEnum = FormStatus.valueOf(quizSocketMessage.formStatus);
-        System.out.println("Form status enum: " + formStatusEnum);
 
         // get the form
         QuizForm form = course.getQuizFormById(new ObjectId(formId));
         if (form == null) {
-            System.out.println("Form not found");
+            log(String.format("Form %s not found", formId));
             return false;
         }
 
         // change the form status
         form.setStatus(formStatusEnum);
+        log(String.format("Form status of form %s changed to %s", formId, formStatusEnum.toString()));
 
         // if it is set to NOT_STARTED, remove all results
         if (formStatusEnum == FormStatus.NOT_STARTED) {
+            log("Clear results and participants of quiz form");
             form.clearResults();
             form.clearParticipants();
             form.currentQuestionIndex = 0;
@@ -361,6 +378,7 @@ public class LiveQuizSocket {
 
         // if it is set to STARTED set the timestamp
         if (formStatusEnum == FormStatus.STARTED) {
+            log("Set start timestamp of quiz form");
             form.setStartTimestamp();
         }
 
@@ -370,8 +388,7 @@ public class LiveQuizSocket {
 
         // update the userstats of the participants and the global stats
         if (formStatusEnum == FormStatus.FINISHED) {
-            System.out.println("Update user stats for quiz form");
-            System.out.println(form.getParticipants().size());
+            log("Update user stats and increment completed quiz forms");
             this.userService.updateUserStatsByQuizForm(form);
             this.statsService.incrementCompletedQuizForms();
         }
@@ -385,25 +402,23 @@ public class LiveQuizSocket {
 
     private Boolean addResult(LiveQuizSocketMessage quizSocketMessage, Course course, String formId, User user) {
 
-        System.out.println("Add result");
-
         // evaluate resultElementId
         if (quizSocketMessage.resultElementId == null || quizSocketMessage.resultElementId.equals("")) {
-            System.out.println("Result questionwrapper ID is invalid");
+            log(String.format("Result element ID %s is invalid", quizSocketMessage.resultElementId));
             return false;
         }
 
         // evaluate resultValue
         if (quizSocketMessage.resultValues == null || quizSocketMessage.resultValues.size() < 1
                 || quizSocketMessage.resultValues.get(0).equals("")) {
-            System.out.println("Result value is invalid");
+            log("Result values are invalid");
             return false;
         }
 
         // get the form
         QuizForm form = course.getQuizFormById(new ObjectId(formId));
         if (form == null) {
-            System.out.println("Form not found");
+            log(String.format("Form %s not found", formId));
             return false;
         }
 
@@ -411,7 +426,7 @@ public class LiveQuizSocket {
         System.out.println(quizSocketMessage.resultElementId);
         QuestionWrapper questionwrapper = form.getQuestionById(new ObjectId(quizSocketMessage.resultElementId));
         if (questionwrapper == null) {
-            System.out.println("Element not found");
+            log(String.format("Questionwrapper %s not found", quizSocketMessage.resultElementId));
             return false;
         }
 
@@ -420,14 +435,14 @@ public class LiveQuizSocket {
         Result result = new Result(hashedUserId, quizSocketMessage.resultValues);
         Boolean wasResultAdded = questionwrapper.addResult(result);
         if (!wasResultAdded) {
-            System.out.println("Result was not added (user probably already submitted a result)");
+            log(String.format("Result for user %s was not added", user.getUsername()));
             return false;
         }
 
         // check if the score of the user has to be updated
         QuizQuestion question = course.getQuizQuestionById(questionwrapper.getQuestionId());
         if (question == null) {
-            System.out.println("Question not found");
+            log(String.format("Question %s not found", questionwrapper.getQuestionId()));
             return false;
         }
         if (question.getHasCorrectAnswers()) {
@@ -457,24 +472,25 @@ public class LiveQuizSocket {
 
     private Boolean next(LiveQuizSocketMessage quizSocketMessage, Course course, String formId, User user) {
 
-        System.out.println("Next");
-
         // user must be owner of the course
         if (!course.isOwner(user.getId())) {
-            System.out.println("User is not owner of the course");
+            log(String.format("User %s is not owner of the course", user.getUsername()));
             return false;
         }
 
         // get the form
         QuizForm form = course.getQuizFormById(new ObjectId(formId));
         if (form == null) {
-            System.out.println("Form not found");
+            log(String.format("Form %s not found", formId));
             return false;
         }
 
         // next question / finish question / finish quiz
         List<String> events = form.next();
         courseRepository.update(course);
+
+        log(String.format("NEXT produced events: %s", events));
+        log(String.format("Current question index: %d; Current question finished: %b", form.currentQuestionIndex, form.currentQuestionFinished));
 
         // for all events, send a message
         events.forEach(event -> {
@@ -486,8 +502,6 @@ public class LiveQuizSocket {
     }
 
     private Boolean fun(LiveQuizSocketMessage quizSocketMessage, String formId) {
-
-        System.out.println("Throw paper plane");
         
         quizSocketMessage = new LiveQuizSocketMessage(quizSocketMessage.action, quizSocketMessage.fun);
 

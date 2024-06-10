@@ -315,6 +315,11 @@ class _FeedbackResultPageState extends AuthState<FeedbackResultPage> {
         );
       }
 
+      var values = 0;
+      if (_results.isNotEmpty) {
+        values = _results[0]["values"].length;
+      }
+
       return Scaffold(
           appBar: appbar,
           body: Stack(
@@ -440,11 +445,30 @@ class _FeedbackResultPageState extends AuthState<FeedbackResultPage> {
                 right: 0,
                 child: Container(
                   color: colors.surfaceVariant,
-                  child: Text(
-                    "${_form.connectCode.substring(0, 3)} ${_form.connectCode.substring(3, 6)}",
-                    style: Theme.of(context).textTheme.headlineSmall,
-                    textAlign: TextAlign.center,
-                  ),
+                  child: Row(children: <Widget>[
+                    Expanded(
+                        child: Text(
+                      "${_form.connectCode.substring(0, 3)} ${_form.connectCode.substring(3, 6)}",
+                      style: Theme.of(context).textTheme.headlineSmall,
+                      textAlign: TextAlign.center,
+                    )),
+                    Expanded(
+                        child: Padding(
+                      padding: const EdgeInsets.only(right: 8.0),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: <Widget>[
+                          Text("Abgestimmt:"),
+                          const Icon(Icons.person),
+                          Text(
+                            "${values}/$_participantCounter",
+                            style: Theme.of(context).textTheme.headlineSmall,
+                            textAlign: TextAlign.right,
+                          ),
+                        ],
+                      ),
+                    )),
+                  ]),
                 ),
               ),
             ],

@@ -6,12 +6,14 @@ class SingleChoiceQuizResult extends StatefulWidget {
   final List<int> results;
   final List<String> options;
   final String correctAnswer;
+  final bool questionFinished;
 
   const SingleChoiceQuizResult({
     super.key,
     required this.results,
     required this.options,
     required this.correctAnswer,
+    required this.questionFinished,
   });
 
   @override
@@ -88,9 +90,12 @@ class _SingleChoiceQuizResultState extends State<SingleChoiceQuizResult> {
               child: Text(
                 optionDerivation.option,
                 style: TextStyle(
-                  color: correctAnswer ? Colors.green : colors.onBackground,
-                  fontWeight:
-                      correctAnswer ? FontWeight.bold : FontWeight.normal,
+                  color: widget.questionFinished && correctAnswer
+                      ? Colors.green
+                      : colors.onBackground,
+                  fontWeight: widget.questionFinished && correctAnswer
+                      ? FontWeight.bold
+                      : FontWeight.normal,
                   fontSize: 20,
                 ),
               ),
@@ -103,8 +108,9 @@ class _SingleChoiceQuizResultState extends State<SingleChoiceQuizResult> {
                     "${optionDerivation.count}",
                     style: TextStyle(
                       color: colors.onBackground,
-                      fontWeight:
-                          correctAnswer ? FontWeight.bold : FontWeight.normal,
+                      fontWeight: widget.questionFinished && correctAnswer
+                          ? FontWeight.bold
+                          : FontWeight.normal,
                     ),
                   ),
                 ),
@@ -117,7 +123,9 @@ class _SingleChoiceQuizResultState extends State<SingleChoiceQuizResult> {
                         value: optionDerivation.normalizedPercentage,
                         backgroundColor: colors.secondary.withOpacity(0.1),
                         valueColor: AlwaysStoppedAnimation<Color>(
-                          correctAnswer ? Colors.green : colors.tertiary,
+                          widget.questionFinished && correctAnswer
+                              ? Colors.green
+                              : colors.tertiary,
                         ),
                       ),
                     ),
