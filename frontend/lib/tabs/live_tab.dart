@@ -67,7 +67,7 @@ class _LiveTabState extends State<LiveTab> {
       _fetchResult = '';
     });
     // fetch forms every 5 seconds
-    Timer.periodic(const Duration(seconds: 1), (timer) {
+    Timer.periodic(const Duration(seconds: 5), (timer) {
       if (!mounted) {
         timer.cancel();
       } else if (ModalRoute.of(context)!.isCurrent) {
