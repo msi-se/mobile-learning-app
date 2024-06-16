@@ -6,6 +6,7 @@ import org.bson.types.ObjectId;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+
 import de.htwg_konstanz.mobilelearning.helper.ObjectIdTypeAdapter;
 import de.htwg_konstanz.mobilelearning.models.quiz.QuizForm;
 
@@ -45,10 +46,10 @@ public class LiveQuizSocketMessage {
         this.fun = quizSocketMessage.fun;
         this.form = null;
 
-        System.out.println("Action: " + this.action);
-        System.out.println("Form status: " + this.formStatus);
-        System.out.println("Result element ID: " + this.resultElementId);
-        System.out.println("Result value: " + this.resultValues);
+        // System.out.println("Action: " + this.action);
+        // System.out.println("Form status: " + this.formStatus);
+        // System.out.println("Result element ID: " + this.resultElementId);
+        // System.out.println("Result value: " + this.resultValues);
     }
 
     public LiveQuizSocketMessage(String action, Fun fun) {
