@@ -7,6 +7,7 @@ import 'package:frontend/pages/feedback/feedback_result_page.dart';
 import 'package:frontend/pages/login_page.dart';
 import 'package:frontend/pages/main_page.dart';
 import 'package:frontend/pages/menu_page.dart';
+import 'package:frontend/pages/privacy_page.dart';
 import 'package:frontend/pages/test_page.dart';
 import 'package:frontend/pages/profile_page.dart';
 import 'package:frontend/pages/quiz/attend_quiz_page.dart';
@@ -48,6 +49,7 @@ class MyApp extends StatelessWidget {
         '/main': (context) => MainPage(riveFile: riveFile),
         '/profile': (context) => const ProfilePage(),
         '/menu': (context) => MenuPage(riveFile: riveFile),
+        '/datenschutz': (context) => const PrivacyPage(),
         '/test': (context) => const TestPage(),
         '/feedback-info': (context) {
           var arguments = ModalRoute.of(context)!.settings.arguments
