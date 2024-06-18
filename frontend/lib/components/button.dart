@@ -2,8 +2,9 @@ import 'package:flutter/material.dart';
 
 class SubmitButton extends StatelessWidget {
   final Function()? onTap;
+  final bool enabled;
 
-  const SubmitButton({super.key, required this.onTap});
+  const SubmitButton({super.key, required this.onTap, this.enabled = true});
 
   @override
   Widget build(BuildContext context) {
@@ -13,7 +14,7 @@ class SubmitButton extends StatelessWidget {
       child: Container(
         height: 60,
         decoration: BoxDecoration(
-          color: colors.primary,
+          color: enabled ? colors.primary : Colors.grey[300],
           borderRadius: BorderRadius.circular(12),
         ),
         child: const Center(

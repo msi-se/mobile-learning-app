@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/auth_state.dart';
 import 'package:frontend/components/basicButton.dart';
+import 'package:frontend/pages/privacy_page.dart';
 import 'package:frontend/global.dart';
 
 class ProfilePage extends StatefulWidget {
@@ -52,7 +53,20 @@ class _ProfilePage extends AuthState<ProfilePage> {
                     fontWeight: FontWeight.w500,
                   ),
                 ),
-                const SizedBox(height: 30),
+                const SizedBox(height: 10),
+                TextButton(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => PrivacyPage()),
+                    );
+                  },
+                  child: const Text(
+                    'Datenschutzerklärung',
+                    style: TextStyle(fontSize: 16),
+                  ),
+                ),
+                const SizedBox(height: 10),
                 BasicButton(
                   type: ButtonType.cancel,
                   text: "Logout",
