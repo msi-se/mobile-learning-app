@@ -25,12 +25,10 @@ class SingleChoiceQuiz extends StatefulWidget {
 
 class _SingleChoiceQuizState extends State<SingleChoiceQuiz> {
   int _selection = -1;
-  late List<String> _options;
 
   @override
   void initState() {
     super.initState();
-    _options = widget.options;
   }
 
   @override
@@ -54,7 +52,7 @@ class _SingleChoiceQuizState extends State<SingleChoiceQuiz> {
       return ListView.builder(
         shrinkWrap: true,
         physics: const NeverScrollableScrollPhysics(),
-        itemCount: _options.length,
+        itemCount: widget.options.length,
         itemBuilder: (BuildContext context, int index) {
           String letter = String.fromCharCode(65 + index);
           bool selected = _selection == index;
@@ -87,7 +85,7 @@ class _SingleChoiceQuizState extends State<SingleChoiceQuiz> {
                   ),
                 ),
               ),
-              title: Text(_options[index]),
+              title: Text(widget.options[index]),
               onTap: () {
                 if (!widget.voted) {
                   setState(() {
@@ -104,7 +102,7 @@ class _SingleChoiceQuizState extends State<SingleChoiceQuiz> {
       return ListView.builder(
         shrinkWrap: true,
         physics: const NeverScrollableScrollPhysics(),
-        itemCount: _options.length,
+        itemCount: widget.options.length,
         itemBuilder: (BuildContext context, int index) {
           String letter = String.fromCharCode(65 + index);
           bool selected = _selection == index;
@@ -149,7 +147,7 @@ class _SingleChoiceQuizState extends State<SingleChoiceQuiz> {
                   ),
                 ),
               ),
-              title: Text(_options[index]),
+              title: Text(widget.options[index]),
               onTap: () {
                 if (!widget.voted && !widget.currentQuestionFinished) {
                   setState(() {
