@@ -49,6 +49,8 @@ class _QuizControlPageState extends AuthState<QuizControlPage> {
   late List<dynamic> _scoreboard;
   bool _showLeaderboard = false;
 
+  int _currentCountdown = 0;
+
   int _participantCounter = 0;
   List<dynamic> _userNames = [];
 
@@ -96,6 +98,7 @@ class _QuizControlPageState extends AuthState<QuizControlPage> {
         var form = QuizForm.fromJson(data);
 
         _form = form;
+        _currentCountdown = 0;
         _results = getResults(data);
         _participantCounter = data["participants"].length;
         _userNames = data["participants"]
@@ -158,6 +161,7 @@ class _QuizControlPageState extends AuthState<QuizControlPage> {
         var form = QuizForm.fromJson(data["form"]);
         setState(() {
           _showLeaderboard = false;
+          _currentCountdown = 0;
           _form.status = FormStatus.fromString(data["formStatus"]);
           _form.currentQuestionIndex = form.currentQuestionIndex;
           _form.currentQuestionFinished = form.currentQuestionFinished;
@@ -165,9 +169,14 @@ class _QuizControlPageState extends AuthState<QuizControlPage> {
         });
       }
       if (data["action"] == "RESULT_ADDED") {
+        List<Map<String, dynamic>> results = getResults(data["form"]);
+        int result_count = results[_form.currentQuestionIndex]["values"].length;
+        if (_participantCounter <= result_count && _currentCountdown > 0) {
+          _currentCountdown = 0;
+        }
         setState(() {
           _scoreboard = getScoreboard(data["form"]);
-          _results = getResults(data["form"]);
+          _results = results;
         });
       }
       if (data["action"] == "CLOSED_QUESTION" ||
@@ -175,6 +184,7 @@ class _QuizControlPageState extends AuthState<QuizControlPage> {
         var form = QuizForm.fromJson(data["form"]);
         setState(() {
           _showLeaderboard = false;
+          _currentCountdown = 0;
           _form.currentQuestionIndex = form.currentQuestionIndex;
           _form.currentQuestionFinished = form.currentQuestionFinished;
         });
@@ -258,9 +268,24 @@ class _QuizControlPageState extends AuthState<QuizControlPage> {
     Navigator.pop(context);
   }
 
-  void next() {
-    if (_form.currentQuestionFinished) {
-      if (_showLeaderboard) {
+  void next({int countdownSeconds = 0}) {
+    if (countdownSeconds == 0) {
+      if (_form.currentQuestionFinished) {
+        if (_showLeaderboard) {
+          if (_socketChannel != null) {
+            _socketChannel!.sink.add(jsonEncode({
+              "action": "NEXT",
+              "roles": _roles,
+              "userId": _userId,
+            }));
+          }
+        } else {
+          // Show the leaderboard first before moving to the next question
+          setState(() {
+            _showLeaderboard = true;
+          });
+        }
+      } else {
         if (_socketChannel != null) {
           _socketChannel!.sink.add(jsonEncode({
             "action": "NEXT",
@@ -268,20 +293,24 @@ class _QuizControlPageState extends AuthState<QuizControlPage> {
             "userId": _userId,
           }));
         }
-      } else {
-        // Show the leaderboard first before moving to the next question
-        setState(() {
-          _showLeaderboard = true;
-        });
       }
-    } else {
-      if (_socketChannel != null) {
-        _socketChannel!.sink.add(jsonEncode({
-          "action": "NEXT",
-          "roles": _roles,
-          "userId": _userId,
-        }));
-      }
+    } else { // Countdown local
+      setState(() {
+        _currentCountdown = countdownSeconds;
+      });
+      Timer.periodic(const Duration(seconds: 1), (timer) {
+        if (!mounted) {
+          timer.cancel();
+        } else if (_currentCountdown <= 1) {
+          _currentCountdown = 0;
+          timer.cancel();
+          next();
+        } else {
+          setState(() {
+            _currentCountdown--;
+          });
+        }
+      });
     }
   }
 
@@ -671,12 +700,47 @@ class _QuizControlPageState extends AuthState<QuizControlPage> {
                       if (_form.status == FormStatus.started)
                         Column(
                           children: [
-                            BasicButton(
-                              type: ButtonType.primary,
-                              text: "Next",
-                              onPressed: next,
-                            ),
-                            const SizedBox(height: 8),
+                            if (!_form.currentQuestionFinished) ...[
+                              if (_currentCountdown == 0) ...[  // Countdown not active
+                                BasicButton(
+                                  type: ButtonType.primary,
+                                  text: "Ergebnis anzeigen",
+                                  onPressed: next,
+                                ),
+                                if (_participantCounter > values.length) ...[  // not all participants have voted
+                                  const SizedBox(height: 8),
+                                  BasicButton(
+                                    type: ButtonType.primary,
+                                    text: "15 Sekunden Countdown",
+                                    onPressed: () => next(countdownSeconds: 15),
+                                  ),
+                                  const SizedBox(height: 8),
+                                  BasicButton(
+                                    type: ButtonType.primary,
+                                    text: "30 Sekunden Countdown",
+                                    onPressed: () => next(countdownSeconds: 30),
+                                  ),
+                                ],
+                              ] else ...[  // Countdown active
+                                Text(
+                                  "Ergebnis in $_currentCountdown Sekunden",
+                                  style: Theme.of(context).textTheme.headlineSmall,
+                                ),
+                              ]
+                            ] else if (!_showLeaderboard) ...[  // Question finished
+                              BasicButton(
+                                type: ButtonType.primary,
+                                text: "Leaderboard anzeigen",
+                                onPressed: next,
+                              ),
+                            ] else ...[  // Leaderboard shown
+                              BasicButton(
+                                type: ButtonType.primary,
+                                text: "Nächste Frage",
+                                onPressed: next,
+                              ),
+                            ],
+                            const SizedBox(height: 32),
                             BasicButton(
                               type: ButtonType.cancel,
                               text: "Quiz beenden",
