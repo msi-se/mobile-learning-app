@@ -111,17 +111,8 @@ quarkus.jacoco.excludes=**/helper/**/*
 
 ## Deployment
 
-- ssh on dev or prod server
   - dev: http://loco.in.htwg-konstanz.de/
-    - Server 141.37.26.19
-    - User: loco
-    - Passwort: ask Prof. Schimkat/Confluence
-    -ssh via VPN => ssh loco@141.37.26.19
   - prod: https://connect.in.htwg-konstanz.de/
-    -  Server 141.37.26.12
-    - User: teammsi
-    - Passwort: ask Prof. Schimkat/Confluence
-    -ssh via VPN => ssh loco@141.37.26.19
 ```bash
 cd /home/loco/team-learning
 docker compose up -d
