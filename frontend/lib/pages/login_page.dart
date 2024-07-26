@@ -209,12 +209,27 @@ class _LoginPageState extends State<LoginPage> {
                             SvgPicture.asset(htwgConnect, height: 130),
                             const SizedBox(width: 20),
                             Flexible(
-                              child: Text(
-                                'HTWG Connect',
-                                style: TextStyle(
-                                    fontSize: 36,
-                                    fontWeight: FontWeight.w900,
-                                    color: colors.primary),
+                              child: Wrap(
+                                children: [
+                                  Text(
+                                    'HTWG ',
+                                    style: TextStyle(
+                                        fontSize: 36,
+                                        fontWeight: FontWeight.w900,
+                                        color: colors.primary),
+                                    softWrap: false,
+                                    overflow: TextOverflow.visible,
+                                  ),
+                                  Text(
+                                    'Connect',
+                                    style: TextStyle(
+                                        fontSize: 36,
+                                        fontWeight: FontWeight.w900,
+                                        color: colors.primary),
+                                    softWrap: false,
+                                    overflow: TextOverflow.visible,
+                                  ),
+                                ],
                               ),
                             ),
                           ],
